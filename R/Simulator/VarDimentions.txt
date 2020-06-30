@@ -1,0 +1,15 @@
+Npft:
+
+"ik", "pstart", "ztopmxPft", "gddfz", "ptemp", "pmintemp", "pmmin", "pdmin", "pcm", "pcd", "idop", "iavepdate", "harvdate", "cntops", "cnroot", "croplive", "grnfraccrop", "gddplant", "gddtsoi", "gddmaturity", "thrlai", "peaklai", "hui", "phuf", "tlai", "templai", "harvidx", "fnleaf", "fnstem", "fnroot", "fngrain", "fnplant", "tnplant", "grainn", "cumlvs", "idpp", "idpe", "dpgf", "cropyld", "dmleaf", "dmstem", "dmresidue", "dmyield", "dmcrop", "cropn", "cropfixn", "nconcl", "nconcs", "nconcr", "nconcg", "leafout", "cropplant", "croplaimx", "residuen", "dmroot", "dmwood", "hdate", "pdate", "crmclim", "crmact", "crmplant", "ccdays", "grainday", "fertinput", "avehybrid", "idppout", "aerial", "arepr", "astem", "astemi", "aleafi", "cfrac", "baset", "mxtmp", "tkill", "hybgdd", "gddmin", "lfemerg", "grnfill", "laicons", "allconsl", "allconss", "laimx", "arooti", "arootf", "aleaff", "astemf", "declfact", "mxgddgf", "mxdgfi", "mxmat", "fleafi", "fleaf", "cgrain", "convfact", "maxhi", "fyield", "fnlfmx", "fngrmx", "sratio", "rratio", "fnopt", "bfact", "totnuptake", "stressn", "totnfix", "fixn", "fertnitro", "vmax_pft", "lotemp", "hitemp", "drought", "f1", "f2", "tauleaf", "tauroot", "tauwood", "tauwood0", "TminL", "TminU", "Twarm", "GDD", "cbiol", "cbior", "cbiow", "cbiog", "cbios", "biomass", "frac", "plai", "plaimx", "tnpp", "tgpp", "nppdummy", "exist", "specla", "aleaf", "aroot", "awood", "amnpp", "adnpp", "ayanpp", "aynpp", "aygpp", "aybprod", "ayabprod", "ayrprod", "aylprod"
+
+Nsoilay:
+
+"hsoi", "tsoi", "wsoi", "wisoi", "consoi", "csoi", "hydraul", "suction", "bex", "sfield", "swilt", "rhosoi", "poros", "porosflo", "sand", "clay", "stressl", "stressu", "upsoiu", "upsoil", "soisand", "soiclay", "domtext", "fracsand", "fracsilt", "fracclay", "cpwf", "swater", "sice", "hflo", "ibex", "pmsoil", "pmsoln", "pcsoln", "smsoil", "smsoln", "fout", "nout", "csoln", "tnuptake", "anuptake", "wflo", "froot", "adwsoilay", "adwisoilay", "adtsoilay", "adupsoil", "adcsoln"
+
+Ndat:
+
+"texdat", "porosdat", "sfielddat", "swiltdat", "bexdat", "suctiondat", "hydrauldat"
+
+Nband:
+
+"solad", "solai", "asurd", "asuri", "rhoveg", "tauveg"

@@ -1,0 +1,2 @@
+ID,LAT,LON,startY,endY,SOILID,StationID,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,cycle length,cycles,params,P1,plating day,start year,cycle length,cycles,params
+simUSR_EUCFLUX,-21.75,-47.75,2004,2016,USR,inst/input_1d/FAYS_279_2015_208_2018_Input_1hora.txt,0,1,0,0,sugarcane,104,2004,390,1,sugarcane_USR,eucalipto,305,2009,2500,1,eucalipto1

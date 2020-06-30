@@ -1,0 +1,2 @@
+ID,LAT,LON,startYear,endYear,SOILID,StationID,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,cycle length,cycles,params
+sim1,-20.25,-46.25,1995,2001,,,0,1,0,0,C4Grass,0,0,0,0,C4Grass

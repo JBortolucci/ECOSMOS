@@ -1,0 +1,32 @@
+Debug:
+
+
+
+### beginning of simulation ###
+
+### rd_param ###
+
+### readit ###
+
+### Initial ###
+
+### subrotina climanl ### OK
+ndaypm: ok
+dtemp: ok
+baset: ok
+rwork: diferença de aproximação. ok
+restante: diferença de aproximação. ok
+
+Primeira iteração:
+
+### subrotina daily ### OK
+xstore: calculo incorreto no R. Consertado. Ok
+psurf - valor diferente devido ao calculo da variável rwork, que calcula o valor um pouco diferente no fortran e no R
+tmin - valor diferente, mas insignificante. arredondamento
+gddsgcp - casas decimais diferentes, mas não é alterado nessa rotina. - Alterado em climanl. diferença de arredondamento. Ok
+Restante: Ok
+
+
+### Subrotina pheno ### OK
+
+

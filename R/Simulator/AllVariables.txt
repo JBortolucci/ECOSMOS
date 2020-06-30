@@ -1,0 +1,1103 @@
+# Examples:  Variable name  |  type(vector, matrix, logical)  |  dim  | dim  |  initial value
+#                termu                    vector                  7                  0              (Vector)
+#                rhoveg                   matrix                nband    2           0              (Matrix)
+#                onflagu                  logical                                    F              (logical)
+#                firb                                                                0              (Normal Variable)
+ 
+
+# Constantes relacionadas às configurações iniciais da simulação
+
+#   Constantes da planta #
+
+C3 0
+C4 1
+
+LOWER 0
+UPPER 1
+
+NATURAL_VEG 0
+CROPS 1
+
+# # soilcspin
+NO_SPIN_UP 0
+SPIN_UP 1
+
+# isimveg
+STATIC_VEG 0
+DYNAMIC_VEG 1
+DYNAMIC_VEG_COLD 2
+
+# isimfire
+FIXED_FIRE 0
+DYNAMIC_FIRE 1
+
+# isimco2
+FIXED_CO2 0
+RAMPED_CO2 1
+
+# irrigate
+NO_IRRIGATION 0
+IRRIGATION_USED 1
+
+# gdddy
+UPDATE_GDD_YEAR  0
+USE_HYBGDD 1
+
+# overveg
+COMPETE_CLIM_CONSTRAINTS  0
+COMPETE_LANDCOVER_CLIMATE 1
+
+# irotation
+# JAIR: Ver com santiago as constantes
+NONE 0
+
+##### com1d.h #####
+
+termu vector 7 0
+terml vector 7 0
+scalcoefl vector 4 0
+scalcoefu vector 4 0
+firb 0
+firg 0
+firi 0
+firl 0
+firs 0
+firu 0
+fsena 0
+fseng 0
+fseni 0
+fsenl 0
+fsens 0
+fsenu 0
+fvapa 0
+fvapg 0
+fvapi 0
+fvaplt 0
+fvaplw 0
+fvaps 0
+fvaput 0
+fvapuw 0
+soli 0
+solg 0
+soll 0
+sols 0
+solu 0
+raing 0
+rainl 0
+rainu 0
+snowg 0
+snowl 0
+snowu 0
+traing 0
+trainl 0
+trainu 0
+tsnowg 0
+tsnowl 0
+tsnowu 0
+nsol 0
+abupd 0
+abupi 0
+ablod 0
+abloi 0
+albsnd 0
+albsni 0
+albsod 0
+albsoi 0
+dummy 0
+flodd 0
+flodi 0
+floii 0
+fupdd 0
+fupdi 0
+fupii 0
+relod 0
+reloi 0
+reupd 0
+reupi 0
+sol2d 0
+sol2i 0
+sol3d 0
+sol3i 0
+indsol 0
+aloga 0
+alogav 0
+alogg 0
+alogi 0
+alogl 0
+alogu 0
+alog1 0
+alog2 0
+alog3 0
+alog4 0
+bdl 0
+bdu 0
+cl 0
+cp 0
+cu 0
+dil 0
+displ 0
+dispu 0
+diu 0
+expl 0
+expu 0
+exphl 0
+exphu 0
+pfluxl 0
+pfluxs 0
+pfluxu 0
+rhoa 0
+richl 0
+richu 0
+sg 0
+si 0
+strahl 0
+strahu 0
+straml 0
+stramu 0
+u1 0
+u12 0
+u2 0
+u3 0
+u34 0
+u4 0
+za 0
+z1 0
+z12 0
+z2 0
+z3 0
+z34 0
+z4 0
+tfac 0
+fwetl 0
+fwets 0
+fwetu 0
+fwetlx 0
+fwetsx 0
+fwetux 0
+rliql 0
+rliqs 0
+rliqu 0
+
+##### comatm.h #####
+
+coszen 0 
+fira 0 
+solad vector nband 0
+solai vector nband 0
+asurd vector nband 0
+asuri vector nband 0
+radd 0 
+solsoi 0 
+ua 0 
+ta 0 
+qa 0 
+raina 0 
+rh 0 
+snowa 0 
+psurf 0 
+cloud 0 
+td 0 
+tmax 0 
+tmin 0 
+qd 0 
+ud 0 
+precip 0 
+precipday vector 31 0
+precipdaysum 0 
+xstore vector 3 0
+iwet 0 
+iwetday vector 31 0
+iwetdaysum 0 
+co2conc 0 
+o2conc 0 
+t_sec 0 
+t_startp 0 
+
+##### combcs.h #####
+
+xintopo 0 
+xinveg 0 
+lmask matrix 720 360 0
+ireccru 0 
+ireccdc 0 
+clmt vector 12 0
+clmq vector 12 0
+clmprec vector 12 0
+clmw vector 12 0
+clmwet vector 12 0
+clmcld vector 12 0
+clmtrng vector 12 0
+cdcinprecd 0 
+stinrad 0 
+
+##### combgc.h #####
+
+lig_frac 0 
+fbsom 0 
+effac 0 
+cnr vector 10 0
+fmxcpool 0 
+rconst 0 
+h20 0 
+klm 0 
+kls 0 
+kll 0 
+krm 0 
+krs 0 
+krl 0 
+kwm 0 
+kws 0 
+kwl 0 
+kbn 0 
+kbp 0 
+knb 0 
+kns 0 
+kpb 0 
+kps 0 
+ksb 0 
+ylm 0 
+yls 0 
+yll 0 
+yrm 0 
+yrs 0 
+yrl 0 
+ywm 0 
+yws 0 
+ywl 0 
+ybn 0 
+ybp 0 
+ynb 0 
+yns 0 
+ypb 0 
+yps 0 
+ysb 0 
+
+##### comcrop.h #####
+
+ik vector npft 0
+qgalho 0 
+cdays 0 
+pstart vector npft 0
+ncyears 0 
+cropy 0 
+nplant 0
+iniday 0 
+endday 0 
+ztopmxPft vector npft 0 
+alphac 0 
+gnmin 0 
+smax 0 
+availn 0 
+cnmax 0 
+consdays 0 
+maxcons 0 
+gsdays 0 
+af1 0 
+af2 0 
+af3 0 
+af4 0 
+af5 0 
+af6 0 
+hsum 0        
+water 0       
+capac 0     
+waterfact 0 
+xirrig 0 
+xirriga 0 
+totirrig 0 
+df 0 
+vf 0 
+pmask 0 
+cumvd 0 
+hdidx 0 
+conspdate 0 
+conshybrid 0 
+gddfz vector npft 0
+gddcornm 0 
+gddsoym  0 
+gddwhtm  0 
+gddwwht  0 
+ptemp vector npft 0
+pmintemp vector npft 0
+pmmin vector npft 0
+pdmin vector npft 0
+pcm vector npft 0
+pcd vector npft 0
+gddsgcp 0 
+gddsgcr 0 
+idop vector npft 0
+iavepdate vector npft 0
+harvdate vector npft 0
+corndop vector 2100 0
+soydop vector 2100 0
+whtdop vector 2100 0
+cntops vector npft 0
+cnroot vector npft 0
+croplive vector npft 0
+grnfraccrop vector npft 0
+gddplant vector npft 0
+gddtsoi vector npft 0
+gddmaturity vector npft 0
+thrlai vector npft 0
+peaklai vector npft 0
+hui vector npft 0
+phuf vector npft 0
+tlai vector npft 0
+templai vector npft 0
+harvidx vector npft 0
+gddemerg 0 
+fnleaf vector npft 0
+fnstem vector npft 0
+fnroot vector npft 0
+fngrain vector npft 0
+fnplant vector npft 0
+tnplant vector npft 0
+grainn vector npft 0
+cumlvs vector npft 0
+idpp vector npft 0
+idpe vector npft 0
+dpgf vector npft 0
+cropyld vector npft 0
+dmleaf vector npft 0
+dmstem vector npft 0
+dmresidue vector npft 0
+dmyield vector npft 0
+dmcrop vector npft 0
+cropn vector  npft 0
+cropfixn vector npft 0
+nconcl vector npft 0
+nconcs vector npft 0
+nconcr vector npft 0
+nconcg vector npft 0
+leafout vector npft 0
+cropplant vector npft 0
+croplaimx vector npft 0
+residuen vector  npft 0
+dmroot vector npft 0
+dmwood vector npft 0
+hdate vector npft 0
+pdate vector npft 0
+crmclim vector npft 0
+crmact vector npft 0
+crmplant vector npft 0
+ccdays vector npft 0
+grainday vector npft 0
+fertinput vector npft 0
+avehybrid vector npft 0
+idppout vector npft 0
+aerial vector npft 0
+rm 0 
+fertmaize vector 100 0
+fertsoy vector 100 0
+fertwheat vector 100 0
+cfertmaize vector 2000 0
+fertsgc vector 100 0
+cfertsoy vector 2000 0
+cfertwheat vector 2000 0
+cfertsgc vector 2000 0
+ndepfact vector 100 0
+xinhybrid vector  100 0
+arepr vector npft 0
+astem vector npft 0
+astemi vector npft 0
+aleafi vector npft 0
+cfrac vector npft 0
+baset vector npft 0
+mxtmp vector npft 0
+tkill vector npft 0
+hybgdd vector npft 0
+gddmin vector npft 0
+lfemerg vector npft 0
+grnfill vector npft 0
+laicons vector npft 0
+allconsl vector npft 0
+allconss vector npft 0
+laimx vector npft 0
+arooti vector npft 0
+arootf vector npft 0
+aleaff vector npft 0
+astemf vector npft 0
+declfact vector npft 0
+mxgddgf vector npft 0
+mxdgfi vector npft 0
+mxmat vector npft 0
+fleafi vector npft 0
+fleaf vector npft 0
+cgrain vector npft 0
+convfact vector npft 0
+maxhi vector npft 0
+fyield vector npft 0
+fnlfmx vector npft 0
+fngrmx vector npft 0
+sratio vector npft 0
+rratio vector npft 0
+fnopt vector npft 0
+bfact vector npft 0
+grnwht vector 2 0
+fleafiwht vector 2 0
+fleafwht vector 2 0
+mgddgf vector 2 0
+mxmatwht vector 2 0
+fnlfmxw vector 2 0
+fngrmxw vector 2 0
+fnoptw vector 2 0
+Deadwood 0
+Deadfineroots 0
+Deadleaves 0
+Deadbranch 0
+DeadGbranch 0
+DBranch 0
+DBranch_attached 0
+DBranch_decay 0
+Signew 0
+cbiold 0.015
+cbiols 0.01
+
+##### comhour.h #####
+
+iiyear vector 9000 0
+iimonth vector 9000 0
+
+##### comhyd.h #####
+
+ginvap 0 
+gsuvap 0 
+gtrans 0 
+gtransu 0 
+gtransl 0 
+grunof 0 
+gdrain 0 
+gadjust 0 
+wtot 0 
+
+##### comnitr.h #####
+
+storedn 0 
+yrleach 0 
+aplantn 0 
+cplantn 0 
+totmin 0 
+totimm 0 
+totnrel 0 
+ctot 0 
+ctoti 0 
+ftot 0 
+tsinp 0 
+tslay 0 
+tsnimm 0 
+tsnmob 0 
+taninp 0 
+dtnleach 0 
+dnileach 0 
+tpnuptake 0 
+totnvegn 0 
+drntot 0 
+ddrn 0 
+concn 0 
+assimn 0 
+ydeposn 0 
+yfixsoin 0 
+yno3leach 0 
+snbalance 0 
+fixsoin 0 
+totnuptake vector npft 0
+stressn vector npft 0
+totnfix vector npft 0
+fixn vector npft 0
+fertnitro vector npft 0
+daydrn vector 366 0
+daynconc vector 366 0
+
+##### compar.h #####
+
+epsilon 0 
+stef 0 
+vonk 0 
+ustar 0 
+grav 0 
+tmelt 0 
+hfus 0 
+hvap 0 
+hsub 0 
+ch2o 0 
+cice 0 
+cair 0 
+cvap 0 
+rair 0 
+rvap 0 
+cappa 0 
+rhow 0 
+garea 0 
+vzero 0 
+lat_npoi 0 
+lon_npoi 0 
+ndaypy 365 
+nlonsub 0 
+nlatsub 0
+
+##### compft.h #####
+
+tau15 0 
+kc15 0 
+ko15 0 
+cimax 0 
+alpha3 0 
+theta3 0 
+thetac3 0 
+beta3 0 
+alpha4 0 
+beta4 0 
+theta4 0 
+thetac4 0 
+betac3 0 
+betac4 0 
+vmax_pft vector npft 0 
+gammaub 0 
+coefmub 0 
+coefbub 0 
+gsubmin 0 
+gammauc 0 
+coefmuc 0 
+coefbuc 0 
+gsucmin 0 
+gammals 0 
+coefbls 0 
+coefmls 0 
+gslsmin 0 
+gammal3 0 
+coefml3 0 
+coefbl3 0 
+gsl3min 0 
+gammal4 0 
+coefml4 0 
+coefbl4 0 
+gsl4min 0 
+gammac3 0 
+coefmc3 0 
+coefbc3 0 
+gsc3min 0 
+gammac4 0 
+coefmc4 0 
+coefbc4 0 
+gsc4min 0 
+lotemp vector npft 0 
+hitemp vector npft 0 
+drought vector npft 0 
+f1 vector npft 0 
+f2 vector npft 0 
+tauleaf vector npft 0 
+tauroot vector npft 0 
+tauwood vector npft 0 
+tauwood0 vector npft 0 
+plai_init matrix 4 15 0 
+plaiupper 0 
+plailower 0 
+xminlai 0 
+sapfrac_init 0 
+beta1 vector npft 0
+beta2 0 
+TminL vector npft 0 
+TminU vector npft 0 
+Twarm vector npft 0 
+GDD vector npft 0 
+
+##### comsno.h #####
+
+z0sno 0 
+rhos 0 
+consno 0 
+hsnotop 0 
+hsnomin 0 
+fimin 0 
+fimax 0 
+fi 0 
+tsno vector 0 
+hsno vector 0 
+
+##### comsoi.h #####
+
+wpudmax 0 
+zwpmax 0 
+bperm 0 
+wpud 0 
+wipud 0 
+z0soi 0 
+albsav 0 
+albsan 0 
+stresstl 0 
+stresstu 0 
+heati 0 
+heatg 0 
+soihfl 0 
+hvasug 0 
+hvasui 0 
+tg 0 
+ti 0 
+fwtop 0 
+fwpud 0 
+deposn 0 
+hsoi vector nsoilay+1 0
+tsoi vector nsoilay 0
+wsoi vector nsoilay 0
+wisoi vector nsoilay 0
+consoi vector nsoilay 0
+csoi vector nsoilay 0
+hydraul vector nsoilay 0
+suction vector nsoilay 0
+bex vector nsoilay 0
+sfield vector nsoilay 0
+swilt vector nsoilay 0
+rhosoi vector nsoilay 0
+poros vector nsoilay 0
+porosflo vector nsoilay 0
+sand vector nsoilay 0
+clay vector nsoilay 0
+stressl vector nsoilay 0
+stressu vector nsoilay 0
+upsoiu vector nsoilay 0
+upsoil vector nsoilay 0
+soisand vector nsoilay 0
+soiclay vector nsoilay 0
+domtext vector nsoilay 0
+fracsand vector nsoilay 0
+fracsilt vector nsoilay 0
+fracclay vector nsoilay 0
+cpwf vector nsoilay 0
+fwpudtot 0 
+swater vector nsoilay 0
+sice vector nsoilay 0
+hflo vector nsoilay+1 0
+ibex vector nsoilay 0
+nslaym 0 
+qglif vector 4 0
+pmsoil vector length(-nsoilay:nsoilay) 0
+pmsoln vector length(-nsoilay:nsoilay) 0
+pcsoln vector length(-nsoilay:nsoilay) 0
+smsoil vector length(-nsoilay:nsoilay) 0
+smsoln vector length(-nsoilay:nsoilay) 0
+fout vector length(-nsoilay:nsoilay) 0
+nout vector length(-nsoilay:nsoilay) 0
+csoln vector length(-nsoilay:nsoilay) 0
+tnuptake vector nsoilay 0
+anuptake vector nsoilay 0
+wflo vector nsoilay+1 0
+
+##### comwork.h #####
+
+lonindex 0 
+latindex 0 
+lonscale vector 720 0
+latscale vector 360 0
+
+##### comveg.h #####
+
+onflagu logical F
+onflagl3 logical F
+onflagl4 logical F
+offflagu logical F
+offflagl3 logical F
+offflagl4 logical F
+alaiml 0 
+alaimu 0 
+cgrass 0 
+chl 0 
+chs 0 
+chu 0 
+cleaf 0 
+cstem 0 
+tblowl 0 
+tblows 0 
+tblowu 0 
+tdripl 0 
+tdrips 0 
+tdripu 0 
+wliqmin 0 
+wliqlmax 0 
+rootr 0 
+wliqsmax 0 
+wliqumax 0 
+wsnomin 0 
+wsnolmax 0 
+wsnosmax 0 
+wsnoumax 0 
+woodnorm 0 
+a11soiltd 0 
+tsoiavg 0 
+Tavgann 0 
+PPTavgann 0 
+daylength 0 
+precipsum 0 
+PPTsumcrit 0 
+stsumu 0 
+stsuml 0 
+sumcom 0 
+a3tdmin 0 
+tminavgann 0 
+q12 0 
+q34 0 
+sl 0 
+ss 0 
+su 0 
+topparl 0 
+topparu 0 
+tl 0 
+ts 0 
+tu 0 
+tlsub 0 
+t12 0 
+t34 0 
+wliql 0 
+wliqs 0 
+wliqu 0 
+wsnol 0 
+wsnos 0 
+wsnou 0 
+agcub 0 
+agcuc 0 
+agcls 0 
+agcl3 0 
+agcl4 0 
+agcc3 0 
+agcc4 0 
+ancub 0 
+ancuc 0 
+ancls 0 
+ancl3 0 
+ancl4 0 
+ancc3 0 
+ancc4 0 
+totcondub 0 
+totconduc 0 
+totcondls 0 
+totcondl3 0 
+totcondl4 0 
+totcondc3 0 
+totcondc4 0 
+ciub 0 
+ciuc 0 
+cils 0 
+cil3 0 
+cil4 0 
+cic3 0 
+cic4 0 
+csub 0 
+csuc 0 
+csls 0 
+csl3 0 
+csl4 0 
+csc3 0 
+csc4 0 
+gsub 0 
+gsuc 0 
+gsls 0 
+gsl3 0 
+gsl4 0 
+gsc3 0 
+gsc4 0 
+agddl 0 
+agddu 0 
+fl 0 
+fu 0 
+templ 0 
+dropu 0 
+dropls 0 
+dropl4 0 
+dropl3 0 
+gdd0 0 
+gdd0c 0 
+gdd5 0 
+sapfrac 0 
+tc 0 
+tcmin 0 
+totlail 0 
+totlaiu 0 
+totbiol 0 
+totbiou 0 
+tw 0 
+disturbf 0 
+disturbo 0 
+firefac 0 
+tco2mic 0 
+tco2root 0 
+tneetot 0 
+tnmin 0 
+tnpptot 0 
+tgpptot 0 
+totalit 0 
+totanlit 0 
+totcmic 0 
+totcsoi 0 
+totfall 0 
+totlit 0 
+totnlit 0 
+totnmic 0 
+totnsoi 0 
+totrlit 0 
+totrnlit 0 
+tempu 0 
+templs 0 
+greenfracl 0 
+greenfracl3 0 
+greenfracl4 0 
+vegtype0 0 
+cbiol vector npft 0
+cbior vector npft 0
+cbiow vector npft 0
+cbiog vector npft 0
+cbios vector npft 0
+cbiocr vector npft 0
+cbiob vector npft 0
+clitll 0 
+clitlm 0 
+clitls 0 
+clitrl 0 
+clitrm 0 
+clitrs 0 
+clitwl 0 
+clitwm 0 
+clitws 0 
+csoipas 0 
+csoislo 0 
+csoislon 0 
+csoislop 0 
+decompl 0 
+decomps 0 
+falll 0 
+falllsgc vector 3 0
+fallr 0 
+fallrsgc vector 3 0
+fallw 0 
+cdisturb 0 
+biomass vector npft 0
+frac vector npft 0
+plai vector npft 0
+plaimx vector npft 0
+tnpp vector npft 0
+tgpp vector npft 0
+nppdummy vector npft 0
+lai matrix 1 2 0
+sai matrix 1 2 0
+zbot vector 2 0
+ztop vector 2 0
+ztopmx vector 2 0
+htmx vector 2 0 
+dleaf vector 2 0
+dstem vector 2 0
+orieh vector 2 0
+oriev vector 2 0
+rhoveg matrix nband 2 0
+tauveg matrix nband 2 0 
+froot matrix nsoilay 2 0
+exist vector npft 0
+use matrix 4 24 0
+specla vector npft 0
+aleaf vector npft 0
+aroot vector npft 0
+awood vector npft 0
+acroot  vector npft 0
+abranch vector npft 0
+
+##### comtex.h #####
+
+texdat matrix 3 ndat 0 
+porosdat vector ndat 0 
+sfielddat vector ndat 0 
+swiltdat vector ndat 0 
+bexdat vector ndat 0 
+suctiondat vector ndat 0 
+hydrauldat vector ndat 0 
+
+##### comsum.h #####
+
+ndtimes 0 
+nmtimes 0 
+nytimes 0 
+idoy 0 
+adrain 0 
+adsnow 0 
+adaet 0 
+adtrans 0 
+adevap 0 
+adtratio 0 
+adtrunoff 0 
+adsrunoff 0 
+addrainage 0 
+adrh 0 
+adud 0 
+adsnod 0 
+adsnof 0 
+adwsoi 0 
+adwisoi 0 
+adtsoi 0 
+adwsoic 0 
+adtsoic 0 
+adco2mic 0 
+adco2root 0 
+adco2soi 0 
+adco2ratio 0 
+adnmintot 0 
+adtlaysoi 0 
+adwlaysoi 0 
+adneetot 0 
+adwsoilay vector nsoilay 0
+adwisoilay vector nsoilay 0
+adtsoilay vector nsoilay 0
+adupsoil vector nsoilay 0
+adcsoln vector nsoilay 0
+amtemp 0 
+amrain 0 
+amsnow 0 
+amcloud 0 
+amrh 0 
+amqa 0 
+amaet 0 
+amtrans 0 
+amtratio 0 
+amtrunoff 0 
+amsrunoff 0 
+amdrainage 0 
+amtotnleach 0 
+amno3leach 0 
+amwsoi 0 
+amwisoi 0 
+amvwc 0 
+amawc 0 
+amtsoi 0 
+amsnod 0 
+amsnof 0 
+amlaiu 0 
+amlail 0 
+amsolar 0 
+rnet 0 
+amalbedo 0 
+amirdown 0 
+amirup 0 
+amsens 0 
+amlatent 0 
+amnpptot 0 
+amneetot 0 
+amco2mic 0 
+amco2root 0 
+amco2soi 0 
+amco2ratio 0 
+amnmintot 0 
+amnpp vector npft 0
+adnpp vector npft 0
+ayprcp 0 
+ayaet 0 
+aytrans 0 
+aytrunoff 0 
+aysrunoff 0 
+aydrainage 0 
+aydwtot 0 
+aywsoi 0 
+aywisoi 0 
+ayvwc 0 
+ayawc 0 
+aytsoi 0 
+ayrratio 0 
+aytratio 0 
+aysolar 0 
+ayalbedo 0 
+ayirdown 0 
+ayirup 0 
+aysens 0 
+aylatent 0 
+aystresstu 0 
+aystresstl 0 
+ayanpptot 0 
+aynpptot 0 
+aygpptot 0 
+ayalit 0 
+ayblit 0 
+aycsoi 0 
+aycmic 0 
+ayanlit 0 
+aybnlit 0 
+aynsoi 0 
+ynleach 0 
+ayneetot 0 
+ayco2mic 0 
+ayco2root 0 
+ayco2soi 0 
+aynmintot 0 
+aymintot 0 
+ayimmtot 0 
+aynreltot 0 
+ayrootbio 0 
+ayanpp vector npft 0
+aynpp vector npft 0
+aygpp vector npft 0
+aybprod vector npft 0
+ayabprod vector npft 0
+ayrprod vector npft 0
+aylprod vector npft 0
+a10td 0 
+a10ts 0 
+a5td 0 
+a5tmin 0 
+a10tmin 0 
+a10ancub 0 
+a10ancuc 0 
+a10ancls 0 
+a10ancl3 0 
+a10ancl4 0 
+a10ancc3 0 
+a10ancc4 0 
+a10scalparamu 0 
+a10scalparaml 0 
+a10daylightu 0 
+a10daylightl 0
+
+### Novas variáveis ###
+
+alpha vector npft 0
+beta vector npft 0 
+theta vector npft 0 
+gamma vector npft 0
+coefm vector npft 0
+coefb vector npft 0
+gsmin vector npft 0 
+ci vector npft 0         
+cs vector npft 0        
+gs vector npft 0
+ag vector npft 0
+an vector npft 0        
+totcond vector npft 0    
+greenfrac vector npft 1 
+ztopPft vector npft 0 
+a10anc vector npft 0  
+temp vector npft 1    
+rgrowthc vector npft 0
+mcbior vector npft 0 
+mcbiog vector npft 0
+mcbiow vector npft 0 
+mcbios vector npft 0 
+mcbiocr vector npft 0
+mcbiob vector npft 0 
+
+##### turvap.R #####
+
+xu 0
+xs 0
+xl 0
+chux 0
+chsx 0
+chlx 0
+chgx 0
+wlgx 0
+wigx 0
+cog 0
+coi 0
+zirg 0
+ziri 0
+wu 0
+ws 0
+wl 0
+wg 0
+wi 0
+tuold 0
+tsold 0
+tlold 0
+tgold 0
+tiold 0
