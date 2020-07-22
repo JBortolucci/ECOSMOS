@@ -1,0 +1,115 @@
+C=======================================================================
+C  VSTAGES, Subroutine
+C  Calculates V-stages
+C-----------------------------------------------------------------------
+C  REVISION HISTORY
+C  07/24/98 CHP Pulled code from PHENOL subroutine
+C-----------------------------------------------------------------------
+!     Called from:    PHENOL
+!     Calls:          None
+C=======================================================================
+
+      SUBROUTINE VSTAGES(
+     &    DAS, DTX, EVMODC, MNEMV1, NDVST,                !Input
+     &    NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             !Input
+     &    TURFAC, XPOD, YRDOY, YRPLT,                     !Input
+     &    RVSTGE, VSTAGE,                                 !Output
+     &    DYNAMIC)                                        !Control
+
+!-----------------------------------------------------------------------
+      USE ModuleDefs     !Definitions of constructed variable types,
+                         ! which contain control information, soil
+                         ! parameters, hourly weather data.
+      IMPLICIT NONE
+      SAVE
+
+      CHARACTER*1 PLME
+      INTEGER DYNAMIC
+      INTEGER DAS, NVEG0, NVEG1, NDVST
+      INTEGER YRPLT, YRDOY
+      REAL VSTAGE, RVSTGE, VSTGED, VSTAGP
+      REAL MNEMV1, TRIFOL, EVMODC, EVMOD, DTX
+      REAL TURFAC, XPOD
+      REAL PHZACC(20)
+
+!***********************************************************************
+!***********************************************************************
+!     Seasonal initialization - run once per season
+!***********************************************************************
+      IF (DYNAMIC .EQ. SEASINIT) THEN
+!-----------------------------------------------------------------------
+      VSTAGE = 0.0
+      RVSTGE = 0.0
+      VSTGED = 0.0
+      VSTAGP = 0.0
+      RVSTGE = 0.0
+
+!***********************************************************************
+!***********************************************************************
+C     Daily Rate Calculations
+!***********************************************************************
+      ELSEIF (DYNAMIC .EQ. RATE) THEN
+!-----------------------------------------------------------------------
+!    Calculate rate of V-stage change for height and width determination
+!-----------------------------------------------------------------------
+      RVSTGE = 0.
+
+      IF (DAS .GE. NVEG0 .AND. DAS .LE. NDVST + ANINT(VSTGED)) THEN
+        IF (DAS .GT. NDVST .AND. VSTGED .GT. 0.001) THEN
+          RVSTGE = 1. / VSTGED
+        ELSE
+          RVSTGE = VSTAGE - VSTAGP
+        ENDIF
+      ENDIF
+
+!***********************************************************************
+!***********************************************************************
+!     Daily Integration
+!***********************************************************************
+      ELSE IF (DYNAMIC .EQ. INTEGR) THEN
+!-----------------------------------------------------------------------
+C     V-STAGE between emergence and unifoliate (V-1) is determined
+C     by the physiological accumulator and the minimum number of
+C     days between emergence and V-1 under optimum temperature (MNEMV1)
+C     V-STAGE after V-1 is determined by the leaf appearance rate
+C     (TRIFOL), a water stress factor (TURFAC) and physiological units
+C     for today (DTX).
+C-----------------------------------------------------------------------
+      IF (RVSTGE .GT. 1.E-6) THEN
+        VSTGED = 1. / RVSTGE
+      ELSE
+        VSTGED = 0.0
+      ENDIF
+      VSTAGP = VSTAGE
+!-----------------------------------------------------------------------
+!     V-Stage for transplants
+!-----------------------------------------------------------------------
+      IF (PLME .EQ. 'T' .AND. YRPLT .EQ. YRDOY) THEN
+        VSTAGE = 1. + (PHZACC(2) - MNEMV1) * TRIFOL
+      ENDIF
+
+!-----------------------------------------------------------------------
+      IF (DAS .GE. NVEG0 .AND. DAS .LE. NDVST) THEN
+        IF (DAS .LT. NVEG1) THEN
+          VSTAGE  = PHZACC(2)/MNEMV1
+        ELSE
+          IF (VSTAGE .LT. ABS(EVMODC) .AND.
+     &        ABS(EVMODC) .GT. 0.0001) THEN
+            EVMOD = 1.0 + (ABS(EVMODC)- VSTAGE) / EVMODC
+            EVMOD = AMIN1(2.0,EVMOD)
+            EVMOD = AMAX1(0.0,EVMOD)
+          ELSE
+            EVMOD = 1.0
+          ENDIF
+          VSTAGE = VSTAGE + DTX * TRIFOL * EVMOD*TURFAC*(1.0-XPOD)
+        ENDIF
+      ENDIF
+
+!***********************************************************************
+!***********************************************************************
+!     End of DYNAMIC IF construct
+!***********************************************************************
+      END IF
+!***********************************************************************
+      RETURN
+      END SUBROUTINE VSTAGES

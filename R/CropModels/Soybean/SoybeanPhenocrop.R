@@ -1,6 +1,39 @@
-# teste 
+
 
 SoybeanPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
+  
+  
+# PHENOL from DSSAT CROPGRO
+  
+  # Parametros CROPGRO
+  
+  PPSEN<- 0.311
+  
+  source("R/CropModels/Soybean/SoybeanPhenoFunctions.R")
+
+  
+       RSTAGES (CONTROL,
+                   FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    #Input
+                   PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM,      #Input
+                   JPEND, MDATE, NDLEAF, NDSET, NDVST, NVALPH,     #Output
+                   NVEG0, NVEG1, NR1, NR2, NR5, NR7, PHZACC,       #Output
+                   RSTAGE, STGDOY, SeedFrac, VegFrac, YREMRG,      #Output
+                   YRNR1, YRNR2, YRNR3, YRNR5, YRNR7)              #Output
+  
+       VSTAGES(    DAS, DTX, EVMODC, MNEMV1, NDVST,                #Input
+                   NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             #Input
+                   TURFAC, XPOD, YRDOY, YRPLT,                     #Input
+                   RVSTGE, VSTAGE,                                 #Output
+                   SEASINIT)             
+  
+  
+  
+  
+  
+  
+# END  PHENOL from DSSAT CROPGRO
+  
+# Codigo antigo do eucalipto, remover depois que implementar tudo  
   
   # parametros
   Alleaf1    <- plantList$soybean$params$Alleaf1
