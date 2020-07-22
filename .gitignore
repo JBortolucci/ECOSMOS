@@ -37,4 +37,4 @@ vignettes/*.pdf
 .Rproj.user
 
 # User files
-UserFiles/*.R
+UserFiles/
