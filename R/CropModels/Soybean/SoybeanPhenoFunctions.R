@@ -12,7 +12,7 @@
   # .GT.  meaning >
   # .GE.  meaning >=
   # .EQ.  meaning =
-  # .NE.  meaning /=
+  # .NE.  meaning !=
   # .OR.  meaning |
   # .AND. meaning &
   # DO/ENDDO   meaning for()
@@ -1037,5 +1037,273 @@ if ((DAS >= NVALPH(NPRIOR[13])) & (NDLEAF >= NVALP0)) {
 #R END SUBROUTINE RSTAGES
 
 }
+
+} # para facilitar a programacao
+
+#### Subrotina: IPPHENOL ####
+{
+
+#R #R !************************************************************************
+#R #R !************************************************************************
+  
+  SUBROUTINE IPPHENOL(CONTROL,
+                      &    ATEMP, CLDVAR, CLDVRR, CSDVAR, CSDVRR, CROP,    #R !Output
+                      &    CTMP, DLTYP, EVMODC, NPRIOR, NSENP, OPTBI,      #R !Output
+                      &    PHTHRS, PLME, PSENP, SDAGE, SDEPTH, SLOBI,      #R !Output
+                      &    THVAR, TRIFOL, TSELC, TB, TO1, TO2, TM, WSENP)  #R !Output
+
+#R !-----------------------------------------------------------------------
+#R USE ModuleDefs     #R !Definitions of constructed variable types,
+#R ! which contain control information, soil
+#R ! parameters, hourly weather data.
+#R IMPLICIT NONE
+#R !-----------------------------------------------------------------------
+CHARACTER*1   PLME, BLANK
+CHARACTER*2   CROP
+CHARACTER*3   CTMP(20), DLTYP(20)
+CHARACTER*6   SECTION, ECOTYP, ECONO, ERRKEY
+CHARACTER*12  FILEC, FILEE
+CHARACTER*16  ECONAM
+CHARACTER*30  FILEIO
+CHARACTER*80  CHAR, PATHCR, PATHEC
+CHARACTER*92  FILECC, FILEGC
+CHARACTER*255 C255
+
+INTEGER LUNIO, NPHS
+INTEGER LUNCRP, LUNECO, ISECT, PATHL
+INTEGER I, J, K
+INTEGER IVRGRP, IVRTEM, ERR, LINC, LNUM, FOUND
+INTEGER NPRIOR(20), TSELC(20)
+
+PARAMETER (BLANK = ' ')
+PARAMETER (ERRKEY = 'IPPHEN')
+PARAMETER (NPHS = 13)
+
+REAL ATEMP, CLDVAR, CLDVRR, CSDVAR, CSDVRR, EVMODC
+REAL OPTBI
+REAL PPSEN, PH2T5, R1PPO, PM06, PM09
+REAL SDEPTH, SDAGE, SLOBI, THVAR, TRIFOL
+REAL TB(5), TO1(5), TO2(5), TM(5)
+REAL WSENP(20), NSENP(20)
+REAL PHTHRS(20), PSENP(20)
+
+#R !-----------------------------------------------------------------------
+#R !     Define constructed variable types based on definitions in
+#R !     ModuleDefs.for.
+
+#R !     The variable "CONTROL" is of type "ControlType".
+TYPE (ControlType) CONTROL
+
+#R !     Transfer values from constructed data types into local variables.
+FILEIO  = CONTROL % FILEIO
+LUNIO   = CONTROL % LUNIO
+
+#R !-----------------------------------------------------------------------
+#R !     Read in values from temporary file, which were previously input
+#R !       in Subroutine IPIBS.
+#R !-----------------------------------------------------------------------
+OPEN (LUNIO, FILE = FILEIO, STATUS = 'OLD', IOSTAT=ERR)
+IF (ERR .NE. 0) print *, "!!! ERROR !!!", ERRKEY,ERR,FILEIO,0
+*      CALL ERROR(ERRKEY,ERR,FILEIO,0)
+
+READ (LUNIO,100,IOSTAT=ERR) FILEC, PATHCR; LNUM = 7
+100   FORMAT(//////,15X,A12,1X,A80)
+IF (ERR .NE. 0) print *, "!!! ERROR !!!!",ERRKEY,ERR,FILEIO,LNUM
+*      CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+
+READ (LUNIO,105,IOSTAT=ERR) FILEE, PATHEC; LNUM = LNUM + 1
+105   FORMAT(15X,A12,1X,A80)
+IF (ERR .NE. 0) print *, "!!! ERROR !!!!",ERRKEY,ERR,FILEIO,LNUM
+*      CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+
+#R !#R !-----------------------------------------------------------------------
+#R !#R !     Subroutine FIND finds appropriate SECTION in a file by
+#R !#R !     searching for the specified 6-character string at beginning
+#R !#R !     of each line.
+#R !#R !-----------------------------------------------------------------------
+#R !      SECTION = '*SIMUL'
+#R !      CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+#R !      IF (FOUND .EQ. 0) CALL ERROR (SECTION, 42, FILEIO,LNUM)
+#R !      READ(LUNIO,'(31X,A1)',IOSTAT=ERR) ISIMI; LNUM = LNUM + 1
+#R !      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+
+#R !-----------------------------------------------------------------------
+#R !     Find and read Cultivar Section
+#R !-----------------------------------------------------------------------
+SECTION = '*CULTI'
+CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+IF (FOUND .EQ. 0) print *, "!!! ERROR !!!!",SECTION, 42, FILEIO,
+& LNUM
+*      CALL ERROR (SECTION, 42, FILEIO,LNUM)
+READ(LUNIO,'(3X,A2)',IOSTAT=ERR) CROP; LNUM = LNUM + 1
+IF (ERR .NE. 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILEIO,LNUM
+*      CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+
+#R !-----------------------------------------------------------------------
+IF (CROP .NE. 'FA') THEN
+#R !-----------------------------------------------------------------------
+#R !     Find and Read Planting Details Section
+#R !-----------------------------------------------------------------------
+SECTION = '*PLANT'
+CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+IF (FOUND .EQ. 0) print *, "!!! ERROR !!!",SECTION, 42, FILEIO,
+& LNUM
+*        CALL ERROR (SECTION, 42, FILEIO,LNUM)
+READ(LUNIO,140,IOSTAT=ERR) PLME, SDEPTH, SDAGE, ATEMP
+140     FORMAT(35X,A1,19X,F5.1,6X,2(1X,F5.0))
+LNUM = LNUM + 1
+IF (ERR .NE. 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILEIO,LNUM
+*        CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+
+#R !-----------------------------------------------------------------------
+#R !     Find and read Cultivar Section
+#R !-----------------------------------------------------------------------
+  SECTION = '*CULTI'
+CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+IF (FOUND .EQ. 0) print *, "!!! ERROR !!!",SECTION, 42, FILEIO,
+& LNUM
+*        CALL ERROR (SECTION, 42, FILEIO,LNUM)
+READ(LUNIO,165,IOSTAT=ERR) ECONO, CSDVAR, PPSEN, PH2T5,
+&              PHTHRS(6), PHTHRS(8), PHTHRS(10), PHTHRS(13)
+165     FORMAT(24X,A6,7F6.0)
+LNUM = LNUM + 1
+IF (ERR .NE. 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILEIO,LNUM
+*        CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+ENDIF
+
+CLOSE (LUNIO)
+
+#R !-----------------------------------------------------------------------
+#R !     Open FILEC
+#R !-----------------------------------------------------------------------
+IF (CROP .NE. 'FA') THEN
+PATHL  = INDEX(PATHCR,BLANK)
+IF (PATHL .LE. 1) THEN
+FILECC = FILEC
+ELSE
+FILECC = PATHCR(1:(PATHL-1)) // FILEC
+ENDIF
+
+CALL GETLUN('FILEC', LUNCRP)
+OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
+IF (ERR .NE. 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,0
+*        CALL ERROR(ERRKEY,ERR,FILECC,0)
+LNUM = 0
+#R !-----------------------------------------------------------------------
+#R !     Find Leaf Growth Parameters from FILEC and read EVMODC value
+#R !-----------------------------------------------------------------------
+  SECTION = '!*LEAF'
+CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+IF (FOUND .EQ. 0) print *, "!!! ERROR !!!",SECTION, 42, FILECC,
+& LNUM
+*        CALL ERROR (SECTION, 42, FILECC,LNUM)
+CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+READ(CHAR,'(24X,F6.1)',IOSTAT=ERR) EVMODC
+IF (ERR .NE. 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
+#R !-----------------------------------------------------------------------
+#R !     Find Phenology Section in FILEC and read
+#R !-----------------------------------------------------------------------
+  SECTION = '!*PHEN'
+CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+IF (FOUND .EQ. 0) print *, "!!! ERROR !!!",SECTION, 42, FILECC,
+& LNUM
+*        CALL ERROR (SECTION, 42, FILECC,LNUM)
+CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+READ(CHAR,250,IOSTAT=ERR) TB(1), TO1(1), TO2(1), TM(1)
+250     FORMAT(13F6.1)
+IF (ERR .NE. 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
+*        CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+
+CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+READ(CHAR,250,IOSTAT=ERR) TB(2), TO1(2), TO2(2), TM(2)
+IF (ERR .NE. 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
+*        CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+
+CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+READ(CHAR,250,IOSTAT=ERR) TB(3), TO1(3), TO2(3), TM(3)
+IF (ERR .NE. 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
+*        CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+
+DO I = 1,NPHS
+CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+READ(CHAR,270,IOSTAT=ERR) J, NPRIOR(J), DLTYP(J), CTMP(J),
+&        TSELC(J), WSENP(J), NSENP(J), PSENP(J)
+270       FORMAT(I3,I3,2(2X,A3),1X,I2,3(1X,F5.2))
+IF (ERR .NE. 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,
+& LNUM
+*          CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+ENDDO
+
+CLOSE (LUNCRP)
+
+#R C-----------------------------------------------------------------------
+#R C     Open FILEE
+#R C-----------------------------------------------------------------------
+LNUM = 0
+PATHL  = INDEX(PATHEC,BLANK)
+IF (PATHL .LE. 1) THEN
+FILEGC = FILEE
+ELSE
+FILEGC = PATHEC(1:(PATHL-1)) // FILEE
+ENDIF
+
+#R C-----------------------------------------------------------------------
+#R C    Read Ecotype Parameter File
+#R C-----------------------------------------------------------------------
+CALL GETLUN('FILEE', LUNECO)
+OPEN (LUNECO,FILE = FILEGC,STATUS = 'OLD',IOSTAT=ERR)
+IF (ERR .NE. 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILEGC,0
+*        CALL ERROR(ERRKEY,ERR,FILEGC,0)
+ECOTYP = '      '
+LNUM = 0
+
+DO WHILE (ECOTYP .NE. ECONO)
+CALL IGNORE(LUNECO, LNUM, ISECT, C255)
+IF (ISECT .EQ. 1 .AND. C255(1:1) .NE. ' ' .AND.
+    &          C255(1:1) .NE. '*') THEN
+READ (C255,3100,IOSTAT=ERR) ECOTYP, ECONAM, IVRGRP,
+&          IVRTEM, THVAR, (PHTHRS(K), K=1,4), PM06, PM09,
+&          (PHTHRS(K),K=11,12), TRIFOL, R1PPO, OPTBI, SLOBI
+3100        FORMAT (A6, 1X, A16, 1X, 2(1X,I2), 7(1X,F5.0), 6X,
+                    &          3(1X,F5.0), 2(6X), 3(1X,F5.0))
+IF (ERR .NE. 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILEGC,
+& LNUM
+*            CALL ERROR(ERRKEY,ERR,FILEGC,LNUM)
+IF (ECOTYP .EQ. ECONO) THEN
+EXIT
+ENDIF
+
+ELSE IF (ISECT .EQ. 0) THEN
+IF (ECONO .EQ. 'DFAULT') print *, "!!! ERROR !!!",ERRKEY,35,
+& FILEGC,LNUM
+*            CALL ERROR(ERRKEY,35,FILEGC,LNUM)
+ECONO = 'DFAULT'
+REWIND(LUNECO)
+LNUM = 0
+ENDIF
+ENDDO
+
+CLOSE (LUNECO)
+
+PHTHRS(5) = MAX(0.,PH2T5 - PHTHRS(3) - PHTHRS(4))
+PHTHRS(7) = PHTHRS(6) + MAX(0.,(PHTHRS(8) - PHTHRS(6))* PM06)
+PHTHRS(9) = MAX(0.,PHTHRS(10) * PM09)
+
+IF (PPSEN .GE. 0.0) THEN
+CLDVAR = CSDVAR + (1.-THVAR)/MAX(PPSEN,0.000001)
+ELSE IF (PPSEN .LT. 0.0) THEN
+CLDVAR = CSDVAR + (1.-THVAR)/MIN(PPSEN,-0.000001)
+ENDIF
+
+CSDVRR = CSDVAR - R1PPO
+CLDVRR = CLDVAR - R1PPO
+
+ENDIF
+
+RETURN
+END  SUBROUTINE IPPHENOL
+
+#R !************************************************************************
+#R !************************************************************************
 
 } # para facilitar a programacao
