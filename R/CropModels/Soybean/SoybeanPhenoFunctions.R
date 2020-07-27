@@ -633,225 +633,239 @@
     #-----------------------------------------------------------------------
     OPEN (LUNIO, FILE = FILEIO, STATUS = 'OLD', IOSTAT=ERR)
     if (ERR != 0) {
-      print *, "!!! ERROR !!!", ERRKEY,ERR,FILEIO,0
-      *      CALL ERROR(ERRKEY,ERR,FILEIO,0)
-      
-      READ (LUNIO,100,IOSTAT=ERR) FILEC, PATHCR; LNUM = 7
-      100   FORMAT(//////,15X,A12,1X,A80)
+      #todo print *, "!!! ERROR !!!", ERRKEY,ERR,FILEIO,0
+      #todo *      CALL ERROR(ERRKEY,ERR,FILEIO,0)
+    }
+    
+    #todo READ (LUNIO,100,IOSTAT=ERR) FILEC, PATHCR; LNUM = 7
+    #todo100   FORMAT(//////,15X,A12,1X,A80)
+    
+    if (ERR != 0) {
+      #todoprint *, "!!! ERROR !!!!",ERRKEY,ERR,FILEIO,LNUM
+      #todo*      CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+    }
+    
+    #todoREAD (LUNIO,105,IOSTAT=ERR) FILEE, PATHEC; LNUM = LNUM + 1
+    #todo105   FORMAT(15X,A12,1X,A80)
+    
+    if (ERR != 0) {
+      #todoprint *, "!!! ERROR !!!!",ERRKEY,ERR,FILEIO,LNUM
+      #todo*      CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+    }
+    
+    #-----------------------------------------------------------------------
+    #     Subroutine FIND finds appropriate SECTION in a file by
+    #     searching for the specified 6-character string at beginning
+    #     of each line.
+    #-----------------------------------------------------------------------
+    #  SECTION = '*SIMUL'
+    #  CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+    #  IF (FOUND .EQ. 0) CALL ERROR (SECTION, 42, FILEIO,LNUM)
+    #  READ(LUNIO,'(31X,A1)',IOSTAT=ERR) ISIMI; LNUM = LNUM + 1
+    #  IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+    
+    #-----------------------------------------------------------------------
+    #     Find and read Cultivar Section
+    #-----------------------------------------------------------------------
+    SECTION = '*CULTI'
+    #todo CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+    if (FOUND == 0) {
+      #todo print *, "!!! ERROR !!!!",SECTION, 42, FILEIO, LNUM
+      #todo *      CALL ERROR (SECTION, 42, FILEIO,LNUM)
+      #todo READ(LUNIO,'(3X,A2)',IOSTAT=ERR) CROP; LNUM = LNUM + 1
+    }
+    
+    if (ERR != 0) {
+      #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILEIO,LNUM
+      #todo *      CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+    }
+    
+    #-----------------------------------------------------------------------
+    if (CROP != "FA") {
+      #-----------------------------------------------------------------------
+      #     Find and Read Planting Details Section
+      #-----------------------------------------------------------------------
+      SECTION = '*PLANT'
+      #todo CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+      if (FOUND == 0) {
+        #todo print *, "!!! ERROR !!!",SECTION, 42, FILEIO, LNUM
+        #todo *        CALL ERROR (SECTION, 42, FILEIO,LNUM)
+        #todo READ(LUNIO,140,IOSTAT=ERR) PLME, SDEPTH, SDAGE, ATEMP
+        #todo 140     FORMAT(35X,A1,19X,F5.1,6X,2(1X,F5.0))
+        LNUM = LNUM + 1
+      }
       
       if (ERR != 0) {
-        print *, "!!! ERROR !!!!",ERRKEY,ERR,FILEIO,LNUM
-        *      CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+        #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILEIO,LNUM
+        #todo *        CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+      }
+      
+      #-----------------------------------------------------------------------
+      #     Find and read Cultivar Section
+      #-----------------------------------------------------------------------
+      SECTION = '*CULTI'
+      #todo CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+      if (FOUND == 0) {
+        #todo print *, "!!! ERROR !!!",SECTION, 42, FILEIO, LNUM
+        #todo *        CALL ERROR (SECTION, 42, FILEIO,LNUM)
+        #todo READ(LUNIO,165,IOSTAT=ERR) ECONO, CSDVAR, PPSEN, PH2T5,
+        #todo &              PHTHRS(6), PHTHRS(8), PHTHRS(10), PHTHRS(13)
+        #todo 165     FORMAT(24X,A6,7F6.0)
+        LNUM = LNUM + 1
+      }
+      if (ERR != 0) {
+        print *, "!!! ERROR !!!",ERRKEY,ERR,FILEIO,LNUM
+        *        CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+      }
+      
+      #todo CLOSE (LUNIO)
+      
+      #-----------------------------------------------------------------------
+      #     Open FILEC
+      #-----------------------------------------------------------------------
+      if (CROP != "FA") {
+        PATHL  = INDEX(PATHCR,BLANK)
+        if (PATHL <= 1) {
+          FILECC = FILEC
+        } else {
+          FILECC = PATHCR(1:(PATHL-1)) // FILEC
+        }
         
-        READ (LUNIO,105,IOSTAT=ERR) FILEE, PATHEC; LNUM = LNUM + 1
-        105   FORMAT(15X,A12,1X,A80)
+        #todo CALL GETLUN('FILEC', LUNCRP)
+        #todo OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
+        if (ERR != 0) {
+          #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,0
+          #todo *        CALL ERROR(ERRKEY,ERR,FILECC,0)
+          LNUM = 0
+        }
+        #-----------------------------------------------------------------------
+        #     Find Leaf Growth Parameters from FILEC and read EVMODC value
+        #-----------------------------------------------------------------------
+        SECTION = '!*LEAF'
+        #todo CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        if (FOUND == 0) {
+          #todo print *, "!!! ERROR !!!",SECTION, 42, FILECC, LNUM
+          #todo *        CALL ERROR (SECTION, 42, FILECC,LNUM)
+          #todo CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+          #todo READ(CHAR,'(24X,F6.1)',IOSTAT=ERR) EVMODC
+        }
         
-        if (ERR != 0) { print *, "!!! ERROR !!!!",ERRKEY,ERR,FILEIO,LNUM
-          *      CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+        if (ERR != 0) {
+          #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
+        }
+        
+        #-----------------------------------------------------------------------
+        #     Find Phenology Section in FILEC and read
+        #-----------------------------------------------------------------------
+        SECTION = '!*PHEN'
+        #todo CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        if (FOUND == 0) {
+          #todo print *, "!!! ERROR !!!",SECTION, 42, FILECC, LNUM
+          #todo *        CALL ERROR (SECTION, 42, FILECC,LNUM)
+          #todo CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+          #todo READ(CHAR,250,IOSTAT=ERR) TB(1), TO1(1), TO2(1), TM(1)
+          #todo 250     FORMAT(13F6.1)
+        }
+        
+        if (ERR != 0) {
+          #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
+          #todo *        CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+          #todo 
+          #todo CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+          #todo READ(CHAR,250,IOSTAT=ERR) TB(2), TO1(2), TO2(2), TM(2)
+        }
+        if (ERR != 0) {
+          #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
+          #todo *        CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
           
-          #-----------------------------------------------------------------------
-          #     Subroutine FIND finds appropriate SECTION in a file by
-          #     searching for the specified 6-character string at beginning
-          #     of each line.
-          #-----------------------------------------------------------------------
-          #  SECTION = '*SIMUL'
-          #  CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-          #  IF (FOUND .EQ. 0) CALL ERROR (SECTION, 42, FILEIO,LNUM)
-          #  READ(LUNIO,'(31X,A1)',IOSTAT=ERR) ISIMI; LNUM = LNUM + 1
-          #  IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-          
-          #-----------------------------------------------------------------------
-          #     Find and read Cultivar Section
-          #-----------------------------------------------------------------------
-          SECTION = '*CULTI'
-          CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-          if (FOUND == 0) {
-            print *, "!!! ERROR !!!!",SECTION, 42, FILEIO, LNUM
-            *      CALL ERROR (SECTION, 42, FILEIO,LNUM)
-            READ(LUNIO,'(3X,A2)',IOSTAT=ERR) CROP; LNUM = LNUM + 1
+          #todo CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+          #todo READ(CHAR,250,IOSTAT=ERR) TB(3), TO1(3), TO2(3), TM(3)
+        }
+        
+        if (ERR != 0) {
+          #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
+          #todo *        CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        }
+        
+        for (I in 1:NPHS) {
+          #todo CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+          #todo READ(CHAR,270,IOSTAT=ERR) J, NPRIOR(J), DLTYP(J), CTMP(J), TSELC(J), WSENP(J), NSENP(J), PSENP(J)
+          #todo 270       FORMAT(I3,I3,2(2X,A3),1X,I2,3(1X,F5.2))
+          if (ERR != 0) {
+            print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC, LNUM
+            *          CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+          }
+        }
+        #todo: checar 'J' v 'I'
+        #todo CLOSE (LUNCRP)
+        
+        #-----------------------------------------------------------------------
+        #     Open FILEE
+        #-----------------------------------------------------------------------
+        LNUM = 0
+        PATHL  = INDEX(PATHEC,BLANK)
+        
+        if (PATHL <= 1) {
+          FILEGC = FILEE
+        } else {
+          FILEGC = PATHEC(1:(PATHL-1)) // FILEE #todo: checar //
+        }
+        
+        #-----------------------------------------------------------------------
+        #    Read Ecotype Parameter File
+        #-----------------------------------------------------------------------
+        #todo CALL GETLUN('FILEE', LUNECO)
+        #todo OPEN (LUNECO,FILE = FILEGC,STATUS = 'OLD',IOSTAT=ERR)
+        if (ERR != 0) {
+          #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILEGC,0
+          #todo *        CALL ERROR(ERRKEY,ERR,FILEGC,0)
+          ECOTYP = "      "
+          LNUM = 0
+        }
+        
+        DO WHILE (ECOTYP != ECONO) { #todo: DO WHILE é igual ao while?
+          #todo CALL IGNORE(LUNECO, LNUM, ISECT, C255)
+          if (ISECT == 1 .AND. C255(1:1) != ' ' & C255(1:1) != '*') {
+            READ (C255,3100,IOSTAT=ERR) ECOTYP, ECONAM, IVRGRP, IVRTEM, THVAR, (PHTHRS(K), K=1,4), PM06, PM09,
+            (PHTHRS(K),K=11,12), TRIFOL, R1PPO, OPTBI, SLOBI
+            3100        FORMAT (A6, 1X, A16, 1X, 2(1X,I2), 7(1X,F5.0), 6X,
+                                &          3(1X,F5.0), 2(6X), 3(1X,F5.0))
+            if (ERR != 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILEGC, LNUM
+            *            CALL ERROR(ERRKEY,ERR,FILEGC,LNUM)
+            if (ECOTYP == ECONO) {
+              EXIT #todo: break?
+            }
             
-            if (ERR .NE. 0) {
-              print *, "!!! ERROR !!!",ERRKEY,ERR,FILEIO,LNUM
-              *      CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-              
-              #-----------------------------------------------------------------------
-              if (CROP != "FA") {
-                #-----------------------------------------------------------------------
-                #     Find and Read Planting Details Section
-                #-----------------------------------------------------------------------
-                SECTION = '*PLANT'
-                CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-                if (FOUND == 0) {
-                  print *, "!!! ERROR !!!",SECTION, 42, FILEIO, LNUM
-                  *        CALL ERROR (SECTION, 42, FILEIO,LNUM)
-                  READ(LUNIO,140,IOSTAT=ERR) PLME, SDEPTH, SDAGE, ATEMP
-                  140     FORMAT(35X,A1,19X,F5.1,6X,2(1X,F5.0))
-                  LNUM = LNUM + 1
-                  
-                  if (ERR != 0) {
-                    print *, "!!! ERROR !!!",ERRKEY,ERR,FILEIO,LNUM
-                    *        CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-                    
-                    #-----------------------------------------------------------------------
-                    #     Find and read Cultivar Section
-                    #-----------------------------------------------------------------------
-                    SECTION = '*CULTI'
-                    CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-                    if (FOUND == 0) {
-                      print *, "!!! ERROR !!!",SECTION, 42, FILEIO, LNUM
-                      *        CALL ERROR (SECTION, 42, FILEIO,LNUM)
-                      READ(LUNIO,165,IOSTAT=ERR) ECONO, CSDVAR, PPSEN, PH2T5,
-                      &              PHTHRS(6), PHTHRS(8), PHTHRS(10), PHTHRS(13)
-                      165     FORMAT(24X,A6,7F6.0)
-                      LNUM = LNUM + 1
-                      if (ERR != 0) {
-                        print *, "!!! ERROR !!!",ERRKEY,ERR,FILEIO,LNUM
-                        *        CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-                      }
-                      
-                      CLOSE (LUNIO)
-                      
-                      #-----------------------------------------------------------------------
-                      #     Open FILEC
-                      #-----------------------------------------------------------------------
-                      if (CROP != "FA") {
-                        PATHL  = INDEX(PATHCR,BLANK)
-                        if (PATHL <= 1) {
-                          FILECC = FILEC
-                        } else {
-                          FILECC = PATHCR(1:(PATHL-1)) // FILEC
-                        }
-                        
-                        CALL GETLUN('FILEC', LUNCRP)
-                        OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-                        if (ERR != 0) {
-                          print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,0
-                          *        CALL ERROR(ERRKEY,ERR,FILECC,0)
-                          LNUM = 0
-                          #-----------------------------------------------------------------------
-                          #     Find Leaf Growth Parameters from FILEC and read EVMODC value
-                          #-----------------------------------------------------------------------
-                          SECTION = '!*LEAF'
-                          CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-                          if (FOUND == 0) {
-                            print *, "!!! ERROR !!!",SECTION, 42, FILECC, LNUM
-                            *        CALL ERROR (SECTION, 42, FILECC,LNUM)
-                            CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-                            READ(CHAR,'(24X,F6.1)',IOSTAT=ERR) EVMODC
-                            
-                            if (ERR != 0) {
-                              print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
-                              
-                              #-----------------------------------------------------------------------
-                              #     Find Phenology Section in FILEC and read
-                              #-----------------------------------------------------------------------
-                              SECTION = '!*PHEN'
-                              CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-                              if (FOUND == 0) {
-                                print *, "!!! ERROR !!!",SECTION, 42, FILECC, LNUM
-                                *        CALL ERROR (SECTION, 42, FILECC,LNUM)
-                                CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-                                READ(CHAR,250,IOSTAT=ERR) TB(1), TO1(1), TO2(1), TM(1)
-                                250     FORMAT(13F6.1)
-                                
-                                if (ERR != 0) {
-                                  print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
-                                  *        CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-                                  
-                                  CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-                                  READ(CHAR,250,IOSTAT=ERR) TB(2), TO1(2), TO2(2), TM(2)
-                                  if (ERR != 0) {
-                                    print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
-                                    *        CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-                                    
-                                    CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-                                    READ(CHAR,250,IOSTAT=ERR) TB(3), TO1(3), TO2(3), TM(3)
-                                    
-                                    if (ERR != 0) {
-                                      print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
-                                      *        CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-                                      
-                                      for (I in 1:NPHS) {
-                                        CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-                                        READ(CHAR,270,IOSTAT=ERR) J, NPRIOR(J), DLTYP(J), CTMP(J), TSELC(J), WSENP(J), NSENP(J), PSENP(J)
-                                        270       FORMAT(I3,I3,2(2X,A3),1X,I2,3(1X,F5.2))
-                                        if (ERR != 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC, LNUM
-                                        *          CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-                                      }
-                                      #todo: checar 'J' v 'I'
-                                      CLOSE (LUNCRP)
-                                      
-                                      #-----------------------------------------------------------------------
-                                      #     Open FILEE
-                                      #-----------------------------------------------------------------------
-                                      LNUM = 0
-                                      PATHL  = INDEX(PATHEC,BLANK)
-                                      if (PATHL <= 1) {
-                                        FILEGC = FILEE
-                                      } else {
-                                        FILEGC = PATHEC(1:(PATHL-1)) // FILEE #todo: checar //
-                                      }
-                                      
-                                      #-----------------------------------------------------------------------
-                                      #    Read Ecotype Parameter File
-                                      #-----------------------------------------------------------------------
-                                      CALL GETLUN('FILEE', LUNECO)
-                                      OPEN (LUNECO,FILE = FILEGC,STATUS = 'OLD',IOSTAT=ERR)
-                                      if (ERR != 0) {
-                                        print *, "!!! ERROR !!!",ERRKEY,ERR,FILEGC,0
-                                        *        CALL ERROR(ERRKEY,ERR,FILEGC,0)
-                                        ECOTYP = '      '
-                                        LNUM = 0
-                                        
-                                        DO WHILE (ECOTYP != ECONO) #todo: DO WHILE é igual ao while?
-                                        CALL IGNORE(LUNECO, LNUM, ISECT, C255)
-                                        if (ISECT == 1 .AND. C255(1:1) != ' ' & C255(1:1) != '*') {
-                                          READ (C255,3100,IOSTAT=ERR) ECOTYP, ECONAM, IVRGRP, IVRTEM, THVAR, (PHTHRS(K), K=1,4), PM06, PM09,
-                                          (PHTHRS(K),K=11,12), TRIFOL, R1PPO, OPTBI, SLOBI
-                                          3100        FORMAT (A6, 1X, A16, 1X, 2(1X,I2), 7(1X,F5.0), 6X,
-                                                              &          3(1X,F5.0), 2(6X), 3(1X,F5.0))
-                                          if (ERR != 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILEGC, LNUM
-                                          *            CALL ERROR(ERRKEY,ERR,FILEGC,LNUM)
-                                          if (ECOTYP == ECONO) {
-                                            EXIT #todo: break?
-                                          }
-                                          
-                                        } else if (ISECT == 0) {
-                                          if (ECONO == 'DFAULT') print *, "!!! ERROR !!!",ERRKEY,35, FILEGC,LNUM
-                                          *            CALL ERROR(ERRKEY,35,FILEGC,LNUM)
-                                          ECONO = 'DFAULT'
-                                          REWIND(LUNECO)
-                                          LNUM = 0
-                                        }
-                                      }
-                                      
-                                      CLOSE (LUNECO)
-                                      
-                                      PHTHRS(5) = MAX(0.,PH2T5 - PHTHRS(3) - PHTHRS(4))
-                                      PHTHRS(7) = PHTHRS(6) + MAX(0.,(PHTHRS(8) - PHTHRS(6))* PM06)
-                                      PHTHRS(9) = MAX(0.,PHTHRS(10) * PM09)
-                                      
-                                      if (PPSEN >== 0.0) {
-                                        CLDVAR = CSDVAR + (1.-THVAR)/max(PPSEN,0.000001)
-                                      } else if (PPSEN .LT. 0.0) {
-                                        CLDVAR = CSDVAR + (1.-THVAR)/min(PPSEN,-0.000001)
-                                      }
-                                      
-                                      CSDVRR = CSDVAR - R1PPO
-                                      CLDVRR = CLDVAR - R1PPO
-                                      
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                        
-                        # RETURN
-                        #R END  SUBROUTINE IPPHENOL
-                      }
-                      #************************************************************************
-                      #************************************************************************
-                      
-                    } # para facilitar a programacao
+          } else if (ISECT == 0) {
+            if (ECONO == 'DFAULT') print *, "!!! ERROR !!!",ERRKEY,35, FILEGC,LNUM
+            *            CALL ERROR(ERRKEY,35,FILEGC,LNUM)
+            ECONO = 'DFAULT'
+            REWIND(LUNECO)
+            LNUM = 0
+          }
+        }
+        
+        #todo CLOSE (LUNECO)
+        
+        PHTHRS(5) = MAX(0.,PH2T5 - PHTHRS(3) - PHTHRS(4))
+        PHTHRS(7) = PHTHRS(6) + MAX(0.,(PHTHRS(8) - PHTHRS(6))* PM06)
+        PHTHRS(9) = MAX(0.,PHTHRS(10) * PM09)
+        
+        if (PPSEN >== 0.0) {
+          CLDVAR = CSDVAR + (1.-THVAR)/max(PPSEN,0.000001)
+        } else if (PPSEN .LT. 0.0) {
+          CLDVAR = CSDVAR + (1.-THVAR)/min(PPSEN,-0.000001)
+        }
+        
+        CSDVRR = CSDVAR - R1PPO
+        CLDVRR = CLDVAR - R1PPO
+        
+      }
+    }
+    # RETURN
+    #R END  SUBROUTINE IPPHENOL
+  }
+  #************************************************************************
+  #************************************************************************
+  
+} # para facilitar a programacao
