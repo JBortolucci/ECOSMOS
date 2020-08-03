@@ -4,6 +4,7 @@ source("R/CropModels/Soybean/SoybeanPhenoFunctions.R")
 SoybeanPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
 
 
+  
 # 'fechar' a chave quando tudo estiver ok
   
 # PHENOL from DSSAT CROPGRO
@@ -41,17 +42,20 @@ SoybeanPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   #R                   &    TDUMX2, VegFrac, VSTAGE, YREMRG, YRNR1,         #R !Output
   #R                   &    YRNR2, YRNR3, YRNR5, YRNR7)                     #R !Output
 
-  { #### Subrotina: PHENOL #### 
+
+  TESTE <- 'N'
+  
+    if (TESTE == 'Y'){ #### Subrotina: PHENOL #### 
     
-    PHENOL <- function (CONTROL, ISWITCH,
-                        DAYL, NSTRES, PStres2, SOILPROP, ST,            # Input
-                        SW, SWFAC, TGRO, TMIN, TURFAC, XPOD, YRPLT,     # Input
-                        DRPP, DTX, DXR57, FRACDN, MDATE, NDLEAF,        # Output
-                        NDSET, NR1, NR2, NR5, NR7, NVEG0, PHTHRS,       # Output
-                        RSTAGE, RVSTGE, STGDOY, SeedFrac, TDUMX,        # Output
-                        TDUMX2, VegFrac, VSTAGE, YREMRG, YRNR1,         # Output
-                        YRNR2, YRNR3, YRNR5, YRNR7) {                   # Output
-      
+#    PHENOL <-          (CONTROL, ISWITCH,
+#                        DAYL, NSTRES, PStres2, SOILPROP, ST,            # Input
+#                        SW, SWFAC, TGRO, TMIN, TURFAC, XPOD, YRPLT,     # Input
+#                        DRPP, DTX, DXR57, FRACDN, MDATE, NDLEAF,        # Output
+#                        NDSET, NR1, NR2, NR5, NR7, NVEG0, PHTHRS,       # Output
+#                        RSTAGE, RVSTGE, STGDOY, SeedFrac, TDUMX,        # Output
+#                        TDUMX2, VegFrac, VSTAGE, YREMRG, YRNR1,         # Output
+#                        YRNR2, YRNR3, YRNR5, YRNR7) {                   # Output
+#      
       #----------------------------------------------------------------------------
       #!----------------------------------------------------------------------------
       #R INTEGER NPHS
@@ -136,12 +140,99 @@ SoybeanPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #     Subroutine IPPHENOL reads required phenology variables from input
         #     files.
-        #-----------------------------------------------------------------------
+         #-----------------------------------------------------------------------
+        
+        PHTHRS<-rep(0,20)
+# Parametros de cultivar
+        CSDL  <- 12.58 
+        PPSEN <- 0.311
+        
+
+        PHTHRS[6]  <- 7.0   # FL-SH 
+        PHTHRS[8]  <- 16.0  # FL-SD 
+        PHTHRS[10] <- 27.00 # SD-PM 
+        PHTHRS[13] <- 18.00 # FL-LF
+        
+        
+# FROM >  *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
+        
+        OPTBI <- 20.0 # ! Minimum daily temperature above which there is no effect on slowing normal development toward flowering (oC)
+        
+        
+# From > SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+        
+#!*LEAF GROWTH PARAMETERS
+        EVMODC<-0.0        
+        
+# !FOLLOWING LINE: STAGE; REF STAGE; PHOTOPERIOD FUNCTION; TEMPERATURE FUNCT;
+# !POINTER TO VEGD(1) OR REPDA(2) OR REPDB(3) TEMP SENS; SENS TO WATER;N; AND P     
+        CTMP  <- c('LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','NON','LIN','LIN')
+        DLTYP <- c('NON','NON','NON','INL','INL','INL','INL','INL','INL','INL','NON','INL','INL')
+        NPRIOR<- c(1,2,2,4,5,6,6,6,9,9,11,6,6)
+        NSENP<-  c(0,0,0,0,0,0,0,0,0.4,0.4,0,0,0)
+        
+        
+        
         IPPHENOL(CONTROL,
                  ATEMP, CLDVAR, CLDVRR, CSDVAR, CSDVRR, CROP,    #R !Output
                  CTMP, DLTYP, EVMODC, NPRIOR, NSENP, OPTBI,      #R !Output
                  PHTHRS, PLME, PSENP, SDAGE, SDEPTH, SLOBI,      #R !Output
                  THVAR, TRIFOL, TSELC, TB, TO1, TO2, TM, WSENP)  #R !Output
+        
+        
+        
+        
+
+          ATEMP <-  -99.000  ## nao sera usado para soja, verificar se podemos remover, ! ATEMP     Temperature of transplant environment (�C)
+#          CLDVAR #calculado depois
+#          CLDVRR #calculado depois
+           CSDVAR <- CSDL
+#          CSDVRR #calculado depois
+          CROP <-'SB' #to do, verificar se e usado, se sim remover
+#          CTMP   # carregado acima -> SPE
+#          DLTYP  # carregado acima -> SPE
+#          EVMODC # carregado acima -> SPE
+#          NPRIOR # carregado acima -> SPE
+          NSENP # carregado acima -> SPE
+          OPTBI # carregado acima -> ECO
+          PHTHRS # calculado abaixo
+          PLME
+          PSENP
+          SDAGE
+          SDEPTH
+          SLOBI
+          THVAR
+          TRIFOL
+          TSELC
+          TB
+          TO1
+          TO2
+          TM
+          WSENP
+          
+          
+                   
+          PHTHRS(5) = MAX(0.,PH2T5 - PHTHRS(3) - PHTHRS(4))
+          PHTHRS(7) = PHTHRS(6) + MAX(0.,(PHTHRS(8) - PHTHRS(6))* PM06)
+          PHTHRS(9) = MAX(0.,PHTHRS(10) * PM09)
+
+#          CLDVAR    Critical daylength above which development rate remains at min value (prior to flowering) (hours)                    
+          if (PPSEN >= 0.0) {
+            CLDVAR = CSDVAR + (1.-THVAR)/max(PPSEN,0.000001)
+          } else if (PPSEN <= 0.0) {
+            CLDVAR = CSDVAR + (1.-THVAR)/min(PPSEN,-0.000001)
+          }
+
+          
+#         CLDVRR    Critical daylength above which development rate remains at min value (after flowering) (hours)          
+          CLDVRR = CLDVAR - R1PPO          
+      
+#         CSDVRR    Critical daylength above which development rate decreases (after flowering) (hours)                  
+          CSDVRR = CSDVAR - R1PPO
+          
+
+          
+        
         
         #-----------------------------------------------------------------------
         #     Set minimum days for phenological events under optimum conditions
@@ -184,7 +275,7 @@ SoybeanPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         }
         
         # Em teoria, essas funções virão do source no SoybeanModel.R
-        RSTAGES(CONTROL,
+        RSTAGES (CONTROL,
                 FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
                 PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM,      # Input
                 JPEND, MDATE, NDLEAF, NDSET, NDVST, NVALPH,     # Output
@@ -192,7 +283,7 @@ SoybeanPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
                 RSTAGE, STGDOY, SeedFrac, VegFrac, YREMRG,      # Output
                 YRNR1, YRNR2, YRNR3, YRNR5, YRNR7)              # Output
         
-        VSTAGES(DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
+        VSTAGES (DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
                 NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
                 TURFAC, XPOD, YRDOY, YRPLT,                     # Input
                 RVSTGE, VSTAGE,                                 # Output
@@ -399,7 +490,7 @@ SoybeanPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       #     End Subroutine PHENOL
       #-----------------------------------------------------------------------
       # END  PHENOL from DSSAT CROPGRO
-    }
+    
     
   } # para facilitar a programacao 
   
