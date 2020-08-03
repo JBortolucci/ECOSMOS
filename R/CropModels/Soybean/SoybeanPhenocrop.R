@@ -1,38 +1,420 @@
-
+# move 'source' to SoybeanModel.R
+source("R/CropModels/Soybean/SoybeanPhenoFunctions.R")
 
 SoybeanPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
-  
+
+
+# 'fechar' a chave quando tudo estiver ok
   
 # PHENOL from DSSAT CROPGRO
   
-  # Parametros CROPGRO
+  # Parametros CROPGRO (verificar todos 'variáveis' que ECOMOS tem e aqueles que fixaremos)
   
-  PPSEN<- 0.311
-  
-  source("R/CropModels/Soybean/SoybeanPhenoFunctions.R")
+  PPSEN <- 0.311 # exemplo de parametro fixo...
 
+  #=======================================================================
+  #  PHENOL, Subroutine, J. W. Jones
+  #  Calculates phenological development.
+  #R-----------------------------------------------------------------------
+  #R  REVISION HISTORY
+  #R  01/01/1993 J.W. Jones, K.J. Boote, G. Hoogenboom
+  #R  04/24/1994 NBP Replaced TAIRHR, TAVG with TGRO, TGROAV.
+  #R  01/08/1997 GH  Add transplant effect
+  #R  07/09/1997 CHP modified for CROPGRO restructuring
+  #R             Added DYNAMIC variable for model control
+  #R  07/13/2006 CHP Added P model
+  #R  06/11/2007 CHP PStres2 affects growth
+  #R-----------------------------------------------------------------------
+  #R     Called from:    Main program
+  #R     Calls:          IPPHENOL
+  #R                     RSTAGES
+  #R                     VSTAGES
+  #R                     CURV
+  #=======================================================================
   
-       RSTAGES (CONTROL,
-                   FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    #Input
-                   PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM,      #Input
-                   JPEND, MDATE, NDLEAF, NDSET, NDVST, NVALPH,     #Output
-                   NVEG0, NVEG1, NR1, NR2, NR5, NR7, PHZACC,       #Output
-                   RSTAGE, STGDOY, SeedFrac, VegFrac, YREMRG,      #Output
-                   YRNR1, YRNR2, YRNR3, YRNR5, YRNR7)              #Output
+  #R SUBROUTINE PHENOL(CONTROL, ISWITCH,
+  #R                   &    DAYL, NSTRES, PStres2, SOILPROP, ST,            #R !Input
+  #R                   &    SW, SWFAC, TGRO, TMIN, TURFAC, XPOD, YRPLT,     #R !Input
+  #R                   &    DRPP, DTX, DXR57, FRACDN, MDATE, NDLEAF,        #R !Output
+  #R                   &    NDSET, NR1, NR2, NR5, NR7, NVEG0, PHTHRS,       #R !Output
+  #R                   &    RSTAGE, RVSTGE, STGDOY, SeedFrac, TDUMX,        #R !Output
+  #R                   &    TDUMX2, VegFrac, VSTAGE, YREMRG, YRNR1,         #R !Output
+  #R                   &    YRNR2, YRNR3, YRNR5, YRNR7)                     #R !Output
+
+  { #### Subrotina: PHENOL #### 
+    
+    PHENOL <- function (CONTROL, ISWITCH,
+                        DAYL, NSTRES, PStres2, SOILPROP, ST,            # Input
+                        SW, SWFAC, TGRO, TMIN, TURFAC, XPOD, YRPLT,     # Input
+                        DRPP, DTX, DXR57, FRACDN, MDATE, NDLEAF,        # Output
+                        NDSET, NR1, NR2, NR5, NR7, NVEG0, PHTHRS,       # Output
+                        RSTAGE, RVSTGE, STGDOY, SeedFrac, TDUMX,        # Output
+                        TDUMX2, VegFrac, VSTAGE, YREMRG, YRNR1,         # Output
+                        YRNR2, YRNR3, YRNR5, YRNR7) {                   # Output
+      
+      #----------------------------------------------------------------------------
+      #!----------------------------------------------------------------------------
+      #R INTEGER NPHS
+      #R PARAMETER (NPHS = 13) #todo
+      #R 
+      #R CHARACTER*1 ISIMI, ISWWAT, PLME  #todo
+      #R CHARACTER*2 CROP
+      #R CHARACTER*3 CTMP(20), DLTYP(20)
+      CTMP <- rep(0,20); DLTYP <- rep(0,20) #todo
+      CTMP[1] <- "C1" #todo
+      CTMP[2] <- "C2" #todo
+      
+      #R INTEGER JPEND, NDVST, NVEG1, YREMRG
+      #R INTEGER DAS, YRDOY, YRPLT, YRSIM
+      #R INTEGER DYNAMIC
+      #R INTEGER I, J, K, NLAYR
+      #R INTEGER NDLEAF, NDSET, NR1, NR2, NR5, NR7, NVEG0, RSTAGE
+      #R INTEGER YRNR1, YRNR2, YRNR3, YRNR5, YRNR7, MDATE
+      #R INTEGER STGDOY(20)
+      #R INTEGER NPRIOR(20), NVALPH(20), TSELC(20)
+      
+      STGDOY <- rep(0,20) #todo: ver se seguiremos assim
+      NPRIOR <- rep(0,20); NVALPH <- rep(0,20); TSELC <- rep(0,20) #todo: ver se seguiremos assim
+      
+      #R REAL DAYL, NSTRES, SWFAC, TMIN, TURFAC, XPOD    #R !, TGROAV
+      #R REAL DRPP, DTX, DXR57, FRACDN, RVSTGE, TDUMX, TDUMX2, VSTAGE
+      #R REAL ATEMP, CLDVAR, CLDVRR, CSDVAR, CSDVRR, EVMODC
+      #R REAL MNEMV1, MNFLLL, MNFLHM, OPTBI
+      #R REAL SDEPTH, SDAGE, SLOBI, THVAR, TRIFOL
+      #R REAL DTRY, FTHR, SWFEM, TNTFAC, TNTFC2
+      #R REAL TSDEP, XDEP, XDEPL, ZMODTE
+      
+      #R REAL TB(5), TO1(5), TO2(5), TM(5)
+      #R REAL PHTHRS(20)
+      #R REAL LL(NL), DUL(NL), SAT(NL), DLAYR(NL)
+      #R REAL WSENP(20), NSENP(20), PSENP(20), PHZACC(20)
+      #R REAL SW(NL), ST(NL)
+      #R REAL FNSTR(20), FPSTR(20), FSW(20), FT(20), FUDAY(20)
+      #R REAL TGRO(TS)
+      
+      TB <- rep(0,5); TO1 <- rep(0,5); TO2 <- rep(0,5); TM <- rep(0,5)
+      PHTHRS <- rep(0,20)
+      LLNL[NL]; DUL[NL]; SAT[NL]; DLAYR[NL] #todo
+      WSENP <- rep(0,20); NSENP <- rep(0,20); PSENP <- rep(0,20); PHZACC <- rep(0,20)
+      SW[NL]; ST[NL] #todo
+      FNSTR <- rep(0,20); FPSTR <- rep(0,20); FSW <- rep(0,20); FT <- rep(0,20); FUDAY <- rep(0,20)
+      TGRO[TS]
+      
+      #R REAL  CURV  #R !Function subroutine
+      
+      #R !     P Module
+      #R REAL PStres2
+      #R REAL SeedFrac, VegFrac
+      
+      #-----------------------------------------------------------------------
+      TYPE (ControlType) CONTROL     #todo
+      TYPE (SoilType) SOILPROP       #todo
+      TYPE (SwitchType) ISWITCH      #todo
+      
+      #R !     Transfer values from constructed data types into local variables.
+      DAS     = CONTROL % DAS        #todo
+      DYNAMIC = CONTROL % DYNAMIC    #todo
+      YRDOY   = CONTROL % YRDOY      #todo
+      YRSIM   = CONTROL % YRSIM      #todo
+      #todo
+      DLAYR  = SOILPROP % DLAYR      #todo
+      DUL    = SOILPROP % DUL        #todo
+      LL     = SOILPROP % LL         #todo
+      NLAYR  = SOILPROP % NLAYR      #todo
+      SAT    = SOILPROP % SAT        #todo
+      
+      #R ISWWAT = ISWITCH % ISWWAT
+      #R ISIMI  = ISWITCH % ISIMI
+      
+      #***********************************************************************
+      #***********************************************************************
+      #     Run Initialization - Called once per simulation
+      #***********************************************************************
+      #R if (DYNAMIC .EQ. RUNINIT) THEN
+      if (DAS == 1) { #todo
+        
+        #-----------------------------------------------------------------------
+        #     Subroutine IPPHENOL reads required phenology variables from input
+        #     files.
+        #-----------------------------------------------------------------------
+        IPPHENOL(CONTROL,
+                 ATEMP, CLDVAR, CLDVRR, CSDVAR, CSDVRR, CROP,    #R !Output
+                 CTMP, DLTYP, EVMODC, NPRIOR, NSENP, OPTBI,      #R !Output
+                 PHTHRS, PLME, PSENP, SDAGE, SDEPTH, SLOBI,      #R !Output
+                 THVAR, TRIFOL, TSELC, TB, TO1, TO2, TM, WSENP)  #R !Output
+        
+        #-----------------------------------------------------------------------
+        #     Set minimum days for phenological events under optimum conditions
+        #     (temperature and short photoperiod)
+        #-----------------------------------------------------------------------
+        if (CROP != "FA") {
+          # Minimum days from emergence to Vegetative Growth Stage 1:
+          MNEMV1 = PHTHRS[2]
+          
+          # Minimum days from start of flowering to last leaf appearance:
+          MNFLLL = PHTHRS[13]
+          
+          # Number of days from flowering to harvest maturity
+          MNFLHM = PHTHRS[8] + PHTHRS[10] + PHTHRS[11]
+        }
+        
+        #***********************************************************************
+        #***********************************************************************
+        #     Seasonal initialization - run once per season
+        #***********************************************************************
+      } else if (DYNAMIC == SEASINIT ) { #todo checar 'ifelse'
+        #-----------------------------------------------------------------------
+        #     Initialization variables from INPLNT
+        #-----------------------------------------------------------------------
+        DRPP   = 0.0
+        DTX    = 0.0
+        DXR57  = 0.0
+        FRACDN = 0.0
+        TDUMX  = 0.0
+        TDUMX2 = 0.0
+        TNTFAC = 0.0
+        TNTFC2 = 0.0
+        
+        for(J in 1:20){
+          FNSTR[J] = 1.
+          FPSTR[J] = 1.
+          FSW[J]   = 1.
+          FT[J]    = 0.
+          FUDAY[J] = 0.
+        }
+        
+        # Em teoria, essas funções virão do source no SoybeanModel.R
+        RSTAGES(CONTROL,
+                FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
+                PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM,      # Input
+                JPEND, MDATE, NDLEAF, NDSET, NDVST, NVALPH,     # Output
+                NVEG0, NVEG1, NR1, NR2, NR5, NR7, PHZACC,       # Output
+                RSTAGE, STGDOY, SeedFrac, VegFrac, YREMRG,      # Output
+                YRNR1, YRNR2, YRNR3, YRNR5, YRNR7)              # Output
+        
+        VSTAGES(DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
+                NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
+                TURFAC, XPOD, YRDOY, YRPLT,                     # Input
+                RVSTGE, VSTAGE,                                 # Output
+                SEASINIT)                                       # Control
+        
+        #***********************************************************************
+        #***********************************************************************
+        #     Daily Rate calculations
+        #***********************************************************************
+      } else if (DYNAMIC == RATE) { #todo: checar 'ifelse'
+        #-----------------------------------------------------------------------
+        #     Compute temp, daylength, and water effects on development,
+        #-----------------------------------------------------------------------
+        #   EMERGENCE PHASE ONLY
+        #-----------------------------------------------------------------------
+        if (NVEG0 > DAS) {
+          FUDAY[1] = 1.
+          FNSTR[1] = 1.
+          FPSTR[1] = 1.
+          K = TSELC[1]
+          
+          #-----------------------------------------------------------------------
+          #      Compute average soil temp, water in top 10 cm for emergence phase
+          #         SWFEM = Average soil water content of top 10 cm
+          #         TSDEP = Average temperature of top 10 cm
+          #-----------------------------------------------------------------------
+          XDEP = 0.0
+          SWFEM = 0.0
+          TSDEP = 0.0
+          
+          
+          for (I in 1:NLAYR){
+            XDEPL = XDEP
+            XDEP = XDEP + DLAYR[I]
+            DTRY = Min(DLAYR[I], 10. - XDEPL)
+            
+            if (ISWWAT == "Y"){
+              if (SW[I] <= DUL[I]) {
+                SWFEM = SWFEM + DTRY * (max(SW[I] - LL(I),0.0)) / (DUL[I] - LL[I])
+              } else {
+                SWFEM = SWFEM + DTRY * (max(SAT[I] - SW[I],0.0)) / (SAT[I] - DUL[I])
+              }
+            }
+            
+            TSDEP = TSDEP + DTRY * ST[I]
+            if (XDEP >= 10.) { break
+            }
+          }
+          
+          TSDEP = TSDEP / 10.
+          
+          #-----------------------------------------------------------------------
+          #      Compute temperature and soil water effects for phase 1, emergence
+          #-----------------------------------------------------------------------
+          
+          FT[1] = CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TSDEP) #todo: escrever função CURV () em algum outro script
+          
+          if (ISWWAT == "Y") {
+            SWFEM = (SWFEM / 10.) * 100.0
+            FSW[1] = CURV("LIN",0.0,20.0,100.,1000.,SWFEM)
+          } else {
+            FSW[1] = 1.
+          }
+          FSW[1] = 1. + (1.-FSW[1])*WSENP[1]
+        }
+        
+        #-----------------------------------------------------------------------
+        #     Compute dev rates for all other phases, using hourly air temp
+        #-----------------------------------------------------------------------
+        for (J in 2:NPHS) {
+          K = TSELC[J]
+          FT[J] = 0.0
+          
+          for (I in 1:TS) {
+            FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
+            FT[J] = FT[J] + FTHR/REAL[TS]
+          }
+          
+          if (DAS < NR1) {
+            FUDAY[J] = CURV(DLTYP[J],1.0,CSDVAR,CLDVAR,THVAR,DAYL)
+          } else {
+            FUDAY[J] = CURV(DLTYP[J],1.0,CSDVRR,CLDVRR,THVAR,DAYL)
+          }
+          
+          FSW[J]   = 1. + (1. - SWFAC)  * WSENP[J]
+          FNSTR[J] = 1. + (1. - NSTRES) * NSENP[J]
+          FPSTR[J] = 1. + (1. - PStres2) * PSENP[J]
+        }
+        
+        #-----------------------------------------------------------------------
+        #     Transplants
+        #-----------------------------------------------------------------------
+        if (PLME == "T" & YRPLT == YRDOY) {
+          K = TSELC[2]
+          FT[2] = CURV(CTMP[2],TB[K],TO1[K],TO2[K],TM[K],ATEMP)  #todo: escrever função CURV ('curvilinar' provavelmente)
+          PHZACC[2] = FT[2] * SDAGE
+        }
+        
+        #-----------------------------------------------------------------------
+        #     The effect of Tmin on rate of development from emergence to
+        #     flowering. Piper et al., (submitted to Field Crops Research, 1995)
+        #-----------------------------------------------------------------------
+        ZMODTE = 1.0
+        
+        if (TMIN < OPTBI) {
+          ZMODTE = 1. - (SLOBI * (OPTBI - TMIN))
+          ZMODTE = max(0.0, ZMODTE)
+          ZMODTE = min(1.0, ZMODTE)
+        }
+        
+        FT[4] = FT[4] * ZMODTE
+        FT[5] = FT[5] * ZMODTE
+        
+        #-----------------------------------------------------------------------
+        #     Compute rates of development to be used in other parts of model
+        #     based on veg, early rep, and late rep temp sensitivities, respectively.
+        #     Physiological days during today for vegetative development (DTX),
+        #     physiological days during the day for reproductive development
+        #     (TNTFAC & TNTFC2), and photothermal days during the day (TDUMX & TDUMX2)
+        #-----------------------------------------------------------------------
+        DTX    = FT[2]
+        TNTFAC = FT[6]
+        TNTFC2 = FT[10]
+        #-----------------------------------------------------------------------
+        #     DRPP affects seed & shell numbers set, seed and shell growth rates,
+        #     ACCAGE, PODADD, FLWADD, FLWADD.  Okay to use the "SEEDFILL"
+        #     photoperiod.  This change will make TDUMX2 sensitive to the R5-R7
+        #     period and affect N mobilization.
+        #-----------------------------------------------------------------------
+        DRPP   = FUDAY[6]
+        TDUMX  = TNTFAC * DRPP
+        TDUMX2 = TNTFC2 * FUDAY[10]
+        
+        #-----------------------------------------------------------------------
+        #    Calculate rate of V-stage change for height and width determination
+        #-----------------------------------------------------------------------
+        VSTAGES(
+          DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
+          NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
+          TURFAC, XPOD, YRDOY, YRPLT,                     # Input
+          RVSTGE, VSTAGE,                                 # Output
+          RATE)                                           # Control
+        
+        
+        
+        #**********************************************************************
+        #**********************************************************************
+        #     Daily Integration
+        #**********************************************************************
+      } else if (DYNAMIC == INTEGR) { #todo check 'ifelse'
+        
+        #----------------------------------------------------------------------
+        #     Check to see if stages occur today, if so set them in RSTAGES
+        #----------------------------------------------------------------------
+        RSTAGES(CONTROL,
+                FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
+                PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM,      # Input
+                JPEND, MDATE, NDLEAF, NDSET, NDVST, NVALPH,     # Output
+                NVEG0, NVEG1, NR1, NR2, NR5, NR7, PHZACC,       # Output
+                RSTAGE, STGDOY, SeedFrac, VegFrac, YREMRG,      # Output
+                YRNR1, YRNR2, YRNR3, YRNR5, YRNR7)              # Output
+        
+        #-----------------------------------------------------------------------
+        #     Special accumulators used in other parts of the model
+        #-----------------------------------------------------------------------
+        #     Canopy age, flowering to harvest maturity, AGELF
+        #-----------------------------------------------------------------------
+        #     FRACDN is relative time from flowering to last leaf, modify leaf part
+        #-----------------------------------------------------------------------
+        if (DAS >= NR1) {
+          FRACDN = PHZACC(13)/MNFLLL
+          FRACDN = min(1.0,FRACDN)
+        }
+        
+        #-----------------------------------------------------------------------
+        #     DXR57-rel time from R5 to R7, modifies N mobilization
+        #-----------------------------------------------------------------------
+        if (DAS > NR5) {
+          DXR57 = PHZACC[10]/PHTHRS[10]
+          DXR57 = min(DXR57,1.0)
+        } else {
+          DXR57 = 0.0
+        }
+        
+        #-----------------------------------------------------------------------
+        #     Calculate V-stages
+        #-----------------------------------------------------------------------
+        VSTAGES(
+          DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
+          NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
+          TURFAC, XPOD, YRDOY, YRPLT,                     # Input
+          RVSTGE, VSTAGE,                                 # Output
+          INTEGR)                                         # Control
+        
+        #***********************************************************************
+        #     End of DYNAMIC IF construct
+        #***********************************************************************
+      }
+      #-----------------------------------------------------------------------
+      # RETURN
+      #todo return, or assign?
+      #R END   #R !SUBROUTINE PHENOL
+      #-----------------------------------------------------------------------
+      #     End Subroutine PHENOL
+      #-----------------------------------------------------------------------
+      # END  PHENOL from DSSAT CROPGRO
+    }
+    
+  } # para facilitar a programacao 
   
-       VSTAGES(    DAS, DTX, EVMODC, MNEMV1, NDVST,                #Input
-                   NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             #Input
-                   TURFAC, XPOD, YRDOY, YRPLT,                     #Input
-                   RVSTGE, VSTAGE,                                 #Output
-                   SEASINIT)             
+       
   
   
   
   
   
   
-# END  PHENOL from DSSAT CROPGRO
   
+  
+       
+       
+       
 # Codigo antigo do eucalipto, remover depois que implementar tudo  
   
   # parametros
@@ -426,10 +808,10 @@ SoybeanPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       if(idpp[i]<=2*365){
         DBranch_decay<-0
-      }else if (idpp[i]>2*365 & idpp[i]<=4*365) {
+      } else if (idpp[i]>2*365 & idpp[i]<=4*365) {
         tauleaf_branch <- (1/280)*(1-exp(-0.0065*(idpp[i]-2*365)))  
         DBranch_decay <- DBranch_attached*tauleaf_branch
-      }else{
+      } else {
         DBranch_decay <- DBranch_attached*(1/280)
       }
       
