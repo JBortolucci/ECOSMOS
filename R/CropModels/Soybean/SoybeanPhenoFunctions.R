@@ -1,6 +1,7 @@
 # Contem as subrotinas: (aqui como 'function's)
-  # 1) VSTAGES (VSTAGES.txt com a programacao em fortran) para os estagios vegetativos
-  # 2) RSTAGES (RSTAGES.txt com a programacao em fortran) para os estagios reprodutivos
+  # 1) PHENOL  (Calculates phenological development.)
+  # 2) VSTAGES (Calculates V-stages)
+  # 3) RSTAGES (Calculates phenological stages and individual phase durations)
 
 # os comentarios com 'R' na frente são para controle e serão removidos posteriormente
 # 'C' ou '!' sao comentarios do codigo original em fortran, portanto, nao usados pelo CROPGRO
@@ -19,6 +20,457 @@
   # DO/ENDDO   meaning for()
   # ELSE IF    meaning else if
   # AMAX1 & AMIN1  meaning max and min
+
+
+#=======================================================================
+# PHENOL Subroutine CROPGRO-DSSAT
+#  PHENOL, Subroutine, J. W. Jones
+#  Calculates phenological development.
+#-----------------------------------------------------------------------
+#     Called from:    CROPGRO
+#     Calls:          RSTAGES
+#                     VSTAGES
+#                     CURV
+#=======================================================================
+{
+  PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
+
+    
+    YRDOY   = paste0(iyear,jday)
+    YRSIM   = paste0(iyear0,1)
+    
+    
+    ISIMI  = 'P' 
+    #         ISIMI      Start of simulation code
+    #               E = On reported emergence day
+    #               I = When initial conditions measured
+    #               P = On reported planting date
+    #               S = On specified date
+    
+    
+    #To do - verificar se esta correto
+    DAYL     <- daylength/60. # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
+    NSTRES   <- 1 #Nitrogen stress factor (1=no stress, 0=max stress) 
+    PStres2  <- 1 
+    
+    TGRO <- tl
+    
+    # To do: depois que implementar 'SUBROUTINE GROW' usar o valor resolvido pelo modelo
+    XPODv <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+               0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+               0.003671511,0.012084253,0.024009451,0.040283576,0.05968399,0.082692102,0.104583979,0.129479527,
+               0.15558961,0.188465804,0.26417467,0.304826766,0.339704752,0.386390269,0.426694751,0.479249477,0.540160716,0.61833334,
+               0.67564851,0.730788291,0.776554286,0.814540088,0.846068263,0.872236669,0.893956423,0.911983788,0.926946521,0.939365625,
+               0.949673474,0.958229005,0.965330064,0.97122395,0.976115882,0.98017621,0.983546197,0.986343324,0.988664985,0.990591943,
+               0.992191315,0.99351877,0.994620562,0.995535076,0.996294141,0.996924162,0.997447014,0.997880936,0.997880936) 
+    
+    XPOD<-XPODv[DAS]
+    
+    
+    
+    if (DYNAMIC == 'RUNINIT') {
+      
+      YRPLT   = paste0(iyear,jday)
+      
+      
+      #***************************************************************************
+      #            Run Initialization - Called once per simulation               #
+      #***************************************************************************        
+      
+      
+      #------------------------------------------------------------------------
+      #     Subroutine IPPHENOL reads required phenology variables from input #
+      #------------------------------------------------------------------------
+      
+      
+      #______________________________________________________________        
+      # CONTROL VARS (.SBX) 
+      CROP <-'SB'        
+      
+      # Find and Read Planting Details Section 
+      PLME <- 'S'        
+      SDEPTH <- 2.5  # PLPD from .SBX
+      SDAGE < -99.0  # ! SDAGE     Transplant age (days)
+      ATEMP <-  -99.000 
+      
+      
+      #______________________________________________________________        
+      # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+      PHTHRS<-rep(0,20) 
+      CSDL       <- 12.58 
+      CSDVAR     <- CSDL  #code uses CSDVAR
+      PPSEN      <- 0.311
+      PH2T5      <- 23.1  # EM-FL - Time between plant emergence and flower appearance (R1) (photothermal days)
+      PHTHRS[6]  <- 7.0   # FL-SH - Time between first flower and first pod (R3) (photothermal days)
+      PHTHRS[8]  <- 16.0  # FL-SD -  Time between first flower and first seed (R5) (photothermal days)
+      PHTHRS[10] <- 27.00 # SD-PM - Time between first seed (R5) and physiological maturity (R7) (photothermal days)
+      PHTHRS[13] <- 18.00 # FL-LF - Time between first flower (R1) and end of leaf expansion (photothermal days)
+      
+      #______________________________________________________________        
+      # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
+      THVAR      <- 0.0      # THVAR   Minimum rate of reproductive development under long days and optimal temperature
+      #PHTHRS [5,7,9] 
+      PHTHRS[1]  <-  3.6     # PL-EM  - Time between planting and emergence (V0) (thermal days)           
+      PHTHRS[2]  <-  6.0     # EM-V1  - Time required from emergence to first true leaf (V1), thermal days           
+      PHTHRS[3]  <-  0.0     # V1-JU  - Time required from first true leaf to end of juvenile phase, thermal days          
+      PHTHRS[4]  <-  5.0     # JU-R0  - Time required for floral induction, equal to the minimum number of days for 
+      #          floral induction under optimal temperature and daylengths, photothermal days 
+      PM06       <- 0.0      # Proportion of time between first flower and first pod for first peg (peanut only)
+      PM09       <- 0.35     # Proportion of time between first seed and physiological maturity that the last seed can be formed
+      PHTHRS[11] <- 12.0     # R7-R8  - Time between physiological (R7) and harvest maturity (R8) (days)           
+      PHTHRS[12] <- 12.00    # FL-VS  - Time from first flower to last leaf on main stem (photothermal days)          
+      TRIFL      <- 0.32     # TRIFL   Rate of appearance of leaves on the mainstem (leaves per thermal day)
+      R1PPO      <- 0.459    # Increase in daylength sensitivity after R1 (CSDVAR and CLDVAR both decrease with the same amount) (h)
+      OPTBI      <- 20.0     # Minimum daily temperature above which there is no effect on slowing normal development toward flowering (oC)
+      SLOBI      <- 0.035    # Slope of relationship reducing progress toward flowering if tmin for the day is less than OPTBI
+      
+      #______________________________________________________________        
+      # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+      
+      # LEAF GROWTH PARAMETERS
+      EVMODC <-0.0           # Modifier of rate of vegetative node appearance for the first few nodes, primarily used for peanut 
+      # ROOT PARAMETERS
+      RWUEP1<-1.50
+      # PHENOLOGY PARAMETERS   
+      TB	<- c( 7,  6, -15, 0, 0)
+      TO1	<- c(28, 26,  26, 0, 0)
+      TO2	<- c(35, 30,  34, 0, 0)
+      TM	<- c(45, 45,  45, 0, 0)
+      
+      # FOLLOWING LINE: STAGE; REF STAGE; PHOTOPERIOD FUNCTION; TEMPERATURE FUNCT;
+      # POINTER TO VEGD(1) OR REPDA(2) OR REPDB(3) TEMP SENS; SENS TO WATER;N; AND P     
+      NPRIOR <- c(1,2,2,4,5,6,6,6,9,9,11,6,6)                                 # The phase of growth at which phase I accumulator can start
+      DLTYP  <- c('NON','NON','NON','INL','INL','INL','INL','INL','INL','INL','NON','INL','INL')  # Type of curve used for daylength function for phase I:  NON=no  photoperiod sensitivity, INL=inverse linear      
+      CTMP   <- c('LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','NON','LIN','LIN')  # Type of curve used for temp. function for phase I: LIN=linear,  QDR=quadratic, SIN=sine function
+      TSELC  <- c(1,1,1,2,2,2,2,2,3,3,1,2,2)                                   # Number of temperature curve to be used for phase I development rate: 1=veg, 2=early rep, 3=late rep 
+      WSENP  <- c(-0.2,-0.2,-0.4,-0.4,-0.4,-0.4,-0.4,-0.4,0.7,0.7,0,-0.6,-0.9) # Sensitivity of phase I to water stress, varying from -1 (slows dev) to 1 (hastens dev) 
+      NSENP  <- c(0,0,0,0,0,0,0,0,0.4,0.4,0,0,0)                               # Sensitivity of phase I to Nitrogen stress. Varies from -1 (slows dev) to +1 (hastens dev)
+      PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP     Sensitivity of phase I to phosphorus stress (not yet used) 
+      
+      
+      
+      PHTHRS[5] = MAX(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
+      PHTHRS[7] = PHTHRS[6] + MAX(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
+      PHTHRS[9] = MAX(0.,PHTHRS[10] * PM09)
+      
+      #          CLDVAR    Critical daylength above which development rate remains at min value (prior to flowering) (hours)                    
+      if (PPSEN >= 0.0) {
+        CLDVAR = CSDVAR + (1.-THVAR)/max(PPSEN,0.000001)
+      } else if (PPSEN <= 0.0) {
+        CLDVAR = CSDVAR + (1.-THVAR)/min(PPSEN,-0.000001)
+      }
+      
+      CLDVRR = CLDVAR - R1PPO     # Critical daylength above which development rate remains at min value (after flowering) (hours)     
+      CSDVRR = CSDVAR - R1PPO     # Critical daylength above which development rate decreases (after flowering) (hours)                  
+      
+      #------------------------------------------------------
+      #      END  SUBROUTINE IPPHENO                        #
+      #------------------------------------------------------
+      
+      
+      #-----------------------------------------------------------------------
+      #     Set minimum days for phenological events under optimum conditions
+      #     (temperature and short photoperiod)
+      #-----------------------------------------------------------------------
+      if (CROP != "FA") {
+        # Minimum days from emergence to Vegetative Growth Stage 1:
+        MNEMV1 = PHTHRS[2]
+        
+        # Minimum days from start of flowering to last leaf appearance:
+        MNFLLL = PHTHRS[13]
+        
+        # Number of days from flowering to harvest maturity
+        MNFLHM = PHTHRS[8] + PHTHRS[10] + PHTHRS[11]
+      }
+      
+#***********************************************************************
+#***********************************************************************
+#     Seasonal initialization - run once per season
+#***********************************************************************
+   } else if (DYNAMIC == 'SEASINIT') {
+      
+#-----------------------------------------------------------------------
+#     Initialization variables from INPLNT
+#-----------------------------------------------------------------------
+      DRPP   = 0.0
+      DTX    = 0.0
+      DXR57  = 0.0
+      FRACDN = 0.0
+      TDUMX  = 0.0
+      TDUMX2 = 0.0
+      TNTFAC = 0.0
+      TNTFC2 = 0.0
+      SWFAC  = 1.0
+      TURFAC = 1.0
+      for(J in 1:20){
+        FNSTR[J] = 1.
+        FPSTR[J] = 1.
+        FSW[J]   = 1.
+        FT[J]    = 0.
+        FUDAY[J] = 0.
+      }
+      
+      # Em teoria, essas funções virão do source no SoybeanModel.R
+      RSTAGES (CONTROL,
+               FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
+               PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM,      # Input
+               JPEND, MDATE, NDLEAF, NDSET, NDVST, NVALPH,     # Output
+               NVEG0, NVEG1, NR1, NR2, NR5, NR7, PHZACC,       # Output
+               RSTAGE, STGDOY, SeedFrac, VegFrac, YREMRG,      # Output
+               YRNR1, YRNR2, YRNR3, YRNR5, YRNR7)              # Output
+      
+      VSTAGES (DAS, DTX, EVMODC, MNEMV1, NDVST,             # Input
+               NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
+               TURFAC, XPOD, YRDOY, YRPLT,                     # Input
+               RVSTGE, VSTAGE,                                 # Output
+               DYNAMIC)                                       # Control
+      
+
+#***********************************************************************
+#***********************************************************************
+#     Daily Rate calculations
+#***********************************************************************
+    } else if (DYNAMIC == 'RATE') {      
+
+      #-----------------------------------------------------------------------
+      #     Compute temp, daylength, and water effects on development,
+      #-----------------------------------------------------------------------
+      #   EMERGENCE PHASE ONLY
+      #-----------------------------------------------------------------------
+      if (NVEG0 > DAS) {
+        FUDAY[1] = 1.
+        FNSTR[1] = 1.
+        FPSTR[1] = 1.
+        K = TSELC[1]
+        
+        #-----------------------------------------------------------------------
+        #      Compute average soil temp, water in top 10 cm for emergence phase
+        #         SWFEM = Average soil water content of top 10 cm
+        #         TSDEP = Average temperature of top 10 cm
+        #-----------------------------------------------------------------------
+        
+        XDEP  = 0.0
+        SWFEM = 0.0
+        TSDEP = 0.0
+        
+        
+        for (k in 1:(nsoilay)){
+          XDEPL = XDEP
+          XDEP = XDEP + hsoi[k]*100        #use in cm 
+          DTRY = min(hsoi[k]*100, 10. - XDEPL)
+          
+          
+          if (wsoi[k] <= sfield[k]) {
+            SWFEM = SWFEM + DTRY * (max(wsoi[k] - swilt[k],0.0)) / (sfield[k] - swilt[k])
+          } else {
+            SWFEM = SWFEM + DTRY * (max(poros[k] - wsoi[k]*poros[k],0.0)) / (poros[k] - sfield[k]*poros[k])
+            
+          }
+          
+          
+          TSDEP = TSDEP + DTRY * (tsoi[k]-273.16)
+          if (XDEP >= 10.) { break}
+        }
+        
+        TSDEP = TSDEP / 10.
+        
+        #-----------------------------------------------------------------------
+        #      Compute temperature and soil water effects for phase 1, emergence
+        #-----------------------------------------------------------------------
+        
+        FT[1] = CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TSDEP) #todo: escrever função CURV () em algum outro script
+        
+        SWFEM = (SWFEM / 10.) * 100.0
+        FSW[1] = CURV("LIN",0.0,20.0,100.,1000.,SWFEM)
+        
+        FSW[1] = 1. + (1.-FSW[1])*WSENP[1]
+      }
+      
+      
+      
+      #       Calculate daily water stess factors (from SWFACS)
+      #       EOP -  Potential plant transpiration rate (mm/d)
+      #       TRWUP and EP1 in cm/d
+      
+      # Transpiration ratio (CO2=330 vpm gives 1.0)
+      # To do: Implementar a chamada da função StomataC3Crops e StomataC4Crops fazendo 'stresst = 1', 
+      #          e salvar totcond como 'totconduns' (i.e., sem estress) e 'ag' como 'aguns'. 
+      #        Depois calcular fvaput e fvaplt considerando sut e slt0 com os valores de 'totconduns'
+      #        Finalmente, calcularmos gtransu e gtransl para a vegetacao sem stresse hidrico (assim, podemos calcular o estresse) 
+      #          e EOP = gtransu ou gtransu        
+      
+      #         EOP = EO * (1.0-EXP(-LAI*KEP)) * TRATIO
+      #        EOP = MAX(EOP,0.0)
+      
+      SWFAC  = 1.0
+      TURFAC = 1.0
+      if(stresstl<=0.9) TURFAC = (1./RWUEP1) * stresstl 
+      if(stresstl<=0.9) SWFAC = stresstl 
+      
+      #        if (EOP > 0.001) {
+      #        EP1 = EOP * 0.1           # EOP mm and EP1 cm
+      #        if ((TRWUP/EP1) < RWUEP1) {TURFAC = (1./RWUEP1) * TRWUP / EP1  }
+      #        if (EP1 >= TRWUP) {  SWFAC = TRWUP / EP1  }
+      #        }
+      #To do: Jair, como haviamos falado essa variavel tem que ser em funcao da planta
+      #         adicionalmente, como saber se usamos aqui stresstl ou stresstu?
+      
+      
+      #-----------------------------------------------------------------------
+      #     Compute dev rates for all other phases, using hourly air temp
+      #-----------------------------------------------------------------------
+      
+      
+      
+      for (J in 2:NPHS) {
+        K = TSELC[J]
+        FT[J] = 0.0
+        
+        for (I in 1:TS) {
+          FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
+          FT[J] = FT[J] + FTHR/REAL[TS]
+        }
+        
+        if (DAS < NR1) {
+          FUDAY[J] = CURV(DLTYP[J],1.0,CSDVAR,CLDVAR,THVAR,DAYL)
+        } else {
+          FUDAY[J] = CURV(DLTYP[J],1.0,CSDVRR,CLDVRR,THVAR,DAYL)
+        }
+        
+        FSW[J]   = 1. + (1. - SWFAC)  * WSENP[J]
+        FNSTR[J] = 1. + (1. - NSTRES) * NSENP[J]
+        FPSTR[J] = 1. + (1. - PStres2) * PSENP[J]
+      }
+      
+      #-----------------------------------------------------------------------
+      #     Transplants
+      #-----------------------------------------------------------------------
+      if (PLME == "T" & YRPLT == YRDOY) {
+        K = TSELC[2]
+        FT[2] = CURV(CTMP[2],TB[K],TO1[K],TO2[K],TM[K],ATEMP)  #todo: escrever função CURV ('curvilinar' provavelmente)
+        PHZACC[2] = FT[2] * SDAGE
+      }
+      
+      #-----------------------------------------------------------------------
+      #     The effect of tmin on rate of development from emergence to
+      #     flowering. Piper et al., (submitted to Field Crops Research, 1995)
+      #-----------------------------------------------------------------------
+      ZMODTE = 1.0
+      
+      if (tmin < OPTBI) {
+        ZMODTE = 1. - (SLOBI * (OPTBI - tmin))
+        ZMODTE = max(0.0, ZMODTE)
+        ZMODTE = min(1.0, ZMODTE)
+      }
+      
+      FT[4] = FT[4] * ZMODTE
+      FT[5] = FT[5] * ZMODTE
+      
+      #-----------------------------------------------------------------------
+      #     Compute rates of development to be used in other parts of model
+      #     based on veg, early rep, and late rep temp sensitivities, respectively.
+      #     Physiological days during today for vegetative development (DTX),
+      #     physiological days during the day for reproductive development
+      #     (TNTFAC & TNTFC2), and photothermal days during the day (TDUMX & TDUMX2)
+      #-----------------------------------------------------------------------
+      DTX    = FT[2]
+      TNTFAC = FT[6]
+      TNTFC2 = FT[10]
+      #-----------------------------------------------------------------------
+      #     DRPP affects seed & shell numbers set, seed and shell growth rates,
+      #     ACCAGE, PODADD, FLWADD, FLWADD.  Okay to use the "SEEDFILL"
+      #     photoperiod.  This change will make TDUMX2 sensitive to the R5-R7
+      #     period and affect N mobilization.
+      #-----------------------------------------------------------------------
+      DRPP   = FUDAY[6]
+      TDUMX  = TNTFAC * DRPP
+      TDUMX2 = TNTFC2 * FUDAY[10]
+      
+#-----------------------------------------------------------------------
+#    Calculate rate of V-stage change for height and width determination
+#-----------------------------------------------------------------------
+     VSTAGES(
+        DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
+        NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
+        TURFAC, XPOD, YRDOY, YRPLT,                     # Input
+        RVSTGE, VSTAGE,                                 # Output
+        DYNAMIC)                                           # Control
+      
+      
+      
+#**********************************************************************
+#**********************************************************************
+#     Daily Integration
+#**********************************************************************
+    } else if (DYNAMIC == 'INTEGR') { 
+      
+#----------------------------------------------------------------------
+#     Check to see if stages occur today, if so set them in RSTAGES
+#----------------------------------------------------------------------
+      RSTAGES(CONTROL,
+              FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
+              PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM,      # Input
+              JPEND, MDATE, NDLEAF, NDSET, NDVST, NVALPH,     # Output
+              NVEG0, NVEG1, NR1, NR2, NR5, NR7, PHZACC,       # Output
+              RSTAGE, STGDOY, SeedFrac, VegFrac, YREMRG,      # Output
+              YRNR1, YRNR2, YRNR3, YRNR5, YRNR7)              # Output
+      
+      #-----------------------------------------------------------------------
+      #     Special accumulators used in other parts of the model
+      #-----------------------------------------------------------------------
+      #     Canopy age, flowering to harvest maturity, AGELF
+      #-----------------------------------------------------------------------
+      #     FRACDN is relative time from flowering to last leaf, modify leaf part
+      #-----------------------------------------------------------------------
+      if (DAS >= NR1) {
+        FRACDN = PHZACC(13)/MNFLLL
+        FRACDN = min(1.0,FRACDN)
+      }
+      
+      #-----------------------------------------------------------------------
+      #     DXR57-rel time from R5 to R7, modifies N mobilization
+      #-----------------------------------------------------------------------
+      if (DAS > NR5) {
+        DXR57 = PHZACC[10]/PHTHRS[10]
+        DXR57 = min(DXR57,1.0)
+      } else {
+        DXR57 = 0.0
+      }
+      
+      #-----------------------------------------------------------------------
+      #     Calculate V-stages
+      #-----------------------------------------------------------------------
+      VSTAGES(
+        DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
+        NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
+        TURFAC, XPOD, YRDOY, YRPLT,                     # Input
+        RVSTGE, VSTAGE,                                 # Output
+        DYNAMIC)                                         # Control
+      
+      #***********************************************************************
+      #     End of DYNAMIC IF construct
+      #***********************************************************************
+      
+    }
+    
+
+# TO DO!: retornar as variaveis abaixo
+#  DRPP, DTX, DXR57, FRACDN, MDATE, NDLEAF,        # Output
+#  NDSET, NR1, NR2, NR5, NR7, NVEG0, PHTHRS,       # Output
+#  RSTAGE, RVSTGE, STGDOY, SeedFrac, TDUMX,        # Output
+#  TDUMX2, VegFrac, VSTAGE, YREMRG, YRNR1,         # Output
+#  YRNR2, YRNR3, YRNR5, YRNR7
+    
+    
+#-----------------------------------------------------------------------
+#     End Subroutine PHENOL
+#-----------------------------------------------------------------------
+
+  } # END PHENOL
+  
+  
+}
+
 
 #### Subrotina: VSTAGES ####
 {
@@ -40,24 +492,13 @@
                        RVSTGE, VSTAGE,                                 #R !Output
                        DYNAMIC) {                                      #R !Control
     
-    #-----------------------------------------------------------------------
-    #R CHARACTER*1 PLME
-    #R INTEGER DYNAMIC
-    #R INTEGER DAS, NVEG0, NVEG1, NDVST
-    #R INTEGER YRPLT, YRDOY
-    #R REAL VSTAGE, RVSTGE, VSTGED, VSTAGP
-    #R REAL MNEMV1, TRIFOL, EVMODC, EVMOD, DTX
-    #R REAL TURFAC, XPOD
-    #R REAL PHZACC(20)
-    
-    PLME <- list("")
-    PHZACC <- rep(0,20)
-    
-    #***********************************************************************
-    #***********************************************************************
-    #     Seasonal initialization - run once per season
-    #***********************************************************************
-    if (DAS == 1) { # IF (DYNAMIC .EQ. SEASINIT) THEN
+
+
+#***********************************************************************
+#***********************************************************************
+#     Seasonal initialization - run once per season
+#***********************************************************************
+    if (DYNAMIC == 'SEASINIT') {
       
       #-----------------------------------------------------------------------
       VSTAGE = 0.0
@@ -572,300 +1013,3 @@
   
 } # para facilitar a programacao
 
-#### Subrotina: IPPHENOL ####
-{
-  
-  #************************************************************************
-  #************************************************************************
-  
-  IPPHENOL(CONTROL,
-           ATEMP, CLDVAR, CLDVRR, CSDVAR, CSDVRR, CROP,    # Output
-           CTMP, DLTYP, EVMODC, NPRIOR, NSENP, OPTBI,      # Output
-           PHTHRS, PLME, PSENP, SDAGE, SDEPTH, SLOBI,      # Output
-           THVAR, TRIFOL, TSELC, TB, TO1, TO2, TM, WSENP) {# Output
-    
-    #-----------------------------------------------------------------------
-    #-----------------------------------------------------------------------
-    #to do
-    #R CHARACTER*1   PLME, BLANK
-    #R CHARACTER*2   CROP
-    #R CHARACTER*3   CTMP(20), DLTYP(20)
-    #R CHARACTER*6   SECTION, ECOTYP, ECONO, ERRKEY
-    #R CHARACTER*12  FILEC, FILEE
-    #R CHARACTER*16  ECONAM
-    #R CHARACTER*30  FILEIO
-    #R CHARACTER*80  CHAR, PATHCR, PATHEC
-    #R CHARACTER*92  FILECC, FILEGC
-    #R CHARACTER*255 C255
-    #R 
-    #R INTEGER LUNIO, NPHS
-    #R INTEGER LUNCRP, LUNECO, ISECT, PATHL
-    #R INTEGER I, J, K
-    #R INTEGER IVRGRP, IVRTEM, ERR, LINC, LNUM, FOUND
-    #R INTEGER NPRIOR(20), TSELC(20)
-    #R 
-    #R PARAMETER (BLANK = ' ')
-    #R PARAMETER (ERRKEY = 'IPPHEN')
-    #R PARAMETER (NPHS = 13)
-    #R 
-    #R REAL ATEMP, CLDVAR, CLDVRR, CSDVAR, CSDVRR, EVMODC
-    #R REAL OPTBI
-    #R REAL PPSEN, PH2T5, R1PPO, PM06, PM09
-    #R REAL SDEPTH, SDAGE, SLOBI, THVAR, TRIFOL
-    #R REAL TB(5), TO1(5), TO2(5), TM(5)
-    #R REAL WSENP(20), NSENP(20)
-    #R REAL PHTHRS(20), PSENP(20)
-    
-    #R !-----------------------------------------------------------------------
-    #R !     Define constructed variable types based on definitions in
-    #R !     ModuleDefs.for.
-    
-    # The variable "CONTROL" is of type "ControlType".
-    TYPE (ControlType) CONTROL
-    
-    # Transfer values from constructed data types into local variables.
-    FILEIO  = CONTROL % FILEIO
-    LUNIO   = CONTROL % LUNIO
-    
-    #-----------------------------------------------------------------------
-    #     Read in values from temporary file, which were previously input
-    #       in Subroutine IPIBS.
-    #-----------------------------------------------------------------------
-    OPEN (LUNIO, FILE = FILEIO, STATUS = 'OLD', IOSTAT=ERR)
-    if (ERR != 0) {
-      #todo print *, "!!! ERROR !!!", ERRKEY,ERR,FILEIO,0
-      #todo *      CALL ERROR(ERRKEY,ERR,FILEIO,0)
-    }
-    
-    #todo READ (LUNIO,100,IOSTAT=ERR) FILEC, PATHCR; LNUM = 7
-    #todo100   FORMAT(//////,15X,A12,1X,A80)
-    
-    if (ERR != 0) {
-      #todoprint *, "!!! ERROR !!!!",ERRKEY,ERR,FILEIO,LNUM
-      #todo*      CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-    }
-    
-    #todoREAD (LUNIO,105,IOSTAT=ERR) FILEE, PATHEC; LNUM = LNUM + 1
-    #todo105   FORMAT(15X,A12,1X,A80)
-    
-    if (ERR != 0) {
-      #todoprint *, "!!! ERROR !!!!",ERRKEY,ERR,FILEIO,LNUM
-      #todo*      CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-    }
-    
-    #-----------------------------------------------------------------------
-    #     Subroutine FIND finds appropriate SECTION in a file by
-    #     searching for the specified 6-character string at beginning
-    #     of each line.
-    #-----------------------------------------------------------------------
-    #  SECTION = '*SIMUL'
-    #  CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-    #  IF (FOUND .EQ. 0) CALL ERROR (SECTION, 42, FILEIO,LNUM)
-    #  READ(LUNIO,'(31X,A1)',IOSTAT=ERR) ISIMI; LNUM = LNUM + 1
-    #  IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-    
-    #-----------------------------------------------------------------------
-    #     Find and read Cultivar Section
-    #-----------------------------------------------------------------------
-    SECTION = '*CULTI'
-    #todo CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-    if (FOUND == 0) {
-      #todo print *, "!!! ERROR !!!!",SECTION, 42, FILEIO, LNUM
-      #todo *      CALL ERROR (SECTION, 42, FILEIO,LNUM)
-      #todo READ(LUNIO,'(3X,A2)',IOSTAT=ERR) CROP; LNUM = LNUM + 1
-    }
-    
-    if (ERR != 0) {
-      #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILEIO,LNUM
-      #todo *      CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-    }
-    
-    #-----------------------------------------------------------------------
-    if (CROP != "FA") {
-      #-----------------------------------------------------------------------
-      #     Find and Read Planting Details Section
-      #-----------------------------------------------------------------------
-      SECTION = '*PLANT'
-      #todo CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        #todo print *, "!!! ERROR !!!",SECTION, 42, FILEIO, LNUM
-        #todo *        CALL ERROR (SECTION, 42, FILEIO,LNUM)
-        #todo READ(LUNIO,140,IOSTAT=ERR) PLME, SDEPTH, SDAGE, ATEMP
-        #todo 140     FORMAT(35X,A1,19X,F5.1,6X,2(1X,F5.0))
-        LNUM = LNUM + 1
-      }
-      
-      if (ERR != 0) {
-        #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILEIO,LNUM
-        #todo *        CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-      }
-      
-      #-----------------------------------------------------------------------
-      #     Find and read Cultivar Section
-      #-----------------------------------------------------------------------
-      SECTION = '*CULTI'
-      #todo CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        #todo print *, "!!! ERROR !!!",SECTION, 42, FILEIO, LNUM
-        #todo *        CALL ERROR (SECTION, 42, FILEIO,LNUM)
-        #todo READ(LUNIO,165,IOSTAT=ERR) ECONO, CSDVAR, PPSEN, PH2T5,
-        #todo &              PHTHRS(6), PHTHRS(8), PHTHRS(10), PHTHRS(13)
-        #todo 165     FORMAT(24X,A6,7F6.0)
-        LNUM = LNUM + 1
-      }
-      if (ERR != 0) {
-        print *, "!!! ERROR !!!",ERRKEY,ERR,FILEIO,LNUM
-        *        CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-      }
-      
-      #todo CLOSE (LUNIO)
-      
-      #-----------------------------------------------------------------------
-      #     Open FILEC
-      #-----------------------------------------------------------------------
-      if (CROP != "FA") {
-        PATHL  = INDEX(PATHCR,BLANK)
-        if (PATHL <= 1) {
-          FILECC = FILEC
-        } else {
-          FILECC = PATHCR(1:(PATHL-1)) // FILEC
-        }
-        
-        #todo CALL GETLUN('FILEC', LUNCRP)
-        #todo OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-        if (ERR != 0) {
-          #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,0
-          #todo *        CALL ERROR(ERRKEY,ERR,FILECC,0)
-          LNUM = 0
-        }
-        #-----------------------------------------------------------------------
-        #     Find Leaf Growth Parameters from FILEC and read EVMODC value
-        #-----------------------------------------------------------------------
-        SECTION = '!*LEAF'
-        #todo CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-        if (FOUND == 0) {
-          #todo print *, "!!! ERROR !!!",SECTION, 42, FILECC, LNUM
-          #todo *        CALL ERROR (SECTION, 42, FILECC,LNUM)
-          #todo CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          #todo READ(CHAR,'(24X,F6.1)',IOSTAT=ERR) EVMODC
-        }
-        
-        if (ERR != 0) {
-          #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
-        }
-        
-        #-----------------------------------------------------------------------
-        #     Find Phenology Section in FILEC and read
-        #-----------------------------------------------------------------------
-        SECTION = '!*PHEN'
-        #todo CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-        if (FOUND == 0) {
-          #todo print *, "!!! ERROR !!!",SECTION, 42, FILECC, LNUM
-          #todo *        CALL ERROR (SECTION, 42, FILECC,LNUM)
-          #todo CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          #todo READ(CHAR,250,IOSTAT=ERR) TB(1), TO1(1), TO2(1), TM(1)
-          #todo 250     FORMAT(13F6.1)
-        }
-        
-        if (ERR != 0) {
-          #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
-          #todo *        CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-          #todo 
-          #todo CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          #todo READ(CHAR,250,IOSTAT=ERR) TB(2), TO1(2), TO2(2), TM(2)
-        }
-        if (ERR != 0) {
-          #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
-          #todo *        CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-          
-          #todo CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          #todo READ(CHAR,250,IOSTAT=ERR) TB(3), TO1(3), TO2(3), TM(3)
-        }
-        
-        if (ERR != 0) {
-          #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC,LNUM
-          #todo *        CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-        }
-        
-        for (I in 1:NPHS) {
-          #todo CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          #todo READ(CHAR,270,IOSTAT=ERR) J, NPRIOR(J), DLTYP(J), CTMP(J), TSELC(J), WSENP(J), NSENP(J), PSENP(J)
-          #todo 270       FORMAT(I3,I3,2(2X,A3),1X,I2,3(1X,F5.2))
-          if (ERR != 0) {
-            print *, "!!! ERROR !!!",ERRKEY,ERR,FILECC, LNUM
-            *          CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-          }
-        }
-        #todo: checar 'J' v 'I'
-        #todo CLOSE (LUNCRP)
-        
-        #-----------------------------------------------------------------------
-        #     Open FILEE
-        #-----------------------------------------------------------------------
-        LNUM = 0
-        PATHL  = INDEX(PATHEC,BLANK)
-        
-        if (PATHL <= 1) {
-          FILEGC = FILEE
-        } else {
-          FILEGC = PATHEC(1:(PATHL-1)) // FILEE #todo: checar //
-        }
-        
-        #-----------------------------------------------------------------------
-        #    Read Ecotype Parameter File
-        #-----------------------------------------------------------------------
-        #todo CALL GETLUN('FILEE', LUNECO)
-        #todo OPEN (LUNECO,FILE = FILEGC,STATUS = 'OLD',IOSTAT=ERR)
-        if (ERR != 0) {
-          #todo print *, "!!! ERROR !!!",ERRKEY,ERR,FILEGC,0
-          #todo *        CALL ERROR(ERRKEY,ERR,FILEGC,0)
-          ECOTYP = "      "
-          LNUM = 0
-        }
-        
-        DO WHILE (ECOTYP != ECONO) { #todo: DO WHILE é igual ao while?
-          #todo CALL IGNORE(LUNECO, LNUM, ISECT, C255)
-          if (ISECT == 1 .AND. C255(1:1) != ' ' & C255(1:1) != '*') {
-            READ (C255,3100,IOSTAT=ERR) ECOTYP, ECONAM, IVRGRP, IVRTEM, THVAR, (PHTHRS(K), K=1,4), PM06, PM09,
-            (PHTHRS(K),K=11,12), TRIFOL, R1PPO, OPTBI, SLOBI
-            3100        FORMAT (A6, 1X, A16, 1X, 2(1X,I2), 7(1X,F5.0), 6X,
-                                &          3(1X,F5.0), 2(6X), 3(1X,F5.0))
-            if (ERR != 0) print *, "!!! ERROR !!!",ERRKEY,ERR,FILEGC, LNUM
-            *            CALL ERROR(ERRKEY,ERR,FILEGC,LNUM)
-            if (ECOTYP == ECONO) {
-              EXIT #todo: break?
-            }
-            
-          } else if (ISECT == 0) {
-            if (ECONO == 'DFAULT') print *, "!!! ERROR !!!",ERRKEY,35, FILEGC,LNUM
-            *            CALL ERROR(ERRKEY,35,FILEGC,LNUM)
-            ECONO = 'DFAULT'
-            REWIND(LUNECO)
-            LNUM = 0
-          }
-        }
-        
-        #todo CLOSE (LUNECO)
-        
-        PHTHRS(5) = MAX(0.,PH2T5 - PHTHRS(3) - PHTHRS(4))
-        PHTHRS(7) = PHTHRS(6) + MAX(0.,(PHTHRS(8) - PHTHRS(6))* PM06)
-        PHTHRS(9) = MAX(0.,PHTHRS(10) * PM09)
-        
-        if (PPSEN >== 0.0) {
-          CLDVAR = CSDVAR + (1.-THVAR)/max(PPSEN,0.000001)
-        } else if (PPSEN .LT. 0.0) {
-          CLDVAR = CSDVAR + (1.-THVAR)/min(PPSEN,-0.000001)
-        }
-        
-        CSDVRR = CSDVAR - R1PPO
-        CLDVRR = CLDVAR - R1PPO
-        
-      }
-    }
-    # RETURN
-    #R END  SUBROUTINE IPPHENOL
-  }
-  #************************************************************************
-  #************************************************************************
-  
-} # para facilitar a programacao
