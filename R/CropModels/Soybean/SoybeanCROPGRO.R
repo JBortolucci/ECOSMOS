@@ -1,12 +1,24 @@
-# move 'source' to SoybeanModel.R
+
 source("R/CropModels/Soybean/SoybeanPhenocrop.R")
-source("R/CropModels/Soybean/SoybeanGrowth.R")
+#source("R/CropModels/Soybean/SoybeanGrowth.R")
 source("R/CropModels/Soybean/CURV.R")
-
-
 
   SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   
+    
+    environment(PHENOL)              <- env
+  
+    
+#   SUBROUTINE CROPGRO(CONTROL, ISWITCH, 
+#                      &    EOP, HARVFRAC, NH4, NO3, SOILPROP, SPi_AVAIL,   !Input
+#                      &    ST, SW, TRWUP, WEATHER, YREND, YRPLT,           !Input
+#                      &    CANHT, EORATIO, HARVRES, KSEVAP, KTRANS, MDATE, !Output
+#                      &    NSTRES, PSTRES1,                                !Output
+#                      &    PUptake, PORMIN, RLV, RWUMX, SENESCE,           !Output
+#                      &    STGDOY, FracRts, UNH4, UNO3, XHLAI, XLAI)       !Output
+    
+    
+    
 #C=======================================================================
 #C=======================================================================
 #C  CROPGRO, Subroutine, G. Hoogenboom, J.W. Jones, K.J. Boote, C. Porter
@@ -151,7 +163,7 @@ source("R/CropModels/Soybean/CURV.R")
    
 #  
   
-  TESTE <- 'N'
+  TESTE <- 'Y'
   
   if (TESTE == 'Y'){ #### Subrotina: PHENOL ####  
     
@@ -161,8 +173,8 @@ source("R/CropModels/Soybean/CURV.R")
     
     if(DAS==1){
      
-      DYNAMIC = 'RUNINIT'
-      PHENOL_OUT <- PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
+     # DYNAMIC = 'RUNINIT'
+    #  PHENOL_OUT <- PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
       DYNAMIC = 'SEASINIT'
       PHENOL_OUT <- PHENOL (iyear, iyear0, jday, DAS,DYNAMIC) 
         }
@@ -190,16 +202,7 @@ source("R/CropModels/Soybean/CURV.R")
    # YRNR2, YRNR3, YRNR5, YRNR7
     
     
-  } # para facilitar a programacao 
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
       if (leafout[i] >= huileaf[i])   idpe[i] <- idpe[i] + 1
       
       # crop phenology from leaf emergence to start of leaf decline

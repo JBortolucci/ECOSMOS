@@ -1,3 +1,4 @@
+
 # Contem as subrotinas: (aqui como 'function's)
 # 1) PHENOL  (Calculates phenological development.)
 # 2) VSTAGES (Calculates V-stages)
@@ -32,12 +33,71 @@
 #                     VSTAGES
 #                     CURV
 #=======================================================================
+
+simDataVars$DRPP     <- 0.0
+simDataVars$DTX      <- 0.0
+simDataVars$DXR57    <- 0.0
+simDataVars$FRACDN   <- 0.0
+simDataVars$TDUMX    <- 0.0
+simDataVars$TDUMX2   <- 0.0
+simDataVars$TNTFAC   <- 0.0
+simDataVars$TNTFC2   <- 0.0
+simDataVars$SWFAC    <- 1.0
+simDataVars$TURFAC   <- 1.0
+simDataVars$FNSTR    <- rep(1.,20)
+simDataVars$FPSTR    <- rep(1.,20)
+simDataVars$FSW      <- rep(1.,20)
+simDataVars$FT       <- rep(0.,20)
+simDataVars$FUDAY    <- rep(0.,20)
+simDataVars$MDATE    <-0
+simDataVars$NDLEAF   <-0
+simDataVars$NDSET    <-0
+simDataVars$NR1      <-0
+simDataVars$NR2      <-0
+simDataVars$NR5      <-0
+simDataVars$NR7      <-0
+simDataVars$NVEG0    <-0
+simDataVars$PHTHRS   <-0
+simDataVars$RSTAGE   <-0
+simDataVars$RVSTGE   <-0
+simDataVars$VSTGED   <-0
+simDataVars$VSTAGP   <-0
+simDataVars$STGDOY   <- rep(9999999,20)
+simDataVars$SeedFrac <-0
+simDataVars$TDUMX    <-0
+simDataVars$TDUMX2   <-0
+simDataVars$VegFrac  <-0
+simDataVars$VSTAGE   <-0
+simDataVars$YREMRG   <-0
+simDataVars$YRNR1    <-0
+simDataVars$YRNR2    <-0
+simDataVars$YRNR3    <-0
+simDataVars$YRNR5    <-0
+simDataVars$YRNR7    <-0
+simDataVars$JPEND    <-0 
+simDataVars$NDVST    <-0 
+simDataVars$NVALPH   <- rep(10000,20)
+simDataVars$NVEG1    <-0
+simDataVars$NR0      <-0
+simDataVars$NR3      <-0
+simDataVars$PHZACC   <- rep(0,20)
+simDataVars$VegTime  <-0
+simDataVars$PROG     <- rep(0,20)
+
+
+
 PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
+  
+  
+  environment(VSTAGES)             <- env
+  environment(RSTAGES)             <- env
   
   
   YRDOY   = paste0(iyear,jday)
   YRSIM   = paste0(iyear0,1)
   
+  NPHS = 13
+  TS   = 24
   
   ISIMI  = 'P' 
   #         ISIMI      Start of simulation code
@@ -46,13 +106,15 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   #               P = On reported planting date
   #               S = On specified date
   
-  
+    TGRO <- ta - 273.15
+
   #To do - verificar se esta correto
   DAYL     <- daylength/60. # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
+  
+
   NSTRES   <- 1 #Nitrogen stress factor (1=no stress, 0=max stress) 
   PStres2  <- 1 
   
-  TGRO <- tl
   
   # To do: depois que implementar 'SUBROUTINE GROW' usar o valor resolvido pelo modelo
   XPODv <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -67,7 +129,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   
   
-  if (DYNAMIC == 'RUNINIT') {
+#   if (DYNAMIC == 'RUNINIT') {
     
     YRPLT   = paste0(iyear,jday)
     
@@ -89,8 +151,8 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     # Find and Read Planting Details Section 
     PLME <- 'S'        
     SDEPTH <- 2.5  # PLPD from .SBX
-    SDAGE < -99.0  # ! SDAGE     Transplant age (days)
-    ATEMP <-  -99.000 
+    SDAGE <-  -99.0  # ! SDAGE     Transplant age (days)
+    ATEMP <-  -99.0 
     
     
     #______________________________________________________________        
@@ -148,9 +210,9 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     
     
     
-    PHTHRS[5] = MAX(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
-    PHTHRS[7] = PHTHRS[6] + MAX(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
-    PHTHRS[9] = MAX(0.,PHTHRS[10] * PM09)
+    PHTHRS[5] = max(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
+    PHTHRS[7] = PHTHRS[6] + max(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
+    PHTHRS[9] = max(0.,PHTHRS[10] * PM09)
     
     #          CLDVAR    Critical daylength above which development rate remains at min value (prior to flowering) (hours)                    
     if (PPSEN >= 0.0) {
@@ -186,34 +248,35 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #***********************************************************************
     #     Seasonal initialization - run once per season
     #***********************************************************************
-  } else if (DYNAMIC == 'SEASINIT') {
+#   } else if (DYNAMIC == 'SEASINIT') {
+     if (DYNAMIC == 'SEASINIT') {
     
-    #-----------------------------------------------------------------------
+        #-----------------------------------------------------------------------
     #     Initialization variables from INPLNT
     #-----------------------------------------------------------------------
-    DRPP   = 0.0
-    DTX    = 0.0
-    DXR57  = 0.0
-    FRACDN = 0.0
-    TDUMX  = 0.0
-    TDUMX2 = 0.0
-    TNTFAC = 0.0
-    TNTFC2 = 0.0
-    SWFAC  = 1.0
-    TURFAC = 1.0
-    FNSTR <- rep(1.,20)
-    FPSTR <- rep(1.,20)
-    FSW   <- rep(1.,20)
-    FT    <- rep(0.,20)
-    FUDAY <- rep(0.,20)
+      DRPP   = 0.0
+      DTX    = 0.0
+      DXR57  = 0.0
+      FRACDN = 0.0
+      TDUMX  = 0.0
+      TDUMX2 = 0.0
+      TNTFAC = 0.0
+      TNTFC2 = 0.0
+      SWFAC  = 1.0
+      TURFAC = 1.0
+      FNSTR <- rep(1.,20)
+      FPSTR <- rep(1.,20)
+      FSW   <- rep(1.,20)
+      FT    <- rep(0.,20)
+      FUDAY <- rep(0.,20)
     
     
-    RSTAGES_OUT <-  RSTAGES (DAS,DYNAMIC,
+    RSTAGES (DAS,DYNAMIC,
                              FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
                              PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM)      # Input
     
     
-    VSTAGE_OUT  <- VSTAGES (DAS, DTX, EVMODC, MNEMV1, NDVST,             # Input
+     VSTAGES (DAS, DTX, EVMODC, MNEMV1, NDVST,             # Input
                             NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
                             TURFAC, XPOD, YRDOY, YRPLT,                     # Input
                             DYNAMIC)                                       # Control
@@ -293,7 +356,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #          e EOP = gtransu ou gtransu        
     
     #         EOP = EO * (1.0-EXP(-LAI*KEP)) * TRATIO
-    #        EOP = MAX(EOP,0.0)
+    #        EOP = max(EOP,0.0)
     
     SWFAC  = 1.0
     TURFAC = 1.0
@@ -321,7 +384,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       
       for (I in 1:TS) {
         FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
-        FT[J] = FT[J] + FTHR/REAL[TS]
+        FT[J] = FT[J] + FTHR/TS
       }
       
       if (DAS < NR1) {
@@ -382,7 +445,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #-----------------------------------------------------------------------
     #    Calculate rate of V-stage change for height and width determination
     #-----------------------------------------------------------------------
-    VSTAGE_OUT <-  VSTAGES( DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
+     VSTAGES( DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
                             NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
                             TURFAC, XPOD, YRDOY, YRPLT,                     # Input
                             DYNAMIC)                                         # Control
@@ -398,7 +461,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #----------------------------------------------------------------------
     #     Check to see if stages occur today, if so set them in RSTAGES
     #----------------------------------------------------------------------
-    RSTAGES_OUT <-  RSTAGES(DAS,DYNAMIC,
+   RSTAGES(DAS,DYNAMIC,
                             FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
                             PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM)      # Input
     
@@ -428,7 +491,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #-----------------------------------------------------------------------
     #     Calculate V-stages
     #-----------------------------------------------------------------------
-    VSTAGE_OUT <-  VSTAGES( DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
+    VSTAGES( DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
                             NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
                             TURFAC, XPOD, YRDOY, YRPLT,                     # Input
                             DYNAMIC)                                         # Control
@@ -439,15 +502,27 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     
   }
   
-  
-  # TO DO!: retornar as variaveis abaixo
-  return (list(DRPP=DRPP,DTX=DTX, DXR57=DXR57, FRACDN=FRACDN, MDATE=MDATE, NDLEAF=NDLEAF,        # Output
-               NDSET=NDSET, NR1=NR1, NR2=NR2, NR5=NR5, NR7=NR7, NVEG0=NVEG0, PHTHRS=PHTHRS,                 # Output
-               RSTAGE=RSTAGE, RVSTGE=RVSTGE, STGDOY=STGDOY, SeedFrac=SeedFrac, TDUMX=TDUMX,                  # Output
-               TDUMX2=TDUMX2, VegFrac=VegFrac, VSTAGE=VSTAGE, YREMRG=YREMRG, YRNR1=YRNR1,                   # Output
-               YRNR2=YRNR2, YRNR3=YRNR3, YRNR5=YRNR5, YRNR7=YRNR7))
-  
-  
+
+    assign("FPSTR",FPSTR , envir = env)  
+    assign("FSW",FSW   , envir = env)  
+    assign("FT",FT    , envir = env)  
+    assign("FUDAY",FUDAY , envir = env)  
+    assign("PHTHRS",PHTHRS, envir = env)  
+    assign("TDUMX",TDUMX , envir = env)  
+    assign("TDUMX2",TDUMX2, envir = env)  
+    assign("DRPP",DRPP  , envir = env)  
+    assign("DTX",DTX   , envir = env)  
+    assign("DXR57",DXR57 , envir = env)  
+    assign("FRACDN",FRACDN, envir = env)  
+    assign("TNTFAC",TNTFAC, envir = env)  
+    assign("TNTFC2",TNTFC2, envir = env)  
+    assign("SWFAC",SWFAC , envir = env)  
+    assign("TURFAC",TURFAC, envir = env)  
+    assign("FNSTR",FNSTR , envir = env)  
+
+    
+    
+    
   #-----------------------------------------------------------------------
   #     End Subroutine PHENOL
   #-----------------------------------------------------------------------
@@ -489,12 +564,12 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
   if (DYNAMIC == 'SEASINIT') {
     
     #-----------------------------------------------------------------------
+
     VSTAGE = 0.0
     RVSTGE = 0.0
     VSTGED = 0.0
     VSTAGP = 0.0
-    RVSTGE = 0.0
-    
+
     #***********************************************************************
     #***********************************************************************
     #     Daily Rate Calculations
@@ -549,7 +624,19 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
       VSTAGE = VSTAGE + DTX * TRIFOL * EVMOD*TURFAC*(1.0-XPOD)
     }
     
-    return(list(RVSTGE=RVSTGE,VSTAGE=VSTAGE)) 
+    #***********************************************************************
+    #     End of DYNAMIC IF construct
+    #***********************************************************************    
+  }
+
+  
+
+  
+  assign("RVSTGE", RVSTGE, envir = env)
+  assign("VSTAGE", VSTAGE, envir = env)
+  assign("VSTGED", VSTGED, envir = env)
+  assign("VSTAGP", VSTAGP, envir = env)
+  
     
   } # END SUBROUTINE VSTAGES
   
@@ -579,6 +666,8 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
                        PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM)   {
     
     
+    NVALP0 = 10000
+    
     
     #***********************************************************************
     #***********************************************************************
@@ -586,7 +675,9 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
     #***********************************************************************
     if (DYNAMIC == 'SEASINIT') { 
       #-----------------------------------------------------------------------
-      NVALP0 = 10000
+      
+      
+      
       RSTAGE = 0
       PHZACC <- rep(0,20)
       NVALPH <- rep(NVALP0,20)
@@ -610,7 +701,6 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
       NDVST  = NVALP0
       NDSET  = NVALP0
       NR7    = NVALP0
-      #     NR8    = NVALP0
       YRNR1  = -99
       YRNR2  = -99
       YRNR3  = -99
@@ -618,8 +708,6 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
       YRNR7  = -99
       MDATE  = -99
       YREMRG = -99
-      PHTEM = 0.0
-      PROG  = 0.0
       # For P module:
       SeedFrac = 0.0
       VegFrac  = 0.0
@@ -860,7 +948,7 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
       #-------------------------------------------------------------------------------
       if (DAS >= NVALPH[NPRIOR[9]] & NDSET >= NVALP0) {
         
-        PROG[9] = FT[9] * FUDAY[9] * max(FSW[9],FNSTR[9],FPSTR[9]) * REM[NPRIOR[9]] #MAX ao inves de MIN
+        PROG[9] = FT[9] * FUDAY[9] * max(FSW[9],FNSTR[9],FPSTR[9]) * REM[NPRIOR[9]] #max ao inves de MIN
         PHZACC[9] = PHZACC[9] + PROG[9]
         
         if(PHZACC[9] - PHTHRS[9] > -1.E-6) {
@@ -881,7 +969,7 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
       #-------------------------------------------------------------------------------
       if (DAS >= NVALPH[NPRIOR[10]] & NR7 >= NVALP0) {
         
-        PROG[10] = FT[10] * FUDAY[10]*max(FSW[10],FNSTR[10],FPSTR[10]) * REM[NPRIOR[10]] #MAX ao inves de MIN
+        PROG[10] = FT[10] * FUDAY[10]*max(FSW[10],FNSTR[10],FPSTR[10]) * REM[NPRIOR[10]] #max ao inves de MIN
         PHZACC[10] = PHZACC[10] + PROG[10]
         SeedFrac = PHZACC[10] / PHTHRS[10]
         
@@ -974,11 +1062,36 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
       #************************************************************************
     }
     #************************************************************************
-    
-    return( list(JPEND=JPEND, MDATE=MDATE, NDLEAF=NDLEAF, NDSET=NDSET, NDVST=NDVST,NVALPH=NVALPH,     # Output
-                NVEG0=NVEG0, NVEG1=NVEG1, NR1=NR1, NR2=NR2, NR5=NR5, NR7=NR7, PHZACC=PHZACC,          # Output
-                RSTAGE=RSTAGE, STGDOY=STGDOY, SeedFrac=SeedFrac, VegFrac=VegFrac, YREMRG=YREMRG,      # Output
-                YRNR1=YRNR1, YRNR2=YRNR2, YRNR3=YRNR3, YRNR5=YRNR5, YRNR7=YRNR7) ) 
+  
+
+    assign("JPEND",JPEND   , envir = env)    
+    assign("MDATE",MDATE   , envir = env)    
+    assign("NDLEAF",NDLEAF  , envir = env)     
+    assign("NDSET",NDSET   , envir = env)    
+    assign("NDVST",NDVST   , envir = env)    
+    assign("NVALPH",NVALPH  , envir = env)     
+    assign("NVEG0",NVEG0   , envir = env)    
+    assign("NVEG1",NVEG1   , envir = env)    
+    assign("NR0",NR0     , envir = env)     
+    assign("NR1",NR1     , envir = env)     
+    assign("NR2",NR2     , envir = env)     
+    assign("NR3",NR3     , envir = env)     
+    assign("NR5",NR5     , envir = env)     
+    assign("NR7",NR7     , envir = env)     
+    assign("PHZACC",PHZACC  , envir = env)      
+    assign("RSTAGE",RSTAGE  , envir = env)      
+    assign("STGDOY",STGDOY  , envir = env)      
+    assign("SeedFrac",SeedFrac, envir = env)     
+    assign("VegFrac",VegFrac , envir = env)    
+    assign("VegTime",VegTime , envir = env)    
+    assign("YREMRG",YREMRG  , envir = env)      
+    assign("YRNR1",YRNR1   , envir = env)     
+    assign("YRNR2",YRNR2   , envir = env)    
+    assign("YRNR3",YRNR3   , envir = env)     
+    assign("YRNR5",YRNR5   , envir = env)     
+    assign("YRNR7",YRNR7   , envir = env)     
+    assign("PROG",PROG    , envir = env)        
+  
     
     }
   

@@ -13,6 +13,12 @@ simDataVars$Deadcoroots <- 0.0001
 simDataVars$tauleaf_branch <- 365
 
 
+
+
+
+
+
+
 ### End of companies params
 
 
@@ -42,8 +48,6 @@ SoybeanModel <- function(year, month, day, index) {
   
   environment(SoybeanPlanting)    <- env
   environment(SoybeanCROPGRO)     <- env
-  environment(SoybeanPhenocrop)   <- env
-  environment(SoybeanGrowth)   <- env
   environment(SoybeanCropresidue) <- env
   
   depth <- numeric(nsoilay)
