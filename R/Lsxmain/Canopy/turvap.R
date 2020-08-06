@@ -565,8 +565,6 @@ turvapR <- function (envi, iter, niter) {
   slh <- slw * (rliql * hvapf(tl,ta) + (1 - rliql) * hsubf(tl,ta)) + slt * hvapf(tl,ta)
   
   
-  #sant	if(i == 1)print(paste0(slt[i],slh[i]))
-    
   # set the matrix of coefficients and the right - hand sides
   # of the linearized equations
   arr[,] <- 0
