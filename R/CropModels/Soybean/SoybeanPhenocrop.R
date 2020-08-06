@@ -1,644 +1,984 @@
-# move 'source' to SoybeanModel.R
-source("R/CropModels/Soybean/SoybeanPhenoFunctions.R")
+# Contem as subrotinas: (aqui como 'function's)
+# 1) PHENOL  (Calculates phenological development.)
+# 2) VSTAGES (Calculates V-stages)
+# 3) RSTAGES (Calculates phenological stages and individual phase durations)
+
+# os comentarios com 'R' na frente são para controle e serão removidos posteriormente
+# 'C' ou '!' sao comentarios do codigo original em fortran, portanto, nao usados pelo CROPGRO
+# checar 'ifelse's e 'inputs'
+# checar GO TO's e IF's sem THEN
+
+# fortran to R
+# .LT.  meaning <
+# .LE.  meaning <=
+# .GT.  meaning >
+# .GE.  meaning >=
+# .EQ.  meaning =
+# .NE.  meaning !=
+# .OR.  meaning |
+# .AND. meaning &
+# DO/ENDDO   meaning for()
+# ELSE IF    meaning else if
+# AMAX1 & AMIN1  meaning max and min
 
 
-SoybeanPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
+#=======================================================================
+# PHENOL Subroutine CROPGRO-DSSAT
+#  PHENOL, Subroutine, J. W. Jones
+#  Calculates phenological development.
+#-----------------------------------------------------------------------
+#     Called from:    CROPGRO
+#     Calls:          RSTAGES
+#                     VSTAGES
+#                     CURV
+#=======================================================================
+PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
-   
-#   
-# To do, parametros do Eucalipto que iremos remover após a implementacao completa
   
-#RM 1 Codigo antigo do eucalipto, remover depois que implementar tudo  
+  YRDOY   = paste0(iyear,jday)
+  YRSIM   = paste0(iyear0,1)
   
-  # parametros
-  Alleaf1    <- plantList$soybean$params$Alleaf1
-  Alleaf2    <- plantList$soybean$params$Alleaf2
-  Alleafinit <- plantList$soybean$params$Alleafinit
-  Alleafmin  <- plantList$soybean$params$Alleafmin
-  Alleafremain <- plantList$soybean$params$Alleafremain
-  Allocsensb <- plantList$soybean$params$Allocsensb
-  Allocsenscr <- plantList$soybean$params$Allocsenscr
-  Allocsensf  <- plantList$soybean$params$Allocsensf 
-  Bdecay <- plantList$soybean$params$Bdecay
-  BdecayStart <- plantList$soybean$params$BdecayStart
-  Bfall <- plantList$soybean$params$Bfall
-  BfallStart <- plantList$soybean$params$BfallStart
-  Branch1 <- plantList$soybean$params$Branch1
-  Branch2 <- plantList$soybean$params$Branch2
-  Callocb <- plantList$soybean$params$Callocb
-  Calloccr  <- plantList$soybean$params$Calloccr
-  Callocf   <- plantList$soybean$params$Callocf
-  Cdecay    <- plantList$soybean$params$Cdecay
-  Cfracts   <- plantList$soybean$params$Cfracts
-  Coroot1   <- plantList$soybean$params$Coroot1
-  Coroot2   <- plantList$soybean$params$Coroot2
-  deltay    <- plantList$soybean$params$deltay 
-  Density   <- plantList$soybean$params$Density
-  Fdecay1   <- plantList$soybean$params$Fdecay1
-  Fdecay2   <- plantList$soybean$params$Fdecay2
-  Fdecay3   <- plantList$soybean$params$Fdecay3
-  Fdecay4   <- plantList$soybean$params$Fdecay4
-  Fineroot1 <- plantList$soybean$params$Fineroot1
-  Fwpmax    <- plantList$soybean$params$Fwpmax
-  Fwpmin    <- plantList$soybean$params$Fwpmin
-  Leafsap1  <- plantList$soybean$params$Leafsap1
-  Leafsap2  <- plantList$soybean$params$Leafsap2
-  Leafsap3  <- plantList$soybean$params$Leafsap3
-  LimLai    <- plantList$soybean$params$LimLai
-  nrn       <- plantList$soybean$params$nrn
-  nrx       <- plantList$soybean$params$nrx
-  Rdecay1   <- plantList$soybean$params$Rdecay1
-  Rdecay2   <- plantList$soybean$params$Rdecay2
-  Sapheight <- plantList$soybean$params$Sapheight
-  Siginit   <- plantList$soybean$params$Siginit
-  Sigmin    <- plantList$soybean$params$Sigmin
-  Wdecay    <- plantList$soybean$params$Wdecay
-#RM 1 Codigo antigo do eucalipto, remover depois que implementar tudo  
-
-    
-  i <- index
   
-  if (croplive[i]==1) {  
+  ISIMI  = 'P' 
+  #         ISIMI      Start of simulation code
+  #               E = On reported emergence day
+  #               I = When initial conditions measured
+  #               P = On reported planting date
+  #               S = On specified date
   
+  
+  #To do - verificar se esta correto
+  DAYL     <- daylength/60. # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
+  NSTRES   <- 1 #Nitrogen stress factor (1=no stress, 0=max stress) 
+  PStres2  <- 1 
+  
+  TGRO <- tl
+  
+  # To do: depois que implementar 'SUBROUTINE GROW' usar o valor resolvido pelo modelo
+  XPODv <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+             0.003671511,0.012084253,0.024009451,0.040283576,0.05968399,0.082692102,0.104583979,0.129479527,
+             0.15558961,0.188465804,0.26417467,0.304826766,0.339704752,0.386390269,0.426694751,0.479249477,0.540160716,0.61833334,
+             0.67564851,0.730788291,0.776554286,0.814540088,0.846068263,0.872236669,0.893956423,0.911983788,0.926946521,0.939365625,
+             0.949673474,0.958229005,0.965330064,0.97122395,0.976115882,0.98017621,0.983546197,0.986343324,0.988664985,0.990591943,
+             0.992191315,0.99351877,0.994620562,0.995535076,0.996294141,0.996924162,0.997447014,0.997880936,0.997880936) 
+  
+  XPOD<-XPODv[DAS]
+  
+  
+  
+  if (DYNAMIC == 'RUNINIT') {
+    
+    YRPLT   = paste0(iyear,jday)
     
     
-#RM 2 Codigo antigo do eucalipto, remover depois que implementar tudo  
+    #***************************************************************************
+    #            Run Initialization - Called once per simulation               #
+    #***************************************************************************        
     
-    huileaf <- array(0, npft)             # heat unit index needed to attain leaf emergence after planting
-    huigrain <- array(0, npft)            # heat unit index needed to reach vegetative maturity
-    laidecl <- matrix(0, 1, npft)  # decline in leaf area for crop
-    # phenology for additional leaf drop - if drought related or temperature related at
-    # end of growing season
     
-    ddays      <- 7.0            #inp
-    ddfac      <- 1.0 / ddays    #inp
-    tthreshold <- 273.16         #par
+    #------------------------------------------------------------------------
+    #     Subroutine IPPHENOL reads required phenology variables from input #
+    #------------------------------------------------------------------------
     
-    # number of corn plants per square meter
-    # this is only important if using the leaf expansion equations
-    # of Ritchie, that is temperature dependent.  Our standard procedure
-    # here however is to use the allocation of C to leaf (aleaf) and
-    # specific leaf area (specla) to accumulate LAI during the season
     
-    nplants <- 7                #inp
+    #______________________________________________________________        
+    # CONTROL VARS (.SBX) 
+    CROP <-'SB'        
     
-    aplantn <- 0.0
+    # Find and Read Planting Details Section 
+    PLME <- 'S'        
+    SDEPTH <- 2.5  # PLPD from .SBX
+    SDAGE < -99.0  # ! SDAGE     Transplant age (days)
+    ATEMP <-  -99.000 
     
-    for(k in 1:nsoilay) {
-      aplantn <- aplantn + smsoil[k] + smsoln[k]
+    
+    #______________________________________________________________        
+    # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+    PHTHRS<-rep(0,20) 
+    CSDL       <- 12.58 
+    CSDVAR     <- CSDL  #code uses CSDVAR
+    PPSEN      <- 0.311
+    PH2T5      <- 23.1  # EM-FL - Time between plant emergence and flower appearance (R1) (photothermal days)
+    PHTHRS[6]  <- 7.0   # FL-SH - Time between first flower and first pod (R3) (photothermal days)
+    PHTHRS[8]  <- 16.0  # FL-SD -  Time between first flower and first seed (R5) (photothermal days)
+    PHTHRS[10] <- 27.00 # SD-PM - Time between first seed (R5) and physiological maturity (R7) (photothermal days)
+    PHTHRS[13] <- 18.00 # FL-LF - Time between first flower (R1) and end of leaf expansion (photothermal days)
+    
+    #______________________________________________________________        
+    # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
+    THVAR      <- 0.0      # THVAR   Minimum rate of reproductive development under long days and optimal temperature
+    #PHTHRS [5,7,9] 
+    PHTHRS[1]  <-  3.6     # PL-EM  - Time between planting and emergence (V0) (thermal days)           
+    PHTHRS[2]  <-  6.0     # EM-V1  - Time required from emergence to first true leaf (V1), thermal days           
+    PHTHRS[3]  <-  0.0     # V1-JU  - Time required from first true leaf to end of juvenile phase, thermal days          
+    PHTHRS[4]  <-  5.0     # JU-R0  - Time required for floral induction, equal to the minimum number of days for 
+    #          floral induction under optimal temperature and daylengths, photothermal days 
+    PM06       <- 0.0      # Proportion of time between first flower and first pod for first peg (peanut only)
+    PM09       <- 0.35     # Proportion of time between first seed and physiological maturity that the last seed can be formed
+    PHTHRS[11] <- 12.0     # R7-R8  - Time between physiological (R7) and harvest maturity (R8) (days)           
+    PHTHRS[12] <- 12.00    # FL-VS  - Time from first flower to last leaf on main stem (photothermal days)          
+    TRIFL      <- 0.32     # TRIFL   Rate of appearance of leaves on the mainstem (leaves per thermal day)
+    R1PPO      <- 0.459    # Increase in daylength sensitivity after R1 (CSDVAR and CLDVAR both decrease with the same amount) (h)
+    OPTBI      <- 20.0     # Minimum daily temperature above which there is no effect on slowing normal development toward flowering (oC)
+    SLOBI      <- 0.035    # Slope of relationship reducing progress toward flowering if tmin for the day is less than OPTBI
+    
+    #______________________________________________________________        
+    # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+    
+    # LEAF GROWTH PARAMETERS
+    EVMODC <-0.0           # Modifier of rate of vegetative node appearance for the first few nodes, primarily used for peanut 
+    # ROOT PARAMETERS
+    RWUEP1<-1.50
+    # PHENOLOGY PARAMETERS   
+    TB	<- c( 7,  6, -15, 0, 0)
+    TO1	<- c(28, 26,  26, 0, 0)
+    TO2	<- c(35, 30,  34, 0, 0)
+    TM	<- c(45, 45,  45, 0, 0)
+    
+    # FOLLOWING LINE: STAGE; REF STAGE; PHOTOPERIOD FUNCTION; TEMPERATURE FUNCT;
+    # POINTER TO VEGD(1) OR REPDA(2) OR REPDB(3) TEMP SENS; SENS TO WATER;N; AND P     
+    NPRIOR <- c(1,2,2,4,5,6,6,6,9,9,11,6,6)                                 # The phase of growth at which phase I accumulator can start
+    DLTYP  <- c('NON','NON','NON','INL','INL','INL','INL','INL','INL','INL','NON','INL','INL')  # Type of curve used for daylength function for phase I:  NON=no  photoperiod sensitivity, INL=inverse linear      
+    CTMP   <- c('LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','NON','LIN','LIN')  # Type of curve used for temp. function for phase I: LIN=linear,  QDR=quadratic, SIN=sine function
+    TSELC  <- c(1,1,1,2,2,2,2,2,3,3,1,2,2)                                   # Number of temperature curve to be used for phase I development rate: 1=veg, 2=early rep, 3=late rep 
+    WSENP  <- c(-0.2,-0.2,-0.4,-0.4,-0.4,-0.4,-0.4,-0.4,0.7,0.7,0,-0.6,-0.9) # Sensitivity of phase I to water stress, varying from -1 (slows dev) to 1 (hastens dev) 
+    NSENP  <- c(0,0,0,0,0,0,0,0,0.4,0.4,0,0,0)                               # Sensitivity of phase I to Nitrogen stress. Varies from -1 (slows dev) to +1 (hastens dev)
+    PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP     Sensitivity of phase I to phosphorus stress (not yet used) 
+    
+    
+    
+    PHTHRS[5] = MAX(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
+    PHTHRS[7] = PHTHRS[6] + MAX(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
+    PHTHRS[9] = MAX(0.,PHTHRS[10] * PM09)
+    
+    #          CLDVAR    Critical daylength above which development rate remains at min value (prior to flowering) (hours)                    
+    if (PPSEN >= 0.0) {
+      CLDVAR = CSDVAR + (1.-THVAR)/max(PPSEN,0.000001)
+    } else if (PPSEN <= 0.0) {
+      CLDVAR = CSDVAR + (1.-THVAR)/min(PPSEN,-0.000001)
+    }
+    
+    CLDVRR = CLDVAR - R1PPO     # Critical daylength above which development rate remains at min value (after flowering) (hours)     
+    CSDVRR = CSDVAR - R1PPO     # Critical daylength above which development rate decreases (after flowering) (hours)                  
+    
+    #------------------------------------------------------
+    #      END  SUBROUTINE IPPHENO                        #
+    #------------------------------------------------------
+    
+    
+    #-----------------------------------------------------------------------
+    #     Set minimum days for phenological events under optimum conditions
+    #     (temperature and short photoperiod)
+    #-----------------------------------------------------------------------
+    if (CROP != "FA") {
+      # Minimum days from emergence to Vegetative Growth Stage 1:
+      MNEMV1 = PHTHRS[2]
+      
+      # Minimum days from start of flowering to last leaf appearance:
+      MNFLLL = PHTHRS[13]
+      
+      # Number of days from flowering to harvest maturity
+      MNFLHM = PHTHRS[8] + PHTHRS[10] + PHTHRS[11]
+    }
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     Seasonal initialization - run once per season
+    #***********************************************************************
+  } else if (DYNAMIC == 'SEASINIT') {
+    
+    #-----------------------------------------------------------------------
+    #     Initialization variables from INPLNT
+    #-----------------------------------------------------------------------
+    DRPP   = 0.0
+    DTX    = 0.0
+    DXR57  = 0.0
+    FRACDN = 0.0
+    TDUMX  = 0.0
+    TDUMX2 = 0.0
+    TNTFAC = 0.0
+    TNTFC2 = 0.0
+    SWFAC  = 1.0
+    TURFAC = 1.0
+    FNSTR <- rep(1.,20)
+    FPSTR <- rep(1.,20)
+    FSW   <- rep(1.,20)
+    FT    <- rep(0.,20)
+    FUDAY <- rep(0.,20)
+    
+    
+    RSTAGES_OUT <-  RSTAGES (DAS,DYNAMIC,
+                             FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
+                             PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM)      # Input
+    
+    
+    VSTAGE_OUT  <- VSTAGES (DAS, DTX, EVMODC, MNEMV1, NDVST,             # Input
+                            NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
+                            TURFAC, XPOD, YRDOY, YRPLT,                     # Input
+                            DYNAMIC)                                       # Control
+    
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     Daily Rate calculations
+    #***********************************************************************
+  } else if (DYNAMIC == 'RATE') {      
+    
+    #-----------------------------------------------------------------------
+    #     Compute temp, daylength, and water effects on development,
+    #-----------------------------------------------------------------------
+    #   EMERGENCE PHASE ONLY
+    #-----------------------------------------------------------------------
+    if (NVEG0 > DAS) {
+      FUDAY[1] = 1.
+      FNSTR[1] = 1.
+      FPSTR[1] = 1.
+      K = TSELC[1]
+      
+      #-----------------------------------------------------------------------
+      #      Compute average soil temp, water in top 10 cm for emergence phase
+      #         SWFEM = Average soil water content of top 10 cm
+      #         TSDEP = Average temperature of top 10 cm
+      #-----------------------------------------------------------------------
+      
+      XDEP  = 0.0
+      SWFEM = 0.0
+      TSDEP = 0.0
+      
+      
+      for (k in 1:(nsoilay)){
+        XDEPL = XDEP
+        XDEP = XDEP + hsoi[k]*100        #use in cm 
+        DTRY = min(hsoi[k]*100, 10. - XDEPL)
+        
+        
+        if (wsoi[k] <= sfield[k]) {
+          SWFEM = SWFEM + DTRY * (max(wsoi[k] - swilt[k],0.0)) / (sfield[k] - swilt[k])
+        } else {
+          SWFEM = SWFEM + DTRY * (max(poros[k] - wsoi[k]*poros[k],0.0)) / (poros[k] - sfield[k]*poros[k])
+          
+        }
+        
+        
+        TSDEP = TSDEP + DTRY * (tsoi[k]-273.16)
+        if (XDEP >= 10.) { break}
+      }
+      
+      TSDEP = TSDEP / 10.
+      
+      #-----------------------------------------------------------------------
+      #      Compute temperature and soil water effects for phase 1, emergence
+      #-----------------------------------------------------------------------
+      
+      FT[1] = CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TSDEP) #todo: escrever função CURV () em algum outro script
+      
+      SWFEM = (SWFEM / 10.) * 100.0
+      FSW[1] = CURV("LIN",0.0,20.0,100.,1000.,SWFEM)
+      
+      FSW[1] = 1. + (1.-FSW[1])*WSENP[1]
     }
     
     
     
-    # Eucalyptus phenology, Carbon Aloccation and Harvest
-#RM 2 Codigo antigo do eucalipto, remover depois que implementar tudo  
+    #       Calculate daily water stess factors (from SWFACS)
+    #       EOP -  Potential plant transpiration rate (mm/d)
+    #       TRWUP and EP1 in cm/d
     
-    if (croplive[i] == 1.0) { #RM 3 nao compreendi a funcao desse if
-
-
-#RM 4 Codigo antigo do eucalipto, remover depois que implementar tudo  
-      
-      huileaf[i]  <- lfemerg[i]  * gddmaturity[i]  # typically between 3 - 7% in wheat
-      
-      crmeuca       <- max(73., min((gddmaturity[i]+ 53.683) / 13.882,135.))
-      huigrain[i] <- -0.002  * (crmeuca - 73.) + grnfill[i]
-      huigrain[i] <- min(max(huigrain[i],grnfill[i] - 0.1), grnfill[i])
-      huigrain[i] <- huigrain[i]   * gddmaturity[i]  # from Cabelguenne et al. 1999
-      
-      
-      # accumulate growing degree days for planted crops past planting
-      gddplant[i] <- gddplant[i] + max(0, min(td - baset[i], mxtmp[i]))
-      gddtsoi[i] <- gddtsoi[i] + max(0, min(tsoi[1] - baset[i], mxtmp[i]))
-      
-      
-      greenfrac[i] <- 1.0
-      
-      # calculate fraction allocated to leaf (from i. Norman allocation curve)
-      # bfact and fleafi are set in params.crp
-      fleaf[i] <- fleafi[i] * (exp(-bfact[i]) - exp(-bfact[i] * gddplant[i] / huigrain[i])) / (exp(-bfact[i]) - 1)
-      
-      # calculate accumulated growing degree days since planting (gddplant)
-      # determine if growing degree days calculated from top layer soil temperature
-      # are enough for leaf emergence to occur
-      hui[i] <- gddplant[i]
-      
-      leafout[i]   <- gddplant[i]
-      
-      laidecl[i] <- 0.0
-      
-      
-#RM 4 Codigo antigo do eucalipto, remover depois que implementar tudo  
-      
-
-            
-      idpp[i] <- idpp[i] + 1
-      
-      
-            
-#---------------------      
-   
-#  
-  
-  TESTE <- 'N'
-  
-  if (TESTE == 'Y'){ #### Subrotina: PHENOL ####  
-  
-    DAS    <- idpp[i]      
+    # Transpiration ratio (CO2=330 vpm gives 1.0)
+    # To do: Implementar a chamada da função StomataC3Crops e StomataC4Crops fazendo 'stresst = 1', 
+    #          e salvar totcond como 'totconduns' (i.e., sem estress) e 'ag' como 'aguns'. 
+    #        Depois calcular fvaput e fvaplt considerando sut e slt0 com os valores de 'totconduns'
+    #        Finalmente, calcularmos gtransu e gtransl para a vegetacao sem stresse hidrico (assim, podemos calcular o estresse) 
+    #          e EOP = gtransu ou gtransu        
     
-   PHENOL (iyear, iyear0, jday, DAS)
-   
-   # DRPP, DTX, DXR57, FRACDN, MDATE, NDLEAF,        # Output
-   # NDSET, NR1, NR2, NR5, NR7, NVEG0, PHTHRS,       # Output
-   # RSTAGE, RVSTGE, STGDOY, SeedFrac, TDUMX,        # Output
-   # TDUMX2, VegFrac, VSTAGE, YREMRG, YRNR1,         # Output
-   # YRNR2, YRNR3, YRNR5, YRNR7
+    #         EOP = EO * (1.0-EXP(-LAI*KEP)) * TRATIO
+    #        EOP = MAX(EOP,0.0)
+    
+    SWFAC  = 1.0
+    TURFAC = 1.0
+    if(stresstl<=0.9) TURFAC = (1./RWUEP1) * stresstl 
+    if(stresstl<=0.9) SWFAC = stresstl 
+    
+    #        if (EOP > 0.001) {
+    #        EP1 = EOP * 0.1           # EOP mm and EP1 cm
+    #        if ((TRWUP/EP1) < RWUEP1) {TURFAC = (1./RWUEP1) * TRWUP / EP1  }
+    #        if (EP1 >= TRWUP) {  SWFAC = TRWUP / EP1  }
+    #        }
+    #To do: Jair, como haviamos falado essa variavel tem que ser em funcao da planta
+    #         adicionalmente, como saber se usamos aqui stresstl ou stresstu?
     
     
-  } # para facilitar a programacao 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-      if (leafout[i] >= huileaf[i])   idpe[i] <- idpe[i] + 1
+    #-----------------------------------------------------------------------
+    #     Compute dev rates for all other phases, using hourly air temp
+    #-----------------------------------------------------------------------
+    
+    
+    
+    for (J in 2:NPHS) {
+      K = TSELC[J]
+      FT[J] = 0.0
       
-      # crop phenology from leaf emergence to start of leaf decline
-      
-      ######################################################################
-      ########## Start Allocation to Perenial (Eucalyptus) crops ############
-      ######################################################################
-      
-      # Phase 1 completed:
-      
-      if(idpp[i]==1){
-        cbiow[i] <- 0.0001455428/kg_C_M2_to_T_ha
-        cbiob[i] <- 0.0002444583/kg_C_M2_to_T_ha
-        cbior[i] <- 0.0001482158/kg_C_M2_to_T_ha
-        cbiol[i] <- 0.005065926 /kg_C_M2_to_T_ha
-        cbiocr[i] <- 0.000163217 /kg_C_M2_to_T_ha
-        plai[i]  <- cbiol[i]*specla[i]  }
-      
-      
-      rm <- min(mxmat[i]/365, idpp[i]/365)
-      
-      
-      #   if( (idpp[i]+1)>= gday$idpp[length(gday$idpp)]) { gday_c<- gday[length(gday$idpp),]}else{gday_c<- gday[which(gday$idpp ==(idpp[i]+1)),]   }
-      
-      
-      
-      hsum   <- 0
-      water  <- 0
-      Wcapac <- 0
-      
-      for(k in 1:(nsoilay)) {
-        
-        hsum <- hsum+hsoi[k]
-        
-        # new michel
-        mh_aw <- 16.61*(1-exp(-0.00202 * idpp[i]))^(1.5883) # Maximum root depth Christina et al. (2017)
-        mh_aw <- min(mh_aw, sum(hsoi))                  # mh_w can not be greater than the last soil layer
-        
-        #     print(paste(sum(hsoi),mh_aw,sep="/"))
-        
-        if(hsum <= mh_aw) {
-          Wcapac <- Wcapac + 1000*(1.0     * hsoi[k] *  poros[k] ) #*froot[k,1] 
-          water  <- water  + 1000*(wsoi[k] * hsoi[k] *  poros[k] ) #*froot[k,1] 
-        }
+      for (I in 1:TS) {
+        FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
+        FT[J] = FT[J] + FTHR/REAL[TS]
       }
       
-      
-      capac <- 30 + 1.2*Wcapac *min(idpp[i]/600,1) #fazer funcao do tempo
-      
-      
-      waterfact <-  ((water / capac) - Fwpmin ) / ( Fwpmax - Fwpmin )
-      # waterfact <-  gday_c$waterfact
-      
-      waterfact<-max(min(waterfact,1),0)
-      
-      greenfrac[i] <- 1
-      
-      #Fine root C allocation
-      Finerootexp <- Fineroot1 * (plai[i]*greenfrac[i])
-      
-      
-      aroot[i] = (0.5 + 0.5 * (1.- (cbior[i]*kg_C_M2_to_T_ha) / Finerootexp ) / Allocsensf )
-      # Finerootexp <- Fineroot1 * (gday_c$lai*greenfrac[i])
-      # aroot[i] = (0.5 + 0.5 * (1.- (gday_c$cbior) / Finerootexp ) / Allocsensf )
-      aroot[i]= aroot[i]*(nrx*nrn)/(nrn+(nrx-nrn)*waterfact)
-      aroot[i]<-max(min(aroot[i],1),0)
-      
-      
-      #---------------------
-      #Leaf C allocation
-      # ModelLai==2 from Param_eucaflux.h
-      # Recalcular o LAI no passo anterior: biomassa de folha input, add o sla
-      if (plai[i]<=0.1) {
-        aleaf[i] = Alleafinit # for very small LAI at begining, constant alloc
+      if (DAS < NR1) {
+        FUDAY[J] = CURV(DLTYP[J],1.0,CSDVAR,CLDVAR,THVAR,DAYL)
       } else {
-        # leaf allocation fraction is the second priority after fine roots, and has a height (age) constraint
-        aleaf[i]= max(Alleafmin,Alleafmin+Alleaf1*exp(-Alleaf2*ztop[1]))
-        aleaf[i]= max(aleaf[i], 1-aroot[i]-Alleafremain) #second priority after fine root, with 20% kept apart
+        FUDAY[J] = CURV(DLTYP[J],1.0,CSDVRR,CLDVRR,THVAR,DAYL)
       }
       
-      aleaf[i]<-max(min(aleaf[i],1),0)
-      #      aleaf[i]<-max(min(aleaf[i],0.16),0)
-      
-      
-      #---------------------
-      #Branch C allocation (Stem)
-      Branchexp = Branch1 * ( plai[i] ^ Branch2 )
-      if (Branchexp < 0.)  Branchexp = 0.001
-      abranch[i] =  (0.5 + 0.5 * (1.- (cbiob[i]*kg_C_M2_to_T_ha) / Branchexp ) / Allocsensb )
-      #  abranch[i] =  (0.5 + 0.5 * (1.- (gday_c$cbiob) / Branchexp ) / Allocsensb )
-      
-      abranch[i]<-max(min(abranch[i],1),0)
-      
-      
-      #---------------------
-      #Root C allocation
-      Corootexp <- Coroot1 * ( (cbiow[i]*kg_C_M2_to_T_ha) ^ Coroot2 )
-      #Corootexp <- Coroot1 * ( (gday_c$cbiow) ^ Coroot2 )
-      
-      if (Corootexp < 0.) Corootexp = 0.001
-      acroot[i] = (0.5 + 0.5 * (1.- (cbiocr[i]*kg_C_M2_to_T_ha) / Corootexp ) / Allocsenscr )
-      #  acroot[i] = (0.5 + 0.5 * (1.-gday_c$cbiocr / Corootexp ) / Allocsenscr )
-      
-      acroot[i]<-max(min(acroot[i],1),0)
-      
-      
-      
-      #---------------------
-      #Stem (G'DAY) C allocation or Wood (ECOSMOS)
-      # reduction factor was used to guaranteer the values (Alleaf + Alfineroot + Albran + Alcoroot) were all lower than 1
-      Callocfr<- 1- (Callocf  + Callocb + Calloccr)
-      aroot[i] = aroot[i]*Callocfr
-      aleaf[i] = aleaf[i]*Callocf
-      abranch[i] = abranch[i]*Callocb
-      acroot[i] = acroot[i]*Calloccr
-      
-      #SVC ___ just test to make LAI increase
-      #if(plai[i]<=4){
-      #  aleaf[i]<-max(0.3,aleaf[i])
-      #  print('increase aleaf to male leaf increase')
-      #
-      #}
-      
-      if ( (aroot[i] + aleaf[i] + abranch[i] + acroot[i]) > 1 ) {
-        reductionfactor <- 1 / (aroot[i] + aleaf[i] + abranch[i] + acroot[i])
-        aroot[i] = aroot[i]*reductionfactor
-        aleaf[i] = aleaf[i]*reductionfactor
-        abranch[i] = abranch[i]*reductionfactor
-        acroot[i] = acroot[i]*reductionfactor
-      }
-      
-      awood[i] = 1 - (aroot[i] + aleaf[i] + abranch[i] + acroot[i])
-      
-      awood[i] <- max(0.0, awood[i])
-      aroot[i] <- max(0.0, aroot[i])
-      aleaf[i] <- max(0.0, aleaf[i])
-      abranch[i] <- max(0.0, abranch[i])
-      acroot[i] <- max(0.0, acroot[i])
-      
-      
-      
-      # END EUCALYPTUS
-      #_____________________________________________
-      
-      # keep track of total biomass production for the entire year, and the
-      aybprod[i] <- aybprod[i] +
-        aleaf[i] * max(0.0,adnpp[i]) +
-        abranch[i] * max(0.0,adnpp[i]) +
-        aroot[i] * max(0.0,adnpp[i]) +
-        awood[i] * max(0.0,adnpp[i]) +
-        acroot[i] * max(0.0,adnpp[i])
-      
-      # aboveground value to calculate harvest index
-      ayabprod[i] <- ayabprod[i] +
-        aleaf[i] * max(0.0,adnpp[i]) +
-        abranch[i] * max(0.0,adnpp[i]) +
-        awood[i] * max(0.0,adnpp[i])
-      
-      
-      # keep track of annual total root production carbon
-      ayrprod[i] <- ayrprod[i] +
-        aroot[i] * max(0.0,adnpp[i]) +
-        acroot[i] * max(0.0,adnpp[i])
-      
-      
-      # keep track of total carbon allocated to
-      # leaves for litterfall calculation
-      aylprod[i] <- aylprod[i] +
-        aleaf[i] * max (0.0, adnpp[i])
-      
-      
-      
-      
-      #---------------------
-      #Mortality - Litterfall C fluxes
-      #---------------------
-      
-      #dead stem computation
-      Deadwood   <- 0
-      Deadcoroots <- 0
-      if (rm > BdecayStart ) {    # progressive start of branch, coarse root and bark decay after age 1./Bdecay
-        fdec <- exp(2.*log(2.)*(rm-BdecayStart))-1
-        fdec <- max(min(fdec,1),0)
-        Deadwood    =  fdec * Wdecay * Sapwood # Stock of dead branch that do not fall into the ground. It is assumed to start at 3 years old
-        Deadcoroots  =  fdec * Cdecay * cbiocr[i]*kg_C_M2_to_T_ha  # cm
-      }
-      
-      #---------------------
-      #dead branches computation
-      
-      if (rm <= BdecayStart ) {    # progressive start of branch, coarse root and bark decay after age 1./Bdecay
-        #dead stem computation
-        DeadGbranch <- 0
-        Deadbranch  <- 0
-        
-      } else if (rm > BdecayStart ) {    # progressive start of branch, coarse root and bark decay after age 1./Bdecay
-        fdec <- exp(2.*log(2.)*(rm-BdecayStart))-1
-        fdec <- max(min(fdec,1),0)
-        DeadGbranch  =  fdec * Bdecay * cbiob[i]*kg_C_M2_to_T_ha
-        
-      } else if ( rm > BfallStart ) {
-        #beginning of the dead branches fall
-        fdec = exp(2*log(2)*(rm-BfallStart))-1.
-        fdec <- max(min(fdec,1),0)
-        Deadbranch   =  fdec * Bfall * DBranch_attached*kg_C_M2_to_T_ha   # Dead branch that falls into the ground and entered the above-ground structural litter pool
-        
-      } else  if (rm > 4 ) {
-        # After 4.5 years, both branch death and branch fall increase considerably ==> empirical correction
-        fdec = exp(2*log(2)*(rm-4))-1.
-        fdec <- max(min(fdec,1),0)
-        # TODO: Reve valores de cada
-        DeadGbranch = fdec * 4 * cbiob[i]*kg_C_M2_to_T_ha  # DeadGbranch increasis after 4 years old
-        
-        # implementar corretamente depois
-        # DBranch<-cbiob[i]*kg_C_M2_to_T_ha/5
-        
-        Deadbranch  = fdec * 3 * DBranch_attached*kg_C_M2_to_T_ha
-      }
-      
-      
-      
-      #---------------------
-      #dead fine roots computation
-      Finerootexp   <- Fineroot1 * plai[i]
-      Rdecay        <- Rdecay1+ Rdecay2 * (cbior[i]*kg_C_M2_to_T_ha / Finerootexp )
-      Deadfineroots <-  Rdecay * cbior[i]*kg_C_M2_to_T_ha
-      
-      #---------------------
-      #dead leaves computation
-      
-      #there is a double litterfall cause: sapwood area target, and higher fall when higher production
-      leaftosapexp <- Leafsap1 + Leafsap2*exp(-Leafsap3*ztop[1])
-      
-      if (leaftosapexp>Leafsap2) leaftosapexp <- Leafsap2
-      #cm : Sapwoodarea is now directly inferred from mean height, according to experimental observations
-      Sapwoodarea   <- Sapheight*ztop[1]
-      Leaftosaparea <- plai[i]*10000./Sapwoodarea
-      
-      Fdecay <- Fdecay1 + Fdecay2*(Leaftosaparea/leaftosapexp)*
-        (1+(aleaf[i] * max (0.0, adnpp[i])*kg_C_M2_to_T_ha)/Fdecay3)*
-        (1-(max(0,min(water/capac,1)))/Fdecay4)
-      
-      Deadleaves <- Fdecay * cbiol[i]*kg_C_M2_to_T_ha  #rever dif entre Leaves_Predicted  e Shoot_Predicted
-      
-      
-      #---------------------
-      #C Pool update
-      #---------------------
-      
-      
-      #computation of SLA of new leaves (expanded)
-      Sigmax <- Siginit
-      Signew <- Sigmax - (Sigmax-Sigmin) * (ztop[1] - 1.)/(10. - 1.)
-      Signew <- min(max(Signew,Sigmin), Sigmax)
-      Signew <- Signew * (0.5+0.5*waterfact)
-      
-      #computation of new LAI from G'DAY  (not using, see bellow that LAI is re-calculated)
-      # Deadleaves/Shoot = fraction of leaf mass which turns over; it is assumed that the same fraction of leaf area turns over.
-      plai[i] <- plai[i] + (deltay * ((aleaf[i] * max (0.0, adnpp[i]))
-                                      * Signew * M2_AS_HA / KG_AS_TONNES / Cfracts  - Deadleaves
-                                      * plai[i] / (cbiol[i]+1E-15)))
-      
-      plai[i] <- max(plai[i],0.01)
-      
-      
-      #  branch decay rate
-      #Deadbranch <- DeadGbranch - Deadbranch
-      #DBranch<- DBranch + DeadGbranch - Deadbranch
-      
-      
-      
-      #C pool update
-      cbiow[i] <- cbiow[i] + (awood[i] * max (0.0, adnpp[i])) - (deltay * Deadwood     /kg_C_M2_to_T_ha)
-      cbiob[i] <- cbiob[i] + (abranch[i] * max (0.0, adnpp[i])) - (deltay * DeadGbranch   /kg_C_M2_to_T_ha)
-      
-      
-      #    tauleaf_branch <- min(365,365*((4*365)/idpp[i]))
-      #    DBranch_decay <- DBranch_attached/tauleaf_branch
-      
-      if(idpp[i]<=2*365){
-        DBranch_decay<-0
-      } else if (idpp[i]>2*365 & idpp[i]<=4*365) {
-        tauleaf_branch <- (1/280)*(1-exp(-0.0065*(idpp[i]-2*365)))  
-        DBranch_decay <- DBranch_attached*tauleaf_branch
-      } else {
-        DBranch_decay <- DBranch_attached*(1/280)
-      }
-      
-      #        if(idpp[i]<=2*365){
-      #          DBranch_decay=0
-      #        }else if (idpp[i]>2*365 & idpp[i]<=4*365) {
-      #          tauleaf_branch <- (1/365)*(1-exp(-0.005*(idpp[i]-2*365)))
-      #          DBranch_decay  <- DBranch_attached*tauleaf_branch
-      #        }else{
-      #        tauleaf_branch <- (1/365)*(2-exp(-0.005*(idpp[i]-4*365)))
-      #        DBranch_decay  <- DBranch_attached*tauleaf_branch
-      #        }
-      #
-      DBranch_attached <- DBranch_attached + (deltay * DeadGbranch   /kg_C_M2_to_T_ha) - DBranch_decay
-      
-      # DBranch_attached<-DBranch_attached + (deltay * DeadGbranch   /kg_C_M2_to_T_ha) - (deltay * Deadbranch/kg_C_M2_to_T_ha)
-      # DBranch_decay <-(deltay * Deadbranch/kg_C_M2_to_T_ha)
-      
-      cbior[i] <- cbior[i] + (aroot[i] * max (0.0, adnpp[i])) - (deltay * Deadfineroots/kg_C_M2_to_T_ha)
-      cbiol[i] <- cbiol[i] + (aleaf[i] * max (0.0, adnpp[i])) - (deltay * Deadleaves   /kg_C_M2_to_T_ha)  #foliar biomass turnover from G'DAY
-      #   cbiol[i] = cbiol[i] + (aleaf[i] * max (0.0, adnpp[i])) - (cbiol[i] / tauleaf[i])  #foliar biomass turnover from ECOSMOS (other crops)
-      cbiocr[i] <- cbiocr[i] + (acroot[i] * max (0.0, adnpp[i])) - (deltay * Deadcoroots  /kg_C_M2_to_T_ha)
-      
-      #       print(paste(idpp[i],Signew/ Cfracts,ztop[1],sep=" / "))
-      # computation of LAI by the ECOSMOS's standards
-      plai[i] <- max(cbiol[i]*Signew/ Cfracts,0.02) # G'DAYS SLA
-      # plai[i] = max(cbiol[i]*specla[i],0.02)      # SLA from ECOSMOS (other crops)
-      
-      
-      #  debug_str <- paste(iyear, idpp[i],plai[i],cbior[i]*kg_C_M2_to_T_ha,cbiob[i]*kg_C_M2_to_T_ha,cbiow[i]*kg_C_M2_to_T_ha,cbiocr[i]*kg_C_M2_to_T_ha,
-      #                     Finerootexp,(0.5 + 0.5 * (1.- (cbior[i]*kg_C_M2_to_T_ha) / Finerootexp ) / Allocsensf ),
-      #                     (nrx*nrn)/(nrn+(nrx-nrn)*waterfact),waterfact,aroot[i],
-      #                     Alleafmin+Alleaf1*exp(-Alleaf2*ztop[1]),aleaf[i],
-      #                     Branchexp, abranch[i],Corootexp,(0.5 + 0.5 * (1.- (cbiocr[i]*kg_C_M2_to_T_ha) / Corootexp ) / Allocsenscr ),
-      #                     acroot[i],awood[i],deltay*Deadwood,deltay*Deadbranch,deltay*Deadfineroots,deltay*Deadleaves,deltay*Deadcoroots,sep=";")
-      #  writeLines(debug_str, out_debug)
-      
-      
-      
-      #                     NOT IMPLEMENTED
-      # #sapwood update
-      Sapwoodarea <- Sapheight*ztop[1] # cm2/ha
-      sap <- Sapwoodarea * ztop[1] * Cfracts * Density * 0.001 ; #new sapwood mass, tC/ha
-      if (sap > cbiow[i]*kg_C_M2_to_T_ha) sap <- cbiow[i]*kg_C_M2_to_T_ha
-      # cphw <- cbiow[i]*kg_C_M2_to_T_ha - sap - Heartwood  #increase in heartwood mass (new stem - new sapwood - old heartwood), needed for N alloc
-      Sapwood   <- sap
-      Heartwood <- cbiow[i]*kg_C_M2_to_T_ha - Sapwood
-      
-      
-      
-      biomass[i] <- cbiol[i] + cbiocr[i] + cbior[i] + cbiob[i] + cbiow[i]
-      
-      # keep track of aboveground annual npp
-      ayanpp[i] <- (aleaf[i] + acroot[i] + abranch[i] + awood[i]) * adnpp[i] + ayanpp[i]
-      
-      
-      #####################################################################
-      # check for climatic and phenological limits on maturity, growth,
-      # and harvest date
-      #
-      # check to see if minimum temperature has fallen below freeze
-      # kill threshold for 3 consecutive days and if lai is above a minimum,
-      # plant will
-      # be damaged/killed.  This function is more for spring freeze events
-      # or for early fall freeze events
-      #
-      # currently simulates too many grid cells that are killed by
-      # freezing temperatures
-      #
-      # spring wheat is affected by this, winter wheat kill function
-      # is determined in crops.f - is a more elaborate function of
-      # cold hardening of the plant
-      
-      if (tmin <= tkill[i]) {
-        ccdays[i] <- ccdays[i] + 1
-      } else {
-        ccdays[i] <- 0
-      }
-      
-      if (ccdays[i] >= 1 &&
-          hui[i] >= 0.6 * gddmaturity[i] &&
-          croplive[i] == 1) {
-        croplive[i]     <- 0.0
-        print(paste0('tkill!!!!!',1,iyear,jday,idpp[i]))
-        harvdate[i]     <- jday
-      }
-      
-      
-      
-      #___________________________________________________
-      #       Harvest
-      
-      if(cropy == 1) {
-        if ( rm == mxmat[i]/365 ) { # maximum harvest date
-          
-          Deadfineroots <- cbior[i]
-          Deadcoroots   <- cbiocr[i]
-          
-          croplive[i]   <- 0.0
-          greenfrac[i]  <- 0.0 # turn all vegetation to brown
-          harvdate[i] <- jday
-          plai[i]         <- 0.01 # simulates remaining stubble/mulch
-          endCycle <- T
-          print(paste('Harvest Eucalyptus - = ',cropy,iyear,jday,idpp[i],rm))
-        }
-      } else {
-        print('Eucalyptus has only one cycle - Stop')
-        stop()
-      }
-      
+      FSW[J]   = 1. + (1. - SWFAC)  * WSENP[J]
+      FNSTR[J] = 1. + (1. - NSTRES) * NSENP[J]
+      FPSTR[J] = 1. + (1. - PStres2) * PSENP[J]
     }
     
+    #-----------------------------------------------------------------------
+    #     Transplants
+    #-----------------------------------------------------------------------
+    if (PLME == "T" & YRPLT == YRDOY) {
+      K = TSELC[2]
+      FT[2] = CURV(CTMP[2],TB[K],TO1[K],TO2[K],TM[K],ATEMP)  #todo: escrever função CURV ('curvilinar' provavelmente)
+      PHZACC[2] = FT[2] * SDAGE
+    }
     
-# Ver com o Michel pq essas variaveis sao definidas mesmo que a planta não estando ativa    
-    sapfrac <- Sapwood / (Sapwood + Heartwood)
+    #-----------------------------------------------------------------------
+    #     The effect of tmin on rate of development from emergence to
+    #     flowering. Piper et al., (submitted to Field Crops Research, 1995)
+    #-----------------------------------------------------------------------
+    ZMODTE = 1.0
     
-    ztopPft[i] <- (min(plai[i]/3, 1)) * ztopmxPft[i] * min(1,(rm /0.7))
+    if (tmin < OPTBI) {
+      ZMODTE = 1. - (SLOBI * (OPTBI - tmin))
+      ZMODTE = max(0.0, ZMODTE)
+      ZMODTE = min(1.0, ZMODTE)
+    }
+    
+    FT[4] = FT[4] * ZMODTE
+    FT[5] = FT[5] * ZMODTE
+    
+    #-----------------------------------------------------------------------
+    #     Compute rates of development to be used in other parts of model
+    #     based on veg, early rep, and late rep temp sensitivities, respectively.
+    #     Physiological days during today for vegetative development (DTX),
+    #     physiological days during the day for reproductive development
+    #     (TNTFAC & TNTFC2), and photothermal days during the day (TDUMX & TDUMX2)
+    #-----------------------------------------------------------------------
+    DTX    = FT[2]
+    TNTFAC = FT[6]
+    TNTFC2 = FT[10]
+    #-----------------------------------------------------------------------
+    #     DRPP affects seed & shell numbers set, seed and shell growth rates,
+    #     ACCAGE, PODADD, FLWADD, FLWADD.  Okay to use the "SEEDFILL"
+    #     photoperiod.  This change will make TDUMX2 sensitive to the R5-R7
+    #     period and affect N mobilization.
+    #-----------------------------------------------------------------------
+    DRPP   = FUDAY[6]
+    TDUMX  = TNTFAC * DRPP
+    TDUMX2 = TNTFC2 * FUDAY[10]
+    
+    #-----------------------------------------------------------------------
+    #    Calculate rate of V-stage change for height and width determination
+    #-----------------------------------------------------------------------
+    VSTAGE_OUT <-  VSTAGES( DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
+                            NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
+                            TURFAC, XPOD, YRDOY, YRPLT,                     # Input
+                            DYNAMIC)                                         # Control
+    
+    
+    
+    #**********************************************************************
+    #**********************************************************************
+    #     Daily Integration
+    #**********************************************************************
+  } else if (DYNAMIC == 'INTEGR') { 
+    
+    #----------------------------------------------------------------------
+    #     Check to see if stages occur today, if so set them in RSTAGES
+    #----------------------------------------------------------------------
+    RSTAGES_OUT <-  RSTAGES(DAS,DYNAMIC,
+                            FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
+                            PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM)      # Input
+    
+    
+    #-----------------------------------------------------------------------
+    #     Special accumulators used in other parts of the model
+    #-----------------------------------------------------------------------
+    #     Canopy age, flowering to harvest maturity, AGELF
+    #-----------------------------------------------------------------------
+    #     FRACDN is relative time from flowering to last leaf, modify leaf part
+    #-----------------------------------------------------------------------
+    if (DAS >= NR1) {
+      FRACDN = PHZACC[13]/MNFLLL
+      FRACDN = min(1.0,FRACDN)
+    }
+    
+    #-----------------------------------------------------------------------
+    #     DXR57-rel time from R5 to R7, modifies N mobilization
+    #-----------------------------------------------------------------------
+    if (DAS > NR5) {
+      DXR57 = PHZACC[10]/PHTHRS[10]
+      DXR57 = min(DXR57,1.0)
+    } else {
+      DXR57 = 0.0
+    }
+    
+    #-----------------------------------------------------------------------
+    #     Calculate V-stages
+    #-----------------------------------------------------------------------
+    VSTAGE_OUT <-  VSTAGES( DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
+                            NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
+                            TURFAC, XPOD, YRDOY, YRPLT,                     # Input
+                            DYNAMIC)                                         # Control
+    
+    #***********************************************************************
+    #     End of DYNAMIC IF construct
+    #***********************************************************************
     
   }
   
-  assign("endCycle", endCycle, envir = env)
   
-  assign("ztopPft", ztopPft, envir = env)
-  assign("sapfrac", sapfrac, envir = env)
+  # TO DO!: retornar as variaveis abaixo
+  return (list(DRPP=DRPP,DTX=DTX, DXR57=DXR57, FRACDN=FRACDN, MDATE=MDATE, NDLEAF=NDLEAF,        # Output
+               NDSET=NDSET, NR1=NR1, NR2=NR2, NR5=NR5, NR7=NR7, NVEG0=NVEG0, PHTHRS=PHTHRS,                 # Output
+               RSTAGE=RSTAGE, RVSTGE=RVSTGE, STGDOY=STGDOY, SeedFrac=SeedFrac, TDUMX=TDUMX,                  # Output
+               TDUMX2=TDUMX2, VegFrac=VegFrac, VSTAGE=VSTAGE, YREMRG=YREMRG, YRNR1=YRNR1,                   # Output
+               YRNR2=YRNR2, YRNR3=YRNR3, YRNR5=YRNR5, YRNR7=YRNR7))
   
-  assign("gddplant", gddplant, envir = env)
-  assign("gddtsoi", gddtsoi, envir = env)
-  assign("aplantn", aplantn, envir = env)
-  assign("fleafi", fleafi, envir = env)
-  assign("mxgddgf", mxgddgf, envir = env)
-  assign("mxmat", mxmat, envir = env)
-  assign("greenfrac", greenfrac, envir = env)
-  assign("fleaf", fleaf, envir = env)
-  assign("hui", hui, envir = env)
-  assign("leafout", leafout, envir = env)
-  assign("idpp", idpp, envir = env)
-  assign("idpe", idpe, envir = env)
-  assign("awood", awood, envir = env)
-  assign("aleaf", aleaf, envir = env)
-  assign("acroot", acroot, envir = env)
-  assign("aroot", aroot, envir = env)
-  assign("abranch", abranch, envir = env)
-  assign("tlai", tlai, envir = env)
-  assign("peaklai", peaklai, envir = env)
-  assign("plai", plai, envir = env)
-  assign("astemi", astemi, envir = env)
-  assign("aleafi", aleafi, envir = env)
-  assign("dpgf", dpgf, envir = env)
-  assign("grainday", grainday, envir = env)
-  assign("thrlai", thrlai, envir = env)
-  assign("templai", templai, envir = env)
-  assign("gddemerg", gddemerg, envir = env)
-  assign("aerial", aerial, envir = env)
-  assign("rm", rm, envir = env)
-  assign("af1", af1, envir = env)
-  assign("af2", af2, envir = env)
-  assign("af3", af3, envir = env)
-  assign("af4", af4, envir = env)
-  assign("af5", af5, envir = env)
-  assign("af6", af6, envir = env)
-  assign("aybprod", aybprod, envir = env)
-  assign("ayabprod", ayabprod, envir = env)
-  assign("ayrprod", ayrprod, envir = env)
-  assign("aylprod", aylprod, envir = env)
-  assign("cbiol", cbiol, envir = env)
-  assign("cbiocr", cbiocr, envir = env)
-  assign("cbiob", cbiob, envir = env)
-  assign("fallrsgc", fallrsgc, envir = env)
-  assign("cbior", cbior, envir = env)
-  assign("cbiow", cbiow, envir = env)
-  assign("biomass", biomass, envir = env)
-  assign("ayanpp", ayanpp, envir = env)
-  assign("ccdays", ccdays, envir = env)
-  assign("croplive", croplive, envir = env)
-  assign("harvdate", harvdate, envir = env)
-  assign("Deadwood",Deadwood      , envir = env)
-  assign("Deadbranch",Deadbranch    , envir = env)
-  assign("DBranch",DBranch    , envir = env)
-  assign("Deadfineroots",Deadfineroots , envir = env)
-  assign("Deadleaves",Deadleaves    , envir = env)
-  assign("Deadcoroots",Deadcoroots   , envir = env)
   
-  assign("cbiold",cbiold, envir = env)
-  assign("cbiols",cbiols, envir = env)
+  #-----------------------------------------------------------------------
+  #     End Subroutine PHENOL
+  #-----------------------------------------------------------------------
   
-  assign("Sapwood",Sapwood  , envir = env)
-  assign("Heartwood",Heartwood, envir = env)
+} # END PHENOL
+
+
+
+#### Subrotina: VSTAGES ####
+#  Vegetative Stage (VARIABLE NAME):
+#    VE    (NVEG0) -  First day with 50 Percent of plants with some part visible at soil surface
+#    NVEG1         - First day with 50 Percent of plants with completely unrolled leaf at unifoliate node
+#    V1            - First day with 50 Percent of plants with completely unrolled leaf at first node above the unifoliate node
+#    V2            - First day with 50 Percent of plants with 2 leaves above the unifoliate on the main stem
+#    V(n)          - First day with 50 Percent of plants with n leaves above the unifoliate on the main stem
+#         (NDVST)  - Day on which last main stem node formed
+#         (NDLEAF) - Day when leaf expansion ceased (often on branches)  
+
+#=======================================================================
+#  VSTAGES, Subroutine
+#  Calculates V-stages
+#-----------------------------------------------------------------------
+#  REVISION HISTORY
+#  07/24/98 CHP Pulled code from PHENOL subroutine
+#-----------------------------------------------------------------------
+#     Called from:    PHENOL
+#     Calls:          None
+#=======================================================================
+
+VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,         
+                     NVEG0, NVEG1, PHZACC, PLME, TRIFOL,      
+                     TURFAC, XPOD, YRDOY, YRPLT,DYNAMIC) {                        
   
-  assign("DBranch_attached",DBranch_attached, envir = env)
-  assign("DBranch_decay",DBranch_decay, envir = env)
-  assign("Signew",Signew, envir = env)
   
-}
+  #***********************************************************************
+  #***********************************************************************
+  #     Seasonal initialization - run once per season
+  #***********************************************************************
+  if (DYNAMIC == 'SEASINIT') {
+    
+    #-----------------------------------------------------------------------
+    VSTAGE = 0.0
+    RVSTGE = 0.0
+    VSTGED = 0.0
+    VSTAGP = 0.0
+    RVSTGE = 0.0
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     Daily Rate Calculations
+    #***********************************************************************
+  } else if (DYNAMIC == 'RATE') { 
+    #-----------------------------------------------------------------------
+    #    Calculate rate of V-stage change for height and width determination
+    #-----------------------------------------------------------------------
+    RVSTGE = 0.
+    
+    if (DAS > NVEG0 & DAS <= (NDVST + round (VSTGED))) {
+      if (DAS > NDVST & VSTGED > 0.001) { RVSTGE = 1. / VSTGED
+      } else { RVSTGE = VSTAGE - VSTAGP }
+    }
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     Daily Integration
+    #***********************************************************************
+    #-----------------------------------------------------------------------
+  } else if (DYNAMIC == 'INTEGR') {
+    #     V-STAGE between emergence and unifoliate (V-1) is determined
+    #     by the physiological accumulator and the minimum number of
+    #     days between emergence and V-1 under optimum temperature (MNEMV1)
+    #     V-STAGE after V-1 is determined by the leaf appearance rate
+    #     (TRIFOL), a water stress factor (TURFAC) and physiological units
+    #     for today (DTX).
+    #-----------------------------------------------------------------------
+    if (RVSTGE > 1.E-6) { VSTGED = 1. / RVSTGE } else { VSTGED = 0.0 }
+    
+    VSTAGP = VSTAGE
+    
+    #-----------------------------------------------------------------------
+    #     V-Stage for transplants
+    #-----------------------------------------------------------------------
+    if (PLME == "T" & YRPLT == YRDOY) { VSTAGE = 1. + (PHZACC[2] - MNEMV1) * TRIFOL }
+    
+    #-----------------------------------------------------------------------
+    if (DAS >= NVEG0 & DAS <= NDVST) {
+      if (DAS < NVEG1) {
+        VSTAGE  = PHZACC[2]/MNEMV1
+      } else {
+        if (VSTAGE < abs(EVMODC) & abs(EVMODC) > 0.0001) {
+          
+          EVMOD = 1.0 + (abs(EVMODC)- VSTAGE) / EVMODC
+          EVMOD = min(2.0,EVMOD)
+          EVMOD = max(0.0,EVMOD)
+        } else {
+          EVMOD = 1.0
+        }
+      }
+      VSTAGE = VSTAGE + DTX * TRIFOL * EVMOD*TURFAC*(1.0-XPOD)
+    }
+    
+    return(list(RVSTGE=RVSTGE,VSTAGE=VSTAGE)) 
+    
+  } # END SUBROUTINE VSTAGES
+  
+  
+  
+  #### Subrotina: RSTAGES ####
+  
+  #  Reproductive STAGE (VARIABLE NAME):
+  #  R00 (JPEND) - Day when juvenile phase ends and plants first become sensitive to photoperiod
+  #  R0  (NR0)   - Day when floral induction occurs
+  #  R1  (NR1)   - Day when 50 Percent of plants have at least one flower at any node on the  plant
+  #  R2  (NR2)   - Day when 50 Percent of plants have one peg at any node (for peanut only)
+  #  R3+ (NR3)   - Day when 50 Percent of plants have at least one pod formed (at least 0.5 cm in length) and ready to grow
+  #  R4+         - Day when 50 Percent of plants have at least one fully expanded pod
+  #  R5+ (NR5)   - Day when 50 Percent of plants have pods with seeds beginning to grow
+  #  R6+         - Day when 50 Percent of plants have at least one pod containing a full-sized green seed NDSET Day when last pod can form
+  #  R7  (NR7)   - Day when 50 Percent of plants first have at least one pod that is yellowing, physiological maturity
+  #  R8  (NR8)   - Day when 50 Percent of plants have at least 95 Percent of pods brown, harvest  maturity
+  #  +Intentionally deviates from Fehr and Caviness (1971) to designate first occurrences of reproductive trait rather
+  #  than looking at top 4 nodes with fully expanded leaves on the plant.
+  
+  #************************************************************************
+  #************************************************************************
+  
+  RSTAGES <- function (DAS,DYNAMIC,
+                       FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,  
+                       PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM)   {
+    
+    
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     Seasonal initialization - run once per season
+    #***********************************************************************
+    if (DYNAMIC == 'SEASINIT') { 
+      #-----------------------------------------------------------------------
+      NVALP0 = 10000
+      RSTAGE = 0
+      PHZACC <- rep(0,20)
+      NVALPH <- rep(NVALP0,20)
+      STGDOY <- rep(9999999,20)
+      PROG   <- rep(0,20)
+      
+      
+      NVALPH[1]  = 1
+      STGDOY[14] = YRSIM
+      STGDOY[15] = YRPLT
+      
+      NVEG0  = NVALP0
+      NVEG1  = NVALP0
+      JPEND  = NVALP0
+      NR0    = NVALP0
+      NR1    = NVALP0
+      NR2    = NVALP0
+      NR3    = NVALP0
+      NR5    = NVALP0
+      NDLEAF = NVALP0
+      NDVST  = NVALP0
+      NDSET  = NVALP0
+      NR7    = NVALP0
+      #     NR8    = NVALP0
+      YRNR1  = -99
+      YRNR2  = -99
+      YRNR3  = -99
+      YRNR5  = -99
+      YRNR7  = -99
+      MDATE  = -99
+      YREMRG = -99
+      PHTEM = 0.0
+      PROG  = 0.0
+      # For P module:
+      SeedFrac = 0.0
+      VegFrac  = 0.0
+      VegTime = PHTHRS[3] + PHTHRS[4] + PHTHRS[5] + PHTHRS[8]
+      
+      #***********************************************************************
+      #***********************************************************************
+      #     Daily Integration
+      #***********************************************************************
+    } else if (DYNAMIC == 'INTEGR') {
+      #-----------------------------------------------------------------------
+      REM <- rep(1.0,20)
+      
+      
+      if (YRDOY == YRPLT) { STGDOY[15] = YRPLT  }
+      
+      #-----------------------------------------------------------------------
+      #     Transplants
+      #-----------------------------------------------------------------------
+      if (PLME == "T" & YRPLT == YRDOY) { 
+        NVEG0 = DAS
+        NVALPH[2] = NVEG0
+        YREMRG    = YRDOY
+        if ((PHZACC[2] - PHTHRS[2]) > -1.E-6) {
+          NVEG1 = DAS
+          NVALPH[3] = NVEG1
+          PHZACC[3] = PHZACC[2] - PHTHRS[2]
+          if ((PHZACC[3] - PHTHRS[3]) > -1.E-6) {
+            JPEND = DAS
+            NVALPH[4] = JPEND
+            PHZACC[4] = PHZACC(3) - PHTHRS(3)
+            if ((PHZACC[4] - PHTHRS[4]) > -1.E-6) {
+              NR0 = DAS
+              NVALPH[5] = NR0
+              RSTAGE    = 0
+              PHZACC[5] = PHZACC[4] - PHTHRS[4]
+              if ((PHZACC[5] - PHTHRS[5]) > -1.E-6) {
+                NR1 = DAS
+                NVALPH[6] = NR1
+                YRNR1     = YRDOY
+                RSTAGE    = 1
+                PHZACC[6] = PHZACC[5] - PHTHRS[5]
+              }
+            }
+          }
+        }
+      }
+      
+      #-----------------------------------------------------------------------
+      #     Check for emergence, if NVEG0 has been set to less than its
+      #         initial value
+      #-----------------------------------------------------------------------
+      if (NVEG0 >= NVALP0) {
+        
+        PHTEM = PHTHRS[1] + SDEPTH * 0.6
+        PROG[1] = FT[1] * FUDAY[1] * min(FSW[1],FNSTR[1],FPSTR[1])
+        PHZACC[1] = PHZACC[1] + PROG[1]
+        
+        if ((PHZACC[1] - PHTEM) > -1.E-6 | (ISIMI == "E")) {
+          
+          #-----------------------------------------------------------------------
+          #       Emergence, next stage, occurs on day DAS
+          #-----------------------------------------------------------------------
+          NVEG0 = DAS
+          NVALPH[2] = NVEG0
+          YREMRG    = YRDOY
+          STGDOY[1] = YRDOY
+          #-----------------------------------------------------------------------
+          #       Account for the part of today that contributes to the next phase(s)
+          #-------------------------------------------------------------------------------
+          if (ISIMI != "E") { REM[2] = (PHZACC[1] - PHTEM)/(PROG[1] + 0.00001)}
+        }
+      }
+      
+      #-------------------------------------------------------------------------------
+      #     Check for veg stage, V1
+      #-------------------------------------------------------------------------------
+      #     Skip accumulator section if not time to start accumulating for phase 2
+      #          also skips this accumulator on day when stage 2 occurred, with
+      #          initial value of PHZACC(2) already computed
+      #-------------------------------------------------------------------------------
+      if (DAS >= NVALPH[NPRIOR[2]] & NVEG1 >= NVALP0) {
+        #-------------------------------------------------------------------------------
+        #     Skip section if stage 3 has already occurred
+        #-------------------------------------------------------------------------------
+        PROG[2] = FT[2] * FUDAY[2] * min(FSW[2],FNSTR[2],FPSTR[2]) * REM[NPRIOR[2]]
+        PHZACC[2] = PHZACC[2] + PROG[2]
+        
+        if (PHZACC[2] - PHTHRS[2] > -1.E-6) {
+          #-------------------------------------------------------------------------------
+          #       V1 occurs on day DAS
+          #-------------------------------------------------------------------------------
+          NVEG1 = DAS
+          NVALPH[3] = NVEG1
+          STGDOY[2] = YRDOY
+          REM[3] = (PHZACC[2] - PHTHRS[2]) / (PROG[2] + 0.00001)
+        }
+      }
+      
+      #-------------------------------------------------------------------------------
+      #     Check for end of juvenile phase
+      #-------------------------------------------------------------------------------
+      if (DAS >= NVALPH[NPRIOR[3]] & JPEND >= NVALP0) {
+        
+        PROG[3] = FT[3] * FUDAY[3] * min(FSW[3],FNSTR[3],FPSTR[3]) * REM[NPRIOR[3]]
+        PHZACC[3] = PHZACC[3] + PROG[3]
+        
+        if (VegTime > 0) {VegFrac = PHZACC[3] / VegTime } else { VegFrac = 0.0}
+        
+        if( (PHZACC[3] - PHTHRS[3]) > -1.E-6) {
+          
+          #-------------------------------------------------------------------------------
+          #       End of juvenile phase occurs on day DAS
+          #-------------------------------------------------------------------------------
+          JPEND = DAS
+          NVALPH[4] = JPEND
+          STGDOY[3] = YRDOY
+          REM[4] = (PHZACC[3] - PHTHRS[3])/(PROG[3] + 0.00001)
+        }
+      }
+      
+      #-------------------------------------------------------------------------------
+      #     Check for floral induction, end of induction phase
+      #-------------------------------------------------------------------------------
+      if ( DAS >= NVALPH[NPRIOR[4]] & NR0 >= NVALP0) {
+        
+        PROG[4] = FT[4] * FUDAY[4] * min(FSW[4],FNSTR[4],FPSTR[4]) * REM[NPRIOR[4]]
+        PHZACC[4] = PHZACC[4] + PROG[4]
+        VegFrac = (PHTHRS[3] + PHZACC[4]) / VegTime
+        
+        if((PHZACC[4] - PHTHRS[4]) > 1.E-6) {
+          #-------------------------------------------------------------------------------
+          #       Floral induction occurs on day DAS, end of phase 4
+          #-------------------------------------------------------------------------------
+          NR0 = DAS
+          NVALPH[5] = NR0
+          RSTAGE    = 0
+          STGDOY[4] = YRDOY
+          REM[5] = (PHZACC[4] - PHTHRS[4])/(PROG[4] + 0.00001)
+        }
+      }
+      
+      #-------------------------------------------------------------------------------
+      #     Check for first flower, stage 6, end of phase 5
+      #-------------------------------------------------------------------------------
+      if (DAS >= NVALPH[NPRIOR[5]] & NR1 >= NVALP0) {
+        
+        PROG[5] = FT[5] * FUDAY[5] * min(FSW[5],FNSTR[5],FPSTR[5]) * REM[NPRIOR[5]]
+        PHZACC[5] = PHZACC[5] + PROG[5]
+        VegFrac = (PHTHRS[3] + PHTHRS[4] + PHZACC[5]) / VegTime
+        
+        if(PHZACC[5] - PHTHRS[5] > -1.E-6) {
+          #-------------------------------------------------------------------------------
+          #       First flower occurs on day DAS
+          #-------------------------------------------------------------------------------
+          NR1 = DAS
+          STGDOY[5] = YRDOY
+          NVALPH[6] = NR1
+          YRNR1     = YRDOY
+          RSTAGE    = 1
+          REM[6] = (PHZACC[5] - PHTHRS[5])/(PROG[5] + 0.00001)
+        }
+      }
+      #-------------------------------------------------------------------------------
+      #     Check for beginning ovule (peg), stage 7, end of phase 6
+      #-------------------------------------------------------------------------------
+      if (DAS >= NVALPH[NPRIOR[6]] & NR2 >= NVALP0) {
+        
+        PROG[6] = FT[6] * FUDAY[6] * min(FSW[6],FNSTR[6],FPSTR[6]) * REM[NPRIOR[6]]
+        PHZACC[6] = PHZACC[6] + PROG[6]
+        
+        if(PHZACC[6] - PHTHRS[6] > -1.E-6) {
+          #-------------------------------------------------------------------------------
+          #       First peg occurs on day DAS
+          #-------------------------------------------------------------------------------
+          NR2 = DAS
+          STGDOY[6] = YRDOY
+          NVALPH[7] = NR2
+          YRNR2     = YRDOY
+          RSTAGE    = 2
+          #-------------------------------------------------------------------------------
+          #       Account for the part of today that contributes to the next phase(s)
+          #-------------------------------------------------------------------------------
+          REM[7] = (PHZACC[6] - PHTHRS[6])/(PROG[6] + 0.00001)
+        }
+      }
+      
+      #-------------------------------------------------------------------------------
+      #     Check for stage beginning shell, stage 8, end of phase 7
+      #-------------------------------------------------------------------------------
+      if (DAS >= NVALPH[NPRIOR[7]] & NR3 >= NVALP0) {
+        
+        PROG[7] = FT[7] * FUDAY[7] * min(FSW[7],FNSTR[7],FPSTR[7]) * REM[NPRIOR[7]]
+        PHZACC[7] = PHZACC[7] + PROG[7]
+        
+        if(PHZACC[7] - PHTHRS[7] > -1.E-6) {
+          #-------------------------------------------------------------------------------
+          #       Stage R3 occurs on day DAS
+          #-------------------------------------------------------------------------------
+          NR3 = DAS
+          STGDOY[7] = YRDOY
+          if (STGDOY[7] == STGDOY[6]) STGDOY[7] = 9999999
+          NVALPH[8] = NR3
+          YRNR3     = YRDOY
+          RSTAGE    = 3
+          #-------------------------------------------------------------------------------
+          #       Account for the part of today that contributes to the next phase(s)
+          #-------------------------------------------------------------------------------
+          REM[8] = (PHZACC[7] - PHTHRS[7])/(PROG[7] + 0.00001)
+        }
+      }
+      #-------------------------------------------------------------------------------
+      #     Check for stage beginning seed (R5), stage 9, end of phase 8
+      #-------------------------------------------------------------------------------
+      if (DAS >= NVALPH[NPRIOR[8]] & NR5 >= NVALP0) {
+        
+        PROG[8] = FT[8] * FUDAY[8] * min(FSW[8],FNSTR[8],FPSTR[8]) * REM[NPRIOR[8]]
+        PHZACC[8] = PHZACC[8] + PROG[8]
+        VegFrac =(PHTHRS[3] + PHTHRS[4] + PHTHRS[5] + PHZACC[8])/VegTime
+        
+        if(PHZACC[8] - PHTHRS[8] > -1.E-6) {
+          #-------------------------------------------------------------------------------
+          #       Stage R5 occurs on day DAS
+          #-------------------------------------------------------------------------------
+          NR5 = DAS
+          STGDOY[8] = YRDOY
+          NVALPH[9] = NR5
+          YRNR5     = YRDOY
+          RSTAGE    = 5
+          #-------------------------------------------------------------------------------
+          #       Account for the part of today that contributes to the next phase(s)
+          #-------------------------------------------------------------------------------
+          REM[9] = (PHZACC[8] - PHTHRS[8])/(PROG[8] + 0.00001)
+        }
+      }
+      #-------------------------------------------------------------------------------
+      #     Check for stage NDSET, stage 10, end of phase 9
+      #-------------------------------------------------------------------------------
+      if (DAS >= NVALPH[NPRIOR[9]] & NDSET >= NVALP0) {
+        
+        PROG[9] = FT[9] * FUDAY[9] * max(FSW[9],FNSTR[9],FPSTR[9]) * REM[NPRIOR[9]] #MAX ao inves de MIN
+        PHZACC[9] = PHZACC[9] + PROG[9]
+        
+        if(PHZACC[9] - PHTHRS[9] > -1.E-6) {
+          #-------------------------------------------------------------------------------
+          #       Stage NDSET occurs on day DAS
+          #-------------------------------------------------------------------------------
+          NDSET = DAS
+          STGDOY[9] = YRDOY
+          NVALPH[10] = NDSET
+          #-------------------------------------------------------------------------------
+          #       Account for the part of today that contributes to the next phase(s)
+          #-------------------------------------------------------------------------------
+          REM[10] = (PHZACC[9] - PHTHRS[9])/(PROG[9] + 0.00001)
+        }
+      }
+      #-------------------------------------------------------------------------------
+      #     Check for stage NR7, stage 11, end of phase 10
+      #-------------------------------------------------------------------------------
+      if (DAS >= NVALPH[NPRIOR[10]] & NR7 >= NVALP0) {
+        
+        PROG[10] = FT[10] * FUDAY[10]*max(FSW[10],FNSTR[10],FPSTR[10]) * REM[NPRIOR[10]] #MAX ao inves de MIN
+        PHZACC[10] = PHZACC[10] + PROG[10]
+        SeedFrac = PHZACC[10] / PHTHRS[10]
+        
+        if(PHZACC[10] - PHTHRS[10] > -1.E-6) {
+          #-------------------------------------------------------------------------------
+          #       Stage NR7, physiological maturity, occurs on day DAS
+          #-------------------------------------------------------------------------------
+          NR7 = DAS
+          STGDOY[10] = YRDOY
+          NVALPH[11] = NR7
+          YRNR7      = YRDOY
+          RSTAGE     = 7
+          #-------------------------------------------------------------------------------
+          #       Account for the part of today that contributes to the next phase(s)
+          #-------------------------------------------------------------------------------
+          REM[11] = (PHZACC[10] - PHTHRS[10])/(PROG[10] + 0.00001)
+        }
+      }
+      
+      #-------------------------------------------------------------------------------
+      #     Check for stage NR8, stage 12, end of phase 11
+      #-------------------------------------------------------------------------------
+      if (DAS >= NVALPH[NPRIOR[11]] & MDATE <= YRSIM) {
+        
+        PROG[11] = FT[11] * FUDAY[11]*min(FSW[11],FNSTR[11],FPSTR[11]) * REM[NPRIOR[11]]
+        PHZACC[11] = PHZACC[11] + PROG[11]
+        
+        if(PHZACC[11] - PHTHRS[11] > 1.E-6) {
+          #-------------------------------------------------------------------------------
+          #       Stage NR8, harvest maturity, occurs on day DAS
+          #-------------------------------------------------------------------------------
+          STGDOY[11] = YRDOY
+          NVALPH[12] = DAS
+          MDATE      = YRDOY
+          RSTAGE     = 8
+          #-------------------------------------------------------------------------------
+          #       Account for the part of today that contributes to the next phase(s)
+          #-------------------------------------------------------------------------------
+          REM[12] = (PHZACC[11] - PHTHRS[11])/(PROG[11] + 0.00001)
+        }
+      }
+      
+      #-------------------------------------------------------------------------------
+      #     Check for stage NDVST, end of V-stage addition, stage 13, end of phase 12
+      #-------------------------------------------------------------------------------
+      if (DAS >= NVALPH[NPRIOR[12]] & NDVST >= NVALP0) {
+        
+        PROG[12] = FT[12] * FUDAY[12]*min(FSW[12],FNSTR[12],FPSTR[12]) * REM[NPRIOR[12]]
+        PHZACC[12] = PHZACC[12] + PROG[12]
+        
+        if((PHZACC[12] - PHTHRS[12]) > 1.E-6) {
+          #-------------------------------------------------------------------------------
+          #       Stage NDVST, end of V-stage addition, occurs on day DAS
+          #-------------------------------------------------------------------------------
+          NDVST = DAS
+          STGDOY[12] = YRDOY
+          NVALPH[13] = NDVST
+          #-------------------------------------------------------------------------------
+          #       Account for the part of today that contributes to the next phase(s)
+          #-------------------------------------------------------------------------------
+          REM[13] = (PHZACC[12] - PHTHRS[12])/(PROG[12] + 0.00001)
+        }
+      }
+      
+      #-------------------------------------------------------------------------------
+      #     Check for stage NDLEAF, end of leaf growth, stage 14, end of phase 13
+      #-------------------------------------------------------------------------------
+      if (DAS >= NVALPH[NPRIOR[13]] & NDLEAF >= NVALP0) {
+        
+        PROG[13] = FT[13] * FUDAY[13]*min(FSW[13],FNSTR[13],FPSTR[13]) * REM[NPRIOR[13]]
+        PHZACC[13] = PHZACC[13] + PROG[13]
+        
+        if(PHZACC[13] - PHTHRS[13] > -1.E-6) {
+          #-------------------------------------------------------------------------------
+          #      Stage NDLEAF, end of leaf growth, occurs on day DAS
+          #-------------------------------------------------------------------------------
+          NDLEAF = DAS
+          STGDOY[13] = YRDOY
+          NVALPH[14] = NDLEAF
+          #-------------------------------------------------------------------------------
+          #       Account for the part of today that contributes to the next phase(s)
+          #-------------------------------------------------------------------------------
+          REM[14] = (PHZACC[13] - PHTHRS[13])/(PROG[13] + 0.00001)
+        }
+      }
+      
+      #************************************************************************
+      #************************************************************************
+      #     End of DYNAMIC IF construct
+      #************************************************************************
+    }
+    #************************************************************************
+    
+    return( list(JPEND=JPEND, MDATE=MDATE, NDLEAF=NDLEAF, NDSET=NDSET, NDVST=NDVST,NVALPH=NVALPH,     # Output
+                NVEG0=NVEG0, NVEG1=NVEG1, NR1=NR1, NR2=NR2, NR5=NR5, NR7=NR7, PHZACC=PHZACC,          # Output
+                RSTAGE=RSTAGE, STGDOY=STGDOY, SeedFrac=SeedFrac, VegFrac=VegFrac, YREMRG=YREMRG,      # Output
+                YRNR1=YRNR1, YRNR2=YRNR2, YRNR3=YRNR3, YRNR5=YRNR5, YRNR7=YRNR7) ) 
+    
+    }
+  

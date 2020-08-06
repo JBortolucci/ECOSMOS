@@ -16,8 +16,8 @@ simDataVars$tauleaf_branch <- 365
 ### End of companies params
 
 
-source("R/CropModels/Soybean/SoybeanPhenocrop.R")
 source("R/CropModels/Soybean/SoybeanPlanting.R")
+source("R/CropModels/Soybean/SoybeanCROPGRO.R")
 source("R/CropModels/Soybean/SoybeanCropresidue.R")
 
 
@@ -41,7 +41,9 @@ SoybeanModel <- function(year, month, day, index) {
   
   
   environment(SoybeanPlanting)    <- env
+  environment(SoybeanCROPGRO)     <- env
   environment(SoybeanPhenocrop)   <- env
+  environment(SoybeanGrowth)   <- env
   environment(SoybeanCropresidue) <- env
   
   depth <- numeric(nsoilay)
@@ -80,7 +82,7 @@ SoybeanModel <- function(year, month, day, index) {
   
   SoybeanPlanting(year0, year, month, day, jday, ffact, index)
   
-  SoybeanPhenocrop(year, year0, month, day, jday, index)
+  SoybeanCROPGRO(year, year0, month, day, jday, index)
   
   SoybeanCropresidue(year, year0, jday, index)
   

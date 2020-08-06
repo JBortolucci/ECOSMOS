@@ -4,6 +4,23 @@
 SoybeanCropresidue <- function (year, year0, jday, index) {
   
   
+  
+#TO DO: Re-implmentar baseado no HRes_CGRO ou mantemos na mesma logica das demais culturas?
+  
+#   !     Calculate harvest residue left in field
+#   CALL HRes_CGRO(CONTROL,
+#                  &    CROP, DLAYR, DWNOD, HARVFRAC, NLAYR, PConc_Shut,!Input
+#                  &    PConc_Root, PConc_Shel, PConc_Seed, PLIGLF,     !Input
+#                  &    PLIGNO, PLIGRT, PLIGSD, PLIGSH, PLIGST, RLV,    !Input
+#                  &    RTWT, SDWT, SENESCE, SHELWT, STMWT, WTLF,       !Input
+#                  &    WTNLF,WTNNOD, WTNRT, WTNSD, WTNSH, WTNST,       !Input
+#                  &    HARVRES)                                        !Output
+#   
+#   SENESCE % ResWt  = 0.0
+#   SENESCE % ResLig = 0.0
+#   SENESCE % ResE   = 0.0
+  
+  
   deltay    <- plantList$soybean$params$deltay 
   
   j <- index
