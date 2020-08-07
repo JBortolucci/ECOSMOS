@@ -13,12 +13,6 @@ simDataVars$Deadcoroots <- 0.0001
 simDataVars$tauleaf_branch <- 365
 
 
-
-
-
-
-
-
 ### End of companies params
 
 

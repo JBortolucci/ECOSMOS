@@ -83,6 +83,7 @@ simDataVars$NR3      <-0
 simDataVars$PHZACC   <- rep(0,20)
 simDataVars$VegTime  <-0
 simDataVars$PROG     <- rep(0,20)
+simDataVars$TGRO     <- rep(1.,24)
 
 
 
@@ -106,7 +107,6 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   #               P = On reported planting date
   #               S = On specified date
   
-    TGRO <- ta - 273.15
 
   #To do - verificar se esta correto
   DAYL     <- daylength/60. # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
@@ -209,6 +209,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP     Sensitivity of phase I to phosphorus stress (not yet used) 
     
     
+    TRIFOL<-TRIFL
     
     PHTHRS[5] = max(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
     PHTHRS[7] = PHTHRS[6] + max(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
@@ -264,11 +265,11 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       TNTFC2 = 0.0
       SWFAC  = 1.0
       TURFAC = 1.0
-      FNSTR <- rep(1.,20)
-      FPSTR <- rep(1.,20)
-      FSW   <- rep(1.,20)
-      FT    <- rep(0.,20)
-      FUDAY <- rep(0.,20)
+      FNSTR <- rep(1,20)
+      FPSTR <- rep(1,20)
+      FSW   <- rep(1,20)
+      FT    <- rep(0,20)
+      FUDAY <- rep(0,20)
     
     
     RSTAGES (DAS,DYNAMIC,
@@ -383,10 +384,14 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       FT[J] = 0.0
       
       for (I in 1:TS) {
+        
+        TGRO[I] <- tl_h[I] - 273.15 
+        
         FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
         FT[J] = FT[J] + FTHR/TS
       }
       
+
       if (DAS < NR1) {
         FUDAY[J] = CURV(DLTYP[J],1.0,CSDVAR,CLDVAR,THVAR,DAYL)
       } else {
@@ -620,8 +625,8 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
         } else {
           EVMOD = 1.0
         }
+        VSTAGE = VSTAGE + DTX * TRIFOL * EVMOD*TURFAC*(1.0-XPOD)
       }
-      VSTAGE = VSTAGE + DTX * TRIFOL * EVMOD*TURFAC*(1.0-XPOD)
     }
     
     #***********************************************************************

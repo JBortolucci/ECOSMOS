@@ -11,8 +11,11 @@
 
 CURV <- function(CTYPE,XB,X1,X2,XM,X) {
 
-    print(paste(CTYPE,XB,X1,X2,XM,X,sep=' | '))
-
+  CURV = 1.0
+  
+# orignal code says if NON returns 1.0 
+#  IF (CTYPE .EQ. 'NON' .OR. CTYPE .EQ. 'non') RETURN
+  
   #-------------------------------------------------------------------------------
   #     Linear
   #-------------------------------------------------------------------------------
@@ -281,6 +284,7 @@ CURV <- function(CTYPE,XB,X1,X2,XM,X) {
   }
 
   #-------------------------------------------------------------------------------
+
 
  return(CURV)
 

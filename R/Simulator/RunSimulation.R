@@ -71,11 +71,8 @@ VariablesInicialization()
 
 RunSimulation <- function(parallel = F, compiled = F, OnEndDailyStep = NULL, OnEndHourlyStep = NULL) {
   
-  if(compiled){
-    SetCompiledFunctions()
-  } else {
     setDefaultFunctions()
-  }
+  if(compiled){ SetCompiledFunctions() } 
   
   if(parallel) {
     
@@ -475,8 +472,11 @@ GeneralModel <- function(simVars = NULL) {
             
             diurnalmet(simVars, time, simVars$jday, plens, startp, endp, simVars$irrigate, ilens, starti, endi)
           } else {
+            
             diurnal(simVars, time, simVars$jday, plens, startp, endp, simVars$irrigate, ilens, starti, endi)
-          }
+
+                      }
+          
           
           # JAIR: Não estão sendo utilizadas
           simVars$t_sec    <- time

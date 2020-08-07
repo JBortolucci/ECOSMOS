@@ -176,19 +176,16 @@ source("R/CropModels/Soybean/CURV.R")
      # DYNAMIC = 'RUNINIT'
     #  PHENOL_OUT <- PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
       DYNAMIC = 'SEASINIT'
-      PHENOL_OUT <- PHENOL (iyear, iyear0, jday, DAS,DYNAMIC) 
+      PHENOL (iyear, iyear0, jday, DAS,DYNAMIC) 
         }
       
       DYNAMIC = 'RATE'
-      PHENOL_OUT <- PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
+      PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
       DYNAMIC = 'INTEGR'
-      PHENOL_OUT <- PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
+      PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
       
-      
-      VSTAGE <- PHENOL_OUT$VSTAGE
-      RSTAGE <- PHENOL_OUT$RSTAGE
-      
-         print(paste(DYNAMIC,DAS,VSTAGE,RSTAGE,sep=" |"))
+
+         print(paste(DYNAMIC,DAS,VSTAGE,RSTAGE,sep=" | "))
          
 
     }

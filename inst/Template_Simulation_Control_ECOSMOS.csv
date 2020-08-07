@@ -1,2 +1,2 @@
 ID,LAT,LON,startYear,endYear,SOILID,StationID,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,cycle length,cycles,params
-sim1,-23.25,-48.75,2002,2009,EUCFLUX,inst/input_1d/met_EUCAFLUX_60min.txt,0,1,0,0,soybean,2,2002,2500,1,soybean1
+sim1,-23.25,-48.75,2002,2009,EUCFLUX,,0,1,0,0,soybean,3,2002,2500,1,soybean1

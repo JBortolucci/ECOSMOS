@@ -337,6 +337,10 @@ sumday <- function (istep, plens, iyear, jday) {
   adnmintot <- ((ndtimes - 1) * adnmintot + tnmin * rwork4) * rwork
   
   
+  
+  tl_h[istep]<-tl 
+  tu_h[istep]<-tu 
+  
   assign("ndtimes", ndtimes, envir = env)
   assign("adnpp", adnpp, envir = env)
   assign("adrain", adrain, envir = env)
@@ -371,6 +375,9 @@ sumday <- function (istep, plens, iyear, jday) {
   assign("decompl", decompl, envir = env)
   assign("decomps", decomps, envir = env)
   assign("adnmintot", adnmintot, envir = env)
+  assign("tl_h", tl_h, envir = env)
+  assign("tu_h", tu_h, envir = env)
+  
   
   # return to main program
   return()
