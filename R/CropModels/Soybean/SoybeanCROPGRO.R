@@ -184,8 +184,13 @@ source("R/CropModels/Soybean/CURV.R")
       DYNAMIC = 'INTEGR'
       PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
       
-
-         print(paste(DYNAMIC,DAS,VSTAGE,RSTAGE,sep=" | "))
+      saidax<-paste(DYNAMIC,DAS,VSTAGE,RSTAGE,sep = ';')
+      
+        write.table(saidax,file = 'Phenol.txt',append = T,row.names = F)
+        
+         print(paste(DYNAMIC,DAS,VSTAGE,RSTAGE,sep=" / "))
+         
+         if(DAS==115)stop()
          
 
     }

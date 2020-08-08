@@ -93,7 +93,28 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   environment(VSTAGES)             <- env
   environment(RSTAGES)             <- env
   
+#_______________________________________________________________________________  
+# Vars that are solverd by ECOSMOS  
   
+  TGRO_T <-read.table(file = 'C:/DSSAT47/Soybean/TGRO.OUT')
+  
+#  TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+  # DAYL   <- TGRO_T$V4[TGRO_T$V1==DAS & TGRO_T$V2==1]
+   XPOD   <- TGRO_T$V5[TGRO_T$V1==DAS & TGRO_T$V2==1]
+  # SWFEM  <- TGRO_T$V6[TGRO_T$V1==DAS & TGRO_T$V2==1]
+  # TMING  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]
+  # TSDEP  <- TGRO_T$V8[TGRO_T$V1==DAS & TGRO_T$V2==1]
+
+    DAYL   <- daylength/60. # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
+  # XPOD   <- ??? # TO Do depois de implementar GROW
+  # SWFEM  <- modelo resolve abaixo com base na umiade do solo
+    TMING  <- tmin 
+  # SWFEM  <- modelo resolve abaixo com base na temperatura do solo
+# Vars that are solverd by ECOSMOS  
+#____________________________________________________________________________      
+      
+      
+#    
   YRDOY   = paste0(iyear,jday)
   YRSIM   = paste0(iyear0,1)
   
@@ -108,27 +129,11 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   #               S = On specified date
   
 
-  #To do - verificar se esta correto
-  DAYL     <- daylength/60. # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
-  
-
   NSTRES   <- 1 #Nitrogen stress factor (1=no stress, 0=max stress) 
   PStres2  <- 1 
   
   
-  # To do: depois que implementar 'SUBROUTINE GROW' usar o valor resolvido pelo modelo
-  XPODv <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-             0.003671511,0.012084253,0.024009451,0.040283576,0.05968399,0.082692102,0.104583979,0.129479527,
-             0.15558961,0.188465804,0.26417467,0.304826766,0.339704752,0.386390269,0.426694751,0.479249477,0.540160716,0.61833334,
-             0.67564851,0.730788291,0.776554286,0.814540088,0.846068263,0.872236669,0.893956423,0.911983788,0.926946521,0.939365625,
-             0.949673474,0.958229005,0.965330064,0.97122395,0.976115882,0.98017621,0.983546197,0.986343324,0.988664985,0.990591943,
-             0.992191315,0.99351877,0.994620562,0.995535076,0.996294141,0.996924162,0.997447014,0.997880936,0.997880936) 
-  
-  XPOD<-XPODv[DAS]
-  
-  
-  
+
 #   if (DYNAMIC == 'RUNINIT') {
     
     YRPLT   = paste0(iyear,jday)
@@ -321,23 +326,18 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
           SWFEM = SWFEM + DTRY * (max(wsoi[k] - swilt[k],0.0)) / (sfield[k] - swilt[k])
         } else {
           SWFEM = SWFEM + DTRY * (max(poros[k] - wsoi[k]*poros[k],0.0)) / (poros[k] - sfield[k]*poros[k])
-          
         }
-        
-        
-        TSDEP = TSDEP + DTRY * (tsoi[k]-273.16)
+         TSDEP = TSDEP + DTRY * (tsoi[k]-273.16)
         if (XDEP >= 10.) { break}
       }
-      
-      TSDEP = TSDEP / 10.
+       TSDEP = TSDEP / 10.
       
       #-----------------------------------------------------------------------
       #      Compute temperature and soil water effects for phase 1, emergence
       #-----------------------------------------------------------------------
       
       FT[1] = CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TSDEP) #todo: escrever função CURV () em algum outro script
-      
-      SWFEM = (SWFEM / 10.) * 100.0
+       SWFEM = (SWFEM / 10.) * 100.0
       FSW[1] = CURV("LIN",0.0,20.0,100.,1000.,SWFEM)
       
       FSW[1] = 1. + (1.-FSW[1])*WSENP[1]
@@ -362,7 +362,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     SWFAC  = 1.0
     TURFAC = 1.0
     if(stresstl<=0.9) TURFAC = (1./RWUEP1) * stresstl 
-    if(stresstl<=0.9) SWFAC = stresstl 
+    if(stresstl<=0.9) SWFAC  = stresstl 
     
     #        if (EOP > 0.001) {
     #        EP1 = EOP * 0.1           # EOP mm and EP1 cm
@@ -376,16 +376,17 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #-----------------------------------------------------------------------
     #     Compute dev rates for all other phases, using hourly air temp
     #-----------------------------------------------------------------------
-    
-    
-    
+ 
+        
     for (J in 2:NPHS) {
       K = TSELC[J]
       FT[J] = 0.0
       
       for (I in 1:TS) {
         
-        TGRO[I] <- tl_h[I] - 273.15 
+        #TGRO[I] <- tl_l[I] - 273.15
+        TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+        
         
         FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
         FT[J] = FT[J] + FTHR/TS
@@ -418,8 +419,8 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #-----------------------------------------------------------------------
     ZMODTE = 1.0
     
-    if (tmin < OPTBI) {
-      ZMODTE = 1. - (SLOBI * (OPTBI - tmin))
+    if (TMING < OPTBI) {
+      ZMODTE = 1. - (SLOBI * (OPTBI - TMING))
       ZMODTE = max(0.0, ZMODTE)
       ZMODTE = min(1.0, ZMODTE)
     }
