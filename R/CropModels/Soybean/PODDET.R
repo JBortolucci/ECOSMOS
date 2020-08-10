@@ -1,4 +1,3 @@
-#=======================================================================
 #  PODDET, Subroutine, W. D. Batchelor
 #-----------------------------------------------------------------------
 #  Computes pod detachment rates.
@@ -118,11 +117,11 @@
 #***********************************************************************
       } else if (DYNAMIC == EMERG) {
 #-----------------------------------------------------------------------
-        for (10 I in 1:NCOHORTS) { #todo: checar numero
-          DTC(I)    = 0.0
-          MSHELN(I) = 0.0
-          WPODY(I)  = 0.0
-          DAYS(I)   = 0.0
+        for (10 I in 1:NCOHORTS) { #TODO: checar numero
+          DTC[I]   = 0.0
+          MSHELN[I]= 0.0
+          WPODY[I] = 0.0
+          DAYS[I]  = 0.0
    10   }
         PODWTD = 0.0
 
@@ -137,7 +136,7 @@
 #--------------------------------------------------------------------
       FT = 0.0
       for (I in 1:TS) {
-         FTHR = CURV('LIN',TB(3),TO1(3),TO2(3),TM(3),TGRO(I))
+         FTHR = CURV('LIN',TB[3],TO1[3],TO2[3],TM[3],TGRO[I])
          FT = FT + FTHR/TS
       }
 #      24 changed to TS on 5 July 2017 by Bruce Kimball
@@ -151,42 +150,42 @@
 # -------------------------------------------------------------------
 #      Compute 10 day running average of leaf mass and PGAVL
 # -------------------------------------------------------------------
-      for (50 I in 10,2,-1) { #todo: checar numero e sintate
-        TDLM(I) = TDLM(I-1)
+      for (50 I in 10,2,-1) { #TODO: checar numero e sintate
+        TDLM[I]= TDLM[I-1]
    50 }
-      TDLM(1) = WTLF
+      TDLM[1] = WTLF
 # -------------------------------------------------------------------
 #     Compute slope of leaf mass curve
 # -------------------------------------------------------------------
-      SL10 = (TDLM(1) - TDLM(10))/ 10.0
+      SL10 = (TDLM[1] - TDLM[10])/ 10.0
 
 #---------------------------------------------------------------------
       if (YRNR2 >= 0) {
 #---------------------------------------------------------------------
 
-        for (40 NPP in 1:YRDOY - YRNR2)  { #todo: checar numero e sintate
-          TPODM = TPODM + WTSHE(NPP) + WTSD(NPP)
+        for (40 NPP in 1:YRDOY - YRNR2)  { #TODO: checar numero e sintate
+          TPODM = TPODM + WTSHE[NPP] + WTSD[NPP]
    40   }
 
         if (TPODM > 10.0) RLMPM = WTLF / TPODM
 #-------------------------------------------------------------------
 #     Main loop that cycles through detachment model
 #--------------------------------------------------------------------
-        for (1000 NPP in 1:YRDOY - YRNR2) { #todo: checar numero e sintate
+        for (1000 NPP in 1:YRDOY - YRNR2) { #TODO: checar numero e sintate
 #--------------------------------------------------------------------
 #     Determine maximum cohort shell mass and accumulate
 #     days without carbohydrate on a cohort basis
 #--------------------------------------------------------------------
-          if (SHELN(NPP) > MSHELN(NPP)) {
-            MSHELN(NPP) = SHELN(NPP)
+          if (SHELN[NPP] > MSHELN[NPP]) {
+            MSHELN[NPP] = SHELN[NPP]
           }
-          if (WTSD(NPP) + WTSHE(NPP) >= 0.01) {
-            if (WTSD(NPP) + WTSHE(NPP) <= WPODY(NPP) &  WTSD(NPP) > 0.0) {
-              DAYS(NPP) = DAYS(NPP) + 1.
+          if (WTSD[NPP] + WTSHE[NPP] >= 0.01) {
+            if (WTSD[NPP] + WTSHE[NPP] <= WPODY[NPP] &  WTSD[NPP] > 0.0) {
+              DAYS[NPP] = DAYS[NPP] + 1.
             }
 
-            if (WTSD(NPP) + WTSHE(NPP) > WPODY(NPP)) {
-              DAYS(NPP) = 0
+            if (WTSD[NPP] + WTSHE[NPP] > WPODY[NPP]) {
+              DAYS[NPP] = 0
             }
 
 #-----------------------------------------------------------------------
@@ -195,14 +194,14 @@
 #-----------------------------------------------------------------------
 #           if (RLMPM > PR1DET | SL10 > PR2DET) GOTO 700
             if (RLMPM <= PR1DET & SL10 <= PR2DET) {
-              if ((SL10 <= PR2DET) | DAYS(NPP) > DWC | WTLF <= 10.) {
-                DTC(NPP) = DTC(NPP) + FT
+              if ((SL10 <= PR2DET) | DAYS[NPP] > DWC | WTLF <= 10.) {
+                DTC[NPP] = DTC[NPP] + FT
               }
             } else {
 #           Accumulate DTC based on days without carbon before RLMPM < PR1DET
 #           and SL10 < PR2DET
-              if (DAYS(NPP) > DWC | WTLF <= 10.) {
-                DTC(NPP) = DTC(NPP) + FT
+              if (DAYS[NPP] > DWC | WTLF <= 10.) {
+                DTC[NPP] = DTC[NPP] + FT
               }
             }
 #-----------------------------------------------------------------------
@@ -211,51 +210,51 @@
 #--------------------------------------------------------------------
 #     Compute detachment for each cohort
 #--------------------------------------------------------------------
-        for (2000 NPP in 1:YRDOY - YRNR2) { #todo: checar numero e sintate
+        for (2000 NPP in 1:YRDOY - YRNR2) { #TODO: checar numero e sintate
 #       curve based on Drew control, disease and Lowman tag pod cohort study
-          if (DTC(NPP) > 0.) {
-            XPD = MSHELN(NPP) * (1.0 - XP1DET*EXP(XP2DET*DTC(NPP))/100.)
+          if (DTC[NPP] > 0.) {
+            XPD = MSHELN[NPP] * (1.0 - XP1DET*EXP(XP2DET*DTC[NPP])/100.)
             XPD = max(0.0,XPD)
-            if (SHELN(NPP) > XPD) {
-              if (SHELN(NPP) >= 0.01 & DTC(NPP) <= 34.) {
-                PDET(NPP) = SHELN(NPP) - XPD
-                PDET(NPP) = max(0.0,PDET(NPP))
-                PODWTD = PODWTD + (WTSHE(NPP) + WTSD(NPP))*PDET(NPP) / SHELN(NPP)
+            if (SHELN[NPP] > XPD) {
+              if (SHELN[NPP] >= 0.01 & DTC[NPP] <= 34.) {
+                PDET[NPP] = SHELN[NPP] - XPD
+                PDET[NPP] = max(0.0,PDET[NPP])
+                PODWTD = PODWTD + (WTSHE[NPP] + WTSD[NPP])*PDET[NPP] / SHELN[NPP]
 
-                SDDAM =  WTSD(NPP) * PDET(NPP) / SHELN(NPP)
-                if (SDDAM > WTSD(NPP)) {
-                  SWIDOT = SWIDOT + WTSD(NPP)
+                SDDAM =  WTSD[NPP] * PDET[NPP] / SHELN[NPP]
+                if (SDDAM > WTSD[NPP]) {
+                  SWIDOT = SWIDOT + WTSD[NPP]
                 } else {
                   SWIDOT = SWIDOT + SDDAM
                 }
 
-                SHDAM = WTSHE(NPP) * PDET(NPP) / SHELN(NPP)
-                if (SHDAM > WTSHE(NPP)) {
-                  WSHIDT = WSHIDT + WTSHE(NPP)
+                SHDAM = WTSHE[NPP] * PDET[NPP] / SHELN[NPP]
+                if (SHDAM > WTSHE[NPP]) {
+                  WSHIDT = WSHIDT + WTSHE[NPP]
                 } else {
                   WSHIDT = WSHIDT + SHDAM
                 }
 
-                WTSD(NPP)  = WTSD(NPP) * (1. - PDET(NPP) / SHELN(NPP))
-                SDNO(NPP)  = SDNO(NPP) * (1. - PDET(NPP) / SHELN(NPP))
-                WTSHE(NPP) = WTSHE(NPP)* (1. - PDET(NPP) / SHELN(NPP))
-                SHELN(NPP) = SHELN(NPP)* (1. - PDET(NPP) / SHELN(NPP))
+                WTSD[NPP]  = WTSD[NPP] * (1. - PDET[NPP] / SHELN[NPP])
+                SDNO[NPP]  = SDNO[NPP] * (1. - PDET[NPP] / SHELN[NPP])
+                WTSHE[NPP] = WTSHE[NPP]* (1. - PDET[NPP] / SHELN[NPP])
+                SHELN[NPP] = SHELN[NPP]* (1. - PDET[NPP] / SHELN[NPP])
 
-                WTSHE(NPP) = max(0.0,WTSHE(NPP))
-                SHELN(NPP) = max(0.0,SHELN(NPP))
-                WTSD(NPP)  = max(0.0,WTSD(NPP))
-                SDNO(NPP)  = max(0.0,SDNO(NPP))
+                WTSHE[NPP] = max(0.0,WTSHE[NPP])
+                SHELN[NPP] = max(0.0,SHELN[NPP])
+                WTSD[NPP]  = max(0.0,WTSD[NPP])
+                SDNO[NPP]  = max(0.0,SDNO[NPP])
               }
             }
           }
-          WPODY(NPP) = WTSD(NPP) + WTSHE(NPP)
+          WPODY[NPP] = WTSD[NPP] + WTSHE[NPP]
  2000   }
 
         SUMSD = 0.0
         SUMSH = 0.0
-        for (4000 NPP in 1:YRDOY - YRNR2)  { #todo: checar numero e sintate
-          SUMSD = SUMSD + WTSD(NPP)
-          SUMSH = SUMSH + WTSHE(NPP)
+        for (4000 NPP in 1:YRDOY - YRNR2)  { #TODO: checar numero e sintate
+          SUMSD = SUMSD + WTSD[NPP]
+          SUMSH = SUMSH + WTSHE[NPP]
  4000   }
       }
 

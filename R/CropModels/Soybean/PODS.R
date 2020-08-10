@@ -235,7 +235,7 @@
       if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEGC,0)
       ECOTYP = '      '
       LNUM = 0
-      DO WHILE (ECOTYP != ECONO) { #todo: checar essa função no R
+      DO WHILE (ECOTYP != ECONO) { #TODO: checar essa função no R
         CALL IGNORE(LUNECO, LNUM, ISECT, C255)
         if ((ISECT == 1) & (C255(1:1) != ' ') & (C255(1:1) != '*')) {
 #          READ (C255,'(A6,66X,F6.0,30X,F6.0)',IOSTAT=ERR)
@@ -269,24 +269,23 @@
 #     (temperature and short photoperiod)
 #-----------------------------------------------------------------------
 #     Number of days from end pod set to physiological maturity
-        MNESPM = PHTHRS(10) - PHTHRS(9)
+        MNESPM = PHTHRS[10] - PHTHRS[9]
 
 #-----------------------------------------------------------------------
 #     Number of days between start of peg (full flower) and shell
 #     formation
 #     Only used in peanut to define slow growth period.
-        LNGPEG  = PHTHRS(7) - PHTHRS(6)
+        LNGPEG  = PHTHRS[7] - PHTHRS[6]
 
 #-----------------------------------------------------------------------
 #     Number of days between start of shell and seed formation of a pod
-        LAGSD  = PHTHRS(8) - PHTHRS(6)
+        LAGSD  = PHTHRS[8] - PHTHRS[6]
 
 #-----------------------------------------------------------------------
 #     Compute reproductive rates from cultivar and ecotype coefficients
 #-----------------------------------------------------------------------
        SDVAR = WTPSD / SFDUR
-       SHVAR = WTPSD * SDPDVR * ((100.-THRESH)/THRESH)/
-     &         ((LNGSH-.85*LNGPEG)*((1.-PROSHI)/(1.-PROSHF)))
+       SHVAR = WTPSD * SDPDVR * ((100.-THRESH)/THRESH)/((LNGSH-.85*LNGPEG)*((1.-PROSHI)/(1.-PROSHF)))
 
 #***********************************************************************
 #***********************************************************************
@@ -340,13 +339,13 @@
         WTSHM   = 0.0
 
         for (NPP in 1:NCOHORTS) {
-          SHELN(NPP) = 0.0
-          WTSHE(NPP) = 0.0
-          WTSD(NPP) = 0.0
-          SDNO(NPP) = 0.0
-          FLWN(NPP) = 0.0
-          SUPDE(NPP) = 0.0
-          AVTEM(NPP) = 0.0
+          SHELN[NPP] = 0.0
+          WTSHE[NPP] = 0.0
+          WTSD[NPP] = 0.0
+          SDNO[NPP] = 0.0
+          FLWN[NPP] = 0.0
+          SUPDE[NPP] = 0.0
+          AVTEM[NPP] = 0.0
         }
       
         CALL PODCOMP(
@@ -379,7 +378,7 @@
 #     Seed growth section
 #-----------------------------------------------------------------------
       if (YRDOY >= YRNR1 & YRNR1 > 0) {
-        NR1TIM = max(TIMDIF(YRNR1,YRDOY),0)
+        NR1TIM = max(TIMDIF(YRNR1,YRDOY),0) #TODO tradução timdif 
 #-----------------------------------------------------------------------
         PGAVLR = PGAVL * XFRT
 
@@ -402,13 +401,13 @@
           REDPUN = 1.0
         }
         if (YRDOY > YRNR2 & YRNR2 > 0) {
-          NR2TIM = max(TIMDIF(YRNR2,YRDOY),0)
+          NR2TIM = max(TIMDIF(YRNR2,YRDOY),0) #TODO tradução timedif 
 #-----------------------------------------------------------------------
 #     Remember yesterdays mature shell weight, WTSHMY
 #-----------------------------------------------------------------------
           WTSHMY = WTSHM
           WTSHM = 0.0
-          for (800 NPP in 1:NR2TIM) { #todo: checar numeros
+          for (800 NPP in 1:NR2TIM) { #TODO: checar numeros
             if (NPP > NCOHORTS) {
               WRITE(MESSAGE(1),851)
               WRITE(MESSAGE(2),852)
@@ -424,7 +423,7 @@
 #-----------------------------------------------------------------------
 #     Compute physiological age of cohort
 #-----------------------------------------------------------------------
-            PAGE = PHTIM(NR2TIM + 1) - PHTIM(NPP)
+            PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
 #-----------------------------------------------------------------------
 #     Prevent seeds from growing until they are older than LAGSD p-t-d
 #-----------------------------------------------------------------------
@@ -434,17 +433,17 @@
 #     Prevent cohort from exceeding threshing limit, considering
 #     damaged seed (SDDES) that were damaged without shell loss ***wdb??
 #-----------------------------------------------------------------------
-              if (SDDES(NPP) > 0.0) {
-                REDSHL = WTSHE(NPP)*SDDES(NPP)/(SDDES(NPP)+SDNO(NPP))
+              if (SDDES[NPP] > 0.0) {
+                REDSHL = WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
               } else {
                 REDSHL = 0.
               }
-              SDMAX = (WTSHE(NPP)-REDSHL)*THRESH/(100.-THRESH)-WTSD(NPP)
+              SDMAX = (WTSHE[NPP]-REDSHL)*THRESH/(100.-THRESH)-WTSD[NPP]
               SDMAX = max(0.0,SDMAX)
 #-----------------------------------------------------------------------
 #     Compute shell wt of cohorts that are full
 #-----------------------------------------------------------------------
-              if (SDMAX <= 0.0) WTSHM = WTSHM + WTSHE(NPP)
+              if (SDMAX <= 0.0) WTSHM = WTSHM + WTSHE[NPP]
             }
   800     }
 #-----------------------------------------------------------------------
@@ -485,24 +484,24 @@
 #-----------------------------------------------------------------------
 #     Grow seed cohorts
 #-----------------------------------------------------------------------
-          for (1300 NPP in 1:NR2TIM) { #todo: checar numeros
-            PAGE = PHTIM(NR2TIM + 1) - PHTIM(NPP)
+          for (1300 NPP in 1:NR2TIM) { #TODO: checar numeros
+            PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
 #           if (PAGE < LAGSD) GO TO 1300
             if (PAGE >= LAGSD) {
-              if (SDDES(NPP) > 0.0) {
-                REDSHL = WTSHE(NPP)*SDDES(NPP)/(SDDES(NPP)+SDNO(NPP))
+              if (SDDES[NPP] > 0.0) {
+                REDSHL = WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
               } else {
                 REDSHL = 0.
               }
-              SDMAX = (WTSHE(NPP)-REDSHL)*THRESH/(100.-THRESH)-WTSD(NPP)
+              SDMAX = (WTSHE[NPP]-REDSHL)*THRESH/(100.-THRESH)-WTSD[NPP]
               SDMAX = max(0.0,SDMAX) * (1. + TURADD)
-              WTSD(NPP) = WTSD(NPP)+RSD*min(SDGR*SDNO(NPP)*REDPUN,SDMAX)
+              WTSD[NPP] = WTSD[NPP]+RSD*min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
 #-----------------------------------------------------------------------
 #     New Seed Tissue Growth, for updating crop seed mass
 #         in GROW, N Required
 #-----------------------------------------------------------------------
-              WSDDTN = WSDDTN + RSD * min(SDGR*SDNO(NPP)*REDPUN,SDMAX)
-              NGRSD = NGRSD+ANINSD*RSD*min(SDGR*SDNO(NPP)*REDPUN,SDMAX)
+              WSDDTN = WSDDTN + RSD * min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
+              NGRSD = NGRSD+ANINSD*RSD*min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
             }
  1300     }
 #-----------------------------------------------------------------------
@@ -520,7 +519,7 @@
 #-----------------------------------------------------------------------
         TEMPOD = 0.
         for (I in 1:TS) {
-          TEMPOD = TEMPOD + CURV(TYPPDT,FNPDT(1),FNPDT(2),FNPDT(3),FNPDT(4),TGRO(I))
+          TEMPOD = TEMPOD + CURV(TYPPDT,FNPDT[1],FNPDT[2],FNPDT[3],FNPDT[4],TGRO[I])
         }
         TEMPOD = TEMPOD/REAL(TS)
 # 24 changed to TS on 3Jul17 by Bruce Kimball
@@ -534,14 +533,14 @@
           POTSW = 0.0
           DSW = 0.0
           for (I in 1:NLAYR) {
-            DSW = DSW + DLAYR(I)
+            DSW = DSW + DLAYR[I]
             FLAYR = 1.0
             if (DSW > DSWBAR) {
-              FLAYR = (DSWBAR-(DSW-DLAYR(I)))/DLAYR(I)
+              FLAYR = (DSWBAR-(DSW-DLAYR[I]))/DLAYR[I]
             }
-            ACTSW = ACTSW + (SW(I) - LL(I)) * DLAYR(I) * FLAYR
-            POTSW = POTSW + (DUL(I) - LL(I)) * DLAYR(I) * FLAYR
-            if ( FLAYR < 1.0 ) GO TO 401 #todo
+            ACTSW = ACTSW + (SW[I] - LL[I]) * DLAYR[I] * FLAYR
+            POTSW = POTSW + (DUL[I] - LL[I]) * DLAYR[I] * FLAYR
+            if ( FLAYR < 1.0 ) GO TO 401 #TODO
           }
   401     SWBAR = ACTSW / POTSW
           SWBAR = MIN (SWBAR,1.0)
@@ -560,22 +559,22 @@
 #     This section calculates shell growth after first pod (NR2)
 #-----------------------------------------------------------------------
         if (YRDOY > YRNR2 & YRNR2 > 0) {
-          for (2100 NPP in 1:NR2TIM) { #todo: checar numeros
+          for (2100 NPP in 1:NR2TIM) { #TODO: checar numeros
             NAGE = NR2TIM + 1 - NPP
-            PAGE = PHTIM(NR2TIM + 1) - PHTIM(NPP)
+            PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
             ADDSHL = 0.0
             SUPDAY = 1.0
             if (PAGE <= LNGSH) {
-              if (SHELN(NPP) >= 0.001 & GRRAT1 >= 0.001) {
+              if (SHELN[NPP] >= 0.001 & GRRAT1 >= 0.001) {
                 if (PAGE >= LNGPEG) {
-                  ADDSHL = min(PGLEFT/AGRSH1,GRRAT1 * SHELN(NPP), NLEFT/(FNINSH*CNSTRES^0.5))
-                  SUPDAY = min((PGLEFT/AGRSH1)/(GRRAT1*SHELN(NPP)), (NLEFT/(FNINSH*CNSTRES^0.5))/(GRRAT1 * SHELN(NPP)), SWADD1)
+                  ADDSHL = min(PGLEFT/AGRSH1,GRRAT1 * SHELN[NPP], NLEFT/(FNINSH*CNSTRES^0.5))
+                  SUPDAY = min((PGLEFT/AGRSH1)/(GRRAT1*SHELN[NPP]), (NLEFT/(FNINSH*CNSTRES^0.5))/(GRRAT1 * SHELN[NPP]), SWADD1)
                   if (SUPDAY >= 1.0) SUPDAY = 1.0
                 } else {
                   if (SHLAG < 0.001) SHLAG = 0.001
-                  ADDSHL = min(PGLEFT/AGRSH1 ,GRRAT1*SHELN(NPP)*SHLAG, NLEFT/(FNINSH*CNSTRES^0.5))
-                  SUPDAY = min((PGLEFT/AGRSH1)/(GRRAT1*SHELN(NPP)*SHLAG),
-							   (NLEFT/(FNINSH*CNSTRES^0.5))/(GRRAT1*SHELN(NPP)*SHLAG), SWADD1)
+                  ADDSHL = min(PGLEFT/AGRSH1 ,GRRAT1*SHELN[NPP]*SHLAG, NLEFT/(FNINSH*CNSTRES^0.5))
+                  SUPDAY = min((PGLEFT/AGRSH1)/(GRRAT1*SHELN[NPP]*SHLAG),
+							   (NLEFT/(FNINSH*CNSTRES^0.5))/(GRRAT1*SHELN[NPP]*SHLAG), SWADD1)
                   if (SUPDAY >= 1.0) SUPDAY = 1.0
                 }
 #-----------------------------------------------------------------------
@@ -583,11 +582,11 @@
 #-----------------------------------------------------------------------
               }
               if (NAGE <= 1) {
-                SUPDE(NPP) = SUPDAY
-                AVTEM(NPP) = TEMPOD
+                SUPDE[NPP] = SUPDAY
+                AVTEM[NPP] = TEMPOD
               } else {
-                SUPDE(NPP) = (SUPDE(NPP) * (NAGE-1) + SUPDAY)/NAGE
-                AVTEM(NPP) = (AVTEM(NPP) * (NAGE-1) + TEMPOD)/NAGE
+                SUPDE[NPP] = (SUPDE[NPP] * (NAGE-1) + SUPDAY)/NAGE
+                AVTEM[NPP] = (AVTEM[NPP] * (NAGE-1) + TEMPOD)/NAGE
               }
 #-----------------------------------------------------------------------
 #     Compute overall growth of all shells, total N required
@@ -604,16 +603,16 @@
 #     Grow shells if greater than 1 day old
 #-----------------------------------------------------------------------
             SHMINE = 0.0
-            if (SDDES(NPP) > 0.0) {
-              REDSHL = WTSHE(NPP)*SDDES(NPP)/(SDDES(NPP)+SDNO(NPP))
+            if (SDDES[NPP] > 0.0) {
+              REDSHL = WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
             } else {
               REDSHL = 0.
             }
-            SDMAXX = (WTSHE(NPP)-REDSHL) * THRESH/(100. - THRESH)
-            if (SHELWT-WTSHM > 0.0 & SDMAXX >= WTSD(NPP)) {
-              SHMINE = NRUSSH/0.16 * WTSHE(NPP)/(SHELWT - WTSHM)
+            SDMAXX = (WTSHE[NPP]-REDSHL) * THRESH/(100. - THRESH)
+            if (SHELWT-WTSHM > 0.0 & SDMAXX >= WTSD[NPP]) {
+              SHMINE = NRUSSH/0.16 * WTSHE[NPP]/(SHELWT - WTSHM)
             }
-            WTSHE(NPP) = WTSHE(NPP) + ADDSHL - max(SHMINE,0.0)
+            WTSHE[NPP] = WTSHE[NPP] + ADDSHL - max(SHMINE,0.0)
  2100     }
 #-----------------------------------------------------------------------
 #     Set seeds based on ratio of supply to demand for shells,
@@ -621,28 +620,28 @@
 #     between (LAGSD) and (LAGSD+TDUMX) p-t-d age
 #-----------------------------------------------------------------------
           WTABRT = 0.0
-          for (2200 NPP in 1:NR2TIM) { #todo: checar numeros
-            PAGE = PHTIM(NR2TIM + 1) - PHTIM(NPP)
-            if (PAGE >= LAGSD & PAGE < LAGSD + TDUMX & SDNO(NPP) <= 0.0) {
+          for (2200 NPP in 1:NR2TIM) { #TODO: checar numeros
+            PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
+            if (PAGE >= LAGSD & PAGE < LAGSD + TDUMX & SDNO[NPP] <= 0.0) {
 #-----------------------------------------------------------------------
 #     Physiol age to set seeds
 #-----------------------------------------------------------------------
-              if (SUPDE(NPP) >= SETMAX) {
+              if (SUPDE[NPP] >= SETMAX) {
                 SHRAT = 1.0
               } else {
-                SHRAT = SUPDE(NPP)/SETMAX
+                SHRAT = SUPDE[NPP]/SETMAX
               }
-              SDNO(NPP) = min(SHRAT, AVTEM(NPP)*(DRPP^1.0)) * SHELN(NPP)* SDPDVR + SDNO(NPP)
+              SDNO[NPP] = min(SHRAT, AVTEM[NPP]*(DRPP^1.0)) * SHELN[NPP]* SDPDVR + SDNO[NPP]
 #-----------------------------------------------------------------------
 #     Abort shells that do not form seed; abort (1-SHRAT) fraction
 #-----------------------------------------------------------------------
               WTABR = 0.0
-              START = SHELN(NPP)
-              SHELN(NPP) = SHELN(NPP)*min(SHRAT, AVTEM(NPP)*(DRPP^1.0))
+              START = SHELN[NPP]
+              SHELN[NPP] = SHELN[NPP]*min(SHRAT, AVTEM[NPP]*(DRPP^1.0))
               if (START > 0.) {
-                WTABR = (START-SHELN(NPP))*WTSHE(NPP)/START
+                WTABR = (START-SHELN[NPP])*WTSHE[NPP]/START
               }
-              WTSHE(NPP) = WTSHE(NPP) - WTABR
+              WTSHE[NPP] = WTSHE[NPP] - WTABR
               WTABRT = WTABRT + WTABR
             }
  2200     }
@@ -656,10 +655,10 @@
 #-----------------------------------------------------------------------
         AFLW = RFLWAB * (1.0 - TDUMX) * (1.0 - SWADD2)
         FLWRDY = 0.
-        for (2500 NPP in 1:NR1TIM) { #todo: checar numeros
-          if (FLWN(NPP) > 0.0001) {
-            PNAGE = PNTIM(NR1TIM + 1) - PNTIM(NPP)
-            FLWN(NPP) = FLWN(NPP) * (1.0 - AFLW)
+        for (2500 NPP in 1:NR1TIM) { #TODO: checar numeros
+          if (FLWN[NPP] > 0.0001) {
+            PNAGE = PNTIM(NR1TIM + 1) - PNTIM[NPP]
+            FLWN[NPP] = FLWN[NPP] * (1.0 - AFLW)
             if (PNAGE >= PHTHRS(6)) {
 #-----------------------------------------------------------------------
 #     Allow flowers in each cohort to make pods over 2-3 days
@@ -668,8 +667,8 @@
               if (TDUMX > 0.0001) FLWFRC = (PNAGE-PHTHRS(6))/TDUMX
               FLWFRC = min(FLWFRC,1.0)
               FLWFRC = max(FLWFRC,0.0)
-              FLWRDY = FLWFRC*FLWN(NPP) + FLWRDY
-              FLWN(NPP) = (1.0-FLWFRC)*FLWN(NPP)
+              FLWRDY = FLWFRC*FLWN[NPP] + FLWRDY
+              FLWN[NPP] = (1.0-FLWFRC)*FLWN[NPP]
             }
           }
  2500   }
@@ -728,22 +727,22 @@
 
           CALL FreshWt(INTEGR, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
 
-          for (2900 NPP in 1:NR2TIM + 1) { #todo: checar numeros e sintaxe da soma (+)
+          for (2900 NPP in 1:NR2TIM + 1) { #TODO: checar numeros e sintaxe da soma (+)
 #-----------------------------------------------------------------------
-            PAGE = PHTIM(NR2TIM + 1) - PHTIM(NPP)
+            PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
 #-----------------------------------------------------------------------
             if (PAGE > LNGPEG) {
-              PODNO = PODNO + SHELN(NPP)
-              SEEDNO = SEEDNO + SDNO(NPP)
+              PODNO = PODNO + SHELN[NPP]
+              SEEDNO = SEEDNO + SDNO[NPP]
               if (PAGE >= LAGSD) {
-                if (SDDES(NPP) > 0.0) {
-                  REDSHL = WTSHE(NPP) * SDDES(NPP) / (SDDES(NPP) + SDNO(NPP))
+                if (SDDES[NPP] > 0.0) {
+                  REDSHL = WTSHE[NPP] * SDDES[NPP] / (SDDES[NPP] + SDNO[NPP])
                 } else {
                   REDSHL = 0.
                 }
-                SDMAXX = (WTSHE(NPP)-REDSHL) * THRESH/(100. - THRESH)
-                if ((WTSD(NPP) >= 0.95 * SDMAXX) & (WTSHE(NPP) > 0.001) | (PAGE > XMPAGE)) {
-                  PODMAT = PODMAT + SHELN(NPP)
+                SDMAXX = (WTSHE[NPP]-REDSHL) * THRESH/(100. - THRESH)
+                if ((WTSD[NPP] >= 0.95 * SDMAXX) & (WTSHE[NPP] > 0.001) | (PAGE > XMPAGE)) {
+                  PODMAT = PODMAT + SHELN[NPP]
                 }
               }
             }

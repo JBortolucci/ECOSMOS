@@ -95,7 +95,7 @@
       } else {
         for (I in 1:4){
           ISECT = 2
-          DO WHILE (ISECT != 1) { #todo: checar essa função no R
+          DO WHILE (ISECT != 1) { #TODO: checar essa função no R
             CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
           }
         }
@@ -150,7 +150,7 @@
       RATTP  = 1.0
 
       for (I in 1:5) {
-        SWFCAB(I) = 1.0
+        SWFCAB[I] = 1.0
       }
 
 #***********************************************************************
@@ -164,10 +164,10 @@
       DAS = CONTROL % DAS
 
       #Update value of RATTP.
-      for (I in NSWAB,2,-1) { #todo: checar sintaxe
-        SWFCAB(I) = SWFCAB(I-1)
+      for (I in NSWAB,2,-1) { #TODO: checar sintaxe
+        SWFCAB[I] = SWFCAB[I-1]
       }
-      SWFCAB(1) = SWFAC
+      SWFCAB[1] = SWFAC
       RATTP = SWFCAB(NSWAB)
 
       SSDOT = 0.0
@@ -198,10 +198,10 @@
         SLDOT = SLDOT + LFSEN
         SLDOT = min(WTLF,SLDOT)
 #-----------------------------------------------------------------------
-C     This section calculates senescence due to low light in lower
-C     canopy.  First compute LAI at which light compensation is reached
-C     then allow LAI above this amount to be senesced over TCMP thermal
-C     days.
+#     This section calculates senescence due to low light in lower
+#     canopy.  First compute LAI at which light compensation is reached
+#     then allow LAI above this amount to be senesced over TCMP thermal
+#     days.
 #-----------------------------------------------------------------------
         LTSEN = 0.0
         if (PAR > 0.) {

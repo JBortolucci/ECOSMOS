@@ -29,7 +29,7 @@
       REAL  WLFDOT, WTLF, SLDOT, NRUSLF, TMIN, FREEZ2
 
 #-----------------------------------------------------------------------
-      DAP   = max(0,TIMDIF(YRPLT,YRDOY))
+      DAP   = max(0,TIMDIF(YRPLT,YRDOY)) #TODO tradução timdif 
       WLFDOT = WTLF - SLDOT - NRUSLF/0.16
 
       if (TMIN < FREEZ2) {

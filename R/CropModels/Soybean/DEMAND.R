@@ -97,7 +97,7 @@
       REAL XVGROW(6), YVGROW(6), YVREF(6)
       REAL XSLATM(10), YSLATM(10), XTRFAC(10), YTRFAC(10), XXFTEM(10), YXFTEM(10)
       REAL XLEAF(25), YLEAF(25), YSTEM(25)
-      REAL TGRO(TS)
+      REAL TGRO[TS]
       REAL SDDES(NCOHORTS), SDNO(NCOHORTS), SHELN(NCOHORTS) 
       REAL WTSD(NCOHORTS), WTSHE(NCOHORTS)
       REAL PHTIM(NCOHORTS), PNTIM(NCOHORTS)
@@ -166,7 +166,7 @@
         SIZRAT = SIZELF / SIZREF
 
         for (I in 1:6){
-          YVGROW(I) = SIZRAT * YVREF(I)
+          YVGROW[I] = SIZRAT * YVREF[I]
         }
 
 #-----------------------------------------------------------------------
@@ -197,8 +197,8 @@
         CDMREP = 0.0
         NAGE   = 0
         for (NPP in 1:NCOHORTS) {
-          PHTIM(NPP) = 0.
-          PNTIM(NPP) = 0.
+          PHTIM[NPP] = 0.
+          PNTIM[NPP] = 0.
         }
         FNINSD = SDPRO * 0.16   
         FNINL  = PROLFI * 0.16  
@@ -263,10 +263,10 @@
         TMPFAC = 0.
         TMPFCS = 0.
         for (I in 1:TS) {
-          TMPFAC =CURV(TYPSDT,FNSDT(1),FNSDT(2),FNSDT(3),FNSDT(4), TGRO(I))
+          TMPFAC =CURV(TYPSDT,FNSDT[1],FNSDT[2],FNSDT[3],FNSDT[4], TGRO[I])
         TMPFCS = TMPFCS + TMPFAC
         }
-        TMPFAC = TMPFCS /REAL(TS)
+        TMPFAC = TMPFCS /REAL[TS]
 # 24 changed to TS on 3Jul17 by Bruce Kimball
         
 #-----------------------------------------------------------------------
@@ -299,27 +299,27 @@
         NDMSDR = 0.0
 #-----------------------------------------------------------------------
         if (DAS > NR2) {
-          for (NPP in 1:DAS - NR2) { #todo: checar sintaxe com o menos (-)
+          for (NPP in 1:DAS - NR2) { #TODO: checar sintaxe com o menos (-)
 #-----------------------------------------------------------------------
 #     Calculate physiol age of seed cohort.  Do not allow seed to grow
 #     until shells are greater than LAGSD physiol age.
 #-----------------------------------------------------------------------
-            PAGE = PHTIM(DAS - NR2 + 1) - PHTIM(NPP)
+            PAGE = PHTIM[DAS - NR2 + 1] - PHTIM[NPP]
             if (PAGE >= LAGSD) {
 #-----------------------------------------------------------------------
 #     Allow cohort growth until threshing limit (seed wt./pod wt) occurs
 #     taking into account damage by pests to seed and shells
 #-----------------------------------------------------------------------
               REDSHL = 0
-              if (SDDES(NPP)>0) {
-                REDSHL = WTSHE(NPP)*SDDES(NPP)/(SDDES(NPP)+SDNO(NPP))
+              if (SDDES[NPP]>0) {
+                REDSHL = WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
               }
-              SDMAX = (WTSHE(NPP)-REDSHL)*THRESH/(100.-THRESH)-WTSD(NPP)
+              SDMAX = (WTSHE[NPP]-REDSHL)*THRESH/(100.-THRESH)-WTSD[NPP]
               SDMAX = max(0.0,SDMAX)
 #-----------------------------------------------------------------------
 #     Compute Seed Growth Demand, GDMSD, and N required for seed, NDMSD
 #-----------------------------------------------------------------------
-              GDMSD  = GDMSD  + min(SDGR*SDNO(NPP)*REDPUN, SDMAX)
+              GDMSD  = GDMSD  + min(SDGR*SDNO[NPP]*REDPUN, SDMAX)
             }
           }
 #-----------------------------------------------------------------------
@@ -365,16 +365,16 @@
 #     until LNGPEG age, then potential growth until LNGSH
 #-----------------------------------------------------------------------
       if (DAS > NR2) {
-        for (NPP in 1:DAS - NR2) {  #todo: checar sintaxe com o menos (-)
+        for (NPP in 1:DAS - NR2) {  #TODO: checar sintaxe com o menos (-)
           NAGE = DAS - NR2 + 1 - NPP  #NAGE not used - chp
-          PAGE = PHTIM(DAS - NR2 + 1) - PHTIM(NPP)
-          if (PAGE <= LNGSH & SHELN(NPP) >= 0.001 & GRRAT1 >= 0.001) {
+          PAGE = PHTIM(DAS - NR2 + 1) - PHTIM[NPP]
+          if (PAGE <= LNGSH & SHELN[NPP] >= 0.001 & GRRAT1 >= 0.001) {
             if (PAGE >= LNGPEG) {
               #Shells between LNGPEG and LNGSH
-              ADDSHL = GRRAT1 * SHELN(NPP)
+              ADDSHL = GRRAT1 * SHELN[NPP]
             } else {
               #Shells < LNGPEG
-              ADDSHL = GRRAT1 * SHELN(NPP) * SHLAG
+              ADDSHL = GRRAT1 * SHELN[NPP] * SHLAG
             }
           }
           GDMSH  = GDMSH + ADDSHL
@@ -390,9 +390,9 @@
 #-----------------------------------------------------------------------
       TEMXFR = 0.
       for (I in 1:TS) {
-        TEMXFR = TEMXFR + TABEX(YXFTEM,XXFTEM,TGRO(I),6)
+        TEMXFR = TEMXFR + TABEX(YXFTEM,XXFTEM,TGRO[I],6)
       }
-      TEMXFR = TEMXFR/REAL(TS)
+      TEMXFR = TEMXFR/REAL[TS]
 # 24 changed to TS by Bruce Kimball on 3Jul17
       
 #-----------------------------------------------------------------------
@@ -507,9 +507,9 @@
 #-----------------------------------------------------------------------
       TPHFAC = 0.
       for (I in 1:TS){
-        TPHFAC = TPHFAC + TABEX (YSLATM,XSLATM,TGRO(I),5)
+        TPHFAC = TPHFAC + TABEX (YSLATM,XSLATM,TGRO[I],5)
       }
-      TPHFAC = TPHFAC/REAL(TS)
+      TPHFAC = TPHFAC/REAL[TS]
 # 24 changed to TS by Bruce Kimball on 3Jul17
       
 #-----------------------------------------------------------------------
@@ -522,7 +522,7 @@
 #-----------------------------------------------------------------------
       FFVEG = FVEG * TPHFAC * PARSLA * TURFSL
 
-      F = FFVEG #todo: checar se o F nao sera confundindo com 'false' + sintaxe de if sem chaves
+      F = FFVEG #TODO: checar se o F nao sera confundindo com 'false' + sintaxe de if sem chaves
       if (XFRT*FRACDN >= 0.05) { F = FFVEG * (1.0 - XFRT * FRACDN) }
 #-----------------------------------------------------------------------
 #     For determinate plants (XFRUIT=1.) leaf expansion stops at NDLEAF
@@ -909,7 +909,7 @@
       if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
       ECOTYP = '      '
       LNUM = 0
-      DO WHILE (ECOTYP != ECONO) { #todo: checar essa função no R
+      DO WHILE (ECOTYP != ECONO) { #TODO: checar essa função no R
         CALL IGNORE(LUNECO, LNUM, ISECT, C255)
         if ((ISECT == 1) & (C255(1:1) != ' ') & (C255(1:1) != '*')) {
 #          READ (C255,'(A6,66X,F6.0,30X,3F6.0)',IOSTAT=ERR)

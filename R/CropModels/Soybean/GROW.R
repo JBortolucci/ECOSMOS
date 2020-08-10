@@ -45,7 +45,7 @@
      &  PLIGLF, PLIGNO, PLIGRT, PLIGSD, PLIGSH, PLIGST,   !Output
      &  PODWT, PUNCSD, PUNCTR, RHOL, RHOS, RNITP,         !Output
      &  ROWSPC, RTWT, SDNPL, SDRATE, SDWT,                !Output
-     &  SEEDNI, SEEDNO, SENESCE, SHELWT, SLA,              !Output
+     &  SEEDNI, SEEDNO, SENESCE, SHELWT, SLA,             !Output
      &  SLAAD, STMWT, TOPWT, TOTWT, WCRLF, WCRRT, WCRSH,  !Output
      &  WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTCO,          !Output
      &  WTLF, WTLO, WTMAIN, WTNCAN, WTNEW, WTNLA, WTNLF,  !Output
@@ -264,7 +264,7 @@
       SENESCE % ResWt  = 0.0
       SENESCE % ResLig = 0.0
       SENESCE % ResE   = 0.0
-      SENESCE % CumResE(N) = 0.0
+      SENESCE % CumResE[N] = 0.0
 
       SHELWT = 0.0
       SLAAD  = 0.0
@@ -436,10 +436,10 @@
       XLAI   = AREALF / 10000.
       XHLAI  = XLAI
 
-C***********************************************************************
-C***********************************************************************
+#***********************************************************************
+#***********************************************************************
 #     Daily integration
-C***********************************************************************
+#***********************************************************************
       } else if (DYNAMIC == INTEGR) {
 #-----------------------------------------------------------------------
       NLPEST = 0.0    #CHP - N loss due to pest damage
@@ -493,7 +493,7 @@ C***********************************************************************
         WSDOT = max(WSDOT, -STMWT)
       }
 #-----------------------------------------------------------------------
-C     Net root growth rate
+#     Net root growth rate
 #-----------------------------------------------------------------------
       WRDOT = WRDOTN - SRDOT - NRUSRT/0.16 - CRUSRT - WRIDOT
       RootMob = (NRUSRT/0.16 + CRUSRT) * 10.      #kg/ha
@@ -1086,10 +1086,10 @@ C     Net root growth rate
 #        SENESCE % CumResE(P) = SENESCE % CumResE(P) + SenE(L,P)
       }
 
-C***********************************************************************
-C***********************************************************************
+#***********************************************************************
+#***********************************************************************
 #     END OF DYNAMIC IF CONSTRUCT
-C***********************************************************************
+#***********************************************************************
       }
 #-----------------------------------------------------------------------
       RETURN
@@ -1142,7 +1142,7 @@ C***********************************************************************
       }
 #-----------------------------------------------------------------------
       if (IHARI == 'M') {
-        DAP   = max(0,TIMDIF(YRPLT,YRDOY))
+        DAP   = max(0,TIMDIF(YRPLT,YRDOY)) #TODO tradução timdif 
 
         !Message to WARNING.OUT
         CALL YR_DOY(YRDOY, YR, DOY)

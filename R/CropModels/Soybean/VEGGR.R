@@ -79,7 +79,7 @@
       REAL NLEAK
       REAL NMINEA, NFIXN, TRNU
 
-      REAL TGRO(TS)
+      REAL TGRO[TS]
 
 #     P module
       REAL PStres2
@@ -144,7 +144,7 @@
       } else {
           for (I in 1:4) {
             ISECT = 2
-            DO WHILE (ISECT != 1)  { #todo: checar essa função no R
+            DO WHILE (ISECT != 1)  { #TODO: checar essa função no R
             CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
             }
           }
@@ -223,21 +223,19 @@
       } else if (DYNAMIC == INTEGR) {
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------
-C     Partitioning is modified by water stress and nitrogen stress
+#     Partitioning is modified by water stress and nitrogen stress
 #-----------------------------------------------------------------------
       SUPPN = NFIXN + TRNU + NMINEA
 #    chp added check for YRDOY = YREMRG, but on the next day, it still
 #     shows N stress because there is little supply.  Force a lag time?
 #      if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0.) {
-      if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0. & 
-     &        YRDOY != YREMRG) {
+      if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0. & YRDOY != YREMRG) {
         NSTRES = min(1.0,SUPPN/(NDMNEW * 0.70))
       } else {
         NSTRES = 1.0
       }
 #      FRRT  = ATOP * (1.0 - (min(TURFAC,NSTRES)))*(1.0-FRRT) + FRRT
-      FRRT  = ATOP * (1.0 - (min(TURFAC, NSTRES, PStres2))) * 
-     &                    (1.0 - FRRT) + FRRT
+      FRRT  = ATOP * (1.0 - (min(TURFAC, NSTRES, PStres2))) * (1.0 - FRRT) + FRRT
 #-----------------------------------------------------------------------
 #     Cumulative turgor factor that remembers veg drought stress
 #     to shift partitioning between leaf and stem toward leaf,
@@ -305,10 +303,7 @@ C     Partitioning is modified by water stress and nitrogen stress
 #     Adjust conversion costs to account for composition of tissue at
 #       lower N concentration
 #-----------------------------------------------------------------------
-            AGRVG = AGRLF * FRLF * (1.0 - (PROLFG - PROLFI)/(1.0 -
-     &       PROLFI))+ AGRRT * FRRT * (1.0 - (PRORTG - PRORTI)/(1.0 -
-     &       PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTG - PROSTI)/
-     &       (1.0 - PROSTI))
+            AGRVG = AGRLF * FRLF * (1.0 - (PROLFG - PROLFI)/(1.0 - PROLFI) )+ AGRRT * FRRT * (1.0 - (PRORTG - PRORTI)/(1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTG - PROSTI)/ (1.0 - PROSTI))
          }
       } else {
 #-----------------------------------------------------------------------
@@ -342,10 +337,7 @@ C     Partitioning is modified by water stress and nitrogen stress
 #     Recompute respiration costs if expansion occurs at low N-conc.,
 #       allow N dilution during growth of leaves, stems, and roots
 #-----------------------------------------------------------------------
-         AGRVG = AGRLF * FRLF * (1.0 - (PROLFT - PROLFI)/
-     &        (1.0-PROLFI)) + AGRRT * FRRT * (1.0 - (PRORTT - PRORTI)/
-     &        (1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTT -
-     &        PROSTI)/(1.0 - PROSTI))
+         AGRVG = AGRLF * FRLF * (1.0 - (PROLFT - PROLFI)/ (1.0-PROLFI)) + AGRRT * FRRT * (1.0 - (PRORTT - PRORTI)/ (1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTT - PROSTI)/(1.0 - PROSTI))
       }
 #-----------------------------------------------------------------------
 #     Compute C and N remaining to add to reserves
@@ -428,7 +420,6 @@ C     Partitioning is modified by water stress and nitrogen stress
          } else {
             NLEAK = 0.0
          }
-
          NADRAT = NLEFT / (FRLF*FNINL+FRSTM*FNINS+FRRT*FNINR)
          NADLF  = NADRAT * FRLF * FNINL
          NADST  = NADRAT * FRSTM * FNINS

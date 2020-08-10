@@ -194,59 +194,62 @@ source("R/CropModels/Soybean/CURV.R")
       
       #______________________________________________________________        
       # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
- 
+
+      # CONTROL VARS (.SBX) 
+      CROP    <-'SB' 
+       
       #!*CARBON AND NITROGEN MINING PARAMETERS
-      
       CADPR1  <- 0.260   
       CMOBMX  <- 0.024 
-      
-      CROP    <-'SB' 
       #!*POD LOSS PARAMETERS
       DETACH  <-'N'  
-     # ECONO (e' o ecotype)     
-     #!*EVAPOTRANSPIRATION    
+      #!*EVAPOTRANSPIRATION    
       EORATIO <- 1.1
       KEP     <- 0.68
-      
       #!*VEGETATIVE PARTITIONING PARAMETERS
-      FRCNOD  <-0.05
+      FRCNOD  <- 0.05
       #!*LEAF SENESCENCE FACTORS
-      FREEZ1   <- -2.22    
-      FREEZ2   <- -5.00 
+      FREEZ1  <- -2.22    
+      FREEZ2  <- -5.00 
       #!*PHOTOSYNTHESIS PARAMETERS
       KCAN     <-  0.67 
       KC_SLOPE <-  0.10     
-      NOUTDO     
-      PCARSH     
-      PCH2O     
-      PLIPSH     
-      PLIGSD     
-      PLIGSH     
-      PMINSD     
-      PMINSH     
-      POASD     
-      POASH     
-      PORMIN     
-      PROLFI     
-      PRORTI     
-      PROSHI     
-      PROSTI     
-      R30C2     
-      RCH2O     
-      RES30C     
-      RFIXN     
-      RLIG     
-      RLIP     
-      RMIN     
-      RNH4C     
-      RNO3C     
-      ROA     
-      RPRO     
-      RWUEP1     
-      RWUMX     
-      TTFIX     
-      
-      
+      #!*PLANT COMPOSITION VALUES
+      PCARSH <- 0.380
+      PLIPSH <- 0.020
+      PLIGSD <- 0.020  
+      PLIGSH <- 0.280
+      PMINSD <- 0.025
+      PMINSH <- 0.030
+      POASD  <- 0.040 
+      POASH  <- 0.040
+      PROLFI <- 0.356
+      PRORTI <- 0.092
+      PROSHI <- 0.250
+      PROSTI <- 0.150
+      #!*RESPIRATION PARAMETERS
+      PCH2O  <- 1.13
+      R30C2  <- 0.0040 
+      RCH2O  <- 1.242
+      RES30C <- 3.5E-04
+      RFIXN  <- 2.830
+      RLIG   <- 2.174
+      RLIP   <- 3.106
+      RMIN   <- 0.05
+      RNH4C  <- 2.556
+      RNO3C  <- 2.556
+      ROA    <- 0.929
+      RPRO   <- 0.360
+      #!*ROOT PARAMETERS
+      PORMIN <- 0.02
+      RWUEP1 <- 1.50
+      RWUMX  <- 0.04
+      #!*NITROGEN FIXATION PARAMETERS
+      TTFIX  <- 0
+      # Não usados
+      # ECONO (ecotype id)  
+      # NOUTDO     Logical unit for OVERVIEW.OUT file 
+
     #  PHENOL_OUT <- PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
       
       
@@ -759,3 +762,87 @@ source("R/CropModels/Soybean/CURV.R")
   assign("Signew",Signew, envir = env)
   
 }
+
+  #-----------------------------------------------------------------------
+  # ! Variable definitions SUBROUTINE IPPLNT
+  #-----------------------------------------------------------------------
+  # ! CADPR1   Maximum fraction of stem growth after flowering that can be 
+  #            allocated to carbohydrate storage just before a full seed load 
+  #            is set. ( fraction)
+  # CMOBMX   Maximum C pool mobilization rate (g[CH2O] / m2 / d)
+  # CROP     Crop identification code 
+  # DETACH   Switch to determine if pod detachment will be simulated (Y or N)
+  # ECONO    Ecotype code - used to match ECOTYP in .ECO file 
+  # ENAME    Experiment description 
+  # ERR      Error code for file operation 
+  # EXPER    Experiment code (prefix of input files) 
+  # FILEC    Filename for SPE file (e.g., SBGRO980.SPE) 
+  # FILECC   Path plus filename for species file (*.spe) 
+  # FILEE    Filename for ECO file (e.g., SBGRO980.ECO) 
+  # FILEGC   Pathname plus filename for ECO file 
+  # FILEIO   Filename for INP file (e.g., IBSNAT35.INP) 
+  # FOUND    Indicator that good data was read from file by subroutine FIND 
+  #            (0 - End-of-file encountered, 1 - NAME was found) 
+  # FRCNOD   Fraction of new root dry matter allocation that is diverted to 
+  #            nodule growth 
+  # FREEZ1   Temperature below which plant loses all leaves, but development 
+  #            continues (ï¿½C)
+  # FREEZ2   Temperature below which plant growth stops completely. (ï¿½C)
+  # ISECT    Data record code (0 - End of file encountered, 1 - Found a good 
+  #            line to read, 2 - End of Section in file encountered, denoted 
+  #            by * in column 1
+  # ISWDIS   Pest damage simulation switch (Y or N) 
+  # KCBMAX   Maximum basal crop coefficient for ASCE dual Kc ET method
+  # KCBMIN   Minimum basal crop coefficient for ASCE dual Kc ET method
+  # LUNCRP   Logical unit number for FILEC (*.spe file) 
+  # MODEL    Name of CROPGRO executable file 
+  # NL       maximum number of soil layers = 20 
+  # PATHCR   Pathname for SPE file or FILEE. 
+  # PATHEC   Pathname for FILEC 
+  # PATHL    Number of characters in path name (path plus filename for FILEC)
+  #            
+  # ! PCARSH   Proportion of shell tissue that is carbohydrate (fraction)
+  # PCH2O    Respiration loss due to storage/mobilization of CH2O
+  #            (g[CH2O] / g[CH2O])
+  # PLIGSD   Proportion of seed tissue that is lignin (fraction)
+  # PLIGSH   Proportion of shell tissue that is lignin (fraction)
+  # PLIPSH   Proportion of shell tissue that is lipid (fraction)
+  # PMINSD   Proportion of seed tissue that is mineral (fraction)
+  # PMINSH   Proportion of shell tissue that is mineral (fraction)
+  # POASD    Proportion of seed tissue that is organic acid (fraction)
+  # POASH    Proportion of shell tissue that is organic acid (fraction)
+  # PROLFI   Maximum protein composition in leaves during growth with 
+  #            luxurious supply of N (g[protein] / g[leaf tissue])
+  # PRORTI   Maximum protein composition in roots during growth with 
+  #            luxurious supply of N (g[protein] / g[root])
+  # PROSHI   Maximum protein composition in shells during growth with 
+  #            luxurious supply of N ( g[protein] / g[shell tissue])
+  # PROSTI   Maximum protein composition in stems during growth with 
+  #            luxurious supply of N (g[protein] / g[stem])
+  # R30C2    Respiration coefficient that depends on total plant mass, value 
+  #            at 30C (g[CH2O] used / g[CH2O] fixed / hr)
+  # RCH2O    Respiration required for synthesizing CH2O structure
+  #            (g[CH2O] / g[tissue])
+  # RES30C   Respiration coefficient that depends on gross photosynthesis, 
+  #            value at 30C (g CH2O/g DW/hr)
+  # RFIXN    CH2O required for biological N fixation (g[CH2O] / g[protein])
+  # RLIG     Respiration required for synthesizing lignin structure
+  #            (g[CH2O] / g[lignin])
+  # RLIP     Respiration required for synthesizing lipid structure
+  #            (g[CH2O] / g[lipid])
+  # RMIN     Respiration required for synthesizing mineral structure
+  #            (g[CH2O] / g[mineral])
+  # RNH4C    CH2O required for protein synthesis when source of N is ammonium 
+  #            uptake (g[CH2O] / g[protein])
+  # RNO3C    Respiration required for reducing NO3 to protein
+  #            (g[CH2O] / g[protein])
+  # ROA      Respiration required for synthesizing organic acids
+  #            (g[CH2O] / g[product])
+  # RPRO     Respiration required for re-synthesizing protein from mobilized 
+  #            N (g[CH2O] / g[protein])
+  # SKC      Shaping coefficient for ASCE dual Kc ET approach
+  # TTFIX    Physiological days delay in nodule initiation
+  #            (photo-thermal days / day)
+  #-----------------------------------------------------------------------
+  # !      END SUBROUTINE IPPLNT
+  #=======================================================================

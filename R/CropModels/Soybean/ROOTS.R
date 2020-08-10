@@ -84,7 +84,7 @@
      &  PORMIN, RFAC1, RLDSM, RTDEPI, RTEXF,              #Output
      &  RTSEN, RTSDF, RTWTMIN, XRTFAC, YRTFAC)            #Output
 
-      DEPMAX = DS(NLAYR)
+      DEPMAX = DS[NLAYR]
 
 #***********************************************************************
 #***********************************************************************
@@ -129,7 +129,7 @@
 
       TRLV = 0.0
       for (L in 1:NLAYR) {
-        TRLV = TRLV + RLV(L) * DLAYR(L) # cm[root] / cm2[ground]
+        TRLV = TRLV + RLV[L] * DLAYR[L] # cm[root] / cm2[ground]
       }
 
       CumRootMass = WTNEW * FRRT * PLTPOP * 10. 
@@ -158,12 +158,12 @@
 #     once, so yesterday's value is stored in TRLV here.
       for (L in 1:NLAYR) {
 #       TRTDY = TRTDY + RLV(L) * DLAYR(L) # cm[root] / cm2[ground]
-        RRLF(L)   = 0.0
-        RLSEN(L)  = 0.0
-        RLGRW(L)  = 0.0
-        MRESPR(L) = 0.0
-        GRESPR(L) = 0.0
-        RESPS(L)  = 0.0
+        RRLF[L]   = 0.0
+        RLSEN[L]  = 0.0
+        RLGRW[L]  = 0.0
+        MRESPR[L] = 0.0
+        GRESPR[L] = 0.0
+        RESPS[L]  = 0.0
       }
 
 #     Update RFAC3 based on yesterday's RTWT and TRLV
@@ -196,7 +196,7 @@
 
       for (L in 1:NLAYR) {
         L1 = L
-        CUMDEP = CUMDEP + DLAYR(L)
+        CUMDEP = CUMDEP + DLAYR[L]
         SWDF = 1.0
         SWEXF = 1.0
 
@@ -208,39 +208,39 @@
 #     water or N uptake. 
 #-----------------------------------------------------------------------
         if (ISWWAT == 'Y') {
-          if (SAT(L)-SW(L) < PORMIN) {
-            SWEXF = (SAT(L) - SW(L)) / PORMIN
+          if (SAT[L]-SW[L] < PORMIN) {
+            SWEXF = (SAT[L] - SW[L]) / PORMIN
             SWEXF = min(SWEXF, 1.0)
           }
 
-          SUMEX = SUMEX + DLAYR(L) * RLV(L) * (1.0 - SWEXF)
-          SUMRL = SUMRL + DLAYR(L) * RLV(L)
+          SUMEX = SUMEX + DLAYR[L] * RLV[L] * (1.0 - SWEXF)
+          SUMRL = SUMRL + DLAYR[L] * RLV[L]
 
-          ESW(L) = DUL(L) - LL(L)
-          if (SW(L) - LL(L) < 0.25*ESW(L)) {
-            SWDF = (SW(L) - LL(L)) / (0.25*ESW(L))
+          ESW[L] = DUL[L] - LL[L]
+          if (SW[L] - LL[L] < 0.25*ESW[L]) {
+            SWDF = (SW[L] - LL[L]) / (0.25*ESW[L])
             SWDF = max(SWDF, 0.0)
           }
         }
 #-----------------------------------------------------------------------
 
         RTSURV = min(1.0,(1.-RTSDF*(1.-SWDF)),(1.-RTEXF*(1.-SWEXF)))
-        if (RLV(L) > RLDSM & TRLV + RLNEW > TRLV_MIN) {
+        if (RLV[L] > RLDSM & TRLV + RLNEW > TRLV_MIN) {
 #         1/14/2005 CHP Don't subtract water stress senescence 
 #           yet - combine with natural senescence and check to see if 
 #           enough RLV for senescence to occur (TRLV > TRLV_MIN)
           #RLV(L) = RLV(L) * RTSURV
-          RLV_WS(L) = RLV(L) * (1.0 - RTSURV)
+          RLV_WS[L] = RLV[L] * (1.0 - RTSURV)
         } else {
-          RLV_WS(L) = 0.0
+          RLV_WS[L] = 0.0
         }
 
 #-----------------------------------------------------------------------
-        RLDF(L) = WR(L) * DLAYR(L) * min(SWDF,SWEXF)
+        RLDF[L] = WR[L] * DLAYR[L] * min(SWDF,SWEXF)
         if (CUMDEP < RTDEP) {
-          TRLDF = TRLDF + RLDF(L)
+          TRLDF = TRLDF + RLDF[L]
         } else {
-          if (WR(L) > 0.0 & RLNEW > 0.0) {
+          if (WR[L] > 0.0 & RLNEW > 0.0) {
             if (L == 1) {
               RTDEP = RTDEP + DTX * RFAC2
             } else {
@@ -262,9 +262,9 @@
                RTDEP = DEPMAX
             }
           }
-          RLDF(L) = RLDF(L) * (1. - (CUMDEP - RTDEP) / DLAYR(L))
-          TRLDF = TRLDF + RLDF(L)
-          GO TO 2900 #todo
+          RLDF[L] = RLDF[L] * (1. - (CUMDEP - RTDEP) / DLAYR[L])
+          TRLDF = TRLDF + RLDF[L]
+          GO TO 2900 #TODO
         }
       }
 #-----------------------------------------------------------------------
@@ -284,33 +284,33 @@
 
       for (L in 1:L1) {
         if (TRLDF < 0.00001) {
-          RRLF(L) = 1.0
+          RRLF[L] = 1.0
         } else {
-          RRLF(L) = RLDF(L)/TRLDF
+          RRLF[L] = RLDF[L]/TRLDF
         }
 #-----------------------------------------------------------------------
 #       MRESPR, GRESPR, and RESPS are not used anywhere
 #                       chp 9/22/98
 #-----------------------------------------------------------------------
-        MRESPR(L) = (RLV(L)/RFAC1*RO*DLAYR(L)*100.0 +RRLF(L)*FRRT*PG*RP) * 44.0 / 30.0
-        GRESPR(L) = RRLF(L) * (CGRRT-WRDOTN) * 44.0 /30.0
-        RESPS(L) = MRESPR(L) + GRESPR(L)
+        MRESPR[L] = (RLV[L]/RFAC1*RO*DLAYR[L]*100.0 +RRLF[L]*FRRT*PG*RP) * 44.0 / 30.0
+        GRESPR[L] = RRLF[L] * (CGRRT-WRDOTN) * 44.0 /30.0
+        RESPS[L] = MRESPR[L] + GRESPR[L]
 #-----------------------------------------------------------------------
-        RLGRW(L) = RRLF(L) * RLNEW / DLAYR(L) #cm[root]/cm3[ground]
+        RLGRW[L] = RRLF[L] * RLNEW / DLAYR[L] #cm[root]/cm3[ground]
 
         if (TRLV + RLNEW > TRLV_MIN) {
-          RLSEN(L) = RLV(L) * RTSEN * DTX
+          RLSEN[L] = RLV[L] * RTSEN * DTX
         } else {
-          RLSEN(L) = 0.0
+          RLSEN[L] = 0.0
         }
 
 #       Limit total senescence in each layer to existing RLV
-        if (RLV(L) - RLSEN(L) - RLV_WS(L) + RLGRW(L) < 0.0) {
-          RLSEN(L) = RLV(L) + RLGRW(L) - RLV_WS(L)
+        if (RLV[L] - RLSEN[L] - RLV_WS[L] + RLGRW[L] < 0.0) {
+          RLSEN[L] = RLV[L] + RLGRW[L] - RLV_WS[L]
         } 
 
 #       RLSENTOT is profile senescence, water stress and natural cm/cm2
-        RLSENTOT = RLSENTOT + (RLSEN(L) + RLV_WS(L)) * DLAYR(L)
+        RLSENTOT = RLSENTOT + (RLSEN[L] + RLV_WS[L]) * DLAYR[L]
       }
 
 #     If senescence too high (results in TRLV < TRLV_MIN) then
@@ -325,19 +325,19 @@
 #     Update RLV and TRLV based on today's growth and senescence
       TRLV = 0.0
       for (L in 1:NLAYR) {
-        RLV(L) = RLV(L) + RLGRW(L) - RLSEN(L) - RLV_WS(L)
-        TRLV = TRLV + RLV(L) * DLAYR(L)
+        RLV[L] = RLV[L] + RLGRW[L] - RLSEN[L] - RLV_WS[L]
+        TRLV = TRLV + RLV[L] * DLAYR[L]
 
 #       Keep senescence in each layer for adding C and N to soil
         #SENRT(L) = RLSEN(L) * DLAYR(L) / RFAC1 * 10000. * 10. #kg/ha
 #       1/14/2005 CHP - water stress senesence needs to be inlcuded.
-        SENRT(L) = (RLSEN(L) + RLV_WS(L)) * DLAYR(L) / RFAC3 * 1.E5 
+        SENRT[L] = (RLSEN[L] + RLV_WS[L]) * DLAYR[L] / RFAC3 * 1.E5 
 #                   cm[root]              g[root]   1000 cm2   10(kg/ha)
 #         kg/ha  =  -------- * cm[soil] * ------- * -------- * ---------
 #                  cm3[soil]             cm[root]     m2         (g/m2)
 
-        SENRT(L) = max(SENRT(L), 0.0)
-        SRDOT = SRDOT + SENRT(L)/10.        #g/m2
+        SENRT[L] = max(SENRT[L], 0.0)
+        SRDOT = SRDOT + SENRT[L]/10.        #g/m2
 
 #       Not used:
         #TRLGRW = TRLGRW + RLGRW(L) * DLAYR(L)
@@ -498,19 +498,19 @@
       CUMDEP = 0.
 
       for (L in 1:NLAYR) {
-        RLV(L) = 0.0
+        RLV[L] = 0.0
       }
 
       for (L in 1:NLAYR) {
-           DEP = min(RTDEP - CUMDEP, DLAYR(L))
+           DEP = min(RTDEP - CUMDEP, DLAYR[L])
            RLINIT = WTNEW * FRRT * PLTPOP * RFAC1 * DEP / ( RTDEP * 10000 )
 #        cm[root]   g[root]    plants  cm[root]   m2
 #        -------- = -------- * ------ * ------- * ---
 #      cm2[ground]   plant       m2     g[root]   cm2
 
            CUMDEP = CUMDEP + DEP
-           RLV(L) = RLINIT / DLAYR(L)
-           if (CUMDEP >= RTDEP) {GO TO 300} #todo
+           RLV[L] = RLINIT / DLAYR[L]
+           if (CUMDEP >= RTDEP) {GO TO 300} #TODO
       }
 
   300 CONTINUE
