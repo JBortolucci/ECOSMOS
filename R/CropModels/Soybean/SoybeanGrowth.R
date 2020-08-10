@@ -1,5 +1,16 @@
 
 
+
+simDataVars$TGRO     <- rep(1.,24)
+
+
+
+GROWTH <- function (iyear, iyear0, jday,DAS,DYNAMIC){
+  
+  
+  environment(GROW)             <- env
+
+
 GROW <- function (CONTROL, ISWITCH, EMERG, SOILPROP, 
         AGEFAC, CADLF, CADST, CRUSLF, CRUSRT, CRUSSH,     # #!Input
         CRUSST, DISLA, F, FILECC, FRLF, FRSTM,            # #!Input
@@ -120,7 +131,7 @@ FREEZE <- function(
 
 
 
-
+}
 
 
 

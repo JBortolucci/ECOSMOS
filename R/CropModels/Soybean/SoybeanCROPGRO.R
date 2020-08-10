@@ -173,8 +173,84 @@ source("R/CropModels/Soybean/CURV.R")
     
     if(DAS==1){
      
+      
      # DYNAMIC = 'RUNINIT'
+      
+#=======================================================================
+#  IPPLNT, Subroutine, C.H. Porter
+#-----------------------------------------------------------------------
+#  Reads variables from crop or species specific data file
+      
+      #______________________________________________________________        
+      # CONTROL VARS (.SBX)       
+
+      #______________________________________________________________        
+      # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+      
+      
+      #______________________________________________________________        
+      # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
+      
+      
+      #______________________________________________________________        
+      # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+ 
+      #!*CARBON AND NITROGEN MINING PARAMETERS
+      
+      CADPR1  <- 0.260   
+      CMOBMX  <- 0.024 
+      
+      CROP    <-'SB' 
+      #!*POD LOSS PARAMETERS
+      DETACH  <-'N'  
+     # ECONO (e' o ecotype)     
+     #!*EVAPOTRANSPIRATION    
+      EORATIO <- 1.1
+      KEP     <- 0.68
+      
+      #!*VEGETATIVE PARTITIONING PARAMETERS
+      FRCNOD  <-0.05
+      #!*LEAF SENESCENCE FACTORS
+      FREEZ1   <- -2.22    
+      FREEZ2   <- -5.00 
+      #!*PHOTOSYNTHESIS PARAMETERS
+      KCAN     <-  0.67 
+      KC_SLOPE <-  0.10     
+      NOUTDO     
+      PCARSH     
+      PCH2O     
+      PLIPSH     
+      PLIGSD     
+      PLIGSH     
+      PMINSD     
+      PMINSH     
+      POASD     
+      POASH     
+      PORMIN     
+      PROLFI     
+      PRORTI     
+      PROSHI     
+      PROSTI     
+      R30C2     
+      RCH2O     
+      RES30C     
+      RFIXN     
+      RLIG     
+      RLIP     
+      RMIN     
+      RNH4C     
+      RNO3C     
+      ROA     
+      RPRO     
+      RWUEP1     
+      RWUMX     
+      TTFIX     
+      
+      
     #  PHENOL_OUT <- PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
+      
+      
+      
       DYNAMIC = 'SEASINIT'
       PHENOL (iyear, iyear0, jday, DAS,DYNAMIC) 
         }
