@@ -99,16 +99,16 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   TGRO_T <-read.table(file = 'C:/DSSAT47/Soybean/TGRO.OUT')
   
 #  TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
-  # DAYL   <- TGRO_T$V4[TGRO_T$V1==DAS & TGRO_T$V2==1]
+   DAYL   <- TGRO_T$V4[TGRO_T$V1==DAS & TGRO_T$V2==1]
    XPOD   <- TGRO_T$V5[TGRO_T$V1==DAS & TGRO_T$V2==1]
-  # SWFEM  <- TGRO_T$V6[TGRO_T$V1==DAS & TGRO_T$V2==1]
-  # TMING  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]
-  # TSDEP  <- TGRO_T$V8[TGRO_T$V1==DAS & TGRO_T$V2==1]
+   SWFEM  <- TGRO_T$V6[TGRO_T$V1==DAS & TGRO_T$V2==1]
+    TMING  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]
+   TSDEP  <- TGRO_T$V8[TGRO_T$V1==DAS & TGRO_T$V2==1]
 
-    DAYL   <- daylength/60. # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
+  #  DAYL   <- daylength/60. # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
   # XPOD   <- ??? # TO Do depois de implementar GROW
   # SWFEM  <- modelo resolve abaixo com base na umiade do solo
-    TMING  <- tmin 
+   # TMING  <- tmin 
   # SWFEM  <- modelo resolve abaixo com base na temperatura do solo
 # Vars that are solverd by ECOSMOS  
 #____________________________________________________________________________      
@@ -312,8 +312,8 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       #-----------------------------------------------------------------------
       
       XDEP  = 0.0
-      SWFEM = 0.0
-      TSDEP = 0.0
+     # SWFEM = 0.0
+     # TSDEP = 0.0
       
       
       for (k in 1:(nsoilay)){
@@ -323,21 +323,21 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
         
         
         if (wsoi[k] <= sfield[k]) {
-          SWFEM = SWFEM + DTRY * (max(wsoi[k] - swilt[k],0.0)) / (sfield[k] - swilt[k])
+        #  SWFEM = SWFEM + DTRY * (max(wsoi[k] - swilt[k],0.0)) / (sfield[k] - swilt[k])
         } else {
-          SWFEM = SWFEM + DTRY * (max(poros[k] - wsoi[k]*poros[k],0.0)) / (poros[k] - sfield[k]*poros[k])
+        #  SWFEM = SWFEM + DTRY * (max(poros[k] - wsoi[k]*poros[k],0.0)) / (poros[k] - sfield[k]*poros[k])
         }
-         TSDEP = TSDEP + DTRY * (tsoi[k]-273.16)
+        # TSDEP = TSDEP + DTRY * (tsoi[k]-273.16)
         if (XDEP >= 10.) { break}
       }
-       TSDEP = TSDEP / 10.
+      #  TSDEP = TSDEP / 10.
       
       #-----------------------------------------------------------------------
       #      Compute temperature and soil water effects for phase 1, emergence
       #-----------------------------------------------------------------------
       
       FT[1] = CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TSDEP) #todo: escrever função CURV () em algum outro script
-       SWFEM = (SWFEM / 10.) * 100.0
+       # SWFEM = (SWFEM / 10.) * 100.0
       FSW[1] = CURV("LIN",0.0,20.0,100.,1000.,SWFEM)
       
       FSW[1] = 1. + (1.-FSW[1])*WSENP[1]
@@ -384,8 +384,8 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       
       for (I in 1:TS) {
         
-        #TGRO[I] <- tl_l[I] - 273.15
-        TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+        # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+         TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
         
         
         FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
