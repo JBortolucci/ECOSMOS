@@ -454,6 +454,7 @@ cbiold 0.015
 cbiols 0.01
 tl_h vector 24 0
 tu_h vector 24 0
+ta_h vector 24 0
 ##### comhour.h #####
 
 iiyear vector 9000 0

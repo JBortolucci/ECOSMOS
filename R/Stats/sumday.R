@@ -340,6 +340,7 @@ sumday <- function (istep, plens, iyear, jday) {
   
   tl_h[istep]<-tl 
   tu_h[istep]<-tu 
+  ta_h[istep]<-ta 
   
   assign("ndtimes", ndtimes, envir = env)
   assign("adnpp", adnpp, envir = env)
@@ -377,7 +378,7 @@ sumday <- function (istep, plens, iyear, jday) {
   assign("adnmintot", adnmintot, envir = env)
   assign("tl_h", tl_h, envir = env)
   assign("tu_h", tu_h, envir = env)
-  
+  assign("ta_h", tu_h, envir = env)
   
   # return to main program
   return()
