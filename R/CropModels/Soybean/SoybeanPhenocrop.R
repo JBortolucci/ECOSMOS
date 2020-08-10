@@ -214,42 +214,6 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP     Sensitivity of phase I to phosphorus stress (not yet used) 
     
     
-    TRIFOL<-TRIFL
-    
-    PHTHRS[5] = max(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
-    PHTHRS[7] = PHTHRS[6] + max(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
-    PHTHRS[9] = max(0.,PHTHRS[10] * PM09)
-    
-    #          CLDVAR    Critical daylength above which development rate remains at min value (prior to flowering) (hours)                    
-    if (PPSEN >= 0.0) {
-      CLDVAR = CSDVAR + (1.-THVAR)/max(PPSEN,0.000001)
-    } else if (PPSEN <= 0.0) {
-      CLDVAR = CSDVAR + (1.-THVAR)/min(PPSEN,-0.000001)
-    }
-    
-    CLDVRR = CLDVAR - R1PPO     # Critical daylength above which development rate remains at min value (after flowering) (hours)     
-    CSDVRR = CSDVAR - R1PPO     # Critical daylength above which development rate decreases (after flowering) (hours)                  
-    
-    #------------------------------------------------------
-    #      END  SUBROUTINE IPPHENO                        #
-    #------------------------------------------------------
-    
-    
-    #-----------------------------------------------------------------------
-    #     Set minimum days for phenological events under optimum conditions
-    #     (temperature and short photoperiod)
-    #-----------------------------------------------------------------------
-    if (CROP != "FA") {
-      # Minimum days from emergence to Vegetative Growth Stage 1:
-      MNEMV1 = PHTHRS[2]
-      
-      # Minimum days from start of flowering to last leaf appearance:
-      MNFLLL = PHTHRS[13]
-      
-      # Number of days from flowering to harvest maturity
-      MNFLHM = PHTHRS[8] + PHTHRS[10] + PHTHRS[11]
-    }
-    
     #***********************************************************************
     #***********************************************************************
     #     Seasonal initialization - run once per season
@@ -257,6 +221,45 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
 #   } else if (DYNAMIC == 'SEASINIT') {
      if (DYNAMIC == 'SEASINIT') {
     
+       
+       TRIFOL<-TRIFL
+       
+       PHTHRS[5] = max(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
+       PHTHRS[7] = PHTHRS[6] + max(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
+       PHTHRS[9] = max(0.,PHTHRS[10] * PM09)
+       
+       #          CLDVAR    Critical daylength above which development rate remains at min value (prior to flowering) (hours)                    
+       if (PPSEN >= 0.0) {
+         CLDVAR = CSDVAR + (1.-THVAR)/max(PPSEN,0.000001)
+       } else if (PPSEN <= 0.0) {
+         CLDVAR = CSDVAR + (1.-THVAR)/min(PPSEN,-0.000001)
+       }
+       
+       CLDVRR = CLDVAR - R1PPO     # Critical daylength above which development rate remains at min value (after flowering) (hours)     
+       CSDVRR = CSDVAR - R1PPO     # Critical daylength above which development rate decreases (after flowering) (hours)                  
+       
+       #------------------------------------------------------
+       #      END  SUBROUTINE IPPHENO                        #
+       #------------------------------------------------------
+       
+       
+       #-----------------------------------------------------------------------
+       #     Set minimum days for phenological events under optimum conditions
+       #     (temperature and short photoperiod)
+       #-----------------------------------------------------------------------
+       if (CROP != "FA") {
+         # Minimum days from emergence to Vegetative Growth Stage 1:
+         MNEMV1 = PHTHRS[2]
+         
+         # Minimum days from start of flowering to last leaf appearance:
+         MNFLLL = PHTHRS[13]
+         
+         # Number of days from flowering to harvest maturity
+         MNFLHM = PHTHRS[8] + PHTHRS[10] + PHTHRS[11]
+       }
+       
+       
+       
         #-----------------------------------------------------------------------
     #     Initialization variables from INPLNT
     #-----------------------------------------------------------------------
