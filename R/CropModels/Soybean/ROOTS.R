@@ -195,6 +195,7 @@
       RLSEN  = 0.0
 
       for (L in 1:NLAYR) {
+        
         L1 = L
         CUMDEP = CUMDEP + DLAYR[L]
         SWDF = 1.0
@@ -264,14 +265,17 @@
           }
           RLDF[L] = RLDF[L] * (1. - (CUMDEP - RTDEP) / DLAYR[L])
           TRLDF = TRLDF + RLDF[L]
-          GO TO 2900 #TODO
+          
+          # ALTERADO: GOTO to break()
+          # GO TO 2900 #TODO
+          break
         }
       }
 #-----------------------------------------------------------------------
 #     Calculate root senescence, growth, maintenance and growth
 #     respiration, and update root length density for each layer.
 #-----------------------------------------------------------------------
- 2900 CONTINUE
+
 
       if (SUMRL > 0.0) {
          SATFAC = SUMEX/SUMRL
@@ -510,10 +514,12 @@
 
            CUMDEP = CUMDEP + DEP
            RLV[L] = RLINIT / DLAYR[L]
-           if (CUMDEP >= RTDEP) {GO TO 300} #TODO
+           if (CUMDEP >= RTDEP) {
+             break
+             #GO TO 300
+           }
       }
 
-  300 CONTINUE
 #***********************************************************************
       RETURN
       END SUBROUTINE INROOT
