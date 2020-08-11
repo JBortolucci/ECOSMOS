@@ -198,9 +198,9 @@
 #-----------------------------------------------------------------------
         ROWSPC = ROWSPC / 100.
         if (ROWSPC * PLTPOP > 1.E-4) {
-          BETN = 1./(ROWSPC*PLTPOP)
+          BETN = 1 / (ROWSPC*PLTPOP)
         } else {
-          BETN = 0.
+          BETN = 0
         }
 
 #-----------------------------------------------------------------------
@@ -261,6 +261,8 @@
       SenWt  = 0.0
       SenLig = 0.0
       SenE   = 0.0
+      
+      # VERIFICAR: Atribuição de uma operação?
       SENESCE % ResWt  = 0.0
       SENESCE % ResLig = 0.0
       SENESCE % ResE   = 0.0
@@ -427,7 +429,8 @@
       RNITP  = PCNL
       PCNST  = WTNST / WSTI * 100.
       PCNRT  = WTNRT / WRTI * 100.
-
+      
+      # VERIFICAR: Mudar F.
 #     Intialize leaf area.  Value of F initialized in DEMAND.
       AREALF = WTLF * F
       AREAH  = AREALF
@@ -669,7 +672,9 @@
 #              senesc. + pest   + freeze  
       NLOFF  = (SLNDOT + WLIDOT + WLFDOT) * (PCNL/100.) + (SLDOT-SLNDOT) * PROLFF * 0.16
       NLPEST = NLPEST + WLIDOT * PCNL/100.
-      if (NLOFF. LT. 0.0) {
+      
+      # ALTERADO: .LT. to <
+      if (NLOFF < 0.0) {
         NLOFF = 0.0
       }
 
@@ -749,15 +754,16 @@
 #-----------------------------------------------------------------------
 #     Total nitrogen in the leaves
 #-----------------------------------------------------------------------
-      if ((NLDOT < 0.0) & (ABS(NLDOT) > WTNLF)) {
+      # ALTERADO: ABS to abs(). Se repetia, mas só comentei aqui pra não duplicar.
+      if ((NLDOT < 0.0) & (abs(NLDOT) > WTNLF)) {
          NLDOT = - WTNLF
       }
       WTNLF = WTNLF + NLDOT
 
 #-----------------------------------------------------------------------
 #     Total nitrogen in the stems
-#-----------------------------------------------------------------------     
-      if ((NSDOT < 0.0) & (ABS(NSDOT) > WTNST)) {
+#-----------------------------------------------------------------------
+      if ((NSDOT < 0.0) & (abs(NSDOT) > WTNST)) {
          NSDOT = - WTNST
       }
       WTNST = WTNST + NSDOT
@@ -765,7 +771,7 @@
 #-----------------------------------------------------------------------
 #     Total nitrogen in the roots
 #-----------------------------------------------------------------------
-      if ((NRDOT < 0.0) & (ABS(NRDOT) > WTNRT)) {
+      if ((NRDOT < 0.0) & (abs(NRDOT) > WTNRT)) {
          NRDOT = - WTNRT
       }
       WTNRT = WTNRT + NRDOT
@@ -778,12 +784,12 @@
 #-----------------------------------------------------------------------
 #     Total nitrogen in the shells
 #-----------------------------------------------------------------------
-      if ((NSHDOT < 0.0) & (ABS(NSHDOT) > WTNSH)) {
+      if ((NSHDOT < 0.0) & (abs(NSHDOT) > WTNSH)) {
          NSHDOT = - WTNSH
       }
       WTNSH = WTNSH + NSHDOT
 
-      if ((NSDDOT < 0.0) & (ABS(NSDDOT) > WTNSD)) {
+      if ((NSDDOT < 0.0) & (abs(NSDDOT) > WTNSD)) {
          NSDDOT = - WTNSD
       }
 
@@ -960,14 +966,15 @@
 #       At this time, the model does not senesce seed.   
 #     Convert from biomass to C with a factor 0.40.   
 #-----------------------------------------------------------------------
-      SenWt(0) = (SLDOT + WLFDOT + SSDOT + WTABRT)
+      SenWt[0] = (SLDOT + WLFDOT + SSDOT + WTABRT)
 #     Convert from g/m2 to kg/ha with a factor of 10.
-      SenWt(0) = max(SenWt(0), 0.) * 10.0    #kg[dry matter]/ha
+      SenWt[0] = max(SenWt[0], 0.) * 10.0    #kg[dry matter]/ha
       
 #-----------------------------------------------------------------------
 #     Surface nitrogen includes nitrogen losses computed above minus the
 #       pest damage components. 
 #-----------------------------------------------------------------------
+      # VERIFICAR: SenE é uma variável? Se sim, deve usar []
       SenE(0,1) = NLOFF + NSOFF + NSHOFF - NLPEST  
 #     Convert from g/m2 to kg/ha with a factor of 10.
       SenE(0,1) = max(SenE(0,1),0.) * 10.0             #kg[N]/ha
@@ -981,25 +988,26 @@
 #     Contribution of lignin to surface litter from senesced and frozen 
 #       plant matter
 #-----------------------------------------------------------------------
-      SenLig(0) = (SLDOT + WLFDOT) * PLIGLF + SSDOT * PLIGST + WTABRT * PLIGSH
+      SenLig[0] = (SLDOT + WLFDOT) * PLIGLF + SSDOT * PLIGST + WTABRT * PLIGSH
 #     Convert from g/m2 to kg/ha with a factor of 10.
-      SenLig(0) = max(SenLig(0),0.) * 10.0             #kg[lig]/ha
+      SenLig[0] = max(SenLig[0],0.) * 10.0             #kg[lig]/ha
 
 #-----------------------------------------------------------------------
 #     Senescence of roots and nodules (kg/ha)
 #-----------------------------------------------------------------------
-      for (L in 1:NLAYR ) {
-        SenWt(L)  = SENRT(L) + SENNOD(L)            #kg[dry matter]/ha
-        SenLig(L) = SENRT(L) * PLIGRT + SENNOD(L) * PLIGNO   #kg[lig]/ha
-        #SenE(L,1) = (SENRT(L)* PRORTF + SENNOD(L) * PRONOD) * 0.16 
+      for (L in 1:NLAYR) {
+        SenWt[L]  = SENRT[L] + SENNOD[L]            #kg[dry matter]/ha
+        SenLig[L] = SENRT[L] * PLIGRT + SENNOD[L] * PLIGNO   #kg[lig]/ha
+        #SenE(L,1) = (SENRT[L]* PRORTF + SENNOD[L] * PRONOD) * 0.16 
 #       01/19/2006 CHP Root senescence at current N% (per KJB and JWJ)
-        SenE(L,1) = SENRT(L) * PCNRT / 100. + SENNOD(L) * PRONOD * 0.16 
+        SenE[L,1] = SENRT[L] * PCNRT / 100. + SENNOD[L] * PRONOD * 0.16 
       }
 
 #-----------------------------------------------------------------------
 #     Leaf Area, Specific Leaf Area Calculations
 #     Calculate Area Growth rate and Update Leaf Area (AREALF, XLAI)
 #-----------------------------------------------------------------------
+      # VERIFICAR: variável F
       ALFDOT = WLDOTN*F - (SLDOT+WLIDOT+WLFDOT+NRUSLF/0.16)*SLA
       if (WTLF > 1.E-4) {
          ALFDOT = ALFDOT + SLA * (NADLF/0.16) * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
@@ -1068,14 +1076,19 @@
      &      RTWT, SDWT, SHELWT, STMWT, TOPWT,             !Input
      &      TOTWT, TURFAC, WTLF, YRDOY, YRPLT,            !Input
      &      MDATE)                                        !Output
-          RETURN
+          
+          # ALTERADO: RETURN to return()
+          return()
         }
       }
-
+      
+      # VERIFICAR: Novamente expressão com operação a esquerda.
       SENESCE % ResWt  = SenWt
       SENESCE % ResLig = SenLig
+      
+      # VERIFICAR: Começa indice començando com 0 e expressão a esquerda. No R o indexamento começa sempre do 1.
       for (L in 0:NLAYR) {
-        SENESCE % ResE(L,N)  = SenE(L,N)
+        SENESCE % ResE[L,N]  = SenE[L,N]
 #        SENESCE % ResE(L,P)  = SenE(L,P)
 
 #        This is being done in OpSoilOrg:
@@ -1092,7 +1105,8 @@
 #***********************************************************************
       }
 #-----------------------------------------------------------------------
-      RETURN
+      # ALTERADO: RETURN to return()
+      return()
       }  # SUBROUTINE GROW
 #=======================================================================
 
@@ -1161,7 +1175,8 @@
   275   FORMAT(/,2X,A78,/,2X,A78)
       }
 #-----------------------------------------------------------------------
-      RETURN
+      # ALTERADO: RETURN to return()
+      return()
       }  # SUBROUTINE STRESS
 #=======================================================================
 
@@ -1369,7 +1384,7 @@
 
       }
 #-----------------------------------------------------------------------
-      RETURN
+      return()
       }  # SUBROUTINE IPGROW
 #=======================================================================
 
