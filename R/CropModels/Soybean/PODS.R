@@ -372,12 +372,14 @@
 
 #     DAS   = max(0,TIMDIF(YRSIM,YRDOY))
       CALL GET(CONTROL)
-      DAS = CONTROL % DAS
+      # ALTERADO: % to %%
+      DAS = CONTROL %% DAS
 
 #***********************************************************************
 #     Seed growth section
 #-----------------------------------------------------------------------
       if (YRDOY >= YRNR1 & YRNR1 > 0) {
+        
         NR1TIM = max(TIMDIF(YRNR1,YRDOY),0) #TODO tradução timdif 
 #-----------------------------------------------------------------------
         PGAVLR = PGAVL * XFRT
@@ -407,7 +409,7 @@
 #-----------------------------------------------------------------------
           WTSHMY = WTSHM
           WTSHM = 0.0
-          for (800 NPP in 1:NR2TIM) { #TODO: checar numeros
+          for (NPP in 1:NR2TIM) { 
             if (NPP > NCOHORTS) {
               WRITE(MESSAGE(1),851)
               WRITE(MESSAGE(2),852)
@@ -445,7 +447,7 @@
 #-----------------------------------------------------------------------
               if (SDMAX <= 0.0) WTSHM = WTSHM + WTSHE[NPP]
             }
-  800     }
+       }
 #-----------------------------------------------------------------------
 #     Compute cohorts of shell wt. that reach THRESH today
 #-----------------------------------------------------------------------
@@ -484,7 +486,7 @@
 #-----------------------------------------------------------------------
 #     Grow seed cohorts
 #-----------------------------------------------------------------------
-          for (1300 NPP in 1:NR2TIM) { #TODO: checar numeros
+          for (NPP in 1:NR2TIM) { 
             PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
 #           if (PAGE < LAGSD) GO TO 1300
             if (PAGE >= LAGSD) {
@@ -503,7 +505,7 @@
               WSDDTN = WSDDTN + RSD * min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
               NGRSD = NGRSD+ANINSD*RSD*min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
             }
- 1300     }
+      }
 #-----------------------------------------------------------------------
         }           #End of YRDOY>YRNR2 Seed growth section
 
@@ -521,7 +523,9 @@
         for (I in 1:TS) {
           TEMPOD = TEMPOD + CURV(TYPPDT,FNPDT[1],FNPDT[2],FNPDT[3],FNPDT[4],TGRO[I])
         }
-        TEMPOD = TEMPOD/REAL(TS)
+        
+        # ALTERADO: REAL(TS) é conversão para tipo REAL, não é necessário aqui.
+        TEMPOD = TEMPOD / TS
 # 24 changed to TS on 3Jul17 by Bruce Kimball
         
 #-----------------------------------------------------------------------
@@ -540,11 +544,16 @@
             }
             ACTSW = ACTSW + (SW[I] - LL[I]) * DLAYR[I] * FLAYR
             POTSW = POTSW + (DUL[I] - LL[I]) * DLAYR[I] * FLAYR
-            if ( FLAYR < 1.0 ) GO TO 401 #TODO
+            
+            # ALTERADO: GOTO era a forma do fortran parar o laço de repetição, no R usa-se break
+            if ( FLAYR < 1.0 ) break() # GO TO 401 #TODO
+            
           }
-  401     SWBAR = ACTSW / POTSW
-          SWBAR = MIN (SWBAR,1.0)
-          SWBAR = MAX (SWBAR,0.0)
+          
+          SWBAR = ACTSW / POTSW
+          SWBAR = min(SWBAR,1.0)
+          SWBAR = max(SWBAR,0.0)
+          
         } else {
           SWBAR = 1.0
         }
@@ -559,7 +568,7 @@
 #     This section calculates shell growth after first pod (NR2)
 #-----------------------------------------------------------------------
         if (YRDOY > YRNR2 & YRNR2 > 0) {
-          for (2100 NPP in 1:NR2TIM) { #TODO: checar numeros
+          for (NPP in 1:NR2TIM) { 
             NAGE = NR2TIM + 1 - NPP
             PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
             ADDSHL = 0.0
@@ -613,14 +622,14 @@
               SHMINE = NRUSSH/0.16 * WTSHE[NPP]/(SHELWT - WTSHM)
             }
             WTSHE[NPP] = WTSHE[NPP] + ADDSHL - max(SHMINE,0.0)
- 2100     }
+      }
 #-----------------------------------------------------------------------
 #     Set seeds based on ratio of supply to demand for shells,
 #     average temperature and night length effect
 #     between (LAGSD) and (LAGSD+TDUMX) p-t-d age
 #-----------------------------------------------------------------------
           WTABRT = 0.0
-          for (2200 NPP in 1:NR2TIM) { #TODO: checar numeros
+          for (NPP in 1:NR2TIM) { 
             PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
             if (PAGE >= LAGSD & PAGE < LAGSD + TDUMX & SDNO[NPP] <= 0.0) {
 #-----------------------------------------------------------------------
@@ -644,7 +653,7 @@
               WTSHE[NPP] = WTSHE[NPP] - WTABR
               WTABRT = WTABRT + WTABR
             }
- 2200     }
+         }
 #-----------------------------------------------------------------------
         }         #End of DAS>NR2 Shell growth section
 #***********************************************************************
@@ -655,23 +664,23 @@
 #-----------------------------------------------------------------------
         AFLW = RFLWAB * (1.0 - TDUMX) * (1.0 - SWADD2)
         FLWRDY = 0.
-        for (2500 NPP in 1:NR1TIM) { #TODO: checar numeros
+        for (NPP in 1:NR1TIM) { 
           if (FLWN[NPP] > 0.0001) {
             PNAGE = PNTIM(NR1TIM + 1) - PNTIM[NPP]
             FLWN[NPP] = FLWN[NPP] * (1.0 - AFLW)
-            if (PNAGE >= PHTHRS(6)) {
+            if (PNAGE >= PHTHRS[6]) {
 #-----------------------------------------------------------------------
 #     Allow flowers in each cohort to make pods over 2-3 days
 #-----------------------------------------------------------------------
               FLWFRC = 0.
-              if (TDUMX > 0.0001) FLWFRC = (PNAGE-PHTHRS(6))/TDUMX
+              if (TDUMX > 0.0001) FLWFRC = (PNAGE-PHTHRS[6])/TDUMX
               FLWFRC = min(FLWFRC,1.0)
               FLWFRC = max(FLWFRC,0.0)
               FLWRDY = FLWFRC*FLWN[NPP] + FLWRDY
               FLWN[NPP] = (1.0-FLWFRC)*FLWN[NPP]
             }
           }
- 2500   }
+        }
  
         PMAX = PGAVLR/(SDVAR*AGRSD1*SDPDVR)*(1./PODUR)
 
@@ -705,7 +714,7 @@
           }
 
           if (DAS >= NDSET & TRIGGR == 1) {
-            SHELN(NR2TIM + 1) = 0.0
+            SHELN[NR2TIM + 1] = 0.0
           }
 #-----------------------------------------------------------------------
         }         #End of DAS>NR2 Pod and flower growth section
@@ -727,7 +736,7 @@
 
           CALL FreshWt(INTEGR, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
 
-          for (2900 NPP in 1:NR2TIM + 1) { #TODO: checar numeros e sintaxe da soma (+)
+          for (NPP in 1:(NR2TIM + 1)) { 
 #-----------------------------------------------------------------------
             PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
 #-----------------------------------------------------------------------
@@ -746,7 +755,7 @@
                 }
               }
             }
- 2900     }
+          }
         }
 
 #-----------------------------------------------------------------------
@@ -1083,6 +1092,7 @@
               if (RATION >= 1.0) {
                 ANINSD = min(FNINSD * (1.0 + (RATION - 1.0)/3.), PROMAX)
               } else {
+                # VERIFICAR: Por que está com esse comentário no meio da expressão?
                 ANINSD = max(FNINSD * (1.0-(RATIO#-1.0)/3.), PROMIN)
               }
             }
