@@ -117,12 +117,13 @@
 #***********************************************************************
       } else if (DYNAMIC == EMERG) {
 #-----------------------------------------------------------------------
-        for (10 I in 1:NCOHORTS) { #TODO: checar numero
+        # ALTERADO: Provavelmente esse número é como o fortran referencia até onde o loop vai repetir.
+        for (I in 1:NCOHORTS) {
           DTC[I]   = 0.0
           MSHELN[I]= 0.0
           WPODY[I] = 0.0
           DAYS[I]  = 0.0
-   10   }
+        }
         PODWTD = 0.0
 
 #***********************************************************************
@@ -150,9 +151,10 @@
 # -------------------------------------------------------------------
 #      Compute 10 day running average of leaf mass and PGAVL
 # -------------------------------------------------------------------
-      for (50 I in 10,2,-1) { #TODO: checar numero e sintate
+      # VERIFICAR: 10,2,-1 deve ser de 10 até 2 no passo -1 (10, 9, 8, 7...)
+      for (I in seq(10, 2)) { #TODO: checar numero e sintate
         TDLM[I]= TDLM[I-1]
-   50 }
+      }
       TDLM[1] = WTLF
 # -------------------------------------------------------------------
 #     Compute slope of leaf mass curve
@@ -162,16 +164,16 @@
 #---------------------------------------------------------------------
       if (YRNR2 >= 0) {
 #---------------------------------------------------------------------
-
-        for (40 NPP in 1:YRDOY - YRNR2)  { #TODO: checar numero e sintate
+        # ALTERADO: Sempre usar parenteses no for
+        for (NPP in 1:(YRDOY - YRNR2))  { 
           TPODM = TPODM + WTSHE[NPP] + WTSD[NPP]
-   40   }
+        }
 
         if (TPODM > 10.0) RLMPM = WTLF / TPODM
 #-------------------------------------------------------------------
 #     Main loop that cycles through detachment model
 #--------------------------------------------------------------------
-        for (1000 NPP in 1:YRDOY - YRNR2) { #TODO: checar numero e sintate
+        for (NPP in 1:(YRDOY - YRNR2)) { 
 #--------------------------------------------------------------------
 #     Determine maximum cohort shell mass and accumulate
 #     days without carbohydrate on a cohort basis
@@ -210,10 +212,12 @@
 #--------------------------------------------------------------------
 #     Compute detachment for each cohort
 #--------------------------------------------------------------------
-        for (2000 NPP in 1:YRDOY - YRNR2) { #TODO: checar numero e sintate
+        for (NPP in 1:(YRDOY - YRNR2)) { 
 #       curve based on Drew control, disease and Lowman tag pod cohort study
-          if (DTC[NPP] > 0.) {
-            XPD = MSHELN[NPP] * (1.0 - XP1DET*EXP(XP2DET*DTC[NPP])/100.)
+          if (DTC[NPP] > 0) {
+            
+            # ALTERADO: EXP por exp
+            XPD = MSHELN[NPP] * (1.0 - XP1DET * exp(XP2DET*DTC[NPP])/100)
             XPD = max(0.0,XPD)
             if (SHELN[NPP] > XPD) {
               if (SHELN[NPP] >= 0.01 & DTC[NPP] <= 34.) {
@@ -248,14 +252,14 @@
             }
           }
           WPODY[NPP] = WTSD[NPP] + WTSHE[NPP]
- 2000   }
+       }
 
         SUMSD = 0.0
         SUMSH = 0.0
-        for (4000 NPP in 1:YRDOY - YRNR2)  { #TODO: checar numero e sintate
+        for (NPP in 1:(YRDOY - YRNR2))  { 
           SUMSD = SUMSD + WTSD[NPP]
           SUMSH = SUMSH + WTSHE[NPP]
- 4000   }
+        }
       }
 
 #***********************************************************************
