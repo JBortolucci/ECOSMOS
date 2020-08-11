@@ -94,10 +94,27 @@
         CALL ERROR(SECTION, 42, FILECC, LNUM)
       } else {
         for (I in 1:4){
+          
           ISECT = 2
-          DO WHILE (ISECT != 1) { #TODO: checar essa função no R
+   
+          # ALTERADO: DO-WHILE pode ser feito com o repeate {}. Isso vai repetir o código entre parênteses. Tomar cuidado pois repeate
+          #           pode facilmente criar um loop infinito, o que vai travar o programa. A condição de parada deve ser bem definida. Exemplo:
+          #   repeat {
+          #         
+          #      faça algo ...
+          #
+          #      if( condição == true ) break
+          #       
+          #   }
+          # Recomendo nesse caso usar while( condição ) { }
+          
+          while(ISECT != 1) {
             CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
           }
+          
+          # DO WHILE (ISECT != 1) { 
+          #   CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+          # }
         }
         READ(CHAR,'(6X,F6.0)',IOSTAT=ERR) PORPT
         if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
@@ -161,14 +178,18 @@
 #-----------------------------------------------------------------------
 #     DAS   = max(0,TIMDIF(YRSIM,YRDOY))
       CALL GET(CONTROL)
-      DAS = CONTROL % DAS
+        
+      DAS = CONTROL %% DAS
 
       #Update value of RATTP.
-      for (I in NSWAB,2,-1) { #TODO: checar sintaxe
+      
+      # ALTERADO: NSWAB, 2, -1 to seq(NSWAV, 2)
+      # VERIFICAR: Se I começa em 1, pois no indice abaixo ele subtrai. Se começar em 1 o indice vai ficar 0.
+      for (I in seq(NSWAB,2)) { 
         SWFCAB[I] = SWFCAB[I-1]
       }
       SWFCAB[1] = SWFAC
-      RATTP = SWFCAB(NSWAB)
+      RATTP = SWFCAB[NSWAB]
 
       SSDOT = 0.0
       SLDOT = 0.0
