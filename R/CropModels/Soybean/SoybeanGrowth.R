@@ -12,33 +12,33 @@ GROWTH <- function (iyear, iyear0, jday,DAS,DYNAMIC){
 
 
 GROW <- function (CONTROL, ISWITCH, EMERG, SOILPROP, 
-        AGEFAC, CADLF, CADST, CRUSLF, CRUSRT, CRUSSH,     # #!Input
-        CRUSST, DISLA, F, FILECC, FRLF, FRSTM,            # #!Input
-        NADLF, NADRT, NADST, NDTH, NFIXN, NGRLF, NGRRT,   # #!Input
-        NGRSD, NGRSH, NGRST, NMINEA, NODGR, NOUTDO,       # #!Input
-        NPLTD, NRUSLF, NRUSRT, NRUSSH, NRUSST,            # #!Input
-        POTCAR, POTLIP, PPLTD, SDIDOT, SDPROR,            # #!Input
-        SENNOD, SENRT, SLDOT, SLNDOT, SRDOT, SSDOT,       # #!Input
-        SSNDOT, TRNH4U, TRNO3U, TRNU,                     # #!Input
-        TURFAC, WLDOTN, WLIDOT, WRDOTN, WRIDOT, WSDDTN,   # #!Input
-        WSDOTN, WSHDTN, WSIDOT, WTABRT, WTSHMT, YRNR1,    # #!Input
-        MDATE, YRPLT,                                     # #!Input
-        SWIDOT, WLFDOT, WSHIDT, WTNFX, XHLAI,             # #!Input/Output
-        AREALF, BETN, CANNAA, CANWAA, CLW, CSW, DWNOD,    # #!Output
-        DWNODA, GROWTH, GRWRES, LAIMX, PCCSD, PCLSD,      # #!Output
-        PCNL, PCNRT, PCNSD, PCNSH, PCNST, PLTPOP,         # #!Output
-        PLIGLF, PLIGNO, PLIGRT, PLIGSD, PLIGSH, PLIGST,   # #!Output
-        PODWT, PUNCSD, PUNCTR, RHOL, RHOS, RNITP,         # #!Output
-        ROWSPC, RTWT, SDNPL, SDRATE, SDWT,                # #!Output
-        SEEDNI, SEEDNO, SENESCE, SHELWT, SLA,             # #!Output
-        SLAAD, STMWT, TOPWT, TOTWT, WCRLF, WCRRT, WCRSH,  # #!Output
-        WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTCO,          # #!Output
-        WTLF, WTLO, WTMAIN, WTNCAN, WTNEW, WTNLA, WTNLF,  # #!Output
-        WTNLO, WTNNA, WTNNAG, WTNNO, WTNNOD, WTNOO,       # #!Output
-        WTNRA, WTNRO, WTNRT, WTNSA, WTNSD, WTNSDA,        # #!Output
-        WTNSDO, WTNSH, WTNSHA, WTNSHO, WTNSO, WTNST,      # #!Output
-        WTNUP, WTRO, WTSDO, WTSHO, WTSO, XLAI, XPOD,      # #!Output
-        ShutMob, RootMob, ShelMob)  {                      # #!Output
+        AGEFAC, CADLF, CADST, CRUSLF, CRUSRT, CRUSSH,     #!Input
+        CRUSST, DISLA, Fnew, FILECC, FRLF, FRSTM,         #!Input  #*** Fnew is 'F' in the original file. Changed because F is logical in R. ***
+        NADLF, NADRT, NADST, NDTH, NFIXN, NGRLF, NGRRT,   #!Input
+        NGRSD, NGRSH, NGRST, NMINEA, NODGR, NOUTDO,       #!Input
+        NPLTD, NRUSLF, NRUSRT, NRUSSH, NRUSST,            #!Input
+        POTCAR, POTLIP, PPLTD, SDIDOT, SDPROR,            #!Input
+        SENNOD, SENRT, SLDOT, SLNDOT, SRDOT, SSDOT,       #!Input
+        SSNDOT, TRNH4U, TRNO3U, TRNU,                     #!Input
+        TURFAC, WLDOTN, WLIDOT, WRDOTN, WRIDOT, WSDDTN,   #!Input
+        WSDOTN, WSHDTN, WSIDOT, WTABRT, WTSHMT, YRNR1,    #!Input
+        MDATE, YRPLT,                                     #!Input
+        SWIDOT, WLFDOT, WSHIDT, WTNFX, XHLAI,             #!Input/Output
+        AREALF, BETN, CANNAA, CANWAA, CLW, CSW, DWNOD,    #!Output
+        DWNODA, GROWTH, GRWRES, LAIMX, PCCSD, PCLSD,      #!Output
+        PCNL, PCNRT, PCNSD, PCNSH, PCNST, PLTPOP,         #!Output
+        PLIGLF, PLIGNO, PLIGRT, PLIGSD, PLIGSH, PLIGST,   #!Output
+        PODWT, PUNCSD, PUNCTR, RHOL, RHOS, RNITP,         #!Output
+        ROWSPC, RTWT, SDNPL, SDRATE, SDWT,                #!Output
+        SEEDNI, SEEDNO, SENESCE, SHELWT, SLA,             #!Output
+        SLAAD, STMWT, TOPWT, TOTWT, WCRLF, WCRRT, WCRSH,  #!Output
+        WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTCO,          #!Output
+        WTLF, WTLO, WTMAIN, WTNCAN, WTNEW, WTNLA, WTNLF,  #!Output
+        WTNLO, WTNNA, WTNNAG, WTNNO, WTNNOD, WTNOO,       #!Output
+        WTNRA, WTNRO, WTNRT, WTNSA, WTNSD, WTNSDA,        #!Output
+        WTNSDO, WTNSH, WTNSHA, WTNSHO, WTNSO, WTNST,      #!Output
+        WTNUP, WTRO, WTSDO, WTSHO, WTSO, XLAI, XPOD,      #!Output
+        ShutMob, RootMob, ShelMob)  {                     #!Output
   
 }
 
@@ -46,7 +46,7 @@ ROOTS <- function(EMERG,
           AGRRT, CROP, DLAYR, DS, DTX, DUL, FILECC, FRRT, #!Input
           ISWWAT, LL, NLAYR, PG, PLTPOP, RO, RP, RTWT,    #!Input
           SAT, SW, SWFAC, VSTAGE, WR, WRDOTN, WTNEW,      #!Input
-          RLV, RTDEP, SATFAC, SENRT, SRDOT)  {             #!Output
+          RLV, RTDEP, SATFAC, SENRT, SRDOT)  {            #!Output
 
   
 }
@@ -79,7 +79,7 @@ PODS <- function(EMERG,
          AGRSD3, LAGSD, LNGPEG, NGRSD, NGRSH, PCTMAT,    #!Output
          PODNO, POTCAR, POTLIP, SDNO, SDVAR, SEEDNO,     #!Output
          SHELN, SHVAR, WSDDTN, WSHDTN, WTABRT, WTSD,     #!Output
-         WTSHE, WTSHMT, FLWN)         {                   #!Output
+         WTSHE, WTSHMT, FLWN)         {                  #!Output
 
 }
   
@@ -96,7 +96,7 @@ PODS <- function(EMERG,
                  CADLF, CADST, CANHT, CANWH, CMINEA, CRUSLF,     #!Output
                  CRUSRT, CRUSSH, CRUSST, EXCESS, NADLF, NADRT,   #!Output
                  NADST, NGRLF, NGRRT, NGRST, NSTRES,             #!Output
-                 TNLEAK, WLDOTN, WRDOTN, WSDOTN)      {           #!Output
+                 TNLEAK, WLDOTN, WRDOTN, WSDOTN)      {          #!Output
 
      
    }

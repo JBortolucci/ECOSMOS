@@ -950,7 +950,7 @@
         RSD = 0.0
       } else if (GDMSD <= 0.0001) {
         RSD = 1.0
-      } else {
+      } else
         CRSD2 = PGAVLR/(GDMSD*AGRSD1)
         CRSD  = min(CRSD2,1.0)
         NREQ = FNINSD*(min(PGAVLR/AGRSD1,GDMSD))
@@ -1093,7 +1093,7 @@
                 ANINSD = min(FNINSD * (1.0 + (RATION - 1.0)/3.), PROMAX)
               } else {
                 # VERIFICAR: Por que está com esse comentário no meio da expressão?
-                ANINSD = max(FNINSD * (1.0-(RATIO#-1.0)/3.), PROMIN)
+                ANINSD = max(FNINSD * (1.0-(RATIOC-1.0)/3.), PROMIN)
               }
             }
 

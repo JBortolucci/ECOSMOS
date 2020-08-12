@@ -151,7 +151,7 @@
 # -------------------------------------------------------------------
 #      Compute 10 day running average of leaf mass and PGAVL
 # -------------------------------------------------------------------
-      # VERIFICAR: 10,2,-1 deve ser de 10 até 2 no passo -1 (10, 9, 8, 7...)
+      # TODO VERIFICAR: 10,2,-1 deve ser de 10 até 2 no passo -1 (10, 9, 8, 7...)
       for (I in seq(10, 2)) { #TODO: checar numero e sintate
         TDLM[I]= TDLM[I-1]
       }

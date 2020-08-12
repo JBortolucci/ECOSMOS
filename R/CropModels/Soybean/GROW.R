@@ -432,7 +432,7 @@
       
       # VERIFICAR: Mudar F.
 #     Intialize leaf area.  Value of F initialized in DEMAND.
-      AREALF = WTLF * F
+      AREALF = WTLF * Fnew  #*** Fnew is 'F' in the original file. Changed because F is logical in R. ***
       AREAH  = AREALF
       SLA    = AREALF / WTLF
       SLAAD  = AREALF / (WTLF - WCRLF)
