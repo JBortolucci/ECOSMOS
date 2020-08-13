@@ -24,43 +24,73 @@
 #  Calls:      IPGROW, STRESS
 #              ERROR
 #=======================================================================
-      SUBROUTINE GROW(CONTROL, ISWITCH, DYNAMIC, SOILPROP, 
-     &  AGEFAC, CADLF, CADST, CRUSLF, CRUSRT, CRUSSH,     !Input
-     &  CRUSST, DISLA, F, FILECC, FRLF, FRSTM,            !Input
-     &  NADLF, NADRT, NADST, NDTH, NFIXN, NGRLF, NGRRT,   !Input
-     &  NGRSD, NGRSH, NGRST, NMINEA, NODGR, NOUTDO,       !Input
-     &  NPLTD, NRUSLF, NRUSRT, NRUSSH, NRUSST,            !Input
-     &  POTCAR, POTLIP, PPLTD, SDIDOT, SDPROR,            !Input
-     &  SENNOD, SENRT, SLDOT, SLNDOT, SRDOT, SSDOT,       !Input
-     &  SSNDOT, TRNH4U, TRNO3U, TRNU,                     !Input
-     &  TURFAC, WLDOTN, WLIDOT, WRDOTN, WRIDOT, WSDDTN,   !Input
-     &  WSDOTN, WSHDTN, WSIDOT, WTABRT, WTSHMT, YRNR1,    !Input
-     &  MDATE, YRPLT,                                     !Input
+    #  SUBROUTINE GROW(CONTROL, ISWITCH, DYNAMIC, SOILPROP, 
+    # &  AGEFAC, CADLF, CADST, CRUSLF, CRUSRT, CRUSSH,     !Input
+    # &  CRUSST, DISLA, F, FILECC, FRLF, FRSTM,            !Input
+    # &  NADLF, NADRT, NADST, NDTH, NFIXN, NGRLF, NGRRT,   !Input
+    # &  NGRSD, NGRSH, NGRST, NMINEA, NODGR, NOUTDO,       !Input
+    # &  NPLTD, NRUSLF, NRUSRT, NRUSSH, NRUSST,            !Input
+    # &  POTCAR, POTLIP, PPLTD, SDIDOT, SDPROR,            !Input
+    # &  SENNOD, SENRT, SLDOT, SLNDOT, SRDOT, SSDOT,       !Input
+    # &  SSNDOT, TRNH4U, TRNO3U, TRNU,                     !Input
+    # &  TURFAC, WLDOTN, WLIDOT, WRDOTN, WRIDOT, WSDDTN,   !Input
+    # &  WSDOTN, WSHDTN, WSIDOT, WTABRT, WTSHMT, YRNR1,    !Input
+    # &  MDATE, YRPLT,                                     !Input
+#
+    # &  SWIDOT, WLFDOT, WSHIDT, WTNFX, XHLAI,             !Input/Output
+#
+    # &  AREALF, BETN, CANNAA, CANWAA, CLW, CSW, DWNOD,    !Output
+    # &  DWNODA, GROWTH, GRWRES, LAIMX, PCCSD, PCLSD,      !Output
+    # &  PCNL, PCNRT, PCNSD, PCNSH, PCNST, PLTPOP,         !Output
+    # &  PLIGLF, PLIGNO, PLIGRT, PLIGSD, PLIGSH, PLIGST,   !Output
+    # &  PODWT, PUNCSD, PUNCTR, RHOL, RHOS, RNITP,         !Output
+    # &  ROWSPC, RTWT, SDNPL, SDRATE, SDWT,                !Output
+    # &  SEEDNI, SEEDNO, SENESCE, SHELWT, SLA,             !Output
+    # &  SLAAD, STMWT, TOPWT, TOTWT, WCRLF, WCRRT, WCRSH,  !Output
+    # &  WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTCO,          !Output
+    # &  WTLF, WTLO, WTMAIN, WTNCAN, WTNEW, WTNLA, WTNLF,  !Output
+    # &  WTNLO, WTNNA, WTNNAG, WTNNO, WTNNOD, WTNOO,       !Output
+    # &  WTNRA, WTNRO, WTNRT, WTNSA, WTNSD, WTNSDA,        !Output
+    # &  WTNSDO, WTNSH, WTNSHA, WTNSHO, WTNSO, WTNST,      !Output
+    # &  WTNUP, WTRO, WTSDO, WTSHO, WTSO, XLAI, XPOD,      !Output
+    # &  ShutMob, RootMob, ShelMob)                        !Output
 
-     &  SWIDOT, WLFDOT, WSHIDT, WTNFX, XHLAI,             !Input/Output
-
-     &  AREALF, BETN, CANNAA, CANWAA, CLW, CSW, DWNOD,    !Output
-     &  DWNODA, GROWTH, GRWRES, LAIMX, PCCSD, PCLSD,      !Output
-     &  PCNL, PCNRT, PCNSD, PCNSH, PCNST, PLTPOP,         !Output
-     &  PLIGLF, PLIGNO, PLIGRT, PLIGSD, PLIGSH, PLIGST,   !Output
-     &  PODWT, PUNCSD, PUNCTR, RHOL, RHOS, RNITP,         !Output
-     &  ROWSPC, RTWT, SDNPL, SDRATE, SDWT,                !Output
-     &  SEEDNI, SEEDNO, SENESCE, SHELWT, SLA,             !Output
-     &  SLAAD, STMWT, TOPWT, TOTWT, WCRLF, WCRRT, WCRSH,  !Output
-     &  WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTCO,          !Output
-     &  WTLF, WTLO, WTMAIN, WTNCAN, WTNEW, WTNLA, WTNLF,  !Output
-     &  WTNLO, WTNNA, WTNNAG, WTNNO, WTNNOD, WTNOO,       !Output
-     &  WTNRA, WTNRO, WTNRT, WTNSA, WTNSD, WTNSDA,        !Output
-     &  WTNSDO, WTNSH, WTNSHA, WTNSHO, WTNSO, WTNST,      !Output
-     &  WTNUP, WTRO, WTSDO, WTSHO, WTSO, XLAI, XPOD,      !Output
-     &  ShutMob, RootMob, ShelMob)                        !Output
+GROW <- function (CONTROL, ISWITCH, EMERG, SOILPROP, 
+                  AGEFAC, CADLF, CADST, CRUSLF, CRUSRT, CRUSSH,     #!Input
+                  CRUSST, DISLA, Fnew, FILECC, FRLF, FRSTM,         #!Input  #*** Fnew is 'F' in the original file. Changed because F is logical in R. ***
+                  NADLF, NADRT, NADST, NDTH, NFIXN, NGRLF, NGRRT,   #!Input
+                  NGRSD, NGRSH, NGRST, NMINEA, NODGR, NOUTDO,       #!Input
+                  NPLTD, NRUSLF, NRUSRT, NRUSSH, NRUSST,            #!Input
+                  POTCAR, POTLIP, PPLTD, SDIDOT, SDPROR,            #!Input
+                  SENNOD, SENRT, SLDOT, SLNDOT, SRDOT, SSDOT,       #!Input
+                  SSNDOT, TRNH4U, TRNO3U, TRNU,                     #!Input
+                  TURFAC, WLDOTN, WLIDOT, WRDOTN, WRIDOT, WSDDTN,   #!Input
+                  WSDOTN, WSHDTN, WSIDOT, WTABRT, WTSHMT, YRNR1,    #!Input
+                  MDATE, YRPLT,                                     #!Input
+                  SWIDOT, WLFDOT, WSHIDT, WTNFX, XHLAI,             #!Input/Output
+                  AREALF, BETN, CANNAA, CANWAA, CLW, CSW, DWNOD,    #!Output
+                  DWNODA, GROWTH, GRWRES, LAIMX, PCCSD, PCLSD,      #!Output
+                  PCNL, PCNRT, PCNSD, PCNSH, PCNST, PLTPOP,         #!Output
+                  PLIGLF, PLIGNO, PLIGRT, PLIGSD, PLIGSH, PLIGST,   #!Output
+                  PODWT, PUNCSD, PUNCTR, RHOL, RHOS, RNITP,         #!Output
+                  ROWSPC, RTWT, SDNPL, SDRATE, SDWT,                #!Output
+                  SEEDNI, SEEDNO, SENESCE, SHELWT, SLA,             #!Output
+                  SLAAD, STMWT, TOPWT, TOTWT, WCRLF, WCRRT, WCRSH,  #!Output
+                  WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTCO,          #!Output
+                  WTLF, WTLO, WTMAIN, WTNCAN, WTNEW, WTNLA, WTNLF,  #!Output
+                  WTNLO, WTNNA, WTNNAG, WTNNO, WTNNOD, WTNOO,       #!Output
+                  WTNRA, WTNRO, WTNRT, WTNSA, WTNSD, WTNSDA,        #!Output
+                  WTNSDO, WTNSH, WTNSHA, WTNSHO, WTNSO, WTNST,      #!Output
+                  WTNUP, WTRO, WTSDO, WTSHO, WTSO, XLAI, XPOD,      #!Output
+                  ShutMob, RootMob, ShelMob)  {                     #!Output
+  
 
 #-----------------------------------------------------------------------
-      USE ModuleDefs     # Definitions of constructed variable types, 
-                         # which contain control information, soil
-                         # parameters, hourly weather data.
-      IMPLICIT NONE
-      SAVE
+      #USE ModuleDefs     # Definitions of constructed variable types, 
+      #                   # which contain control information, soil
+      #                   # parameters, hourly weather data.
+      #IMPLICIT NONE
+      #SAVE
 #-----------------------------------------------------------------------
 
       CHARACTER*1  ISWSYM, ISWNIT, IDETO, IHARI, PLME
@@ -118,7 +148,7 @@
       REAL WTSHMT
       REAL WTNTOT, NMINEA, TRNU
       REAL PCLSD, PCCSD, RNITP, PCNMIN
-      REAL ALFDOT,  F, SLA, AREALF, XLAI, SLAAD
+      REAL ALFDOT,  Fnew, SLA, AREALF, XLAI, SLAAD
       REAL LAIMX, AREAH
       REAL XHLAI, SEEDNO, PLTPOP, ROWSPC, BETN
       REAL TURFAC
@@ -1387,7 +1417,7 @@
       return()
       }  # SUBROUTINE IPGROW
 #=======================================================================
-
+}
 #-----------------------------------------------------------------------
 #       Variable definitions: updated 27 Feb 04
 #-----------------------------------------------------------------------

@@ -60,7 +60,7 @@ DEMAND <- function(RUNINIT, CONTROL,
          TAVG, TDUMX, TDUMX2, TGRO, TURFAC, VSTAGE, WCRLF, #!Input
          WCRRT, WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTLF,   #!Input
          WTSD, WTSHE, XPOD, NVEG0, NR1, NR2, NR5, NR7,     #!Input
-         AGRSD1, AGRSD2, AGRVG, AGRVG2, CDMREP, F, FNINL,  #!Output
+         AGRSD1, AGRSD2, AGRVG, AGRVG2, CDMREP, Fnew, FNINL,  #!Output #*** Fnew is 'F' in the original file. Changed because F is logical in R. ***
          FNINR, FNINS, FNINSD, FRLF, FRRT, FRSTM, GDMSD,   #!Output
          GRRAT1, NDMNEW,  NDMOLD, NDMREP, NDMSDR, NDMTOT,  #!Output
          NDMVEG, NMINEP, NMOBR, PHTIM, PNTIM, POTCAR,      #!Output

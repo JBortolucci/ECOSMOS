@@ -29,6 +29,8 @@ FREEZE <- function(
   MDATE,                           #!Input/Output
   WLFDOT) {
   
+  FREEZE <- 0
+  
   #CHARACTER*1  IDETO
   #CHARACTER*78 MESSAGE(10)
   #INTEGER MDATE, YRDOY, DAP, NOUTDO, YRPLT, TIMDIF
@@ -39,20 +41,20 @@ FREEZE <- function(
   #!*LEAF SENESCENCE FACTORS
   FREEZ2 <- -5.00
   
-  # acredito que nao serao usados! (variavies para o OVERVIEW.OUT no DSSAT)
+  # acredito que nao serao usados! (variaveis para o OVERVIEW.OUT no DSSAT)
   #IDETO
   #NOUTDO
   
   #TODO descobrir origens dessas variaveis
-  NRUSLF <- 
-  SLDOT  <-
-  WTLF   <-
+  NRUSLF <- 0 # calculado no MOBIL.for
+  SLDOT  <- 0 # calculado no SENES.for
+  WTLF   <- 0 # calculado no GROW.for
   MDATE  <- #!Input/Output
-  
-  #TODO buscar do padrao do Ecosmos
-  TMIN <- 
-  YRDOY <- paste0(iyear,jday) #usado para calcular dap/das
-  YRPLT <-  #usado para calcular dap/das
+    
+    #TODO buscar no padrao do Ecosmos
+    TMIN  <- 0   
+  YRDOY <- 0 # usado para calcular dap/das == paste0(iyear,jday)
+  YRPLT <- 0  # usado para calcular dap/das
   
   # outputs
   WLFDOT <- 0

@@ -18,6 +18,7 @@ SDCOMP <- function (CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD,   #Input
                     SDPRO, SLOSUM, TAVG,                            #Input
                     AGRSD1, AGRSD2, FNINSD, POTCAR, POTLIP) {       #Output
   
+  SDCOMP <- 0
   #TODO atribuir variáveis e parametros
   
   #______________________________________________________________        
@@ -48,7 +49,7 @@ SDCOMP <- function (CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD,   #Input
   RPRO   <- 0.360
 
   #.WTH 
-  TAVG <-  #TODO buscar do padrao do Ecosmos                    
+  TAVG <- 0 #TODO buscar do padrao do Ecosmos                    
   
   AGRSD1 <- 0 #output
   AGRSD2 <- 0 #output

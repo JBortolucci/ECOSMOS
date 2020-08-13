@@ -33,669 +33,842 @@
 #                  &  GRRAT1, NDMNEW,  NDMOLD, NDMREP, NDMSDR, NDMTOT,  #Output
 #                  &  NDMVEG, NMINEP, NMOBR, PHTIM, PNTIM, POTCAR,      #Output
 #                  &  POTLIP, SDGR, TURADD, XFRT, YREND)                #Output
-#
-##-----------------------------------------------------------------------
-#USE ModuleDefs
-#USE ModuleData
-#IMPLICIT NONE
-#SAVE
-#TODO verificar se vamos utilizar
-#CHARACTER*2 CROP
-#CHARACTER*3 TYPSDT
-#CHARACTER*6   ERRKEY
-#PARAMETER (ERRKEY = 'DEMAND')
-#CHARACTER*30 FILEIO
-#CHARACTER*78 MSG(2)
-#CHARACTER*92 FILECC, FILEGC
-#TODO verificar se vamos utilizar é output
-#INTEGER DYNAMIC   #, TIMDIF
-#INTEGER NPP, I, NAGE, DAS
-#INTEGER NDLEAF, NR1, NR2, NR5, NR7, NVEG0, YREND
 
-#______________________________________________________________        
-# *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
-#!*VEGETATIVE PARTITIONING PARAMETERS
-FRLFM   <- 0.70
-#!*LEAF GROWTH PARAMETERS
-SLAREF <- 350.
-FINREF <- 180.
-sLAMAX <- 950.
-SLAMIN <- 250.0
-#!*VEGETATIVE PARTITIONING PARAMETERS
-FRLFF  <- 0.24
-FRSTMF <- 0.55
-
-#!*SEED  COMPOSITION VALUES 
-CARMIN <- 0.180
-LIPOPT <- 23.65 
-LIPTB  <- 7.16
-SLOSUM <- 0.908 #TODO checar SLOSUM*100 = 0.908 (no .SPE)
-#!*SEED AND SHELL GROWTH PARAMETERS
-FNSDT  <- c(14.0, 21.0, 26.5, 40.0) #+ QDR in .SPE
-#!*LEAF GROWTH PARAMETERS
-XVGROW <- c( 0.0,  1.0,  2.0,  3.0,  4.0,  5.0)
-YVREF  <- c( 0.0, 20.0, 55.0,110.0,200.0,320.0)
-YVGROW <- rep(0,6) #preenchido com uma função de interpolacao/lookup (TABEX)
-#TODO verificar (10) e (25)
-XSLATM(10), YSLATM(10), XTRFAC(10), YTRFAC(10), XXFTEM(10), YXFTEM(10)
-XLEAF(25), YLEAF(25), YSTEM(25)
-
-TGRO[TS]
-SDDES[NCOHORTS]
-SDNO[NCOHORTS]
-SHELN[NCOHORTS]
-WTSD[NCOHORTS]
-WTSHE[NCOHORTS]
-PHTIM[NCOHORTS]
-PNTIM[NCOHORTS]
-
-#TODO verificar
-FRSTMM #check
-YY
-XX
-TMPFAC
-REDPUN
-TMPFCS
-PAGE
-REDSHL
-SDMAX
-CDMSH
-GDMSH
-ADDSHL
-TEMXFR
-CAVTOT
-GDMSDO
-CNOLD
-NVSTL
-NVSTS
-NVSTR
-FRNLFT
-POTLIP
-POTCAR
-TPHFAC
-PARSLA
-FFVEG
-ROYES
-GAINNW
-GAINWT
-SLAVAR
-THRESH
-GRSH2
-AGRRT
-AGRSTM
-TURFSL
-
-#TODO verificar
-#REAL AGRLF, AGRSD1, AGRSD2, AGRVG, AGRVG2,
-#&  CDMREP, CDMSD, CDMSDR, CDMTOT,
-#&  CDMVEG, DRPP, DUMFAC, DXR57, F,
-#&  FNINL, FNINR, FNINS, FNINSD, FNINSH,
-#&  FRACDN, FRLF, FRLFMX,
-#&  FRRT, FRSTM, FVEG,
-#&  GDMSD, GDMSDR,
-#&  GROMAX, GRRAT1, LAGSD, LNGPEG, LNGSH,
-#&  NDMNEW, NDMOLD, NDMREP,
-#&  NDMSD, NDMSDR, NDMSH, NDMTOT, NDMVEG,
-#&  NMINEP, NMOBMX, NMOBR, NRCVR, NSTRES,
-#&  NVSMOB,
-#&  PAR, PCNL, PCNRT, PCNST,
-#&  PGAVL, PLIGSD, PLTPOP, PMINSD, POASD,
-#&  PROLFF, PROLFI,
-#&  PRORTF, PRORTI, PROSTF, PROSTI, RCH2O,
-#&  RLIG, RLIP, RMIN, RNO3C,
-#&  ROA, RPRO, RPROAV, RTWT, SDGR,
-#&  SDLIP, SDPRO, SDVAR, SHLAG, SHVAR,
-#&  SIZELF, SIZREF, SLAMN, SLAMX, SLAPAR,
-#&  SRMAX, STMWT, SWFAC, TAVG, TDUMX,
-#&  SIZRAT, TDUMX2,
-#&  TURADD, TURFAC, TURSLA, TURXFR,
-#&  VSSINK, VSTAGE, WCRLF, WCRRT, WCRST, WNRLF,
-#&  WNRRT, WNRSH, WNRST, WTLF, XFRMAX,
-#&  XFRT, XFRUIT, XPOD
-
-##CHP - puncture variables, not functional
-#REAL PUNCSD, PUNCTR, RPRPUN
-
-#TYPE (ControlType) CONTROL
-
-
-#***********************************************************************
-#***********************************************************************
-#     Run Initialization - Called once per simulation
-#***********************************************************************
-if (DYNAMIC == RUNINIT) {
-  #-----------------------------------------------------------------------
-  CALL IPDMND(
-    &  FILECC, FILEGC, FILEIO,                           #Input
-    &  CARMIN, FINREF, FNSDT, FRLFF, FRLFMX,             #Output
-    &  FRSTMF, LIPOPT, LIPTB, LNGSH, NMOBMX,             #Output
-    &  NRCVR, NVSMOB, PLIGSD, PMINSD, POASD,             #Output
-    &  PROLFF, PROLFI, PRORTF, PRORTI, PROSTF, PROSTI,   #Output
-    &  RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA,              #Output
-    &  RPRO, SDLIP, SDPRO, SHLAG, SLAMAX, SLAMIN,        #Output
-    &  SLAPAR, SLAREF, SLAVAR, SLOSUM, SIZELF, SIZREF,   #Output
-    &  SRMAX, THRESH, TURSLA, TYPSDT, VSSINK, XFRMAX,    #Output
-    &  XFRUIT, XLEAF, XSLATM, XTRFAC, XVGROW, XXFTEM,    #Output
-    &  YLEAF, YSLATM, YSTEM, YTRFAC, YVREF, YXFTEM)      #Output
+DEMAND <- function(DYNAMIC, CONTROL,
+                   AGRLF, AGRRT, AGRSH2, AGRSTM, CROP, DRPP, DXR57,  #Input
+                   FILECC, FILEGC, FILEIO, FNINSH, FRACDN, LAGSD,    #Input
+                   LNGPEG, NDLEAF, NSTRES, PAR, PCNL, PCNRT, PCNST,  #Input
+                   PGAVL, PUNCSD, PUNCTR, PLTPOP, RPROAV, RTWT,      #Input
+                   SDDES, SDNO, SDVAR, SHELN, SHVAR, STMWT, SWFAC,   #Input
+                   TAVG, TDUMX, TDUMX2, TGRO, TURFAC, VSTAGE, WCRLF, #Input
+                   WCRRT, WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTLF,   #Input
+                   WTSD, WTSHE, XPOD, NVEG0, NR1, NR2, NR5, NR7,     #Input
+                   
+                   AGRSD1, AGRSD2, AGRVG, AGRVG2, CDMREP, Fnew, FNINL,  #Output *** Fnew is 'F' in the original file. Changed because F is logical in R. ***
+                   FNINR, FNINS, FNINSD, FRLF, FRRT, FRSTM, GDMSD,   #Output
+                   GRRAT1, NDMNEW,  NDMOLD, NDMREP, NDMSDR, NDMTOT,  #Output
+                   NDMVEG, NMINEP, NMOBR, PHTIM, PNTIM, POTCAR,      #Output
+                   POTLIP, SDGR, TURADD, XFRT, YREND) {                #Output
+  
+  DEMAND <- 0
+  
+  ##-----------------------------------------------------------------------
+  #USE ModuleDefs
+  #USE ModuleData
+  #IMPLICIT NONE
+  #SAVE
+  #TODO verificar se vamos utilizar
+  #CHARACTER*2 CROP
+  #CHARACTER*3 TYPSDT
+  #CHARACTER*6   ERRKEY
+  #PARAMETER (ERRKEY = 'DEMAND')
+  #CHARACTER*30 FILEIO
+  #CHARACTER*78 MSG(2)
+  #CHARACTER*92 FILECC, FILEGC
+  #INTEGER DYNAMIC   #, TIMDIF
+  #TODO verificar se vamos utilizar/é output
+  #INTEGER NPP, I, NAGE, DAS
+  #INTEGER NDLEAF, NR1, NR2, NR5, NR7, NVEG0, YREND
+  
+  #______________________________________________________________        
+  # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+  SDLIP <- 0.200 #Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
+  SDPRO <- 0.400 #Fraction protein in seeds (g(protein)/g(seed)) [from VAR# BR0001]
+  XFRT  <- 1.000 #Maximum fraction of daily growth that is partitioned to seed + shell
+  
+  #______________________________________________________________        
+  # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # ECO# SB0602
+  LNGSH <- 10.0
+  
+  #______________________________________________________________        
+  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*VEGETATIVE PARTITIONING PARAMETERS
+  FRLFM   <- 0.70
+  #!*LEAF GROWTH PARAMETERS
+  FINREF <- 180.
+  SLAREF <- 350.
+  SIZREF <- 171.399994
+  VSSINK <- 5.0
+  SLAMAX <- 950.
+  SLAMIN <- 250.0
+  SLAPAR <- -0.048
+  TURSLA <- 1.50
+  XVGROW <- c( 0.0,  1.0,  2.0,  3.0,  4.0,  5.0)
+  YVREF  <- c( 0.0, 20.0, 55.0,110.0,200.0,320.0)
+  YVGROW <- rep(0,6) #preenchido com uma função de interpolacao/lookup (TABEX)
+  #!*VEGETATIVE PARTITIONING PARAMETERS
+  FRLFF  <- 0.24
+  FRSTMF <- 0.55
+  FRLFMX <- 0.70
+  #!*SEED  COMPOSITION VALUES 
+  CARMIN <- 0.180
+  LIPOPT <- 23.65 
+  LIPTB  <- 7.16
+  SLOSUM <- 0.908 #TODO checar SLOSUM*100 = 0.908 (no .SPE)
+  #!*SEED AND SHELL GROWTH PARAMETERS
+  FNSDT  <- c(14.0, 21.0, 26.5, 40.0) #+ QDR in .SPE
+  SHLAG  <- 0
+  SRMAX  <- 0.300000012
+  XFRMAX <- 0
+  #!*CARBON AND NITROGEN MINING PARAMETERS
+  NMOBMX <- 0.090
+  NRCVR  <- 0.15
+  NVSMOB <- 0.35
+  #!*PLANT COMPOSITION VALUES
+  PLIGSD <- 0.020
+  PMINSD <- 0.025
+  POASD  <- 0.040
+  PROLFF <- 0.112
+  PROLFI <- 0.356
+  PRORTF <- 0.056
+  PRORTI <- 0.092
+  PROSTF <- 0.035
+  PROSTI <- 0.150
+  #!*RESPIRATION PARAMETERS
+  RCH2O  <- 1.242
+  RLIG   <- 2.174
+  RLIP   <- 3.106
+  RMIN   <- 0.05
+  RNO3C  <- 2.556
+  ROA    <- 0.929
+  RPRO   <- 0.360
+  
+  #TODO verificar se (10) e (25) seria rep(0,XX)
+  XSLATM <- rep(0,10)
+  YSLATM <- rep(0,10)
+  XTRFAC <- rep(0,10)
+  YTRFAC <- rep(0,10)
+  XXFTEM <- rep(0,10)
+  YXFTEM <- rep(0,10)
+  XLEAF  <- rep(0,25)
+  YLEAF  <- rep(0,25)
+  YSTEM  <- rep(0,25)
+  
+  #TGRO[TS]
+  TGRO   <- rep(1.,24)
+  
+  NCOHORTS <- 300 #from line 51 in ModuleDefs.for NCOHORTS = 300, !Maximum number of cohorts
+  SDDES <- rep(0, NCOHORTS)
+  SDNO  <- rep(0, NCOHORTS)
+  SHELN <- rep(0, NCOHORTS)
+  WTSD  <- rep(0, NCOHORTS)
+  WTSHE <- rep(0, NCOHORTS)
+  PHTIM <- rep(0, NCOHORTS)
+  PNTIM <- rep(0, NCOHORTS)
+  
+  FRSTMM  <- 0
+  YY      <- 0
+  XX      <- 0
+  TMPFAC  <- 0
+  REDPUN  <- 0
+  TMPFCS  <- 0
+  PAGE    <- 0
+  REDSHL  <- 0
+  SDMAX   <- 0
+  CDMSH   <- 0
+  GDMSH   <- 0
+  ADDSHL  <- 0
+  TEMXFR  <- 0
+  CAVTOT  <- 0
+  GDMSDO  <- 0
+  CNOLD   <- 0
+  NVSTL   <- 0
+  NVSTS   <- 0
+  NVSTR   <- 0
+  FRNLFT  <- 0
+  POTLIP  <- 0
+  POTCAR  <- 0
+  TPHFAC  <- 0
+  PARSLA  <- 0
+  FFVEG   <- 0
+  ROYES   <- 0
+  GAINNW  <- 0
+  GAINWT  <- 0
+  SLAVAR  <- 0
+  THRESH  <- 0
+  GRSH2   <- 0
+  AGRRT   <- 0
+  AGRSTM  <- 0
+  TURFSL  <- 0
+  
+  #TODO VERIFICAR nesta lista...
+  # ORIGENS DE ALGUNS DESSES VALORES QUE VIERAM DO print*,
+  # Aqueles que vem de outra função/subrotina: não sei se atribuo zero [0] ou não aqui
+  AGRLF   <- 0.783989966 # fixed value from print*, | não descobri de onde vem!
+  AGRSD1  <- 0 # from SDCOM.for
+  AGRSD2  <- 0 # from SDCOM.for
+  AGRVG   <- 0
+  AGRVG2  <- 0
+  CDMREP  <- 0
+  CDMSD   <- 0
+  CDMSDR  <- 0
+  CDMTOT  <- 0 # CDMTOT not used - chp
+  CDMVEG  <- 0
+  DRPP    <- 0 # DRPP = FUDAY[6] no PHENOL.for
+  DUMFAC  <- 0
+  DXR57   <- 0 # calculado no PHENOL.for
+  Fnew    <- 0 #*** Fnew is 'F' in the original file. Changed because F is logical in R. ***
+  FNINL   <- 0
+  FNINR   <- 0
+  FNINS   <- 0
+  FNINSD  <- 0
+  FNINSH  <- 0
+  FRACDN  <- 0 # calculado no PHENOL.for
+  FRLF    <- 0
+  # FRLFMX  <-  'subi' como parametros de espécie (.SPE)
+  FRRT    <- 0
+  FRSTM   <- 0
+  FVEG    <- 0
+  GDMSD   <- 0
+  GDMSDR  <- 0
+  GROMAX  <- 0
+  GRRAT1  <- 0
+  LAGSD   <- 0 # calculado no PODS.for
+  LNGPEG  <- 0 # calculado no PODS.for
+  #LNGSH   <-  'subi' como parametros de ecótipo (.ECO)
+  NDMNEW  <- 0
+  NDMOLD  <- 0
+  NDMREP  <- 0
+  NDMSD   <- 0
+  NDMSDR  <- 0
+  NDMSH   <- 0
+  NDMTOT  <- 0
+  NDMVEG  <- 0
+  NMINEP  <- 0
+  #NMOBMX  <-  'subi' como parametros de espécie (.SPE) 
+  NMOBR   <- 0
+  #NRCVR   <-  'subi' como parametros de espécie (.SPE) 
+  NSTRES  <- 0 # N stress factor (verificar de onde vem no ECOSMOS)
+  #NVSMOB  <-  'subi' como parametros de espécie (.SPE)  
+  PAR     <- 0 # PAR em moles[quanta]/m2-d (verificar de onde vem do ECOSMOS)
+  PCNL    <- 0 # calculado no GROW.for
+  PCNRT   <- 0 # calculado no GROW.for
+  PCNST   <- 0 # calculado no GROW.for
+  PGAVL   <- 0 # inicializado no CROPGRO.for
+  #PLIGSD  <-  'subi' como parametros de espécie (.SPE)  
+  PLTPOP  <- 0 # plant population -> provavel q venha do arquivo experimental (densidade x espacamento)
+  #PMINSD  <-  'subi' como parametros de espécie (.SPE)  
+  #POASD   <-  'subi' como parametros de espécie (.SPE)   
+  #PROLFF  <-  'subi' como parametros de espécie (.SPE)    
+  #PROLFI  <-  'subi' como parametros de espécie (.SPE)    
+  #PRORTF  <-  'subi' como parametros de espécie (.SPE)    
+  #PRORTI  <-  'subi' como parametros de espécie (.SPE)    
+  #PROSTF  <-  'subi' como parametros de espécie (.SPE)    
+  #PROSTI  <-  'subi' como parametros de espécie (.SPE)    
+  #RCH2O   <-  'subi' como parametros de espécie (.SPE)
+  #RLIG    <-  'subi' como parametros de espécie (.SPE)
+  #RLIP    <-  'subi' como parametros de espécie (.SPE)
+  #RMIN    <-  'subi' como parametros de espécie (.SPE)
+  #RNO3C   <-  'subi' como parametros de espécie (.SPE)
+  #ROA     <-  'subi' como parametros de espécie (.SPE)
+  #RPRO    <-  'subi' como parametros de espécie (.SPE)
+  RPROAV  <- 0 # calculado no CROPGRO.for
+  RTWT    <- 0 # calculado no GROW.for
+  SDGR    <- 0
+  #SDLIP   <-  'subi' como parametros de cultivar (.CUL) 
+  #SDPRO   <-  'subi' como parametros de cultivar (.CUL)  
+  SDVAR   <- 0 # calculado no PODS.for
+  #SHLAG   <-  'subi' como parametros de espécie (.SPE) 
+  SHVAR   <- 0 # calculado no PODS.for
+  SIZELF  <- 200.000000 #indicado em alguns .ECO da familia CROPGRO, mas nao encontrei onde exatamente!
+  #SIZREF  <-  'subi' como parametros de espécie (.SPE)   
+  SIZRAT  <- 0
+  SLAMN   <- 0
+  SLAMX   <- 0
+  #SLAPAR  <-  'subi' como parametros de espécie (.SPE)
+  #SRMAX   <-  'subi' como parametros de espécie (.SPE)
+  STMWT   <- 0 # calculado no GROW.for
+  SWFAC   <- 0 # water stress factor (verificar de onde vem no ECOSMOS)
+  TAVG    <- 0 # buscar do padrao do Ecosmos    
+  TDUMX   <- 0 # calculado no PHENOL.for
+  TDUMX2  <- 0 # calculado no PHENOL.for
+  TURADD  <- 0
+  TURFAC  <- 0 # water stress factor (verificar de onde vem no ECOSMOS)
+  #TURSLA  <-  'subi' como parametros de espécie (.SPE)
+  TURXFR  <- 0
+  #VSSINK  <-  'subi' como parametros de espécie (.SPE)
+  VSTAGE  <- 0 # calculado no PHENOL.for
+  WCRLF   <- 0 # calculado no GROW.for
+  WCRRT   <- 0 # calculado no GROW.for
+  WCRST   <- 0 # calculado no GROW.for
+  WNRLF   <- 0 # calculado no GROW.for
+  WNRRT   <- 0 # calculado no GROW.for
+  WNRSH   <- 0 # calculado no GROW.for
+  WNRST   <- 0 # calculado no GROW.for
+  WTLF    <- 0 # calculado no GROW.for
+  #XFRMAX  <-  'subi' como parametros de espécie (.SPE)
+  #XFRT    <-  'subi' como parametros de cultivar (.CUL)
+  XFRUIT  <- 0 #XFRT   = XFRUIT at EMERG
+  XPOD    <- 0 # calculado no GROW.for
+  
+  ##CHP - puncture variables, not functional
+  #REAL PUNCSD, PUNCTR, RPRPUN
+  
+  #TYPE (ControlType) CONTROL
+  
   
   #***********************************************************************
   #***********************************************************************
-  #     Seasonal initialization - run once per season
+  #     Run Initialization - Called once per simulation
   #***********************************************************************
-} else if (DYNAMIC == SEASINIT) {
-  #-----------------------------------------------------------------------
-  CDMSDR = 0.0
-  GDMSDR = 0.0
-  FNINSD = 0.0
-  NDMNEW = 0.0
-  NDMREP = 0.0
-  NDMSD  = 0.0
-  NDMSH  = 0.0
-  NDMSDR = 0.0
-  NDMVEG = 0.0
-  NMOBR  = 0.0
-  SDGR   = 0.0
-  FNINL  = 0.0
-  FNINS  = 0.0
-  FNINR  = 0.0
-  NMINEP = 0.0
-  
-  RPRPUN = 1.0 
-  TMPFAC = 1.0
-  
-  #-----------------------------------------------------------------------
-  #     SET VARIETY SPECIFIC LEAF PARAMETERS
-  #-----------------------------------------------------------------------
-  if (CROP != 'FA') {
-    DUMFAC = SLAVAR / SLAREF
-    F      = DUMFAC * FINREF # VERIFICAR: F ? palavra reservada da linguagem. Substituir.
-    FVEG   = DUMFAC * SLAMAX
-    SLAMN  = DUMFAC * SLAMIN
-    SLAMX  = DUMFAC * SLAMAX
-    GROMAX = 0.0
-    SIZRAT = SIZELF / SIZREF
+  if (DYNAMIC == RUNINIT) {
+    #-----------------------------------------------------------------------
+    #CALL IPDMND(
+    #  &  FILECC, FILEGC, FILEIO,                           #Input
+    #  &  CARMIN, FINREF, FNSDT, FRLFF, FRLFMX,             #Output
+    #  &  FRSTMF, LIPOPT, LIPTB, LNGSH, NMOBMX,             #Output
+    #  &  NRCVR, NVSMOB, PLIGSD, PMINSD, POASD,             #Output
+    #  &  PROLFF, PROLFI, PRORTF, PRORTI, PROSTF, PROSTI,   #Output
+    #  &  RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA,              #Output
+    #  &  RPRO, SDLIP, SDPRO, SHLAG, SLAMAX, SLAMIN,        #Output
+    #  &  SLAPAR, SLAREF, SLAVAR, SLOSUM, SIZELF, SIZREF,   #Output
+    #  &  SRMAX, THRESH, TURSLA, TYPSDT, VSSINK, XFRMAX,    #Output
+    #  &  XFRUIT, XLEAF, XSLATM, XTRFAC, XVGROW, XXFTEM,    #Output
+    #  &  YLEAF, YSLATM, YSTEM, YTRFAC, YVREF, YXFTEM)      #Output
     
-    for (I in 1:6){
-      YVGROW[I] = SIZRAT * YVREF[I]
-    }
+    IPDMND(
+      FILECC, FILEGC, FILEIO,                           #Input
+      CARMIN, FINREF, FNSDT, FRLFF, FRLFMX,             #Output
+      FRSTMF, LIPOPT, LIPTB, LNGSH, NMOBMX,             #Output
+      NRCVR, NVSMOB, PLIGSD, PMINSD, POASD,             #Output
+      PROLFF, PROLFI, PRORTF, PRORTI, PROSTF, PROSTI,   #Output
+      RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA,              #Output
+      RPRO, SDLIP, SDPRO, SHLAG, SLAMAX, SLAMIN,        #Output
+      SLAPAR, SLAREF, SLAVAR, SLOSUM, SIZELF, SIZREF,   #Output
+      SRMAX, THRESH, TURSLA, TYPSDT, VSSINK, XFRMAX,    #Output
+      XFRUIT, XLEAF, XSLATM, XTRFAC, XVGROW, XXFTEM,    #Output
+      YLEAF, YSLATM, YSTEM, YTRFAC, YVREF, YXFTEM)      #Output
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     Seasonal initialization - run once per season
+    #***********************************************************************
+  } else if (DYNAMIC == SEASINIT) {
+    #-----------------------------------------------------------------------
+    CDMSDR = 0.0
+    GDMSDR = 0.0
+    FNINSD = 0.0
+    NDMNEW = 0.0
+    NDMREP = 0.0
+    NDMSD  = 0.0
+    NDMSH  = 0.0
+    NDMSDR = 0.0
+    NDMVEG = 0.0
+    NMOBR  = 0.0
+    SDGR   = 0.0
+    FNINL  = 0.0
+    FNINS  = 0.0
+    FNINR  = 0.0
+    NMINEP = 0.0
+    
+    RPRPUN = 1.0 
+    TMPFAC = 1.0
     
     #-----------------------------------------------------------------------
-    #     INITIALIZE PARTITIONING PARAMETERS
+    #     SET VARIETY SPECIFIC LEAF PARAMETERS
     #-----------------------------------------------------------------------
-    FRLF = TABEX(YLEAF,XLEAF,0.0,8)
-    FRSTM = TABEX(YSTEM,XLEAF,0.0,8)
-    FRRT = 1.0 - FRLF - FRSTM
-    
-  }
-  
-  #***********************************************************************
-  #***********************************************************************
-  #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
-  #         or transplanting of plants
-  #***********************************************************************
-} else if (DYNAMIC == EMERG) {
-  #-----------------------------------------------------------------------
-  XFRT   = XFRUIT
-  ADDSHL = 0.0
-  TURXFR = 0.0
-  GDMSD  = 0.0
-  CDMSD  = 0.0
-  NDMSD  = 0.0
-  GDMSDR = 0.0
-  CDMSDR = 0.0
-  NDMSDR = 0.0
-  CDMREP = 0.0
-  NAGE   = 0
-  for (NPP in 1:NCOHORTS) {
-    PHTIM[NPP] = 0.
-    PNTIM[NPP] = 0.
-  }
-  FNINSD = SDPRO * 0.16   
-  FNINL  = PROLFI * 0.16  
-  FNINS  = PROSTI * 0.16  
-  FNINR  = PRORTI * 0.16  
-  
-  #***********************************************************************
-  #***********************************************************************
-  #     DAILY RATE/INTEGRATION
-  #***********************************************************************
-} else if (DYNAMIC == INTEGR) {
-  #-----------------------------------------------------------------------
-  #     DAS = max(0,TIMDIF(YRSIM,YRDOY))
-  CALL GET(CONTROL)
-  
-  # ALTERADO: Resto da divis?o s?o dois %.
-  # DAS = CONTROL % DAS 
-  DAS = CONTROL %% DAS 
-  
-  #-----------------------------------------------------------------------
-  #     Compute max N mining, NMINEP, based on stage-dependent mining
-  #     rate, NMOBR
-  #-----------------------------------------------------------------------
-  #     Assume that a Maximum Fraction (NMOBMX) of N can be Mobilized per Day
-  #     NVSMOB is the relative N mobil rate in veg stage, rel to reprod. stage
-  #-----------------------------------------------------------------------
-  #     9/27/95 ACCELERATE N MOBILIZATION AFTER R5, FUNCTION OF (1-SWFAC)
-  #     ALLOWS ACCELERATING BY 50% IF MAX DEFICIT.
-  #     2/6/96 SOMETIMES SEEDS FILL, XPOD IS LOW, { N MOBILIZATION SLOWS
-  #     I DON'T REALLY WANT THAT, LATE IN CYCLE.  KJB
-  #     NOW, DXR57 HITS CLOSE TO 1 AT MATURITY AND PREVENTS THAT
-  #-----------------------------------------------------------------------
-  NMOBR  = NVSMOB * NMOBMX * TDUMX
-  if (DAS > NR5) {
-    NMOBR = NMOBMX * TDUMX2 * (1.0 + 0.5*(1.0 - SWFAC)) * (1.0 + 0.3*(1.0 - NSTRES)) * (NVSMOB + (1. - NVSMOB) * max(XPOD,DXR57^2.))
-  }
-  NMINEP = NMOBR * (WNRLF + WNRST + WNRRT + WNRSH)
-  
-  #-----------------------------------------------------------------------
-  if (DAS >= NR1) {
-    #-----------------------------------------------------------------------
-    #     Accumulate physiological age of flower (PNTIM) and pod (PHTIM) cohorts
-    #-----------------------------------------------------------------------
-    if (DAS - NR1 + 1 > NCOHORTS) {
-      WRITE(MSG(1),'(A,I5)') 'Number of flower cohorts exceeds maximum limit of',NCOHORTS
-      CALL WARNING(1,ERRKEY,MSG)
-      CALL ErrorCode(CONTROL, 100, ERRKEY, YREND)
+    if (CROP != 'FA') {
+      DUMFAC = SLAVAR / SLAREF
+      Fnew   = DUMFAC * FINREF # VERIFICAR: F ? palavra reservada da linguagem. Substituir.
+      FVEG   = DUMFAC * SLAMAX
+      SLAMN  = DUMFAC * SLAMIN
+      SLAMX  = DUMFAC * SLAMAX
+      GROMAX = 0.0
+      SIZRAT = SIZELF / SIZREF
       
-      # ALTERADO: RETURN
-      return()
+      for (I in 1:6){
+        YVGROW[I] = SIZRAT * YVREF[I]
+      }
+      
+      #-----------------------------------------------------------------------
+      #     INITIALIZE PARTITIONING PARAMETERS
+      #-----------------------------------------------------------------------
+      FRLF = TABEX(YLEAF,XLEAF,0.0,8)
+      FRSTM = TABEX(YSTEM,XLEAF,0.0,8)
+      FRRT = 1.0 - FRLF - FRSTM
+      
     }
     
-    # VERIFICAR: Nao seria DAS <= NR1 ? Pois caso DAS seja menor, a linha a seguir dar? erro por ser indice negativo.
-    if (DAS == NR1) {
-      PNTIM[1] = 0.0
-    } else {
-      PNTIM[DAS - NR1 + 1] = PNTIM[DAS - NR1] + TDUMX
-    }
-    
-    if (DAS <= NR2) {
-      PHTIM[1] = 0.0
-    } else {
-      PHTIM(DAS - NR2 + 1) = PHTIM(DAS - NR2) + TDUMX
-    }
-    
+    #***********************************************************************
+    #***********************************************************************
+    #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
+    #         or transplanting of plants
+    #***********************************************************************
+  } else if (DYNAMIC == EMERG) {
     #-----------------------------------------------------------------------
-    #     Calculate function for modifying seed growth rate with temperature
-    #-----------------------------------------------------------------------
-    TMPFAC = 0
-    TMPFCS = 0
-    for (I in 1:TS) {
-      TMPFAC = CURV(TYPSDT,FNSDT[1], FNSDT[2], FNSDT[3], FNSDT[4], TGRO[I])
-      TMPFCS = TMPFCS + TMPFAC
-    }
-    
-    TMPFAC = TMPFCS / TS
-    
-    # 24 changed to TS on 3Jul17 by Bruce Kimball
-    
-    #-----------------------------------------------------------------------
-    #       Calculate reduction in seed growth due to insect punctures
-    #-----------------------------------------------------------------------
-    if (PUNCSD > 0.001) {
-      REDPUN = 1.0 - (PUNCTR/PUNCSD) * RPRPUN
-      REDPUN = max(0.0,REDPUN)
-    } else {
-      REDPUN = 1.0
-    }
-    #-----------------------------------------------------------------------
-    #       Water stress factor (TURADD) effect on reproductive growth and
-    #       pod addition.  Stress is defined to INCREASE growth and addition.
-    #-----------------------------------------------------------------------
-    TURADD = TABEX (YTRFAC,XTRFAC,TURFAC,4)
-    #-----------------------------------------------------------------------
-    #     Calculate maximum growth per seed based on temp and seed punctures
-    #-----------------------------------------------------------------------
-    SDGR = SDVAR * TMPFAC * REDPUN * (1.-(1.-DRPP)*SRMAX) * (1. + TURADD)
-    #-----------------------------------------------------------------------
-    #     Initialize Seed Growth Demands and CH2O and N required for seed
-    #       growth
-    #-----------------------------------------------------------------------
+    XFRT   = XFRUIT
+    ADDSHL = 0.0
+    TURXFR = 0.0
     GDMSD  = 0.0
     CDMSD  = 0.0
     NDMSD  = 0.0
     GDMSDR = 0.0
     CDMSDR = 0.0
     NDMSDR = 0.0
+    CDMREP = 0.0
+    NAGE   = 0
+    for (NPP in 1:NCOHORTS) {
+      PHTIM[NPP] = 0.
+      PNTIM[NPP] = 0.
+    }
+    FNINSD = SDPRO * 0.16   
+    FNINL  = PROLFI * 0.16  
+    FNINS  = PROSTI * 0.16  
+    FNINR  = PRORTI * 0.16  
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     DAILY RATE/INTEGRATION
+    #***********************************************************************
+  } else if (DYNAMIC == INTEGR) {
+    #-----------------------------------------------------------------------
+    #     DAS = max(0,TIMDIF(YRSIM,YRDOY))
+    #CALL GET(CONTROL)
+    
+    # ALTERADO: Resto da divis?o s?o dois %. [DiasHB: talvez % no Fortran seja equivalente ao $ no R]
+    # DAS = CONTROL % DAS 
+    DAS = CONTROL %% DAS 
+    
+    #-----------------------------------------------------------------------
+    #     Compute max N mining, NMINEP, based on stage-dependent mining
+    #     rate, NMOBR
+    #-----------------------------------------------------------------------
+    #     Assume that a Maximum Fraction (NMOBMX) of N can be Mobilized per Day
+    #     NVSMOB is the relative N mobil rate in veg stage, rel to reprod. stage
+    #-----------------------------------------------------------------------
+    #     9/27/95 ACCELERATE N MOBILIZATION AFTER R5, FUNCTION OF (1-SWFAC)
+    #     ALLOWS ACCELERATING BY 50% IF MAX DEFICIT.
+    #     2/6/96 SOMETIMES SEEDS FILL, XPOD IS LOW, { N MOBILIZATION SLOWS
+    #     I DON'T REALLY WANT THAT, LATE IN CYCLE.  KJB
+    #     NOW, DXR57 HITS CLOSE TO 1 AT MATURITY AND PREVENTS THAT
+    #-----------------------------------------------------------------------
+    NMOBR  = NVSMOB * NMOBMX * TDUMX
+    if (DAS > NR5) {
+      NMOBR = NMOBMX * TDUMX2 * (1.0 + 0.5*(1.0 - SWFAC)) * (1.0 + 0.3*(1.0 - NSTRES)) * (NVSMOB + (1. - NVSMOB) * max(XPOD,DXR57^2.))
+    }
+    NMINEP = NMOBR * (WNRLF + WNRST + WNRRT + WNRSH)
+    
+    #-----------------------------------------------------------------------
+    if (DAS >= NR1) {
+      #-----------------------------------------------------------------------
+      #     Accumulate physiological age of flower (PNTIM) and pod (PHTIM) cohorts
+      #-----------------------------------------------------------------------
+      if (DAS - NR1 + 1 > NCOHORTS) {
+        WRITE(MSG(1),'(A,I5)') 'Number of flower cohorts exceeds maximum limit of',NCOHORTS
+        CALL WARNING(1,ERRKEY,MSG)
+        CALL ErrorCode(CONTROL, 100, ERRKEY, YREND)
+        
+        # ALTERADO: RETURN
+        return()
+      }
+      
+      # VERIFICAR: Nao seria DAS <= NR1 ? Pois caso DAS seja menor, a linha a seguir dar? erro por ser indice negativo.
+      if (DAS == NR1) {
+        PNTIM[1] = 0.0
+      } else {
+        PNTIM[DAS - NR1 + 1] = PNTIM[DAS - NR1] + TDUMX
+      }
+      
+      if (DAS <= NR2) {
+        PHTIM[1] = 0.0
+      } else {
+        PHTIM(DAS - NR2 + 1) = PHTIM(DAS - NR2) + TDUMX
+      }
+      
+      #-----------------------------------------------------------------------
+      #     Calculate function for modifying seed growth rate with temperature
+      #-----------------------------------------------------------------------
+      TMPFAC = 0
+      TMPFCS = 0
+      for (I in 1:TS) {
+        TMPFAC = CURV(TYPSDT,FNSDT[1], FNSDT[2], FNSDT[3], FNSDT[4], TGRO[I])
+        TMPFCS = TMPFCS + TMPFAC
+      }
+      
+      TMPFAC = TMPFCS / TS
+      
+      # 24 changed to TS on 3Jul17 by Bruce Kimball
+      
+      #-----------------------------------------------------------------------
+      #       Calculate reduction in seed growth due to insect punctures
+      #-----------------------------------------------------------------------
+      if (PUNCSD > 0.001) {
+        REDPUN = 1.0 - (PUNCTR/PUNCSD) * RPRPUN
+        REDPUN = max(0.0,REDPUN)
+      } else {
+        REDPUN = 1.0
+      }
+      #-----------------------------------------------------------------------
+      #       Water stress factor (TURADD) effect on reproductive growth and
+      #       pod addition.  Stress is defined to INCREASE growth and addition.
+      #-----------------------------------------------------------------------
+      TURADD = TABEX (YTRFAC,XTRFAC,TURFAC,4)
+      #-----------------------------------------------------------------------
+      #     Calculate maximum growth per seed based on temp and seed punctures
+      #-----------------------------------------------------------------------
+      SDGR = SDVAR * TMPFAC * REDPUN * (1.-(1.-DRPP)*SRMAX) * (1. + TURADD)
+      #-----------------------------------------------------------------------
+      #     Initialize Seed Growth Demands and CH2O and N required for seed
+      #       growth
+      #-----------------------------------------------------------------------
+      GDMSD  = 0.0
+      CDMSD  = 0.0
+      NDMSD  = 0.0
+      GDMSDR = 0.0
+      CDMSDR = 0.0
+      NDMSDR = 0.0
+      #-----------------------------------------------------------------------
+      if (DAS > NR2) {
+        for (NPP in 1:(DAS - NR2)) { 
+          #-----------------------------------------------------------------------
+          #     Calculate physiol age of seed cohort.  Do not allow seed to grow
+          #     until shells are greater than LAGSD physiol age.
+          #-----------------------------------------------------------------------
+          PAGE = PHTIM[DAS - NR2 + 1] - PHTIM[NPP]
+          if (PAGE >= LAGSD) {
+            #-----------------------------------------------------------------------
+            #     Allow cohort growth until threshing limit (seed wt./pod wt) occurs
+            #     taking into account damage by pests to seed and shells
+            #-----------------------------------------------------------------------
+            REDSHL = 0
+            if (SDDES[NPP] > 0) {
+              REDSHL = WTSHE[NPP] * SDDES[NPP] / (SDDES[NPP] + SDNO[NPP])
+            }
+            SDMAX = (WTSHE[NPP] - REDSHL) * THRESH / (100 - THRESH) - WTSD[NPP]
+            SDMAX = max(0, SDMAX)
+            #-----------------------------------------------------------------------
+            #     Compute Seed Growth Demand, GDMSD, and N required for seed, NDMSD
+            #-----------------------------------------------------------------------
+            GDMSD  = GDMSD  + min(SDGR * SDNO[NPP] * REDPUN, SDMAX)
+          }
+        }
+        #-----------------------------------------------------------------------
+        #     Call seed composition routine
+        #-----------------------------------------------------------------------
+        #CALL SDCOMP(
+        #  &      CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD, #Input
+        #  &      RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA, SDLIP,   #Input
+        #  &      SDPRO, SLOSUM, TAVG,                          #Input
+        #  &      AGRSD1, AGRSD2, FNINSD, POTCAR, POTLIP)       #Output
+        
+        SDCOMP(
+          CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD, #Input
+          RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA, SDLIP,   #Input
+          SDPRO, SLOSUM, TAVG,                          #Input
+          AGRSD1, AGRSD2, FNINSD, POTCAR, POTLIP)       #Output
+        
+        NDMSD  = FNINSD * GDMSD
+        #-----------------------------------------------------------------------
+        #     Calculate Amount of Mobilized N Which Can be Used for Seed Growth,
+        #     NDMSDR, potential seed growth from this source of N, GDMSDR,
+        #     and CH2O required for this seed growth from mobilized N, CDMSDR
+        #-----------------------------------------------------------------------
+        if (NDMSD > NMINEP) {
+          NDMSDR = NMINEP
+        } else {
+          NDMSDR = NDMSD
+        }
+        GDMSDR = NDMSDR / FNINSD
+        CDMSDR = GDMSDR * (AGRSD1 + FNINSD * 6.25 * RPRO)
+        #-----------------------------------------------------------------------
+        #    Compute Total CH2O Demand to Grow GDMSD g Tissue
+        #-----------------------------------------------------------------------
+        CDMSD = (max(0, (GDMSD - GDMSDR))) * AGRSD2 + CDMSDR
+      }
+    }
+    #-----------------------------------------------------------------------
+    #     Compute max growth per shell, depending on temp, daylength
+    #-----------------------------------------------------------------------
+    GRRAT1 = SHVAR * TMPFAC * (1- (1-DRPP) * SRMAX) * (1.0 + TURADD)
+    #-----------------------------------------------------------------------
+    #     Initialize Shell Growth Demand, N (NDMSH) and C (CDMSH) needed for growth
+    #-----------------------------------------------------------------------
+    GDMSH = 0.0
+    NDMSH = 0.0
+    CDMSH = 0.0
+    #-----------------------------------------------------------------------
+    #     Compute growth demand for shells, GDMSH, allowing slow growth
+    #     until LNGPEG age, then potential growth until LNGSH
     #-----------------------------------------------------------------------
     if (DAS > NR2) {
-      for (NPP in 1:(DAS - NR2)) { 
-        #-----------------------------------------------------------------------
-        #     Calculate physiol age of seed cohort.  Do not allow seed to grow
-        #     until shells are greater than LAGSD physiol age.
-        #-----------------------------------------------------------------------
-        PAGE = PHTIM[DAS - NR2 + 1] - PHTIM[NPP]
-        if (PAGE >= LAGSD) {
-          #-----------------------------------------------------------------------
-          #     Allow cohort growth until threshing limit (seed wt./pod wt) occurs
-          #     taking into account damage by pests to seed and shells
-          #-----------------------------------------------------------------------
-          REDSHL = 0
-          if (SDDES[NPP] > 0) {
-            REDSHL = WTSHE[NPP] * SDDES[NPP] / (SDDES[NPP] + SDNO[NPP])
+      for (NPP in 1:(DAS - NR2)) {  
+        NAGE = DAS - NR2 + 1 - NPP  #NAGE not used - chp
+        PAGE = PHTIM(DAS - NR2 + 1) - PHTIM[NPP]
+        if (PAGE <= LNGSH & SHELN[NPP] >= 0.001 & GRRAT1 >= 0.001) {
+          if (PAGE >= LNGPEG) {
+            #Shells between LNGPEG and LNGSH
+            ADDSHL = GRRAT1 * SHELN[NPP]
+          } else {
+            #Shells < LNGPEG
+            ADDSHL = GRRAT1 * SHELN[NPP] * SHLAG
           }
-          SDMAX = (WTSHE[NPP] - REDSHL) * THRESH / (100 - THRESH) - WTSD[NPP]
-          SDMAX = max(0, SDMAX)
-          #-----------------------------------------------------------------------
-          #     Compute Seed Growth Demand, GDMSD, and N required for seed, NDMSD
-          #-----------------------------------------------------------------------
-          GDMSD  = GDMSD  + min(SDGR * SDNO[NPP] * REDPUN, SDMAX)
         }
+        GDMSH  = GDMSH + ADDSHL
       }
       #-----------------------------------------------------------------------
-      #     Call seed composition routine
+      #     Compute CH2O required for the potential shell growth
       #-----------------------------------------------------------------------
-      CALL SDCOMP(
-        &      CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD, #Input
-        &      RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA, SDLIP,   #Input
-        &      SDPRO, SLOSUM, TAVG,                          #Input
-        &      AGRSD1, AGRSD2, FNINSD, POTCAR, POTLIP)       #Output
-      
-      NDMSD  = FNINSD * GDMSD
-      #-----------------------------------------------------------------------
-      #     Calculate Amount of Mobilized N Which Can be Used for Seed Growth,
-      #     NDMSDR, potential seed growth from this source of N, GDMSDR,
-      #     and CH2O required for this seed growth from mobilized N, CDMSDR
-      #-----------------------------------------------------------------------
-      if (NDMSD > NMINEP) {
-        NDMSDR = NMINEP
+      CDMSH = GDMSH * AGRSH2
+    }
+    #-----------------------------------------------------------------------
+    #     Compute TEMXFR, the temp effect on partitioning to pods
+    #     High temp would increase fraction growth to vegetative tissue
+    #-----------------------------------------------------------------------
+    TEMXFR = 0.
+    for (I in 1:TS) {
+      TEMXFR = TEMXFR + TABEX(YXFTEM,XXFTEM,TGRO[I],6)
+    }
+    TEMXFR = TEMXFR/TS
+    # 24 changed to TS by Bruce Kimball on 3Jul17
+    
+    #-----------------------------------------------------------------------
+    #     Partitioning to pods is increased under drought stress conditions
+    #        depending on XFRMAX, an input parameter
+    #-----------------------------------------------------------------------
+    TURXFR = XFRMAX * (1 - TURFAC)
+    TURXFR = min(TURXFR, 1)
+    TURXFR = max(TURXFR, 0)
+    #-----------------------------------------------------------------------
+    #     Night length and temperature are multiplicative
+    #     but turgor effect adds to the partitioning
+    #-----------------------------------------------------------------------
+    XFRT = XFRUIT * TEMXFR + XFRUIT * TURXFR
+    #     XFRT = XFRUIT * RNIT * TEMXFR   #NEED TO FIX FOR DAYLENGTH EFFECT
+    XFRT = min(XFRT,1.0)
+    XFRT = max(XFRT,0.0)
+    #-----------------------------------------------------------------------
+    #    Total Potential Available CH2O for Reprod Growth (CAVTOT)
+    #    and total CH2O needed for potential reproductive growth (CDMREP)
+    #-----------------------------------------------------------------------
+    CAVTOT = PGAVL * XFRT
+    CDMREP = CDMSH + CDMSD
+    #-----------------------------------------------------------------------
+    #    Adjust #-Demand for New Growth if #-Available is Less than C Demand
+    #    Also adjust tissue growth demand for seeds and shells
+    #-----------------------------------------------------------------------
+    GDMSDO = GDMSD
+    if (CDMREP > CAVTOT) {
+      if (CDMSD > CAVTOT) {
+        CDMSH = 0.0
+        GDMSH = 0.0
+        CDMSD = CAVTOT
+        if (CDMSDR > CAVTOT) {
+          CDMSDR = CAVTOT
+        }
+        GDMSD = (max(0.0,(CDMSD-CDMSDR)))/ AGRSD2 + CDMSDR / (AGRSD1 + FNINSD * 6.25 * RPRO)
+        NDMSDR = GDMSDR * FNINSD
       } else {
-        NDMSDR = NDMSD
+        CDMSH = CAVTOT - CDMSD
+        GDMSH = CDMSH/AGRSH2
       }
-      GDMSDR = NDMSDR / FNINSD
-      CDMSDR = GDMSDR * (AGRSD1 + FNINSD * 6.25 * RPRO)
-      #-----------------------------------------------------------------------
-      #    Compute Total CH2O Demand to Grow GDMSD g Tissue
-      #-----------------------------------------------------------------------
-      CDMSD = (max(0, (GDMSD - GDMSDR))) * AGRSD2 + CDMSDR
-    }
-  }
-  #-----------------------------------------------------------------------
-  #     Compute max growth per shell, depending on temp, daylength
-  #-----------------------------------------------------------------------
-  GRRAT1 = SHVAR * TMPFAC * (1- (1-DRPP) * SRMAX) * (1.0 + TURADD)
-  #-----------------------------------------------------------------------
-  #     Initialize Shell Growth Demand, N (NDMSH) and C (CDMSH) needed for growth
-  #-----------------------------------------------------------------------
-  GDMSH = 0.0
-  NDMSH = 0.0
-  CDMSH = 0.0
-  #-----------------------------------------------------------------------
-  #     Compute growth demand for shells, GDMSH, allowing slow growth
-  #     until LNGPEG age, then potential growth until LNGSH
-  #-----------------------------------------------------------------------
-  if (DAS > NR2) {
-    for (NPP in 1:(DAS - NR2)) {  
-      NAGE = DAS - NR2 + 1 - NPP  #NAGE not used - chp
-      PAGE = PHTIM(DAS - NR2 + 1) - PHTIM[NPP]
-      if (PAGE <= LNGSH & SHELN[NPP] >= 0.001 & GRRAT1 >= 0.001) {
-        if (PAGE >= LNGPEG) {
-          #Shells between LNGPEG and LNGSH
-          ADDSHL = GRRAT1 * SHELN[NPP]
-        } else {
-          #Shells < LNGPEG
-          ADDSHL = GRRAT1 * SHELN[NPP] * SHLAG
-        }
-      }
-      GDMSH  = GDMSH + ADDSHL
+      CDMREP = CDMSD + CDMSH
     }
     #-----------------------------------------------------------------------
-    #     Compute CH2O required for the potential shell growth
+    #     Compute N demand for seed, shell, and total reproductive growth
     #-----------------------------------------------------------------------
-    CDMSH = GDMSH * AGRSH2
-  }
-  #-----------------------------------------------------------------------
-  #     Compute TEMXFR, the temp effect on partitioning to pods
-  #     High temp would increase fraction growth to vegetative tissue
-  #-----------------------------------------------------------------------
-  TEMXFR = 0.
-  for (I in 1:TS) {
-    TEMXFR = TEMXFR + TABEX(YXFTEM,XXFTEM,TGRO[I],6)
-  }
-  TEMXFR = TEMXFR/TS
-  # 24 changed to TS by Bruce Kimball on 3Jul17
-  
-  #-----------------------------------------------------------------------
-  #     Partitioning to pods is increased under drought stress conditions
-  #        depending on XFRMAX, an input parameter
-  #-----------------------------------------------------------------------
-  TURXFR = XFRMAX * (1 - TURFAC)
-  TURXFR = min(TURXFR, 1)
-  TURXFR = max(TURXFR, 0)
-  #-----------------------------------------------------------------------
-  #     Night length and temperature are multiplicative
-  #     but turgor effect adds to the partitioning
-  #-----------------------------------------------------------------------
-  XFRT = XFRUIT * TEMXFR + XFRUIT * TURXFR
-  #     XFRT = XFRUIT * RNIT * TEMXFR   #NEED TO FIX FOR DAYLENGTH EFFECT
-  XFRT = min(XFRT,1.0)
-  XFRT = max(XFRT,0.0)
-  #-----------------------------------------------------------------------
-  #    Total Potential Available CH2O for Reprod Growth (CAVTOT)
-  #    and total CH2O needed for potential reproductive growth (CDMREP)
-  #-----------------------------------------------------------------------
-  CAVTOT = PGAVL * XFRT
-  CDMREP = CDMSH + CDMSD
-  #-----------------------------------------------------------------------
-  #    Adjust #-Demand for New Growth if #-Available is Less than C Demand
-  #    Also adjust tissue growth demand for seeds and shells
-  #-----------------------------------------------------------------------
-  GDMSDO = GDMSD
-  if (CDMREP > CAVTOT) {
-    if (CDMSD > CAVTOT) {
-      CDMSH = 0.0
-      GDMSH = 0.0
-      CDMSD = CAVTOT
-      if (CDMSDR > CAVTOT) {
-        CDMSDR = CAVTOT
-      }
-      GDMSD = (max(0.0,(CDMSD-CDMSDR)))/ AGRSD2 + CDMSDR / (AGRSD1 + FNINSD * 6.25 * RPRO)
-      NDMSDR = GDMSDR * FNINSD
+    NDMSD  = GDMSD * FNINSD
+    NDMSH  = GDMSH * FNINSH
+    NDMREP = NDMSD + NDMSH
+    
+    #-----------------------------------------------------------------------
+    #     Vegetative partitioning factors and demand for C and N for new
+    #     growth before VSSINK, assume leaf expansion is fixed, compute
+    #     SLA based on function of light, temp, etc, then compute
+    #     FRLF (leaf partitioning), then FRRT, FRSTM
+    #-----------------------------------------------------------------------
+    #     Check to See if New Vegetative Tissue Can Be Grown, Using PGAVL
+    #-----------------------------------------------------------------------
+    CDMVEG = max(0.0,(1.-XFRT)*PGAVL)
+    NDMVEG = 0.0
+    CDMVEG = (PGAVL * XFRT - CDMREP) + CDMVEG
+    
+    #-----------------------------------------------------------------------
+    #       This is from documentation:  check no longer needed?? chp
+    #-----------------------------------------------------------------------
+    #      CDMVEG = max(0.0,(1.-XFRT)*PGAVL)
+    #      if (PGAVL * XFRT > CDMREP) {
+    #        if (N <= NDLEAF) CDMVEG = (PGAVL * XFRT - CDMREP) + CDMVEG
+    #      }
+    #-----------------------------------------------------------------------
+    
+    #-----------------------------------------------------------------------
+    if (DAS == NR1) {
+      #-----------------------------------------------------------------------
+      #     Fraction of growth going to leaves and roots decreases
+      #     linearly between R1 and NDLEAF.
+      #-----------------------------------------------------------------------
+      FRLFM  = TABEX (YLEAF, XLEAF, VSTAGE, 8)
+      FRSTMM = TABEX (YSTEM, XLEAF, VSTAGE, 8)
+      YY = FRLFM - FRLFF 
+      XX = FRSTMM - FRSTMF
+    }
+    #-----------------------------------------------------------------------
+    if (DAS < NR1) {
+      #-----------------------------------------------------------------------
+      #     Calculate Pattern of Vegetative Partitioning, a function of V-STAGE
+      #-----------------------------------------------------------------------
+      FRLF  = TABEX(YLEAF,XLEAF,VSTAGE,8)
+      FRSTM = TABEX(YSTEM,XLEAF,VSTAGE,8)
     } else {
-      CDMSH = CAVTOT - CDMSD
-      GDMSH = CDMSH/AGRSH2
+      #-----------------------------------------------------------------------
+      #     Partitioning between vegetative tissues depends on development
+      #     as expressed by FRACDN, the relative development between R1 and NDLEAF
+      #-----------------------------------------------------------------------
+      FRLF = FRLFM - YY * FRACDN
+      FRSTM = FRSTMM - XX * FRACDN
+      if ( DAS >= NDLEAF) {
+        FRLF = FRLFF
+        FRSTM = FRSTMF
+      }
     }
-    CDMREP = CDMSD + CDMSH
-  }
-  #-----------------------------------------------------------------------
-  #     Compute N demand for seed, shell, and total reproductive growth
-  #-----------------------------------------------------------------------
-  NDMSD  = GDMSD * FNINSD
-  NDMSH  = GDMSH * FNINSH
-  NDMREP = NDMSD + NDMSH
-  
-  #-----------------------------------------------------------------------
-  #     Vegetative partitioning factors and demand for C and N for new
-  #     growth before VSSINK, assume leaf expansion is fixed, compute
-  #     SLA based on function of light, temp, etc, then compute
-  #     FRLF (leaf partitioning), then FRRT, FRSTM
-  #-----------------------------------------------------------------------
-  #     Check to See if New Vegetative Tissue Can Be Grown, Using PGAVL
-  #-----------------------------------------------------------------------
-  CDMVEG = max(0.0,(1.-XFRT)*PGAVL)
-  NDMVEG = 0.0
-  CDMVEG = (PGAVL * XFRT - CDMREP) + CDMVEG
-  
-  #-----------------------------------------------------------------------
-  #       This is from documentation:  check no longer needed?? chp
-  #-----------------------------------------------------------------------
-  #      CDMVEG = max(0.0,(1.-XFRT)*PGAVL)
-  #      if (PGAVL * XFRT > CDMREP) {
-  #        if (N <= NDLEAF) CDMVEG = (PGAVL * XFRT - CDMREP) + CDMVEG
-  #      }
-  #-----------------------------------------------------------------------
-  
-  #-----------------------------------------------------------------------
-  if (DAS == NR1) {
+    
+    #     This is where to modify partitioning for extra root growth:
+    #     check units### fraction vs percentage
+    #     FRLF = FRLF - FRLF/(FRLF+FRSTM) * (extra root value)
+    #     FRSTM= FRSTM - FRSTM/(FRLF+FRSTM) * (extra root value)
+    FRRT = 1 - FRLF - FRSTM
+    
     #-----------------------------------------------------------------------
-    #     Fraction of growth going to leaves and roots decreases
-    #     linearly between R1 and NDLEAF.
+    #     Compute F, specific leaf area for new leaf weight
     #-----------------------------------------------------------------------
-    FRLFM  = TABEX (YLEAF, XLEAF, VSTAGE, 8)
-    FRSTMM = TABEX (YSTEM, XLEAF, VSTAGE, 8)
-    YY = FRLFM - FRLFF 
-    XX = FRSTMM - FRSTMF
-  }
-  #-----------------------------------------------------------------------
-  if (DAS < NR1) {
-    #-----------------------------------------------------------------------
-    #     Calculate Pattern of Vegetative Partitioning, a function of V-STAGE
-    #-----------------------------------------------------------------------
-    FRLF  = TABEX(YLEAF,XLEAF,VSTAGE,8)
-    FRSTM = TABEX(YSTEM,XLEAF,VSTAGE,8)
-  } else {
-    #-----------------------------------------------------------------------
-    #     Partitioning between vegetative tissues depends on development
-    #     as expressed by FRACDN, the relative development between R1 and NDLEAF
-    #-----------------------------------------------------------------------
-    FRLF = FRLFM - YY * FRACDN
-    FRSTM = FRSTMM - XX * FRACDN
-    if ( DAS >= NDLEAF) {
-      FRLF = FRLFF
-      FRSTM = FRSTMF
+    TPHFAC = 0
+    for (I in 1:TS){
+      TPHFAC = TPHFAC + TABEX (YSLATM,XSLATM,TGRO[I],5)
     }
-  }
-  
-  #     This is where to modify partitioning for extra root growth:
-  #     check units### fraction vs percentage
-  #     FRLF = FRLF - FRLF/(FRLF+FRSTM) * (extra root value)
-  #     FRSTM= FRSTM - FRSTM/(FRLF+FRSTM) * (extra root value)
-  FRRT = 1 - FRLF - FRSTM
-  
-  #-----------------------------------------------------------------------
-  #     Compute F, specific leaf area for new leaf weight
-  #-----------------------------------------------------------------------
-  TPHFAC = 0
-  for (I in 1:TS){
-    TPHFAC = TPHFAC + TABEX (YSLATM,XSLATM,TGRO[I],5)
-  }
-  TPHFAC = TPHFAC/TS
-  # 24 changed to TS by Bruce Kimball on 3Jul17
-  
-  #-----------------------------------------------------------------------
-  # VERIFICAR: EXP seria exponencial? Se for, trocar por 'exp()'
-  PARSLA = (SLAMN+(SLAMX-SLAMN) * EXP(SLAPAR*PAR)) / SLAMX
-  TURFSL = max(0.1, (1.0 - (1.0 - TURFAC)*TURSLA))
-  #-----------------------------------------------------------------------
-  #     Compute overall effect of TMP, PAR, water stress on SLA (F), first
-  #     for veg stages, then transition to rep stage from R1 to end leaf
-  #     effect of PAR on SLA, COX PEANUT SCI. 5:27, 1978
-  #-----------------------------------------------------------------------
-  FFVEG = FVEG * TPHFAC * PARSLA * TURFSL
-  
-  # VERIFICAR: F novamente. Mudar
-  F = FFVEG 
-  if (XFRT*FRACDN >= 0.05) { 
-    F = FFVEG * (1.0 - XFRT * FRACDN) 
-  }
-  #-----------------------------------------------------------------------
-  #     For determinate plants (XFRUIT=1.) leaf expansion stops at NDLEAF
-  #-----------------------------------------------------------------------
-  # VERIFICAR: F novamente. Mudar
-  if (XFRUIT > 0.9999 & DAS >= NDLEAF) { 
-    F = 0.0 
-  }
-  
-  #-----------------------------------------------------------------------
-  #     During early vegetative growth, leaf area expansion depends on
-  #     VSTAGE (Prior to VSSINK).  This sets FRLF, partitioning of d.m.
-  #     to leaves.  FRRT and FRSTM are then computed by left over C.  When
-  #     an upper limit of d.m. goes to leaves, leaf area expansion is
-  #     restricted so that F is maintained as computed and minimal amounts
-  #     of C is partitioned to FRSTM and FRRT  (JWJ 4/1/96)
-  #-----------------------------------------------------------------------
-  if (VSTAGE < VSSINK) {
-    GROYES = GROMAX
-    GROMAX = TABEX(YVGROW,XVGROW,VSTAGE,6) * SIZELF/SIZREF
-    GAINNW = (GROMAX - GROYES) * PLTPOP
+    TPHFAC = TPHFAC/TS
+    # 24 changed to TS by Bruce Kimball on 3Jul17
+    
     #-----------------------------------------------------------------------
-    #     CALCULATE MINIMUM WEIGHT NEEDED TO ADD GAINNW LEAF AREA/M2,
-    #     AND AMOUNT OF LEAF WEIGHT WHICH CAN BE GROWN WITH PG AVAILABLE
+    # VERIFICAR: EXP seria exponencial? Se for, trocar por 'exp()'
+    PARSLA = (SLAMN+(SLAMX-SLAMN) * EXP(SLAPAR*PAR)) / SLAMX
+    TURFSL = max(0.1, (1.0 - (1.0 - TURFAC)*TURSLA))
+    #-----------------------------------------------------------------------
+    #     Compute overall effect of TMP, PAR, water stress on SLA (F), first
+    #     for veg stages, then transition to rep stage from R1 to end leaf
+    #     effect of PAR on SLA, COX PEANUT SCI. 5:27, 1978
+    #-----------------------------------------------------------------------
+    FFVEG = FVEG * TPHFAC * PARSLA * TURFSL
+    
+    # VERIFICAR: F novamente. Mudar
+    Fnew = FFVEG 
+    if (XFRT*FRACDN >= 0.05) { 
+      Fnew = FFVEG * (1.0 - XFRT * FRACDN) 
+    }
+    #-----------------------------------------------------------------------
+    #     For determinate plants (XFRUIT=1.) leaf expansion stops at NDLEAF
     #-----------------------------------------------------------------------
     # VERIFICAR: F novamente. Mudar
-    if (F > 1.E-5) {
-      GAINWT = GAINNW/F
-    } else {
-      GAINWT = 0.0
+    if (XFRUIT > 0.9999 & DAS >= NDLEAF) { 
+      Few = 0.0 
     }
+    
     #-----------------------------------------------------------------------
-    #     Compute fraction of C partitioned to leaves, based on F, VSSINK
-    #     Limit leaf pertitioning to FRLFMX (i.e., FRLFMX = 0.7)
+    #     During early vegetative growth, leaf area expansion depends on
+    #     VSTAGE (Prior to VSSINK).  This sets FRLF, partitioning of d.m.
+    #     to leaves.  FRRT and FRSTM are then computed by left over C.  When
+    #     an upper limit of d.m. goes to leaves, leaf area expansion is
+    #     restricted so that F is maintained as computed and minimal amounts
+    #     of C is partitioned to FRSTM and FRRT  (JWJ 4/1/96)
     #-----------------------------------------------------------------------
-    FRLF = (AGRLF*GAINWT)/(CDMVEG + 0.0001)
-    if (FRLF > FRLFMX) {
-      GAINWT = (CDMVEG/AGRLF) * FRLFMX
+    if (VSTAGE < VSSINK) {
+      GROYES = GROMAX
+      GROMAX = TABEX(YVGROW,XVGROW,VSTAGE,6) * SIZELF/SIZREF
+      GAINNW = (GROMAX - GROYES) * PLTPOP
+      #-----------------------------------------------------------------------
+      #     CALCULATE MINIMUM WEIGHT NEEDED TO ADD GAINNW LEAF AREA/M2,
+      #     AND AMOUNT OF LEAF WEIGHT WHICH CAN BE GROWN WITH PG AVAILABLE
+      #-----------------------------------------------------------------------
       # VERIFICAR: F novamente. Mudar
-      GAINNW = GAINWT * F
-      FRLF = FRLFMX
+      if (Fnew > 1.E-5) {
+        GAINWT = GAINNW/Fnew
+      } else {
+        GAINWT = 0.0
+      }
+      #-----------------------------------------------------------------------
+      #     Compute fraction of C partitioned to leaves, based on F, VSSINK
+      #     Limit leaf pertitioning to FRLFMX (i.e., FRLFMX = 0.7)
+      #-----------------------------------------------------------------------
+      FRLF = (AGRLF*GAINWT)/(CDMVEG + 0.0001)
+      if (FRLF > FRLFMX) {
+        GAINWT = (CDMVEG/AGRLF) * FRLFMX
+        # VERIFICAR: F novamente. Mudar
+        GAINNW = GAINWT * Fnew
+        FRLF = FRLFMX
+      }
+      #-----------------------------------------------------------------------
+      #     Recompute FRSTM and FRRT based on FRLF
+      #-----------------------------------------------------------------------
+      FRSTM = (1. - FRLF) * FRSTM / (FRSTM + FRRT)
+      FRRT  = 1. - FRLF - FRSTM
+      #-----------------------------------------------------------------------
     }
     #-----------------------------------------------------------------------
-    #     Recompute FRSTM and FRRT based on FRLF
+    #     Compute CH2O cost per g of tissue, excluding cost for protein (AGRVG)
+    #     and total CH2O cost per g of veg tissue (AGRVG2)
     #-----------------------------------------------------------------------
-    FRSTM = (1. - FRLF) * FRSTM / (FRSTM + FRRT)
-    FRRT  = 1. - FRLF - FRSTM
+    AGRVG = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
+    AGRVG2 = AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RPROAV
     #-----------------------------------------------------------------------
+    #    Compute N Demand for New Tissue, including reproductive and vegetative
+    #-----------------------------------------------------------------------
+    NDMVEG = (CDMVEG/AGRVG2) * (FRLF*FNINL+FRSTM*FNINS+ FRRT*FNINR)
+    NDMNEW = NDMREP + NDMVEG
+    #-----------------------------------------------------------------------
+    #    Check to See if Any C is Left After Reproductive Growth for
+    #    Reducing N to Re-Fill Old Tissue, if N Can Be Taken up by Roots
+    #-----------------------------------------------------------------------
+    CNOLD = max(0.0,PGAVL-CDMREP)
+    NDMOLD = 0.0
+    #-----------------------------------------------------------------------
+    #    Nitrogen Demand for Old Tissue
+    #-----------------------------------------------------------------------
+    if (DAS > NVEG0 & DAS < NR7 & CNOLD > 0.0) {
+      NVSTL = FNINL
+      NVSTS = FNINS
+      NVSTR = FNINR
+      if (DXR57 > 0.0) {
+        FRNLFT = (NRCVR + (1. - NRCVR) * (1. - DXR57^2))
+        NVSTL = PROLFF*0.16 + (FNINL-PROLFF*0.16) * FRNLFT
+        NVSTS = PROSTF*0.16 + (FNINS-PROSTF*0.16) * FRNLFT
+        NVSTR = PRORTF*0.16 + (FNINR-PRORTF*0.16) * FRNLFT
+      }
+      NDMOLD = (WTLF  - WCRLF) * max(0.0,(NVSTL - PCNL /100.)) + (STMWT - WCRST) * max(0.0,(NVSTS - PCNST/100.)) + (RTWT  - WCRRT) * max(0.0,(NVSTR - PCNRT/100.))
+      if (NDMOLD > (CNOLD/RNO3C*0.16)) {
+        NDMOLD = CNOLD/RNO3C*0.16
+      }
+    }
+    #-----------------------------------------------------------------------
+    #    Total N Demand
+    #-----------------------------------------------------------------------
+    NDMTOT = NDMREP + NDMVEG + NDMOLD
+    #-----------------------------------------------------------------------
+    #    Compute Total Demand for C, and Max. C that Could be Mined
+    #     CDMTOT not used - chp
+    #-----------------------------------------------------------------------
+    CDMTOT = CDMREP + CDMVEG + NDMOLD*RNO3C/0.16 
+    GDMSD = GDMSDO
+    #-----------------------------------------------------------------------
+    #    At this point, PGAVL will be used entirely, assuming that N can be
+    #    made available in the ratio described.
+    #     Growth Demands : GDMSD, GDMSH
+    #     N-Demands      : NDMREP, NDMVEG, NDMOLD, NDMTOT, NDMNEW
+    #     #-Demands      : CDMREP, CDMVEG, CDMTOT, CNOLD
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     END OF DYNAMIC IF CONSTRUCT
+    #***********************************************************************
   }
   #-----------------------------------------------------------------------
-  #     Compute CH2O cost per g of tissue, excluding cost for protein (AGRVG)
-  #     and total CH2O cost per g of veg tissue (AGRVG2)
-  #-----------------------------------------------------------------------
-  AGRVG = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
-  AGRVG2 = AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RPROAV
-  #-----------------------------------------------------------------------
-  #    Compute N Demand for New Tissue, including reproductive and vegetative
-  #-----------------------------------------------------------------------
-  NDMVEG = (CDMVEG/AGRVG2) * (FRLF*FNINL+FRSTM*FNINS+ FRRT*FNINR)
-  NDMNEW = NDMREP + NDMVEG
-  #-----------------------------------------------------------------------
-  #    Check to See if Any C is Left After Reproductive Growth for
-  #    Reducing N to Re-Fill Old Tissue, if N Can Be Taken up by Roots
-  #-----------------------------------------------------------------------
-  CNOLD = max(0.0,PGAVL-CDMREP)
-  NDMOLD = 0.0
-  #-----------------------------------------------------------------------
-  #    Nitrogen Demand for Old Tissue
-  #-----------------------------------------------------------------------
-  if (DAS > NVEG0 & DAS < NR7 & CNOLD > 0.0) {
-    NVSTL = FNINL
-    NVSTS = FNINS
-    NVSTR = FNINR
-    if (DXR57 > 0.0) {
-      FRNLFT = (NRCVR + (1. - NRCVR) * (1. - DXR57^2))
-      NVSTL = PROLFF*0.16 + (FNINL-PROLFF*0.16) * FRNLFT
-      NVSTS = PROSTF*0.16 + (FNINS-PROSTF*0.16) * FRNLFT
-      NVSTR = PRORTF*0.16 + (FNINR-PRORTF*0.16) * FRNLFT
-    }
-    NDMOLD = (WTLF  - WCRLF) * max(0.0,(NVSTL - PCNL /100.)) + (STMWT - WCRST) * max(0.0,(NVSTS - PCNST/100.)) + (RTWT  - WCRRT) * max(0.0,(NVSTR - PCNRT/100.))
-    if (NDMOLD > (CNOLD/RNO3C*0.16)) {
-      NDMOLD = CNOLD/RNO3C*0.16
-    }
-  }
-  #-----------------------------------------------------------------------
-  #    Total N Demand
-  #-----------------------------------------------------------------------
-  NDMTOT = NDMREP + NDMVEG + NDMOLD
-  #-----------------------------------------------------------------------
-  #    Compute Total Demand for C, and Max. C that Could be Mined
-  #     CDMTOT not used - chp
-  #-----------------------------------------------------------------------
-  CDMTOT = CDMREP + CDMVEG + NDMOLD*RNO3C/0.16 
-  GDMSD = GDMSDO
-  #-----------------------------------------------------------------------
-  #    At this point, PGAVL will be used entirely, assuming that N can be
-  #    made available in the ratio described.
-  #     Growth Demands : GDMSD, GDMSH
-  #     N-Demands      : NDMREP, NDMVEG, NDMOLD, NDMTOT, NDMNEW
-  #     #-Demands      : CDMREP, CDMVEG, CDMTOT, CNOLD
   
-  #***********************************************************************
-  #***********************************************************************
-  #     END OF DYNAMIC IF CONSTRUCT
-  #***********************************************************************
+  #RETURN
+  #END SUBROUTINE DEMAND
+  return()
 }
-#-----------------------------------------------------------------------
 
-RETURN
-END SUBROUTINE DEMAND
+
+#TODO VERIFICAR se a subrotina IPDMND é necessária!
 #=======================================================================
 
 #=======================================================================
