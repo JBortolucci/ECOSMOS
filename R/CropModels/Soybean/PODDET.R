@@ -14,45 +14,86 @@
 #  Calls:        ERROR, FIND, IGNORE
 #=======================================================================
 
-      SUBROUTINE PODDET(
-     &  FILECC, TGRO, WTLF, YRDOY, YRNR2,                 #Input
-     &  PODWTD, SDNO, SHELN, SWIDOT,                      #Output
-     &  WSHIDT, WTSD, WTSHE,                              #Output
-     &  DYNAMIC)                                          #Control
+     #  SUBROUTINE PODDET(
+     # &  FILECC, TGRO, WTLF, YRDOY, YRNR2,                 #Input
+     # &  PODWTD, SDNO, SHELN, SWIDOT,                      #Output
+     # &  WSHIDT, WTSD, WTSHE,                              #Output
+     # &  DYNAMIC)                                          #Control
 
+#TODO REMINDER -> não usado pelo modelo, por enquanto!
+PODDET <- function(
+                   FILECC, TGRO, WTLF, YRDOY, YRNR2,                 #Input
+                   PODWTD, SDNO, SHELN, SWIDOT,                      #Output
+                   WSHIDT, WTSD, WTSHE,                              #Output
+                   DYNAMIC) {                                          #Control
+
+  PODDET <- 0
 #-----------------------------------------------------------------------
-      USE ModuleDefs     #Definitions of constructed variable types, 
+      #USE ModuleDefs     #Definitions of constructed variable types, 
                          # which contain control information, soil
                          # parameters, hourly weather data.
-      IMPLICIT NONE
-      SAVE
+      #IMPLICIT NONE
+      #SAVE
+      #CHARACTER*6 ERRKEY
+      #PARAMETER (ERRKEY = 'PODDET')
+      #CHARACTER*6 SECTION
+      #CHARACTER*80 C80
+      #CHARACTER*92 FILECC
+      #INTEGER LUNCRP, ERR, LINC, LNUM, FOUND, ISECT, I
+  
+  #TODO checar conexão no ECOSMOS 
+  #DYNAMIC
+  #YRDOY
+  YRNR2 <- 0 #calculado no RSTAGES.for
+  # NPP
 
-      CHARACTER*6 ERRKEY
-      PARAMETER (ERRKEY = 'PODDET')
+  SWIDOT <- 0
+  WSHIDT <- 0
+  WTLF   <- 0 # calculado no GROW.for
+  XPD    <- 0
+  PODWTD <- 0
 
-      CHARACTER*6 SECTION
-      CHARACTER*80 C80
-      CHARACTER*92 FILECC
+  TPODM  <- 0
+  RLMPM  <- 0
+  SL10   <- 0
+  FT     <- 0
+  FTHR   <- 0
+  #CURV   <-  curva de temp
 
-      INTEGER LUNCRP, ERR, LINC, LNUM, FOUND, ISECT, I
-      INTEGER DYNAMIC, YRDOY
-      INTEGER YRNR2, NPP
+  SDDAM  <- 0
+  SHDAM  <- 0
+  SUMSD  <- 0
+  SUMSH  <- 0
 
-      REAL SWIDOT,WSHIDT,WTLF
-      REAL XPD,PODWTD,DWC
-      REAL TPODM,RLMPM,SL10
-      REAL FT
-      REAL FTHR,CURV
-      REAL PR1DET,PR2DET,XP1DET,XP2DET
-      REAL SDDAM,SHDAM,SUMSD,SUMSH
+  #______________________________________________________________        
+  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*POD LOSS PARAMETERS
+  DWC    <- 6.0
+  PR1DET <- 0.3961
+  PR2DET <- -0.865
+  XP1DET <- 1.00
+  XP2DET <- 0.00
+  #!*PHENOLOGY PARAMETERS   
+  TB	<- c( 7,  6, -15, 0, 0)
+  TO1	<- c(28, 26,  26, 0, 0)
+  TO2	<- c(35, 30,  34, 0, 0)
+  TM	<- c(45, 45,  45, 0, 0)
 
-      REAL TB(5), TO1(5), TO2(5), TM(5)
-      REAL TDLM(20)
-      REAL TGRO(TS)
-      REAL WTSD(NCOHORTS), SDNO(NCOHORTS), WTSHE(NCOHORTS)
-      REAL WPODY(NCOHORTS), SHELN(NCOHORTS), PDET(NCOHORTS)
-      REAL DAYS(NCOHORTS), MSHELN(NCOHORTS), DTC(NCOHORTS)
-
+  TDLM <- rep(0,20)
+  #TGRO[TS]
+  TGRO   <- rep(1.,24)
+  
+  NCOHORTS <- 300 #from line 51 in ModuleDefs.for NCOHORTS = 300, !Maximum number of cohorts
+  SDNO   <- rep(0, NCOHORTS)
+  SHELN  <- rep(0, NCOHORTS)
+  WTSD   <- rep(0, NCOHORTS)
+  WTSHE  <- rep(0, NCOHORTS)
+  WPODY  <- rep(0, NCOHORTS)
+  PDET   <- rep(0, NCOHORTS)
+  DAYS   <- rep(0, NCOHORTS)
+  MSHELN <- rep(0, NCOHORTS)
+  DTC    <- rep(0, NCOHORTS)
+  
 #***********************************************************************
 #***********************************************************************
 #     Run Initialization - Called once per simulation
@@ -268,8 +309,10 @@
 #***********************************************************************
       }
 #***********************************************************************
-      RETURN
-      END # SUBROUTINE PODDET
+      #RETURN
+      #END # SUBROUTINE PODDET
+return()
+      }
 #=======================================================================
 
 #***********************************************************************

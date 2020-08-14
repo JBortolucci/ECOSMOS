@@ -102,7 +102,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
    DAYL   <- TGRO_T$V4[TGRO_T$V1==DAS & TGRO_T$V2==1]
    XPOD   <- TGRO_T$V5[TGRO_T$V1==DAS & TGRO_T$V2==1]
    SWFEM  <- TGRO_T$V6[TGRO_T$V1==DAS & TGRO_T$V2==1]
-    TMING  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]
+   TMING  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]
    TSDEP  <- TGRO_T$V8[TGRO_T$V1==DAS & TGRO_T$V2==1]
 
   #  DAYL   <- daylength/60. # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)

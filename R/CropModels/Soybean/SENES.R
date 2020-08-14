@@ -16,269 +16,323 @@
 #  Calls  : ERROR, FIND, IGNORE
 #========================================================================
 
-      SUBROUTINE SENES(DYNAMIC,
-     &    FILECC, CLW, DTX, KCAN, NR7, NRUSLF, PAR,       #Input
-     &    RHOL, SLAAD, STMWT, SWFAC, VSTAGE, WTLF, XLAI,  #Input
-     &    SLDOT, SLNDOT, SSDOT, SSNDOT)                   #Output
+     # SUBROUTINE SENES(DYNAMIC,
+     #&    FILECC, CLW, DTX, KCAN, NR7, NRUSLF, PAR,       #Input
+     #&    RHOL, SLAAD, STMWT, SWFAC, VSTAGE, WTLF, XLAI,  #Input
+     #&    SLDOT, SLNDOT, SSDOT, SSNDOT)                   #Output
 
-#-----------------------------------------------------------------------
-      USE ModuleDefs
-      USE ModuleData
-      IMPLICIT NONE
-      SAVE
+SENES <- function (DYNAMIC,
+                   FILECC, CLW, DTX, KCAN, NR7, NRUSLF, PAR,       #Input
+                   RHOL, SLAAD, STMWT, SWFAC, VSTAGE, WTLF, XLAI,  #Input
+                   SLDOT, SLNDOT, SSDOT, SSNDOT){                   #Output
+  
+  #-----------------------------------------------------------------------
+  #USE ModuleDefs
+  #USE ModuleData
+  #IMPLICIT NONE
+  #SAVE
+  
+  #CHARACTER*6  ERRKEY, SECTION
+  #CHARACTER*80 CHAR
+  #CHARACTER*92 FILECC
+  #PARAMETER (ERRKEY = 'SENES')
+  
+  #INTEGER I, II, LUNCRP, ERR, LINC, LNUM, ISECT
+  #INTEGER FOUND
+  #TODO checar conexão no ECOSMOS 
+  #INTEGER DYNAMIC
+  #INTEGER DAS
+  
+  #______________________________________________________________        
+  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*LEAF SENESCENCE FACTORS
+  ICMP   <- 0.80
+  TCMP   <- 10.0
+  SENDAY <- 0.06
+  SENRT2 <- 0.20
+  SENRTE <- 0.80
+  SENMAX <- c(0.0, 0.2, 0.6 , 0.6)
+  SENPOR <- c(0.0, 0.0, 0.12, 0.12)
+  XSENMX <- c(3.0, 5.0, 10.0, 30.0)
+  XSTAGE <- c(0.0, 5.0, 14.0, 30.0)
+  
+  #!*VEGETATIVE PARTITIONING PARAMETERS
+  PORPT  <- 0.58
+  #!*PHOTOSYNTHESIS PARAMETERS
+  KCAN   <- 0.67
 
-      CHARACTER*6  ERRKEY, SECTION
-      CHARACTER*80 CHAR
-      CHARACTER*92 FILECC
-      PARAMETER (ERRKEY = 'SENES')
+  NR7  <- 0 # calculado no RSTAGES.for
+  NSWAB <- 5 # from (1) INTEGER NSWAB & (2) PARAMETER (NSWAB = 5)
 
-      INTEGER I, II, LUNCRP, ERR, LINC, LNUM, ISECT
-      INTEGER DYNAMIC
-      INTEGER NR7, DAS
-      INTEGER FOUND
-      INTEGER NSWAB
-      PARAMETER (NSWAB = 5)
-
-      REAL DTX, NRUSLF, PAR, RATTP, RHOL, SLAAD
-      REAL STMWT, VSTAGE, CLW, WTLF, XLAI
-      REAL SLDOT, SLNDOT, SSDOT, SSNDOT
-      REAL ICMP, KCAN, PORPT, SENDAY
-      REAL SENRT2, SENRTE, TCMP
-      REAL LCMP, LTSEN, PORLFT, LFSEN, SWFAC, WSLOSS, TABEX
-      REAL SENMAX(4), SENPOR(4), XSENMX(4), XSTAGE(4)
-      REAL SWFCAB(NSWAB)
-
-      TYPE (ControlType) CONTROL
-
-#***********************************************************************
-#***********************************************************************
-#     Run Initialization - Called once per simulation
-#***********************************************************************
-      if (DYNAMIC == RUNINIT) {
-#-----------------------------------------------------------------------
-#     Read in values from input file, which were previously input
-#       in Subroutine IPCROP.
-#-----------------------------------------------------------------------
-      CALL GETLUN('FILEC', LUNCRP)
-      OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,0)}
-      LNUM = 0
-#-----------------------------------------------------------------------
-#    Find and Read Photosynthesis Section
-#-----------------------------------------------------------------------
-#     Subroutine FIND finds appropriate SECTION in a file by
-#     searching for the specified 6-character string at beginning
-#     of each line.
-#-----------------------------------------------------------------------
-#CHP 7/30/2004 - Get KCAN from main routine.
-#                May be overriden by value in ECOTYPE file.
-#      SECTION = '#*PHOT'
-#      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-#      if (FOUND == 0) {
-#        CALL ERROR(SECTION, 42, FILECC, LNUM)
-#      } else {
-#          ISECT = 2
-#          DO WHILE (ISECT != 1)
-#            CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-#            if (ISECT == 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-#          ENDDO
-#          READ(CHAR,'(12X,F6.0)',IOSTAT=ERR) KCAN
-#          if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-#      }
-#-----------------------------------------------------------------------
-#    Find and Read Partitioning Section
-#-----------------------------------------------------------------------
-      SECTION = '#*VEGE'
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-        for (I in 1:4){
-          
-          ISECT = 2
-   
-          # ALTERADO: DO-WHILE pode ser feito com o repeate {}. Isso vai repetir o código entre parênteses. Tomar cuidado pois repeate
-          #           pode facilmente criar um loop infinito, o que vai travar o programa. A condição de parada deve ser bem definida. Exemplo:
-          #   repeat {
-          #         
-          #      faça algo ...
-          #
-          #      if( condição == true ) break
-          #       
-          #   }
-          # Recomendo nesse caso usar while( condição ) { }
-          
-          while(ISECT != 1) {
-            CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          }
-          
-          # DO WHILE (ISECT != 1) { 
-          #   CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          # }
-        }
-        READ(CHAR,'(6X,F6.0)',IOSTAT=ERR) PORPT
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      }
-
-#-----------------------------------------------------------------------
-#    Find and Read Senescence Section
-#    NOTE: First search for Section finds '#*LEAF GROWTH PARAMETERS'
-#          Second search finds '#*LEAF SENESCENCE FACTORS'
-#-----------------------------------------------------------------------
-      SECTION = '#*LEAF'
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      }
-
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        READ(CHAR,'(3F6.0)',IOSTAT=ERR) SENRTE, SENRT2, SENDAY
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        READ(CHAR,'(2F6.0)',IOSTAT=ERR) ICMP, TCMP
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        READ(CHAR,'(8F6.0)',IOSTAT=ERR)(XSTAGE(II),II=1,4),(XSENMX(II),II=1,4)
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        READ(CHAR,'(8F6.0)',IOSTAT=ERR) (SENPOR(II),II=1,4),(SENMAX(II),II=1,4)
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      }
-
-      CLOSE (LUNCRP)
-
-#***********************************************************************
-#***********************************************************************
-#     Seasonal initialization - run once per season
-#***********************************************************************
-      } else if (DYNAMIC == SEASINIT) {
-#-----------------------------------------------------------------------
-      SSDOT  = 0.0
-      SLDOT  = 0.0
-      SLNDOT = 0.0
-      SSNDOT = 0.0
-      RATTP  = 1.0
-
-      for (I in 1:5) {
-        SWFCAB[I] = 1.0
-      }
-
-#***********************************************************************
-#***********************************************************************
-#     DAILY RATE/INTEGRATION
-#***********************************************************************
-      } else if (DYNAMIC == INTEGR) {
-#-----------------------------------------------------------------------
-#     DAS   = max(0,TIMDIF(YRSIM,YRDOY))
-      CALL GET(CONTROL)
+  DTX    <- 0 # calculado no PHENOL.for
+  NRUSLF <- 0 # calculado no MOBIL.for
+  PAR    <- 0 # PAR em moles[quanta]/m2-d (verificar de onde vem do ECOSMOS)
+  RATTP  <- 0 
+  RHOL   <- 0 # calculado no GROW.for
+  SLAAD  <- 0 # calculado no GROW.for
+  STMWT  <- 0 # calculado no GROW.for
+  #VSTAGE <- 0 # funcao no PHENOL.for
+  CLW    <- 0 # calculado no GROW.for
+  WTLF   <- 0 # calculado no GROW.for
+  XLAI   <- 0 # calculado no GROW.for
+  SLDOT  <- 0
+  SLNDOT <- 0
+  SSDOT  <- 0
+  SSNDOT <- 0
+  #ICMP   <-   'subi' como parametros de espécie (.SPE)
+  #KCAN   <-   'subi' como parametros de espécie (.SPE)
+  #PORPT  <-   'subi' como parametros de espécie (.SPE)
+  #SENDAY <-   'subi' como parametros de espécie (.SPE)
+  #SENRT2 <-   'subi' como parametros de espécie (.SPE)
+  #SENRTE <-   'subi' como parametros de espécie (.SPE)
+  #TCMP   <-   'subi' como parametros de espécie (.SPE)
+  LCMP   <- 0
+  LTSEN  <- 0
+  LFSEN  <- 0
+  PORLFT <- 0
+  SWFAC  <- 0 # water stress factor (verificar de onde vem no ECOSMOS)
+  WSLOSS <- 0
+  #TABEX  <- # funcao no UTILS.for
+  #SENMAX(4)   'subi' como parametros de espécie (.SPE)
+  #SENPOR(4)   'subi' como parametros de espécie (.SPE)
+  #XSENMX(4)   'subi' como parametros de espécie (.SPE)
+  #XSTAGE(4)   'subi' como parametros de espécie (.SPE)
+  SWFCAB <- rep(0,NSWAB) #TODO verificar sintaxe
+  
+  #TYPE (ControlType) CONTROL
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     Run Initialization - Called once per simulation
+  #***********************************************************************
+  if (DYNAMIC == RUNINIT) {
+    #-----------------------------------------------------------------------
+    #     Read in values from input file, which were previously input
+    #       in Subroutine IPCROP.
+    #-----------------------------------------------------------------------
+    CALL GETLUN('FILEC', LUNCRP)
+    OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
+    if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,0)}
+    LNUM = 0
+    #-----------------------------------------------------------------------
+    #    Find and Read Photosynthesis Section
+    #-----------------------------------------------------------------------
+    #     Subroutine FIND finds appropriate SECTION in a file by
+    #     searching for the specified 6-character string at beginning
+    #     of each line.
+    #-----------------------------------------------------------------------
+    #CHP 7/30/2004 - Get KCAN from main routine.
+    #                May be overriden by value in ECOTYPE file.
+    #      SECTION = '#*PHOT'
+    #      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+    #      if (FOUND == 0) {
+    #        CALL ERROR(SECTION, 42, FILECC, LNUM)
+    #      } else {
+    #          ISECT = 2
+    #          DO WHILE (ISECT != 1)
+    #            CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+    #            if (ISECT == 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+    #          ENDDO
+    #          READ(CHAR,'(12X,F6.0)',IOSTAT=ERR) KCAN
+    #          if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+    #      }
+    #-----------------------------------------------------------------------
+    #    Find and Read Partitioning Section
+    #-----------------------------------------------------------------------
+    SECTION = '#*VEGE'
+    CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+    if (FOUND == 0) {
+      CALL ERROR(SECTION, 42, FILECC, LNUM)
+    } else {
+      for (I in 1:4){
         
-      DAS = CONTROL %% DAS
-
-      #Update value of RATTP.
+        ISECT = 2
+        
+        # ALTERADO: DO-WHILE pode ser feito com o repeate {}. Isso vai repetir o código entre parênteses. Tomar cuidado pois repeate
+        #           pode facilmente criar um loop infinito, o que vai travar o programa. A condição de parada deve ser bem definida. Exemplo:
+        #   repeat {
+        #         
+        #      faça algo ...
+        #
+        #      if( condição == true ) break
+        #       
+        #   }
+        # Recomendo nesse caso usar while( condição ) { }
+        
+        while(ISECT != 1) {
+          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+        }
+        
+        # DO WHILE (ISECT != 1) { 
+        #   CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+        # }
+      }
+      READ(CHAR,'(6X,F6.0)',IOSTAT=ERR) PORPT
+      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+    }
+    
+    #-----------------------------------------------------------------------
+    #    Find and Read Senescence Section
+    #    NOTE: First search for Section finds '#*LEAF GROWTH PARAMETERS'
+    #          Second search finds '#*LEAF SENESCENCE FACTORS'
+    #-----------------------------------------------------------------------
+    SECTION = '#*LEAF'
+    CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+    if (FOUND == 0) {
+      CALL ERROR(SECTION, 42, FILECC, LNUM)
+    }
+    
+    CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+    if (FOUND == 0) {
+      CALL ERROR(SECTION, 42, FILECC, LNUM)
+    } else {
+      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+      READ(CHAR,'(3F6.0)',IOSTAT=ERR) SENRTE, SENRT2, SENDAY
+      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
       
-      # ALTERADO: NSWAB, 2, -1 to seq(NSWAV, 2)
-      # VERIFICAR: Se I começa em 1, pois no indice abaixo ele subtrai. Se começar em 1 o indice vai ficar 0.
-      for (I in seq(NSWAB,2)) { 
-        SWFCAB[I] = SWFCAB[I-1]
+      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+      READ(CHAR,'(2F6.0)',IOSTAT=ERR) ICMP, TCMP
+      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+      
+      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+      READ(CHAR,'(8F6.0)',IOSTAT=ERR)(XSTAGE(II),II=1,4),(XSENMX(II),II=1,4)
+      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+      
+      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+      READ(CHAR,'(8F6.0)',IOSTAT=ERR) (SENPOR(II),II=1,4),(SENMAX(II),II=1,4)
+      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+    }
+    
+    CLOSE (LUNCRP)
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     Seasonal initialization - run once per season
+    #***********************************************************************
+  } else if (DYNAMIC == SEASINIT) {
+    #-----------------------------------------------------------------------
+    SSDOT  = 0.0
+    SLDOT  = 0.0
+    SLNDOT = 0.0
+    SSNDOT = 0.0
+    RATTP  = 1.0
+    
+    for (I in 1:5) {
+      SWFCAB[I] = 1.0
+    }
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     DAILY RATE/INTEGRATION
+    #***********************************************************************
+  } else if (DYNAMIC == INTEGR) {
+    #-----------------------------------------------------------------------
+    #     DAS   = max(0,TIMDIF(YRSIM,YRDOY))
+    #CALL GET(CONTROL)
+    
+    #TODO ver padrão ECOSMOS
+    DAS = CONTROL %% DAS
+    
+    #Update value of RATTP.
+    
+    # ALTERADO: NSWAB, 2, -1 to seq(NSWAV, 2)
+    # TODO VERIFICAR: Se I começa em 1, pois no indice abaixo ele subtrai. Se começar em 1 o indice vai ficar 0.
+    for (I in seq(NSWAB,2)) { 
+      SWFCAB[I] = SWFCAB[I-1]
+    }
+    SWFCAB[1] = SWFAC
+    RATTP = SWFCAB[NSWAB]
+    
+    SSDOT = 0.0
+    SLDOT = 0.0
+    SLNDOT = 0.0
+    SSNDOT = 0.0
+    
+    if (DAS <= NR7 & VSTAGE >= 1.0) {
+      #-----------------------------------------------------------------------
+      #     This section calculates natural senescence prior to the
+      #     beginning of seed growth
+      #-----------------------------------------------------------------------
+      if (VSTAGE >= 5.0) {
+        PORLFT = 1.0 - TABEX(SENPOR,XSTAGE,VSTAGE,4)
+        if ((WTLF * ( 1.0 - RHOL)) > CLW*PORLFT) {
+          SLDOT = WTLF * ( 1.0 - RHOL) - CLW * PORLFT
+        }
       }
-      SWFCAB[1] = SWFAC
-      RATTP = SWFCAB[NSWAB]
-
-      SSDOT = 0.0
-      SLDOT = 0.0
-      SLNDOT = 0.0
-      SSNDOT = 0.0
-
-      if (DAS <= NR7 & VSTAGE >= 1.0) {
-#-----------------------------------------------------------------------
-#     This section calculates natural senescence prior to the
-#     beginning of seed growth
-#-----------------------------------------------------------------------
-        if (VSTAGE >= 5.0) {
-          PORLFT = 1.0 - TABEX(SENPOR,XSTAGE,VSTAGE,4)
-          if ((WTLF * ( 1.0 - RHOL)) > CLW*PORLFT) {
-            SLDOT = WTLF * ( 1.0 - RHOL) - CLW * PORLFT
-          }
-        }
-#-----------------------------------------------------------------------
-#     This section calculates leaf senescence due to N mobilization.
-#     Concentration of N in stems and leaves must
-#     be recalculated since senescing leaves and petioles are assumed
-#     to contain no more mineable Protein--i.e., N content of senesced
-#     leaves and petioles is different from canopy average.
-#-----------------------------------------------------------------------
-        LFSEN = SENRTE * NRUSLF / 0.16
-        LFSEN = min(WTLF,LFSEN)
-        SLDOT = SLDOT + LFSEN
-        SLDOT = min(WTLF,SLDOT)
-#-----------------------------------------------------------------------
-#     This section calculates senescence due to low light in lower
-#     canopy.  First compute LAI at which light compensation is reached
-#     then allow LAI above this amount to be senesced over TCMP thermal
-#     days.
-#-----------------------------------------------------------------------
-        LTSEN = 0.0
-        if (PAR > 0.) {
-          LCMP = -(1. / KCAN) * ALOG(ICMP / PAR)
-          LTSEN = DTX * (XLAI - LCMP) / TCMP
-          LTSEN = max(0.0, LTSEN)
-        }
-#-----------------------------------------------------------------------
-#     Convert area loss to biomass(m2 *10000cm2/m2)/(cm2/g)=g/m2
-#-----------------------------------------------------------------------
-        SLDOT = SLDOT + LTSEN * 10000. / SLAAD
-#-----------------------------------------------------------------------
-#     Calculate senescence due to water stress.
-#-----------------------------------------------------------------------
-        WSLOSS = SENDAY * (1. - RATTP) * WTLF
-        if (WSLOSS > 0.0) {
-          PORLFT = 1.0 - TABEX(SENMAX, XSENMX, VSTAGE, 4)
-          WSLOSS = min(WSLOSS, WTLF - CLW * PORLFT)
-          WSLOSS = max(WSLOSS, 0.0)
-          SLNDOT = WSLOSS
-        }
-        SLDOT = SLDOT + SLNDOT
+      #-----------------------------------------------------------------------
+      #     This section calculates leaf senescence due to N mobilization.
+      #     Concentration of N in stems and leaves must
+      #     be recalculated since senescing leaves and petioles are assumed
+      #     to contain no more mineable Protein--i.e., N content of senesced
+      #     leaves and petioles is different from canopy average.
+      #-----------------------------------------------------------------------
+      LFSEN = SENRTE * NRUSLF / 0.16
+      LFSEN = min(WTLF,LFSEN)
+      SLDOT = SLDOT + LFSEN
+      SLDOT = min(WTLF,SLDOT)
+      #-----------------------------------------------------------------------
+      #     This section calculates senescence due to low light in lower
+      #     canopy.  First compute LAI at which light compensation is reached
+      #     then allow LAI above this amount to be senesced over TCMP thermal
+      #     days.
+      #-----------------------------------------------------------------------
+      LTSEN = 0.0
+      if (PAR > 0.) {
+        LCMP = -(1. / KCAN) * ALOG(ICMP / PAR)
+        LTSEN = DTX * (XLAI - LCMP) / TCMP
+        LTSEN = max(0.0, LTSEN)
+      }
+      #-----------------------------------------------------------------------
+      #     Convert area loss to biomass(m2 *10000cm2/m2)/(cm2/g)=g/m2
+      #-----------------------------------------------------------------------
+      SLDOT = SLDOT + LTSEN * 10000. / SLAAD
+      #-----------------------------------------------------------------------
+      #     Calculate senescence due to water stress.
+      #-----------------------------------------------------------------------
+      WSLOSS = SENDAY * (1. - RATTP) * WTLF
+      if (WSLOSS > 0.0) {
+        PORLFT = 1.0 - TABEX(SENMAX, XSENMX, VSTAGE, 4)
+        WSLOSS = min(WSLOSS, WTLF - CLW * PORLFT)
+        WSLOSS = max(WSLOSS, 0.0)
+        SLNDOT = WSLOSS
+      }
+      SLDOT = SLDOT + SLNDOT
+      SSDOT = SLDOT * PORPT
+      SSDOT = min(SSDOT,0.1*STMWT)
+      SSNDOT = SLNDOT * PORPT
+      SSNDOT = min(SSDOT,SSNDOT)
+      #-----------------------------------------------------------------------
+      #     This section calculates senescence of leaves and petioles
+      #     after R7.
+      #-----------------------------------------------------------------------
+    } else if (DAS > NR7) {
+      if (WTLF > 0.0001) {
+        SLDOT = WTLF * SENRT2
+        SLNDOT = SLDOT
         SSDOT = SLDOT * PORPT
-        SSDOT = min(SSDOT,0.1*STMWT)
-        SSNDOT = SLNDOT * PORPT
-        SSNDOT = min(SSDOT,SSNDOT)
-#-----------------------------------------------------------------------
-#     This section calculates senescence of leaves and petioles
-#     after R7.
-#-----------------------------------------------------------------------
-      } else if (DAS > NR7) {
-        if (WTLF > 0.0001) {
-          SLDOT = WTLF * SENRT2
-          SLNDOT = SLDOT
-          SSDOT = SLDOT * PORPT
-          SSNDOT = SSDOT
-        } else {
-          SLDOT = 0.0
-          SSDOT = 0.0
-          SLNDOT = 0.0
-          SSNDOT = 0.0
-        }
-        if (STMWT < 0.0001) {
-          SLNDOT = 0.0
-          SSNDOT = 0.0
-        }
+        SSNDOT = SSDOT
+      } else {
+        SLDOT = 0.0
+        SSDOT = 0.0
+        SLNDOT = 0.0
+        SSNDOT = 0.0
       }
-
-#***********************************************************************
-#***********************************************************************
-#     END OF DYNAMIC IF CONSTRUCT
-#***********************************************************************
+      if (STMWT < 0.0001) {
+        SLNDOT = 0.0
+        SSNDOT = 0.0
       }
-#***********************************************************************
-      RETURN
-      END # SUBROUTINE SENES
+    }
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     END OF DYNAMIC IF CONSTRUCT
+    #***********************************************************************
+  }
+  #***********************************************************************
+  #RETURN
+  #END # SUBROUTINE SENES
+  return()
+}
 #***********************************************************************
 #     SENES VARIABLE DEFINITIONS:
 #-----------------------------------------------------------------------

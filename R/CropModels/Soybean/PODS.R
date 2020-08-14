@@ -27,96 +27,273 @@
 #                ERROR, FIND, IGNORE
 #=======================================================================
 
-      SUBROUTINE PODS(DYNAMIC,  
-     &    AGRSD1, AGRSH1, DLAYR, DRPP, DUL, FILECC,       #Input
-     &    FILEGC,FILEIO, FNINL, FNINSD, FNINSH, GDMSD,    #Input
-     &    GRRAT1, ISWWAT, LL, NAVL, NDSET, NLAYR, NRUSSH, #Input
-     &    NSTRES, PGAVL, PHTHRS, PHTIM, PNTIM, PUNCSD,    #Input
-     &    PUNCTR, RNITP, SDDES, SDGR, SHELWT, SW, SWFAC,  #Input
-     &    TDUMX, TGRO, TURADD, XFRT, YRDOY, YRNR1, YRNR2, #Input
-     &    PStres2, YRPLT,                                 #Input
-     &    AGRSD3, LAGSD, LNGPEG, NGRSD, NGRSH, PCTMAT,    #Output
-     &    PODNO, POTCAR, POTLIP, SDNO, SDVAR, SEEDNO,     #Output
-     &    SHELN, SHVAR, WSDDTN, WSHDTN, WTABRT, WTSD,     #Output
-     &    WTSHE, WTSHMT, FLWN)                            #Output
+    # SUBROUTINE PODS(DYNAMIC,  
+    #&    AGRSD1, AGRSH1, DLAYR, DRPP, DUL, FILECC,       #Input
+    #&    FILEGC,FILEIO, FNINL, FNINSD, FNINSH, GDMSD,    #Input
+    #&    GRRAT1, ISWWAT, LL, NAVL, NDSET, NLAYR, NRUSSH, #Input
+    #&    NSTRES, PGAVL, PHTHRS, PHTIM, PNTIM, PUNCSD,    #Input
+    #&    PUNCTR, RNITP, SDDES, SDGR, SHELWT, SW, SWFAC,  #Input
+    #&    TDUMX, TGRO, TURADD, XFRT, YRDOY, YRNR1, YRNR2, #Input
+    #&    PStres2, YRPLT,                                 #Input
+    #&    AGRSD3, LAGSD, LNGPEG, NGRSD, NGRSH, PCTMAT,    #Output
+    #&    PODNO, POTCAR, POTLIP, SDNO, SDVAR, SEEDNO,     #Output
+    #&    SHELN, SHVAR, WSDDTN, WSHDTN, WTABRT, WTSD,     #Output
+    #&    WTSHE, WTSHMT, FLWN)                            #Output
 
-#-----------------------------------------------------------------------
-      USE ModuleDefs
-      USE ModuleData
-      IMPLICIT NONE
-      SAVE
-
-      CHARACTER*1   ISWWAT, ISWFWT
-      CHARACTER*2   CROP
-      CHARACTER*3   TYPPDT
-      CHARACTER*6   ERRKEY
-      PARAMETER (ERRKEY = 'PODS  ')
-      CHARACTER*6   ECOTYP, ECONO
-      CHARACTER*6   SECTION
-      CHARACTER*30 FILEIO
-      CHARACTER*78 MESSAGE(10)
-      CHARACTER*80  C80
-      CHARACTER*92  FILECC, FILEGC
-      CHARACTER*255 C255
-
-      INTEGER LUNECO, LUNCRP, LUNIO, ERR, LINC, LNUM, FOUND, ISECT, II
-      INTEGER NPP,NAGE,I,NLAYR
-      INTEGER DYNAMIC, TIMDIF, NR1TIM, NR2TIM
-      INTEGER YRDOY, YRNR1, YRNR2, DAS, YRPLT
-      INTEGER NDSET
-      INTEGER TRIGGR
-
-      REAL AGRSD1, FNINSD, GDMSD, NAVL, WSDDTN, WSHDTN, NGRSD, NGRSH
-      REAL TEMPOD, PCTMAT, WTSHM, NSTRES, PGAVL, XFRT, LAGSD, THRESH
-      REAL WTSHMT, TURADD, SDGR, DSWBAR, SWBAR, SWADD1, SWADD2
-      REAL SHVAR, LNGSH, GRRAT1, LNGPEG, AGRSH1, FNINSH, NLEFT, SHLAG
-      REAL PROSHI, SHELWT, NRUSSH, WTABRT, TDUMX, SWFAC, SETMAX, DRPP
-      REAL SDPDVR, RFLWAB, PMAX, SDVAR, PODUR, MNESPM, RNITP
-      REAL PROLFF, FNINL, SEEDNO, PODNO, XMPAGE
-      REAL WTPSD, SFDUR, PROSHF
-
-      REAL NAVPOD, ADDSHL, FLWADD
-      REAL PGLEFT, PODMAT, AFLW, FLWRDY, PODADD, SHMINE, ACCAGE, PGAVLR
-      REAL REDPUN, WTSHMY, PAGE, REDSHL, SDMAX, RSD, PGNPOD, SHMAXG
-      REAL SUPDAY, SDMAXX, SHRAT, WTABR, START, PNAGE, FLWFRC, FLADD
-      REAL ACTSW, POTSW, DSW, FLAYR, CURV, TABEX
-      REAL CUMSIG, CNSTRES, AGRSD3, ANINSD
-      REAL RNITPD, POTLIP, POTCAR
-      REAL CRSD, NRSD, NREQ
-
-#     Puncture variables, not yet functional
-      REAL PUNCSD, PUNCTR, RPRPUN     
-
-      REAL FNPDT(4)
-      REAL XSWBAR(10), YSWBAR(10), XSWFAC(10), YSWFAC(10)
-      REAL DLAYR(NL), SW(NL), LL(NL), DUL(NL)
-      REAL PHTHRS(20)
-      REAL TGRO(TS)
-      REAL WTSD(NCOHORTS), WTSHE(NCOHORTS), SDNO(NCOHORTS)
-      REAL SHELN(NCOHORTS), SDDES(NCOHORTS), SUPDE(NCOHORTS)
-      REAL AVTEM(NCOHORTS), FLWN(NCOHORTS)
-      REAL PHTIM(NCOHORTS), PNTIM(NCOHORTS)
-
-#     P module
-      REAL PStres2, CPSTRES
-      TYPE (ControlType) CONTROL
-
-#***********************************************************************
-#***********************************************************************
-#     Run Initialization - Called once per simulation
-#***********************************************************************
-      if (DYNAMIC == RUNINIT) {
-#-----------------------------------------------------------------------
-#    Find and Read Simulation Control Section from FILEIO
-#               Previously read in IPIBS
-#-----------------------------------------------------------------------
+PODS <- function(EMERG, 
+                 AGRSD1, AGRSH1, DLAYR, DRPP, DUL, FILECC,       #!Input
+                 FILEGC,FILEIO, FNINL, FNINSD, FNINSH, GDMSD,    #!Input
+                 GRRAT1, ISWWAT, LL, NAVL, NDSET, NLAYR, NRUSSH, #!Input
+                 NSTRES, PGAVL, PHTHRS, PHTIM, PNTIM, PUNCSD,    #!Input
+                 PUNCTR, RNITP, SDDES, SDGR, SHELWT, SW, SWFAC,  #!Input
+                 TDUMX, TGRO, TURADD, XFRT, YRDOY, YRNR1, YRNR2, #!Input
+                 PStres2, YRPLT,                                 #!Input
+                 AGRSD3, LAGSD, LNGPEG, NGRSD, NGRSH, PCTMAT,    #!Output
+                 PODNO, POTCAR, POTLIP, SDNO, SDVAR, SEEDNO,     #!Output
+                 SHELN, SHVAR, WSDDTN, WSHDTN, WTABRT, WTSD,     #!Output
+                 WTSHE, WTSHMT, FLWN)         {                  #!Output
+  
+  PODS <- 0
+  
+  #-----------------------------------------------------------------------
+  #USE ModuleDefs
+  #USE ModuleData
+  #IMPLICIT NONE
+  #SAVE
+  
+  #CHARACTER*1   ISWWAT, ISWFWT
+  #CHARACTER*2   CROP
+  #CHARACTER*3   TYPPDT
+  #CHARACTER*6   ERRKEY
+  #PARAMETER (ERRKEY = 'PODS  ')
+  #CHARACTER*6   ECOTYP, ECONO
+  #CHARACTER*6   SECTION
+  #CHARACTER*30 FILEIO
+  #CHARACTER*78 MESSAGE(10)
+  #CHARACTER*80  C80
+  #CHARACTER*92  FILECC, FILEGC
+  #CHARACTER*255 C255
+  
+  #______________________________________________________________        
+  # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+  XFRT    <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
+  SDPDVR  <- 370.0 # ***SDPDV no .CUL***
+  PODUR   <- 10.0  # Time required for cultivar to reach final pod load under optimal conditions (photothermal days)
+  WTPSD   <- 0.19  # Maximum weight per seed (g)
+  SFDUR   <- 21.0  # Seed filling duration for pod cohort at standard growth conditions (photothermal days)
+  
+  PHTHRS  <- rep(0,20)
+  PHTHRS[6]  <- 7.0   # FL-SH - Time between first flower and first pod (R3) (photothermal days)
+  PHTHRS[8]  <- 16.0  # FL-SD -  Time between first flower and first seed (R5) (photothermal days)
+  PHTHRS[10] <- 27.00 # SD-PM - Time between first seed (R5) and physiological maturity (R7) (photothermal days)
+  PHTHRS[13] <- 18.00 # FL-LF - Time between first flower (R1) and end of leaf expansion (photothermal days)
+  
+  #______________________________________________________________        
+  # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # ECO# SB0602
+  LNGSH <- 10.0 #Time required for growth of individual shells (photothermal days)
+  
+  #PHTHRS[1]  <-  3.6     # PL-EM  - Time between planting and emergence (V0) (thermal days)           
+  #PHTHRS[2]  <-  6.0     # EM-V1  - Time required from emergence to first true leaf (V1), thermal days           
+  #PHTHRS[3]  <-  0.0     # V1-JU  - Time required from first true leaf to end of juvenile phase, thermal days          
+  #PHTHRS[4]  <-  5.0     # JU-R0  - Time required for floral induction, equal to the minimum number of days for
+                                  # floral induction under optimal temperature and daylengths, photothermal days 
+  #PHTHRS[11] <-  12.0     # R7-R8  - Time between physiological (R7) and harvest maturity (R8) (days)           
+  #PHTHRS[12] <-  12.0     # FL-VS  - Time from first flower to last leaf on main stem (photothermal days)          
+  
+  #TODO REMINDER: 5, 7 and 9 are solved in PHENOL.for .:. bring them here!
+  #PHTHRS[5] = max(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
+  #PHTHRS[7] = PHTHRS[6] + max(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
+  #PHTHRS[9] = max(0.,PHTHRS[10] * PM09)
+  
+  #______________________________________________________________        
+  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*SEED AND SHELL GROWTH PARAMETERS
+  DSWBAR  <- 15.0
+  SETMAX  <- 0.60
+  RFLWAB  <- 0.0
+  XMPAGE  <- 100.0
+  #TODO verificar esses vetores
+  FNPDT   <- c(14.0,21.0,26.5,40.0) # + QDR no .SPE
+  XSWBAR  <- c(0.00,  0.01,  0.25,  1.00,  1.00, rep(1,5)) #10 posicoes no fortran e 5 no .SPE
+  YSWBAR  <- c(1.00,  1.00,  1.00,  1.00,  1.00, rep(1,5)) #10 posicoes no fortran e 5 no .SPE
+  XSWFAC  <- c(0.00,  0.50,  1.00,  1.00, rep(1,6)) #10 posicoes no fortran e 4 no .SPE
+  YSWFAC  <- c(0.00,  1.00,  1.00,  1.00, rep(1,6)) #10 posicoes no fortran e 4 no .SPE
+  #!*PLANT COMPOSITION VALUES
+  PROSHI  <- 0.250
+  PROLFF  <- 0.112
+  PROSHF  <- 0.050
+  
+  #INTEGER LUNECO, LUNCRP, LUNIO, ERR, LINC, LNUM, FOUND, ISECT, II
+  #TODO ver conexão com ECOSMOS
+  #NPP
+  NAGE <- 0
+  #I
+  #NLAYR #TODO ver como está sendo usado no ECOSMOS
+  #DYNAMIC #TODO ver como está sendo usado no ECOSMOS
+  #TIMDIF
+  NR1TIM <- 0
+  NR2TIM <- 0
+  YRDOY  <- 0 #TODO ver como está sendo usado no ECOSMOS
+  YRNR1  <- 0 # calculado no RSTAGES.for
+  YRNR2  <- 0 # calculado no RSTAGES.for
+  DAS    <- 0 #TODO ver como está sendo usado no ECOSMOS
+  YRPLT  <- 0 #TODO ver como está sendo usado no ECOSMOS
+  NDSET  <- 0 # calculado no RSTAGES.for
+  TRIGGR <- 0
+  
+  AGRSD1  <- 0 # from SDCOM.for
+  FNINSD  <- 0 # calculado no DEMAND.for
+  GDMSD   <- 0 # calculado no DEMAND.for
+  NAVL    <- 0 # calculado no PODCOMP subroutine dentro do PODS.for
+  WSDDTN  <- 0
+  WSHDTN  <- 0
+  NGRSD   <- 0
+  NGRSH   <- 0
+  TEMPOD  <- 0
+  PCTMAT  <- 0
+  WTSHM   <- 0
+  NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
+  PGAVL   <- 0 # inicializado no CROPGRO.for 
+  #XFRT    <-  'subi' como parametros de cultivar (.CUL) 
+  LAGSD   <- 0 # calculado no DEMAND.for
+  THRESH  <- 0 # calculado no DEMAND.for
+  WTSHMT  <- 0
+  TURADD  <- 0 # calculado no DEMAND.for
+  SDGR    <- 0 # calculado no DEMAND.for
+  #DSWBAR  <-  'subi' como parametros de espécie (.SPE) 
+  SWBAR   <- 0
+  SWADD1  <- 0
+  SWADD2  <- 0
+  SHVAR   <- 0
+  #LNGSH   <-  'subi' como parametros de ecótipo (.ECO)
+  GRRAT1  <- 0 # calculado no DEMAND.for
+  LNGPEG  <- 0
+  AGRSH1  <- 0 # calculado no INCOMP.for *** precisará ser trazido do CROPGRO ***
+  FNINSH  <- 0 # calculado no DEMAND.for
+  NLEFT   <- 0
+  SHLAG   <- 0 # calculado no DEMAND.for
+  #PROSHI  <-  'subi' como parametros de espécie (.SPE) 
+  SHELWT  <- 0 # calculado no GROW.for
+  NRUSSH  <- 0 # calculado no MOBIL.for
+  WTABRT  <- 0
+  TDUMX   <- 0 # calculado no PHENOL.for
+  SWFAC   <- 0 # water stress factor (verificar de onde vem no ECOSMOS)
+  #SETMAX  <-  'subi' como parametros de espécie (.SPE) 
+  DRPP    <- 0 # DRPP = FUDAY[6] no PHENOL.for
+  #SDPDVR  <-  'subi' como parametros de cultivar (.CUL) ***SDPDV no .CUL***
+  #RFLWAB  <-  'subi' como parametros de espécie (.SPE)  
+  PMAX    <- 0
+  SDVAR   <- 0
+  #PODUR   <-  'subi' como parametros de cultivar (.CUL)
+  MNESPM  <- 0
+  RNITP   <- 0 # calculado no GROW.for
+  #PROLFF  <-  'subi' como parametros de espécie (.SPE) 
+  FNINL   <- 0 # calculado no DEMAND.for
+  SEEDNO  <- 0
+  PODNO   <- 0
+  #XMPAGE  <-  'subi' como parametros de espécie (.SPE)
+  #WTPSD   <-  'subi' como parametros de cultivar (.CUL)
+  #SFDUR   <-  'subi' como parametros de cultivar (.CUL)
+  #PROSHF  <-  'subi' como parametros de espécie (.SPE)
+  
+  NAVPOD  <- 0
+  ADDSHL  <- 0
+  FLWADD  <- 0
+  PGLEFT  <- 0
+  PODMAT  <- 0
+  AFLW    <- 0
+  FLWRDY  <- 0
+  PODADD  <- 0
+  SHMINE  <- 0
+  ACCAGE  <- 0
+  PGAVLR  <- 0
+  REDPUN  <- 0
+  WTSHMY  <- 0
+  PAGE    <- 0
+  REDSHL  <- 0
+  SDMAX   <- 0
+  RSD     <- 0
+  PGNPOD  <- 0
+  SHMAXG  <- 0
+  SUPDAY  <- 0
+  SDMAXX  <- 0
+  SHRAT   <- 0
+  WTABR   <- 0
+  START   <- 0
+  PNAGE   <- 0
+  FLWFRC  <- 0
+  FLADD   <- 0
+  ACTSW   <- 0
+  POTSW   <- 0
+  DSW     <- 0
+  FLAYR   <- 0
+  CURV    <- 0 # funcao do UTILS.for
+  TABEX   <- 0 # funcao do UTILS.for
+  CUMSIG  <- 0
+  CNSTRES <- 0
+  AGRSD3  <- 0 # == AGRSD1 no codigo
+  ANINSD  <- 0 # == FNINSD no codigo
+  RNITPD  <- 0
+  POTLIP  <- 0
+  POTCAR  <- 0
+  CRSD    <- 0
+  NRSD    <- 0
+  NREQ    <- 0
+  
+  #     Puncture variables, not yet functional
+  #      REAL PUNCSD, PUNCTR, RPRPUN     
+  
+  #TODO verificar se (XX) seria rep(0,XX)
+  #!*SEED AND SHELL GROWTH PARAMETERS
+  #FNPDT(4)   <- 'subi' como parametros de espécie (.SPE) 
+  #XSWBAR(10) <- 'subi' como parametros de espécie (.SPE) 
+  #YSWBAR(10) <- 'subi' como parametros de espécie (.SPE) 
+  #XSWFAC(10) <- 'subi' como parametros de espécie (.SPE) 
+  #YSWFAC(10) <- 'subi' como parametros de espécie (.SPE) 
+  
+  DLAYR(NL)  <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS
+  SW(NL)     <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS
+  LL(NL)     <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS
+  DUL(NL)    <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS
+  #PHTHRS(20) <- 'subi' como parametros de cultivar (.CUL) + buscar do env
+  #TGRO[TS]
+  #TODO ler arquivo de output do Fortran
+  TGRO   <- rep(1.,24)
+  
+  NCOHORTS <- 300 #from line 51 in ModuleDefs.for NCOHORTS = 300, !Maximum number of cohorts
+  SDDES <- rep(0, NCOHORTS)
+  SDNO  <- rep(0, NCOHORTS)
+  SHELN <- rep(0, NCOHORTS)
+  WTSD  <- rep(0, NCOHORTS)
+  WTSHE <- rep(0, NCOHORTS)
+  PHTIM <- rep(0, NCOHORTS)
+  PNTIM <- rep(0, NCOHORTS)
+  SUPDE <- rep(0, NCOHORTS)
+  AVTEM <- rep(0, NCOHORTS)
+  FLWN  <- rep(0, NCOHORTS)
+  
+  #     P module
+  PStres2 <- 1 # P stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar] 
+  CPSTRES <- 1 # Moving average of Pstres2
+    #TYPE (ControlType) CONTROL
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     Run Initialization - Called once per simulation
+    #***********************************************************************
+    if (DYNAMIC == RUNINIT) {
+      #-----------------------------------------------------------------------
+      #    Find and Read Simulation Control Section from FILEIO
+      #               Previously read in IPIBS
+      #-----------------------------------------------------------------------
       CALL GETLUN('FILEIO', LUNIO)
       OPEN (LUNIO, FILE = FILEIO,STATUS = 'OLD',IOSTAT=ERR)
       if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,0)
       LNUM = 0
-#-----------------------------------------------------------------------
-#    Find and Read Cultivars Section from FILEIO
-#-----------------------------------------------------------------------
+      #-----------------------------------------------------------------------
+      #    Find and Read Cultivars Section from FILEIO
+      #-----------------------------------------------------------------------
       SECTION = '*CULTI'
       CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
       if (FOUND == 0) {
@@ -125,36 +302,36 @@
         READ(LUNIO,'(3X,A2)',IOSTAT=ERR) CROP ; LNUM = LNUM + 1
         if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
       }
-
-#-----------------------------------------------------------------------
-#    Find and Read Cultivars Section from FILEIO
-#-----------------------------------------------------------------------
+      
+      #-----------------------------------------------------------------------
+      #    Find and Read Cultivars Section from FILEIO
+      #-----------------------------------------------------------------------
       SECTION = '*CULTI'
       CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
       if (FOUND == 0) {
         CALL ERROR(SECTION, 42, FILEIO, LNUM)
       } else {
-#        READ(LUNIO,'(24X,A6,66X,4F6.0)',IOSTAT=ERR)
-#     &          ECONO, WTPSD, SFDUR, SDPDVR, PODUR ; LNUM = LNUM + 1
+        #        READ(LUNIO,'(24X,A6,66X,4F6.0)',IOSTAT=ERR)
+        #     &          ECONO, WTPSD, SFDUR, SDPDVR, PODUR ; LNUM = LNUM + 1
         READ(LUNIO,'(24X,A6,66X,5F6.0)',IOSTAT=ERR)
-     &          ECONO, WTPSD, SFDUR, SDPDVR, PODUR, THRESH
+        &          ECONO, WTPSD, SFDUR, SDPDVR, PODUR, THRESH
         LNUM = LNUM + 1
         if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
       }
-
+      
       CLOSE (LUNIO)
-
-#-----------------------------------------------------------------------
-#     Read in values from input file, which were previously input
-#       in Subroutine IPCROP.
-#-----------------------------------------------------------------------
+      
+      #-----------------------------------------------------------------------
+      #     Read in values from input file, which were previously input
+      #       in Subroutine IPCROP.
+      #-----------------------------------------------------------------------
       CALL GETLUN('FILEC', LUNCRP)
       OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
       if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,0)
       LNUM = 0
-#-----------------------------------------------------------------------
-#    Find and Read Plant Composition Section
-#-----------------------------------------------------------------------
+      #-----------------------------------------------------------------------
+      #    Find and Read Plant Composition Section
+      #-----------------------------------------------------------------------
       SECTION = '#*PLAN'
       CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
       if (FOUND == 0) {
@@ -163,14 +340,14 @@
         CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
         READ(C80,'(12X,F6.0)',IOSTAT=ERR) PROLFF
         if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-
+        
         CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
         READ(C80,'(18X,F6.0,6X,F6.0)',IOSTAT=ERR) PROSHI, PROSHF
         if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
       }
-#-----------------------------------------------------------------------
-#    Find and Read Seed and Shell Growth Section
-#-----------------------------------------------------------------------
+      #-----------------------------------------------------------------------
+      #    Find and Read Seed and Shell Growth Section
+      #-----------------------------------------------------------------------
       SECTION = '#*SEED'
       CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
       if (FOUND == 0) {
@@ -183,34 +360,34 @@
         CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
         READ(C80,'(F6.0,6X,2F6.0)',IOSTAT=ERR) SETMAX, RFLWAB, XMPAGE
         if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-
+        
         CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
         READ(C80,'(F6.0,6X,F6.0)',IOSTAT=ERR) DSWBAR, SHLAG
         if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-
+        
         CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
         READ(C80,'(4F6.0,3X,A3)',IOSTAT=ERR)(FNPDT(II),II=1,4),TYPPDT
         if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-
+        
         for (I in 1:4) {
           CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
         }
         READ(C80,'(4F6.0)',IOSTAT=ERR)(XSWFAC(II),II=1,4)
         if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-
+        
         CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
         READ(C80,'(4F6.0)',IOSTAT=ERR)(YSWFAC(II),II=1,4)
         if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-
+        
         CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
         READ(C80,'(5F6.0)',IOSTAT=ERR)(XSWBAR(II),II=1,5)
         if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-
+        
         CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
         READ(C80,'(5F6.0)',IOSTAT=ERR)(YSWBAR(II),II=1,5)
         if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
       }
-
+      
       #----------------------------------------------------------------
       #        Find and Read Fresh weight option
       #----------------------------------------------------------------
@@ -224,12 +401,12 @@
           ISWFWT = 'Y'
         }
       }
-
+      
       CLOSE (LUNCRP)
-
-#-----------------------------------------------------------------------
-#    Read Ecotype Parameter File
-#-----------------------------------------------------------------------
+      
+      #-----------------------------------------------------------------------
+      #    Read Ecotype Parameter File
+      #-----------------------------------------------------------------------
       CALL GETLUN('FILEE', LUNECO)
       OPEN (LUNECO,FILE = FILEGC,STATUS = 'OLD',IOSTAT=ERR)
       if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEGC,0)
@@ -238,14 +415,14 @@
       DO WHILE (ECOTYP != ECONO) { #TODO: checar essa função no R
         CALL IGNORE(LUNECO, LNUM, ISECT, C255)
         if ((ISECT == 1) & (C255(1:1) != ' ') & (C255(1:1) != '*')) {
-#          READ (C255,'(A6,66X,F6.0,30X,F6.0)',IOSTAT=ERR)
-#     &        ECOTYP, LNGSH, THRESH
+          #          READ (C255,'(A6,66X,F6.0,30X,F6.0)',IOSTAT=ERR)
+          #     &        ECOTYP, LNGSH, THRESH
           READ (C255,'(A6,66X,F6.0)',IOSTAT=ERR) ECOTYP, LNGSH
           if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEGC,LNUM)
           if (ECOTYP == ECONO) {
             EXIT
           }
-
+          
         } else if (ISECT == 0) {
           if (ECONO == 'DFAULT') CALL ERROR(ERRKEY,35,FILEGC,LNUM)
           ECONO = 'DFAULT'
@@ -253,46 +430,48 @@
           LNUM = 0
         }
       }
-
+      
       CLOSE (LUNECO)
-
-#-----------------------------------------------------------------------
-
+      
+      #-----------------------------------------------------------------------
+      
+      #TODO CHAMAR FUNCAO
       CALL PODCOMP(
-     &  AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
-     &  POTCAR, POTLIP,                                 #Input/Output
-     &  AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
-     &  RUNINIT)                                        #Control
-
-#-----------------------------------------------------------------------
-#     Set minimum days for phenological events under optimum conditions
-#     (temperature and short photoperiod)
-#-----------------------------------------------------------------------
-#     Number of days from end pod set to physiological maturity
-        MNESPM = PHTHRS[10] - PHTHRS[9]
-
-#-----------------------------------------------------------------------
-#     Number of days between start of peg (full flower) and shell
-#     formation
-#     Only used in peanut to define slow growth period.
-        LNGPEG  = PHTHRS[7] - PHTHRS[6]
-
-#-----------------------------------------------------------------------
-#     Number of days between start of shell and seed formation of a pod
-        LAGSD  = PHTHRS[8] - PHTHRS[6]
-
-#-----------------------------------------------------------------------
-#     Compute reproductive rates from cultivar and ecotype coefficients
-#-----------------------------------------------------------------------
-       SDVAR = WTPSD / SFDUR
-       SHVAR = WTPSD * SDPDVR * ((100.-THRESH)/THRESH)/((LNGSH-.85*LNGPEG)*((1.-PROSHI)/(1.-PROSHF)))
-
-#***********************************************************************
-#***********************************************************************
-#     Seasonal initialization - run once per season
-#***********************************************************************
-      } else if (DYNAMIC == SEASINIT) {
-#-----------------------------------------------------------------------
+        &  AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
+        &  POTCAR, POTLIP,                                 #Input/Output
+        &  AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
+        &  RUNINIT)                                        #Control
+      
+      
+      #-----------------------------------------------------------------------
+      #     Set minimum days for phenological events under optimum conditions
+      #     (temperature and short photoperiod)
+      #-----------------------------------------------------------------------
+      #     Number of days from end pod set to physiological maturity
+      MNESPM = PHTHRS[10] - PHTHRS[9]
+      
+      #-----------------------------------------------------------------------
+      #     Number of days between start of peg (full flower) and shell
+      #     formation
+      #     Only used in peanut to define slow growth period.
+      LNGPEG  = PHTHRS[7] - PHTHRS[6]
+      
+      #-----------------------------------------------------------------------
+      #     Number of days between start of shell and seed formation of a pod
+      LAGSD  = PHTHRS[8] - PHTHRS[6]
+      
+      #-----------------------------------------------------------------------
+      #     Compute reproductive rates from cultivar and ecotype coefficients
+      #-----------------------------------------------------------------------
+      SDVAR = WTPSD / SFDUR
+      SHVAR = WTPSD * SDPDVR * ((100.-THRESH)/THRESH)/((LNGSH-.85*LNGPEG)*((1.-PROSHI)/(1.-PROSHF)))
+      
+      #***********************************************************************
+      #***********************************************************************
+      #     Seasonal initialization - run once per season
+      #***********************************************************************
+    } else if (DYNAMIC == SEASINIT) {
+      #-----------------------------------------------------------------------
       FNINSH = 0.0   
       NAVPOD = 0.0
       NGRSD  = 0.0   
@@ -308,60 +487,62 @@
       WTSHMT = 0.0   
       WTSD   = 0.0
       WTSHE  = 0.0
-
+      
       RPRPUN = 1.0 
       PGAVLR = 0.0
       SDNO   = 0.0
       AGRSD3 = AGRSD1
       SHELN  = 0.0
       FLWN   = 0.0
-
-      CALL FreshWt(SEASINIT, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
-
-#***********************************************************************
-#***********************************************************************
-#     EMERGENCE CALCULATIONS - Performed once per season upon emergence
-#         or transplanting of plants
-#***********************************************************************
-      } else if (DYNAMIC == EMERG) {
-#-----------------------------------------------------------------------
-        ACCAGE  = 0.0
-        AFLW    = 0.0
-        CNSTRES = 1.0
-        CPSTRES = 1.0     #CHP 3/24/2004
-        FNINSH  = PROSHI * 0.16         
-        FLWRDY  = 0.0
-        PCTMAT  = 0.0
-        PODADD  = 0.0
-        SHMINE  = 0.0
-        TEMPOD  = 0.0
-        TRIGGR  = 0
-        WTSHM   = 0.0
-
-        for (NPP in 1:NCOHORTS) {
-          SHELN[NPP] = 0.0
-          WTSHE[NPP] = 0.0
-          WTSD[NPP] = 0.0
-          SDNO[NPP] = 0.0
-          FLWN[NPP] = 0.0
-          SUPDE[NPP] = 0.0
-          AVTEM[NPP] = 0.0
-        }
       
-        CALL PODCOMP(
-     &    AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,  #Input
-     &    POTCAR, POTLIP,                               #Input/Output
-     &    AGRSD3, ANINSD, CUMSIG, RSD,                  #Output
-     &    EMERG)                                        #Control
-
-#***********************************************************************
-#***********************************************************************
-#     DAILY RATE/INTEGRATION
-#***********************************************************************
-      } else if (DYNAMIC == INTEGR) {
-#-----------------------------------------------------------------------
-#     Daily Initialization.
-#-----------------------------------------------------------------------
+      #TODO CHAMAR FUNCAO
+      CALL FreshWt(SEASINIT, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
+      
+      #***********************************************************************
+      #***********************************************************************
+      #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
+      #         or transplanting of plants
+      #***********************************************************************
+    } else if (DYNAMIC == EMERG) {
+      #-----------------------------------------------------------------------
+      ACCAGE  = 0.0
+      AFLW    = 0.0
+      CNSTRES = 1.0
+      CPSTRES = 1.0     #CHP 3/24/2004
+      FNINSH  = PROSHI * 0.16         
+      FLWRDY  = 0.0
+      PCTMAT  = 0.0
+      PODADD  = 0.0
+      SHMINE  = 0.0
+      TEMPOD  = 0.0
+      TRIGGR  = 0
+      WTSHM   = 0.0
+      
+      for (NPP in 1:NCOHORTS) {
+        SHELN[NPP] = 0.0
+        WTSHE[NPP] = 0.0
+        WTSD[NPP] = 0.0
+        SDNO[NPP] = 0.0
+        FLWN[NPP] = 0.0
+        SUPDE[NPP] = 0.0
+        AVTEM[NPP] = 0.0
+      }
+      
+      #TODO CHAMAR FUNCAO
+      CALL PODCOMP(
+        &    AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,  #Input
+        &    POTCAR, POTLIP,                               #Input/Output
+        &    AGRSD3, ANINSD, CUMSIG, RSD,                  #Output
+        &    EMERG)                                        #Control
+      
+      #***********************************************************************
+      #***********************************************************************
+      #     DAILY RATE/INTEGRATION
+      #***********************************************************************
+    } else if (DYNAMIC == INTEGR) {
+      #-----------------------------------------------------------------------
+      #     Daily Initialization.
+      #-----------------------------------------------------------------------
       PODMAT = 0.0
       WSDDTN = 0.0
       WSHDTN = 0.0
@@ -369,32 +550,32 @@
       NGRSH  = 0.0
       NLEFT  = 0.0
       PGLEFT = 0.0
-
-#     DAS   = max(0,TIMDIF(YRSIM,YRDOY))
+      
+      #     DAS   = max(0,TIMDIF(YRSIM,YRDOY))
       CALL GET(CONTROL)
       # ALTERADO: % to %%
       DAS = CONTROL %% DAS
-
-#***********************************************************************
-#     Seed growth section
-#-----------------------------------------------------------------------
+      
+      #***********************************************************************
+      #     Seed growth section
+      #-----------------------------------------------------------------------
       if (YRDOY >= YRNR1 & YRNR1 > 0) {
         
         NR1TIM = max(TIMDIF(YRNR1,YRDOY),0) #TODO tradução timdif 
-#-----------------------------------------------------------------------
+        #-----------------------------------------------------------------------
         PGAVLR = PGAVL * XFRT
-
-#-----------------------------------------------------------------------
-#     Nitrogen stress; 8-Day moving average.
-#     Slow response to change in N stress.
-#-----------------------------------------------------------------------
+        
+        #-----------------------------------------------------------------------
+        #     Nitrogen stress; 8-Day moving average.
+        #     Slow response to change in N stress.
+        #-----------------------------------------------------------------------
         CNSTRES = 0.875 * CNSTRES + 0.125 * NSTRES
         CPSTRES = 0.875 * CPSTRES + 0.125 * PStres2
-#     chp added CPSTRES here, but not implemented -- need Ken's input
-#     03/24/2004
-#-----------------------------------------------------------------------
-#     Calculate insect feeding and puncture damage
-#-----------------------------------------------------------------------
+        #     chp added CPSTRES here, but not implemented -- need Ken's input
+        #     03/24/2004
+        #-----------------------------------------------------------------------
+        #     Calculate insect feeding and puncture damage
+        #-----------------------------------------------------------------------
         REDPUN = 1.0
         if (PUNCSD > 0.0) {
           REDPUN = REDPUN - (PUNCTR/PUNCSD) * RPRPUN
@@ -404,9 +585,9 @@
         }
         if (YRDOY > YRNR2 & YRNR2 > 0) {
           NR2TIM = max(TIMDIF(YRNR2,YRDOY),0) #TODO tradução timedif 
-#-----------------------------------------------------------------------
-#     Remember yesterdays mature shell weight, WTSHMY
-#-----------------------------------------------------------------------
+          #-----------------------------------------------------------------------
+          #     Remember yesterdays mature shell weight, WTSHMY
+          #-----------------------------------------------------------------------
           WTSHMY = WTSHM
           WTSHM = 0.0
           for (NPP in 1:NR2TIM) { 
@@ -417,24 +598,24 @@
               CALL WARNING(3,ERRKEY,MESSAGE)
               WRITE (*,854) MESSAGE(1), MESSAGE(2), MESSAGE(3)
               STOP
- 851          FORMAT('You have reached the maximum number of',' cohorts which can be produced.')
- 852          FORMAT('There is probably an error in your inputs.')
- 853          FORMAT('Please end this run and fix the problem.')
- 854          FORMAT(/,1X,A78,/,1X,A78,/,1X,A78,/)
+              851          FORMAT('You have reached the maximum number of',' cohorts which can be produced.')
+              852          FORMAT('There is probably an error in your inputs.')
+              853          FORMAT('Please end this run and fix the problem.')
+              854          FORMAT(/,1X,A78,/,1X,A78,/,1X,A78,/)
             }
-#-----------------------------------------------------------------------
-#     Compute physiological age of cohort
-#-----------------------------------------------------------------------
+            #-----------------------------------------------------------------------
+            #     Compute physiological age of cohort
+            #-----------------------------------------------------------------------
             PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
-#-----------------------------------------------------------------------
-#     Prevent seeds from growing until they are older than LAGSD p-t-d
-#-----------------------------------------------------------------------
-#           if (PAGE < LAGSD) GO TO 800
+            #-----------------------------------------------------------------------
+            #     Prevent seeds from growing until they are older than LAGSD p-t-d
+            #-----------------------------------------------------------------------
+            #           if (PAGE < LAGSD) GO TO 800
             if (PAGE >= LAGSD) {
-#-----------------------------------------------------------------------
-#     Prevent cohort from exceeding threshing limit, considering
-#     damaged seed (SDDES) that were damaged without shell loss ***wdb??
-#-----------------------------------------------------------------------
+              #-----------------------------------------------------------------------
+              #     Prevent cohort from exceeding threshing limit, considering
+              #     damaged seed (SDDES) that were damaged without shell loss ***wdb??
+              #-----------------------------------------------------------------------
               if (SDDES[NPP] > 0.0) {
                 REDSHL = WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
               } else {
@@ -442,23 +623,23 @@
               }
               SDMAX = (WTSHE[NPP]-REDSHL)*THRESH/(100.-THRESH)-WTSD[NPP]
               SDMAX = max(0.0,SDMAX)
-#-----------------------------------------------------------------------
-#     Compute shell wt of cohorts that are full
-#-----------------------------------------------------------------------
+              #-----------------------------------------------------------------------
+              #     Compute shell wt of cohorts that are full
+              #-----------------------------------------------------------------------
               if (SDMAX <= 0.0) WTSHM = WTSHM + WTSHE[NPP]
             }
-       }
-#-----------------------------------------------------------------------
-#     Compute cohorts of shell wt. that reach THRESH today
-#-----------------------------------------------------------------------
+          }
+          #-----------------------------------------------------------------------
+          #     Compute cohorts of shell wt. that reach THRESH today
+          #-----------------------------------------------------------------------
           WTSHMT = WTSHM - WTSHMY
-
-#-----------------------------------------------------------------------
-#     Modification of seed composition
-#-----------------------------------------------------------------------
-#       This section of code provides an alternative to calling PODCOMP
-#       routine.  Currently, both are done.
-#-----------------------------------------------------------------------
+          
+          #-----------------------------------------------------------------------
+          #     Modification of seed composition
+          #-----------------------------------------------------------------------
+          #       This section of code provides an alternative to calling PODCOMP
+          #       routine.  Currently, both are done.
+          #-----------------------------------------------------------------------
           RSD = 1.0
           if (GDMSD > 0.0001) {
             CRSD = min(PGAVLR / (GDMSD*AGRSD1), 1.0)
@@ -470,25 +651,26 @@
             }
             RSD = min(CRSD, NRSD, 1.0)
           }
-
+          
           AGRSD3 = AGRSD1
           ANINSD = FNINSD
-
-#-----------------------------------------------------------------------
-#     Detailed seed composition calculations
-#-----------------------------------------------------------------------
+          
+          #-----------------------------------------------------------------------
+          #     Detailed seed composition calculations
+          #-----------------------------------------------------------------------
+          #TODO CHAMAR FUNCAO
           CALL PODCOMP(
-     &      AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,  #Input
-     &      POTCAR, POTLIP,                               #Input/Output
-     &      AGRSD3, ANINSD, CUMSIG, RSD,                  #Output
-     &      INTEGR)                                       #Control
-
-#-----------------------------------------------------------------------
-#     Grow seed cohorts
-#-----------------------------------------------------------------------
+            &      AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,  #Input
+            &      POTCAR, POTLIP,                               #Input/Output
+            &      AGRSD3, ANINSD, CUMSIG, RSD,                  #Output
+            &      INTEGR)                                       #Control
+          
+          #-----------------------------------------------------------------------
+          #     Grow seed cohorts
+          #-----------------------------------------------------------------------
           for (NPP in 1:NR2TIM) { 
             PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
-#           if (PAGE < LAGSD) GO TO 1300
+            #           if (PAGE < LAGSD) GO TO 1300
             if (PAGE >= LAGSD) {
               if (SDDES[NPP] > 0.0) {
                 REDSHL = WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
@@ -498,27 +680,27 @@
               SDMAX = (WTSHE[NPP]-REDSHL)*THRESH/(100.-THRESH)-WTSD[NPP]
               SDMAX = max(0.0,SDMAX) * (1. + TURADD)
               WTSD[NPP] = WTSD[NPP]+RSD*min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
-#-----------------------------------------------------------------------
-#     New Seed Tissue Growth, for updating crop seed mass
-#         in GROW, N Required
-#-----------------------------------------------------------------------
+              #-----------------------------------------------------------------------
+              #     New Seed Tissue Growth, for updating crop seed mass
+              #         in GROW, N Required
+              #-----------------------------------------------------------------------
               WSDDTN = WSDDTN + RSD * min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
               NGRSD = NGRSD+ANINSD*RSD*min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
             }
-      }
-#-----------------------------------------------------------------------
+          }
+          #-----------------------------------------------------------------------
         }           #End of YRDOY>YRNR2 Seed growth section
-
-#***********************************************************************
-#     Shell section
-#-----------------------------------------------------------------------
+        
+        #***********************************************************************
+        #     Shell section
+        #-----------------------------------------------------------------------
         PGLEFT = max(0.0,(PGAVLR - WSDDTN*AGRSD3))
         NLEFT  = max(0.0,(NAVL - NGRSD))
         PGNPOD = PGLEFT
         NAVPOD = NLEFT
-#-----------------------------------------------------------------------
-#     Calculate function for modifying pod setting with temperature
-#-----------------------------------------------------------------------
+        #-----------------------------------------------------------------------
+        #     Calculate function for modifying pod setting with temperature
+        #-----------------------------------------------------------------------
         TEMPOD = 0.
         for (I in 1:TS) {
           TEMPOD = TEMPOD + CURV(TYPPDT,FNPDT[1],FNPDT[2],FNPDT[3],FNPDT[4],TGRO[I])
@@ -526,12 +708,12 @@
         
         # ALTERADO: REAL(TS) é conversão para tipo REAL, não é necessário aqui.
         TEMPOD = TEMPOD / TS
-# 24 changed to TS on 3Jul17 by Bruce Kimball
+        # 24 changed to TS on 3Jul17 by Bruce Kimball
         
-#-----------------------------------------------------------------------
-#     Avg soil water (SWBAR) over DSWBAR depth to affect flower,
-#         pod addition
-#-----------------------------------------------------------------------
+        #-----------------------------------------------------------------------
+        #     Avg soil water (SWBAR) over DSWBAR depth to affect flower,
+        #         pod addition
+        #-----------------------------------------------------------------------
         if (ISWWAT == 'Y') {
           ACTSW = 0.0
           POTSW = 0.0
@@ -557,16 +739,16 @@
         } else {
           SWBAR = 1.0
         }
-#-----------------------------------------------------------------------
-#     Soil water factor (SWADD1), and Water stress factor (SWADD2)
-#-----------------------------------------------------------------------
+        #-----------------------------------------------------------------------
+        #     Soil water factor (SWADD1), and Water stress factor (SWADD2)
+        #-----------------------------------------------------------------------
         SWADD1 = TABEX (YSWBAR,XSWBAR,SWBAR,5)
         SWADD2 = TABEX (YSWFAC,XSWFAC,SWFAC,4)
-#-----------------------------------------------------------------------
+        #-----------------------------------------------------------------------
         SHMAXG = SHVAR
-#-----------------------------------------------------------------------
-#     This section calculates shell growth after first pod (NR2)
-#-----------------------------------------------------------------------
+        #-----------------------------------------------------------------------
+        #     This section calculates shell growth after first pod (NR2)
+        #-----------------------------------------------------------------------
         if (YRDOY > YRNR2 & YRNR2 > 0) {
           for (NPP in 1:NR2TIM) { 
             NAGE = NR2TIM + 1 - NPP
@@ -583,12 +765,12 @@
                   if (SHLAG < 0.001) SHLAG = 0.001
                   ADDSHL = min(PGLEFT/AGRSH1 ,GRRAT1*SHELN[NPP]*SHLAG, NLEFT/(FNINSH*CNSTRES^0.5))
                   SUPDAY = min((PGLEFT/AGRSH1)/(GRRAT1*SHELN[NPP]*SHLAG),
-							   (NLEFT/(FNINSH*CNSTRES^0.5))/(GRRAT1*SHELN[NPP]*SHLAG), SWADD1)
+                               (NLEFT/(FNINSH*CNSTRES^0.5))/(GRRAT1*SHELN[NPP]*SHLAG), SWADD1)
                   if (SUPDAY >= 1.0) SUPDAY = 1.0
                 }
-#-----------------------------------------------------------------------
-#     Compute running avg ratio supply to demand for shell grwoth
-#-----------------------------------------------------------------------
+                #-----------------------------------------------------------------------
+                #     Compute running avg ratio supply to demand for shell grwoth
+                #-----------------------------------------------------------------------
               }
               if (NAGE <= 1) {
                 SUPDE[NPP] = SUPDAY
@@ -597,10 +779,10 @@
                 SUPDE[NPP] = (SUPDE[NPP] * (NAGE-1) + SUPDAY)/NAGE
                 AVTEM[NPP] = (AVTEM[NPP] * (NAGE-1) + TEMPOD)/NAGE
               }
-#-----------------------------------------------------------------------
-#     Compute overall growth of all shells, total N required
-#     and the remaining C (PGLEFT) and N (LEFT)
-#-----------------------------------------------------------------------
+              #-----------------------------------------------------------------------
+              #     Compute overall growth of all shells, total N required
+              #     and the remaining C (PGLEFT) and N (LEFT)
+              #-----------------------------------------------------------------------
               WSHDTN = WSHDTN + ADDSHL
               NGRSH = NGRSH + ADDSHL * PROSHI * 0.16 * CNSTRES^0.5
               if (PGLEFT < 1.0E-6) PGLEFT=0.0          #NBP
@@ -608,9 +790,9 @@
               PGLEFT = max(0.0,(PGLEFT - ADDSHL * AGRSH1))
               NLEFT  = max(0.0,(NLEFT - ADDSHL * (FNINSH*CNSTRES^0.5)))
             }
-#-----------------------------------------------------------------------
-#     Grow shells if greater than 1 day old
-#-----------------------------------------------------------------------
+            #-----------------------------------------------------------------------
+            #     Grow shells if greater than 1 day old
+            #-----------------------------------------------------------------------
             SHMINE = 0.0
             if (SDDES[NPP] > 0.0) {
               REDSHL = WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
@@ -622,28 +804,28 @@
               SHMINE = NRUSSH/0.16 * WTSHE[NPP]/(SHELWT - WTSHM)
             }
             WTSHE[NPP] = WTSHE[NPP] + ADDSHL - max(SHMINE,0.0)
-      }
-#-----------------------------------------------------------------------
-#     Set seeds based on ratio of supply to demand for shells,
-#     average temperature and night length effect
-#     between (LAGSD) and (LAGSD+TDUMX) p-t-d age
-#-----------------------------------------------------------------------
+          }
+          #-----------------------------------------------------------------------
+          #     Set seeds based on ratio of supply to demand for shells,
+          #     average temperature and night length effect
+          #     between (LAGSD) and (LAGSD+TDUMX) p-t-d age
+          #-----------------------------------------------------------------------
           WTABRT = 0.0
           for (NPP in 1:NR2TIM) { 
             PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
             if (PAGE >= LAGSD & PAGE < LAGSD + TDUMX & SDNO[NPP] <= 0.0) {
-#-----------------------------------------------------------------------
-#     Physiol age to set seeds
-#-----------------------------------------------------------------------
+              #-----------------------------------------------------------------------
+              #     Physiol age to set seeds
+              #-----------------------------------------------------------------------
               if (SUPDE[NPP] >= SETMAX) {
                 SHRAT = 1.0
               } else {
                 SHRAT = SUPDE[NPP]/SETMAX
               }
               SDNO[NPP] = min(SHRAT, AVTEM[NPP]*(DRPP^1.0)) * SHELN[NPP]* SDPDVR + SDNO[NPP]
-#-----------------------------------------------------------------------
-#     Abort shells that do not form seed; abort (1-SHRAT) fraction
-#-----------------------------------------------------------------------
+              #-----------------------------------------------------------------------
+              #     Abort shells that do not form seed; abort (1-SHRAT) fraction
+              #-----------------------------------------------------------------------
               WTABR = 0.0
               START = SHELN[NPP]
               SHELN[NPP] = SHELN[NPP]*min(SHRAT, AVTEM[NPP]*(DRPP^1.0))
@@ -653,15 +835,15 @@
               WTSHE[NPP] = WTSHE[NPP] - WTABR
               WTABRT = WTABRT + WTABR
             }
-         }
-#-----------------------------------------------------------------------
+          }
+          #-----------------------------------------------------------------------
         }         #End of DAS>NR2 Shell growth section
-#***********************************************************************
-#     Add new pods and flowers
-#     RFLWAB is relative rate of flower abortion per day because
-#     daylength is not optimum.  The flowers that survive "NR2"
-#     PHOTOTHERMAL days is equal to FLWRDY which can limit pod addition
-#-----------------------------------------------------------------------
+        #***********************************************************************
+        #     Add new pods and flowers
+        #     RFLWAB is relative rate of flower abortion per day because
+        #     daylength is not optimum.  The flowers that survive "NR2"
+        #     PHOTOTHERMAL days is equal to FLWRDY which can limit pod addition
+        #-----------------------------------------------------------------------
         AFLW = RFLWAB * (1.0 - TDUMX) * (1.0 - SWADD2)
         FLWRDY = 0.
         for (NPP in 1:NR1TIM) { 
@@ -669,9 +851,9 @@
             PNAGE = PNTIM(NR1TIM + 1) - PNTIM[NPP]
             FLWN[NPP] = FLWN[NPP] * (1.0 - AFLW)
             if (PNAGE >= PHTHRS[6]) {
-#-----------------------------------------------------------------------
-#     Allow flowers in each cohort to make pods over 2-3 days
-#-----------------------------------------------------------------------
+              #-----------------------------------------------------------------------
+              #     Allow flowers in each cohort to make pods over 2-3 days
+              #-----------------------------------------------------------------------
               FLWFRC = 0.
               if (TDUMX > 0.0001) FLWFRC = (PNAGE-PHTHRS[6])/TDUMX
               FLWFRC = min(FLWFRC,1.0)
@@ -681,65 +863,66 @@
             }
           }
         }
- 
+        
         PMAX = PGAVLR/(SDVAR*AGRSD1*SDPDVR)*(1./PODUR)
-
+        
         if (YRDOY >= YRNR2 & YRNR2 > 0) {
           FLADD = FLWRDY * TEMPOD *(DRPP^1.3)* min(SWADD1,SWADD2) *XFRT
           if (DAS > NDSET & MNESPM > 0.) {
             ACCAGE = ACCAGE + TEMPOD * DRPP * SWFAC / MNESPM
             ACCAGE = min(1.0,ACCAGE)
           }
-#-----------------------------------------------------------------------
-#    Reduce pod addition from END POD SET to physiological maturity
-#    DRPP**1.3 makes smaller and more sentitive to long days
-#    Scale pod addition to RNITP, leaf N for photo purporses
-#-----------------------------------------------------------------------
+          #-----------------------------------------------------------------------
+          #    Reduce pod addition from END POD SET to physiological maturity
+          #    DRPP**1.3 makes smaller and more sentitive to long days
+          #    Scale pod addition to RNITP, leaf N for photo purporses
+          #-----------------------------------------------------------------------
           RNITPD = (RNITP*0.01-PROLFF*0.16)/(FNINL-PROLFF*0.16)
           RNITPD = min(1.1,RNITPD)
           RNITPD = max(0.1,RNITPD)
           PODADD = PMAX * TEMPOD * (DRPP^1.3) * min(SWADD1,SWADD2,RNITPD) * max((1.0 - ACCAGE),0.0)
-#    &       * max((1.0 - ACCAGE),0.0) * (1.0 + TURADD)
+          #    &       * max((1.0 - ACCAGE),0.0) * (1.0 + TURADD)
           SHELN(NR2TIM + 1) = min(PODADD, PGNPOD/(SHMAXG*AGRSH1), FLADD, NAVPOD/(SHMAXG*(FNINSH*CNSTRES^0.5)))
-#-----------------------------------------------------------------------
-#    KJB ADDED 1/27/96.  2 CONDITIONS: NDSET AND TRIGGER (CUMSIG >.98)
-#    MUST BE MET TO STOP POD ADDITION.  THUS, IF WE ARE THRU THE WINDOW
-#    AND FULL LOAD IS SET, { NO LATE PODS AND FLOWERS CAN BE ADDED
-#    PRESENTLY NDSET WAS PLACED TO R7 IN SOYBEAN.  MOVE IT EARLIER
-#    SO WE CAN PREVENT FUNNY LATE BUMPS (WMS-88, 84RF) OCCURRING AFTER
-#    FULL LOAD IS APPARENTLY SET, BUT DROUGHT IS RELEASED.
-#-----------------------------------------------------------------------
+          #-----------------------------------------------------------------------
+          #    KJB ADDED 1/27/96.  2 CONDITIONS: NDSET AND TRIGGER (CUMSIG >.98)
+          #    MUST BE MET TO STOP POD ADDITION.  THUS, IF WE ARE THRU THE WINDOW
+          #    AND FULL LOAD IS SET, { NO LATE PODS AND FLOWERS CAN BE ADDED
+          #    PRESENTLY NDSET WAS PLACED TO R7 IN SOYBEAN.  MOVE IT EARLIER
+          #    SO WE CAN PREVENT FUNNY LATE BUMPS (WMS-88, 84RF) OCCURRING AFTER
+          #    FULL LOAD IS APPARENTLY SET, BUT DROUGHT IS RELEASED.
+          #-----------------------------------------------------------------------
           if (TRIGGR == 0 & CUMSIG < 0.98) {
             TRIGGR = 1
           }
-
+          
           if (DAS >= NDSET & TRIGGR == 1) {
             SHELN[NR2TIM + 1] = 0.0
           }
-#-----------------------------------------------------------------------
+          #-----------------------------------------------------------------------
         }         #End of DAS>NR2 Pod and flower growth section
-#-----------------------------------------------------------------------
+        #-----------------------------------------------------------------------
         FLWADD = 2. * PMAX * TEMPOD * (DRPP^1.3) * min(SWADD1,SWADD2,CNSTRES^0.5)
-#    &     min(SWADD1,SWADD2,CNSTRES**0.5) * (1.0 + TURADD)
+        #    &     min(SWADD1,SWADD2,CNSTRES**0.5) * (1.0 + TURADD)
         FLWN(NR1TIM + 1) = min(FLWADD,PGNPOD/(SHMAXG*0.1*AGRSH1), NAVPOD/(SHMAXG*0.1*(FNINSH*CNSTRES^0.5)))
         if (DAS >= NDSET & TRIGGR == 1) {
           FLWN(NR1TIM + 1) = 0.
         }
-#-----------------------------------------------------------------------
-#     Calculate number of pods, including those with and without seeds
-#-----------------------------------------------------------------------
+        #-----------------------------------------------------------------------
+        #     Calculate number of pods, including those with and without seeds
+        #-----------------------------------------------------------------------
         SEEDNO = 0.0
         PODNO = 0.0
-
-#-----------------------------------------------------------------------
+        
+        #-----------------------------------------------------------------------
         if (YRDOY >= YRNR2 & YRNR2 > 0) {
-
+          
+          #TODO CHAMAR FUNCAO
           CALL FreshWt(INTEGR, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
-
+          
           for (NPP in 1:(NR2TIM + 1)) { 
-#-----------------------------------------------------------------------
+            #-----------------------------------------------------------------------
             PAGE = PHTIM[NR2TIM + 1] - PHTIM[NPP]
-#-----------------------------------------------------------------------
+            #-----------------------------------------------------------------------
             if (PAGE > LNGPEG) {
               PODNO = PODNO + SHELN[NPP]
               SEEDNO = SEEDNO + SDNO[NPP]
@@ -757,40 +940,43 @@
             }
           }
         }
-
-#-----------------------------------------------------------------------
+        
+        #-----------------------------------------------------------------------
         if (PODMAT > 0. & PODNO > 0.) {
           PCTMAT = PODMAT*100./PODNO
         }
-
-#-----------------------------------------------------------------------
-      }             #End of section for YRDOY>YRNR1
-#-----------------------------------------------------------------------
-#    Leave PODS with : NGRSD  : New N Used for New Seed Growth
-#                      NGRSH  : New N Used for New Shell Growth
-#                      WSDDTN : New Seed Growth, g tissue/m2 d
-#                      WSHDTN : New Shell Growth, g tissue/m2 d
-#                      New pods, seeds, flowers, mature pods, % mature pods
-
-#***********************************************************************
-#***********************************************************************
-#     OUTPUT
-#***********************************************************************
-      } else if (DYNAMIC == OUTPUT | DYNAMIC == SEASEND) {
         
-#-----------------------------------------------------------------------
+        #-----------------------------------------------------------------------
+      }             #End of section for YRDOY>YRNR1
+      #-----------------------------------------------------------------------
+      #    Leave PODS with : NGRSD  : New N Used for New Seed Growth
+      #                      NGRSH  : New N Used for New Shell Growth
+      #                      WSDDTN : New Seed Growth, g tissue/m2 d
+      #                      WSHDTN : New Shell Growth, g tissue/m2 d
+      #                      New pods, seeds, flowers, mature pods, % mature pods
+      
+      #***********************************************************************
+      #***********************************************************************
+      #     OUTPUT
+      #***********************************************************************
+    } else if (DYNAMIC == OUTPUT | DYNAMIC == SEASEND) {
+      
+      #-----------------------------------------------------------------------
       if (YRDOY >= YRNR2 & YRNR2 > 0) {
+        #TODO CHAMAR FUNCAO
         CALL FreshWt(DYNAMIC, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
       }
-
-#***********************************************************************
-#***********************************************************************
-#     END OF DYNAMIC IF CONSTRUCT
-#***********************************************************************
-      }
-#***********************************************************************
-      RETURN
-      END SUBROUTINE PODS
+      
+      #***********************************************************************
+      #***********************************************************************
+      #     END OF DYNAMIC IF CONSTRUCT
+      #***********************************************************************
+    }
+  #***********************************************************************
+  #RETURN
+  #END SUBROUTINE PODS
+  return()
+}
 #=======================================================================
 
 #=======================================================================
@@ -820,338 +1006,394 @@
 #  Calls:        ERROR, FIND, IGNORE
 #=======================================================================
 
-      SUBROUTINE PODCOMP(
-     &  AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
-     &  POTCAR, POTLIP,                                 #Input/Output
-     &  AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
-     &  DYNAMIC)                                        #Control
+     # SUBROUTINE PODCOMP(
+     #&  AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
+     #&  POTCAR, POTLIP,                                 #Input/Output
+     #&  AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
+     #&  DYNAMIC)                                        #Control
 
-#-----------------------------------------------------------------------
-      USE ModuleDefs     #Definitions of constructed variable types, 
-                         # which contain control information, soil
-                         # parameters, hourly weather data.
-      IMPLICIT NONE
-      SAVE
-
-      CHARACTER*6 ERRKEY
-      PARAMETER (ERRKEY = 'PODCOM')
-
-      CHARACTER*6 SECTION
-      CHARACTER*80 C80
-      CHARACTER*92 FILECC
-
-      INTEGER LUNCRP, ERR, LINC, LNUM, FOUND, ISECT, I
-      INTEGER DYNAMIC
-
-      REAL AGRSD1, AGRSD3, ANINSD, CRSD, CRSD2, CUMSIG, DMSDC 
-      REAL DMSDN, DTCAR, DTLIP, FNINSD, GDMSD, NAVL, NREQ, NRSD 
-      REAL PGAVLR, PLIGSD, PMINSD, PNINSD, POASD, POTCAR, POTLIP
-      REAL PROMAX, PROMIN, RATIOC, RATION, RCH2O, RLIG, RLIP
-      REAL RMIN, ROA, RSD, THETA, TOTAL, XRSD
-
-#***********************************************************************
-#***********************************************************************
-#     Run Initialization - Called once per simulation
-#***********************************************************************
-      if (DYNAMIC == RUNINIT) {
-#***********************************************************************
-#     Read in values from input file, which were previously input
-#       in Subroutine IPCROP.
-#-----------------------------------------------------------------------
-      CALL GETLUN('FILEC', LUNCRP)
-      OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,0)}
-      LNUM = 0
-#-----------------------------------------------------------------------
-#    Find and Read Respiration Section
-#-----------------------------------------------------------------------
-#     Subroutine FIND finds appropriate SECTION in a file by
-#     searching for the specified 6-character string at beginning
-#     of each line.
-#-----------------------------------------------------------------------
-      SECTION = '#*RESP'
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-        for (I in 1:3) {
-          CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-          if (ISECT == 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-        }
-        READ(C80,'(5F6.0)',IOSTAT=ERR) RCH2O, RLIP, RLIG, ROA, RMIN
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      }
-
-#-----------------------------------------------------------------------
-#    Find and Read Plant Composition Section
-#-----------------------------------------------------------------------
-      SECTION = '#*PLAN'
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-        for (I in 1:3) {
-          CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-          if (ISECT == 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-        }
-        READ(C80,'(18X,3F6.0)',IOSTAT=ERR) PROMIN, PROMAX, THETA
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        for (I in 1:3) {
-          CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-          if (ISECT == 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-        }
-        READ(C80,'(24X,F6.0)',IOSTAT=ERR) PLIGSD
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
+PODCOMP <- function(
+  AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
+  POTCAR, POTLIP,                                 #Input/Output
+  AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
+  DYNAMIC) {                                        #Control
+  
+  #-----------------------------------------------------------------------
+  #USE ModuleDefs     #Definitions of constructed variable types, 
+  # which contain control information, soil
+  # parameters, hourly weather data.
+  #IMPLICIT NONE
+  #SAVE
+  
+  #CHARACTER*6 ERRKEY
+  #PARAMETER (ERRKEY = 'PODCOM')
+  
+  #CHARACTER*6 SECTION
+  #CHARACTER*80 C80
+  #CHARACTER*92 FILECC
+  
+  #INTEGER LUNCRP, ERR, LINC, LNUM, FOUND, ISECT, I
+  #INTEGER DYNAMIC
+  #TODO DYNAMIC
+  
+  #______________________________________________________________        
+  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*PLANT COMPOSITION VALUES
+  PLIGSD <- 0.020 
+  PMINSD <- 0.025
+  POASD  <- 0.040
+  PROMAX <- 0.080
+  PROMIN <- 0.030
+  THETA  <- 0.800
+  #!*RESPIRATION PARAMETERS
+  RCH2O  <- 1.242
+  RLIG   <- 2.174
+  RLIP   <- 3.106
+  RMIN   <- 0.05
+  ROA    <- 0.929
+  
+  #TODO verificar se alguns anteriormente 'chamados' (PC) precisam dessa etapa novamente
+  AGRSD1  <- 0 #(PC) from SDCOM.for
+  AGRSD3  <- 0 #(PC) == AGRSD1 no codigo
+  ANINSD  <- 0 #(PC) == FNINSD no codigo
+  CRSD    <- 0 #(PC)
+  CRSD2   <- 0
+  CUMSIG  <- 0 #(PC)
+  DMSDC   <- 0
+  DMSDN   <- 0
+  DTCAR   <- 0
+  DTLIP   <- 0
+  FNINSD  <- 0 #(PC) calculado no DEMAND.for
+  GDMSD   <- 0 #(PC) calculado no DEMAND.for
+  NAVL    <- 0 #(PC) calculado no PODCOMP subroutine dentro do PODS.for
+  NREQ    <- 0 #(PC)
+  NRSD    <- 0 #(PC)
+  PGAVLR  <- 0 #(PC)
+  #PLIGSD  <-   'subi' como parametros de  espécie (.SPE)
+  #PMINSD  <-   'subi' como parametros de  espécie (.SPE)
+  PNINSD  <- 0
+  #POASD   <-   'subi' como parametros de  espécie (.SPE)
+  POTCAR  <- 0 #(PC)
+  POTLIP  <- 0 #(PC)
+  #PROMAX  <-   'subi' como parametros de  espécie (.SPE)
+  #PROMIN  <-   'subi' como parametros de  espécie (.SPE)
+  RATIOC  <- 0
+  RATION  <- 0
+  #RCH2O   <-   'subi' como parametros de  espécie (.SPE)
+  #RLIG    <-   'subi' como parametros de  espécie (.SPE)
+  #RLIP    <-   'subi' como parametros de  espécie (.SPE)
+  #RMIN    <-   'subi' como parametros de  espécie (.SPE)
+  #ROA     <-   'subi' como parametros de  espécie (.SPE)
+  RSD     <- 0
+  #THETA   <-   'subi' como parametros de  espécie (.SPE)
+  TOTAL   <- 0
+  XRSD    <- 0
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     Run Initialization - Called once per simulation
+  #***********************************************************************
+  if (DYNAMIC == RUNINIT) {
+    #***********************************************************************
+    #     Read in values from input file, which were previously input
+    #       in Subroutine IPCROP.
+    #-----------------------------------------------------------------------
+    CALL GETLUN('FILEC', LUNCRP)
+    OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
+    if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,0)}
+    LNUM = 0
+    #-----------------------------------------------------------------------
+    #    Find and Read Respiration Section
+    #-----------------------------------------------------------------------
+    #     Subroutine FIND finds appropriate SECTION in a file by
+    #     searching for the specified 6-character string at beginning
+    #     of each line.
+    #-----------------------------------------------------------------------
+    SECTION = '#*RESP'
+    CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+    if (FOUND == 0) {
+      CALL ERROR(SECTION, 42, FILECC, LNUM)
+    } else {
+      for (I in 1:3) {
         CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(24X,F6.0)',IOSTAT=ERR) POASD
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(24X,F6.0)',IOSTAT=ERR) PMINSD
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+        if (ISECT == 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
       }
-
-      CLOSE (LUNCRP)
-
-#***********************************************************************
-#***********************************************************************
-#     EMERGENCE CALCULATIONS - Performed once per season upon emergence
-#         or transplanting of plants
-#***********************************************************************
-      } else if (DYNAMIC == EMERG) {
-#-----------------------------------------------------------------------
-#     Initialize plant variables at emergence
-#-----------------------------------------------------------------------
-        CUMSIG = 1.0      
-        RATION = 1.0      
-        RATIOC = 1.0      
-
-#***********************************************************************
-#***********************************************************************
-#     DAILY INTEGRATION
-#***********************************************************************
-      } else if (DYNAMIC == INTEGR) {
-#-----------------------------------------------------------------------
-#     Daily initialize, each should change before seed cohorts section
-#-----------------------------------------------------------------------
-      PNINSD = FNINSD
-      ANINSD = FNINSD
-      DTLIP = 0.0
-      DTCAR = 0.0
-      AGRSD3 = AGRSD1
+      READ(C80,'(5F6.0)',IOSTAT=ERR) RCH2O, RLIP, RLIG, ROA, RMIN
+      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+    }
+    
+    #-----------------------------------------------------------------------
+    #    Find and Read Plant Composition Section
+    #-----------------------------------------------------------------------
+    SECTION = '#*PLAN'
+    CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+    if (FOUND == 0) {
+      CALL ERROR(SECTION, 42, FILECC, LNUM)
+    } else {
+      for (I in 1:3) {
+        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+        if (ISECT == 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+      }
+      READ(C80,'(18X,3F6.0)',IOSTAT=ERR) PROMIN, PROMAX, THETA
+      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+      
+      for (I in 1:3) {
+        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+        if (ISECT == 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+      }
+      READ(C80,'(24X,F6.0)',IOSTAT=ERR) PLIGSD
+      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+      
+      CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+      READ(C80,'(24X,F6.0)',IOSTAT=ERR) POASD
+      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+      
+      CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+      READ(C80,'(24X,F6.0)',IOSTAT=ERR) PMINSD
+      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+    }
+    
+    CLOSE (LUNCRP)
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
+    #         or transplanting of plants
+    #***********************************************************************
+  } else if (DYNAMIC == EMERG) {
+    #-----------------------------------------------------------------------
+    #     Initialize plant variables at emergence
+    #-----------------------------------------------------------------------
+    CUMSIG = 1.0      
+    RATION = 1.0      
+    RATIOC = 1.0      
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     DAILY INTEGRATION
+    #***********************************************************************
+  } else if (DYNAMIC == INTEGR) {
+    #-----------------------------------------------------------------------
+    #     Daily initialize, each should change before seed cohorts section
+    #-----------------------------------------------------------------------
+    PNINSD = FNINSD
+    ANINSD = FNINSD
+    DTLIP = 0.0
+    DTCAR = 0.0
+    AGRSD3 = AGRSD1
+    RSD = 1.0
+    CRSD = 1.0
+    NRSD = 1.0
+    XRSD = 1.0
+    
+    if (PGAVLR <= 0.00001) {
+      RSD = 0.0
+    } else if (GDMSD <= 0.0001) {
       RSD = 1.0
-      CRSD = 1.0
-      NRSD = 1.0
-      XRSD = 1.0
-
-      if (PGAVLR <= 0.00001) {
-        RSD = 0.0
-      } else if (GDMSD <= 0.0001) {
-        RSD = 1.0
-      } else
-        CRSD2 = PGAVLR/(GDMSD*AGRSD1)
-        CRSD  = min(CRSD2,1.0)
-        NREQ = FNINSD*(min(PGAVLR/AGRSD1,GDMSD))
-        NRSD = NAVL/NREQ
-#-----------------------------------------------------------------------
-#     Full seed load defined for either of all N or all C
-#     being used for seed growth.
-#-----------------------------------------------------------------------
-        CUMSIG = 0.8 * CUMSIG + 0.2 * CRSD
-#-----------------------------------------------------------------------
-#     5-day moving average.  Does it work ?
-#
-#     Computing the possible seed N conc given the "total" NAVL
-#     relative to PG available or seed growth demand
-#-----------------------------------------------------------------------
-        PNINSD = NAVL/(min(PGAVLR/AGRSD1,GDMSD))
-#-----------------------------------------------------------------------
-#     Set ANINSD equal to FNINSD to allow nitrogen to go to vegetative
-#     parts when carbon is not limiting.  Note:  CRSD and NRSD are above
-#     1 and upto 30 during the time seed setting occurs.  This is why we
-#     can not let ANINSD = PNINSD or let RSD = CRSD during this phase.
-
-#-----------------------------------------------------------------------
-#-----------------------------------------------------------------------
-#     CASE 4: NRSD <= 1.0 - N supply limiting seed growth
-#-----------------------------------------------------------------------
-        if (NRSD <= 1.0) {
-#-----------------------------------------------------------------------
-#   NOTE THAT WHEN NRSD < 1.0, { PNINSD < FNINSD.  IN THIS CASE,
-#   THE N SUPPLY IS INSUFFICIENT TO GROW SEED AT FNINSD.  N IS LIMITED
-#   RELATIVE TO C SUPPLY AND RELATIVE TO SEED DEMAND.  ALLOW SEED N CONC
-#   TO DECLINE AND RECOMPUTE RSD & AGRSD3.  THERE IS NO CASE OF EXCESS C
-#   SUPPLY HERE BECAUSE N STRESS BY THE DEFINED CURVE LIMITS SINGLE SEED
-#   GROWTH RATE.  N STRESS INCREASINGLY LIMITS SEED GROWTH RATE AS PNINSD
-#   DECLINES.  AS A RESULT OF "LIMITING" SEED GROWTH RATE, THE SEED N CONC
-#   IS  HELD UP A BIT MORE BECAUSE LESS C IS USED.  SO ANINSD WILL BE
-#   A BIT HIGHER THAN PNINSD HERE.  AGRSD3 AND RSD SHOULD BE RECOMPUTED.
-#
-#   MORE NOTES:  NOTE THAT NRSD AND PNINSD ALREADY CONSIDER CARBON SUPPLY
-#   (PGAVLR) IN THEIR EQUATIONS.  THUS, IF C SUPPLY IS HIGH, { PNINSD
-#   WILL BE LOW AND IT WILL BE CONSIDERED HERE.  IF C SUPPLY IS LOW, THE
-#   PNINSD WILL BE HIGH (ABOVE FNINSD) AND NRSD > 1, AND IT WILL BE
-#   CONSIDERED IN THE NEXT LOOP.
-#
-#        COMPUTE XRSD WITH RECT HYP EQ, WITH INIT SLOPE = 1/PROMIN
-#        MAX = 1.0 AT FNINSD, AND THE Y IS 0 TO 1.0 AND X IS
-#        INCOMING PNINSD FROM ZERO TO FNINSD.
-#        THIS "RSD" DESCRIBES N LIMIT ON SEED GROWTH RATE
-#        { COMPUTE "NEW" "ANINSD" BASED ON "N-LIMITED' SEED
-#        GROWTH RATE.  USE THAT AS THE ANINSD, { CHECKS FOR
-#        CARBOHYDRATE REQUIRED BASED ON NAVL AND PGAVLR
-#
-#-----------------------------------------------------------------------
-#          SCALAR = (FNINSD/PROMIN + 1.0 - ((FNINSD/PROMIN + 1.0)**2
-#     &          - 4*THETA*FNINSD/PROMIN*1.0)**0.5)/(2*THETA)
-#          XRSD = ((PNINSD/PROMIN + 1.0 - ((PNINSD/PROMIN + 1.0)**2
-#     &          - 4*THETA*PNINSD/PROMIN*1.0)**0.5)/(2*THETA))/SCALAR
-
-          XRSD = ((PNINSD/PROMIN + 1.0 - ((PNINSD/PROMIN + 1.0)^2 - 4*THETA*PNINSD/PROMIN*1.0)^0.5)/(2*THETA)) / ((FNINSD/PROMIN + 1.0 - ((FNINSD/PROMIN + 1.0)^2 - 4*THETA*FNINSD/PROMIN*1.0)^0.5)/(2*THETA))
-
-          if (XRSD*min(PGAVLR/AGRSD1,GDMSD) > 1.E-5) {
-            ANINSD = NAVL/(XRSD*min(PGAVLR/AGRSD1,GDMSD))
+    } else
+      CRSD2 = PGAVLR/(GDMSD*AGRSD1)
+    CRSD  = min(CRSD2,1.0)
+    NREQ = FNINSD*(min(PGAVLR/AGRSD1,GDMSD))
+    NRSD = NAVL/NREQ
+    #-----------------------------------------------------------------------
+    #     Full seed load defined for either of all N or all C
+    #     being used for seed growth.
+    #-----------------------------------------------------------------------
+    CUMSIG = 0.8 * CUMSIG + 0.2 * CRSD
+    #-----------------------------------------------------------------------
+    #     5-day moving average.  Does it work ?
+    #
+    #     Computing the possible seed N conc given the "total" NAVL
+    #     relative to PG available or seed growth demand
+    #-----------------------------------------------------------------------
+    PNINSD = NAVL/(min(PGAVLR/AGRSD1,GDMSD))
+    #-----------------------------------------------------------------------
+    #     Set ANINSD equal to FNINSD to allow nitrogen to go to vegetative
+    #     parts when carbon is not limiting.  Note:  CRSD and NRSD are above
+    #     1 and upto 30 during the time seed setting occurs.  This is why we
+    #     can not let ANINSD = PNINSD or let RSD = CRSD during this phase.
+    
+    #-----------------------------------------------------------------------
+    #-----------------------------------------------------------------------
+    #     CASE 4: NRSD <= 1.0 - N supply limiting seed growth
+    #-----------------------------------------------------------------------
+    if (NRSD <= 1.0) {
+      #-----------------------------------------------------------------------
+      #   NOTE THAT WHEN NRSD < 1.0, { PNINSD < FNINSD.  IN THIS CASE,
+      #   THE N SUPPLY IS INSUFFICIENT TO GROW SEED AT FNINSD.  N IS LIMITED
+      #   RELATIVE TO C SUPPLY AND RELATIVE TO SEED DEMAND.  ALLOW SEED N CONC
+      #   TO DECLINE AND RECOMPUTE RSD & AGRSD3.  THERE IS NO CASE OF EXCESS C
+      #   SUPPLY HERE BECAUSE N STRESS BY THE DEFINED CURVE LIMITS SINGLE SEED
+      #   GROWTH RATE.  N STRESS INCREASINGLY LIMITS SEED GROWTH RATE AS PNINSD
+      #   DECLINES.  AS A RESULT OF "LIMITING" SEED GROWTH RATE, THE SEED N CONC
+      #   IS  HELD UP A BIT MORE BECAUSE LESS C IS USED.  SO ANINSD WILL BE
+      #   A BIT HIGHER THAN PNINSD HERE.  AGRSD3 AND RSD SHOULD BE RECOMPUTED.
+      #
+      #   MORE NOTES:  NOTE THAT NRSD AND PNINSD ALREADY CONSIDER CARBON SUPPLY
+      #   (PGAVLR) IN THEIR EQUATIONS.  THUS, IF C SUPPLY IS HIGH, { PNINSD
+      #   WILL BE LOW AND IT WILL BE CONSIDERED HERE.  IF C SUPPLY IS LOW, THE
+      #   PNINSD WILL BE HIGH (ABOVE FNINSD) AND NRSD > 1, AND IT WILL BE
+      #   CONSIDERED IN THE NEXT LOOP.
+      #
+      #        COMPUTE XRSD WITH RECT HYP EQ, WITH INIT SLOPE = 1/PROMIN
+      #        MAX = 1.0 AT FNINSD, AND THE Y IS 0 TO 1.0 AND X IS
+      #        INCOMING PNINSD FROM ZERO TO FNINSD.
+      #        THIS "RSD" DESCRIBES N LIMIT ON SEED GROWTH RATE
+      #        { COMPUTE "NEW" "ANINSD" BASED ON "N-LIMITED' SEED
+      #        GROWTH RATE.  USE THAT AS THE ANINSD, { CHECKS FOR
+      #        CARBOHYDRATE REQUIRED BASED ON NAVL AND PGAVLR
+      #
+      #-----------------------------------------------------------------------
+      #          SCALAR = (FNINSD/PROMIN + 1.0 - ((FNINSD/PROMIN + 1.0)**2
+      #     &          - 4*THETA*FNINSD/PROMIN*1.0)**0.5)/(2*THETA)
+      #          XRSD = ((PNINSD/PROMIN + 1.0 - ((PNINSD/PROMIN + 1.0)**2
+      #     &          - 4*THETA*PNINSD/PROMIN*1.0)**0.5)/(2*THETA))/SCALAR
+      
+      XRSD = ((PNINSD/PROMIN + 1.0 - ((PNINSD/PROMIN + 1.0)^2 - 4*THETA*PNINSD/PROMIN*1.0)^0.5)/(2*THETA)) / ((FNINSD/PROMIN + 1.0 - ((FNINSD/PROMIN + 1.0)^2 - 4*THETA*FNINSD/PROMIN*1.0)^0.5)/(2*THETA))
+      
+      if (XRSD*min(PGAVLR/AGRSD1,GDMSD) > 1.E-5) {
+        ANINSD = NAVL/(XRSD*min(PGAVLR/AGRSD1,GDMSD))
+      } else {
+        ANINSD = FNINSD
+      }
+      #-----------------------------------------------------------------------
+      #  CHECK BECAUSE N CONC CAN GO ABOVE FNINSD IF PNINSD NEAR FNINSD
+      #-----------------------------------------------------------------------
+      ANINSD = min(ANINSD,FNINSD)
+      
+      #-----------------------------------------------------------------------
+      #-----------------------------------------------------------------------
+      #     CASE 3: CRSD2 <= 1.0 - C supply is limiting seed growth.
+      #-----------------------------------------------------------------------
+    } else {
+      #      HERE NRSD > 1.0 AND PNINSD > FININSD, SO ALLOW INCREASING
+      #      SEED N CONC.  CONSIDER TWO OPTIONS, C DEFICIENT OR THAT C
+      #      SUPPLY IS EXCESS.  A CRSD <= 1.0 IS THE SAME AS CRSD2 <= 1.0
+      #      FIRST OPTION IS IF C SUPPLY IS DEFICIENT, BUT N SUPPLY/DEMAND
+      #      RATIO GREATER THAN 1.
+      if (CRSD2 <= 1.0) {
+        #-----------------------------------------------------------------------
+        #      DOES POSSIBLE N CONCENTRATION EXCEED MAX?
+        #-----------------------------------------------------------------------
+        #           if (PNINSD>PROMAX) {
+        #             ANINSD = PROMAX
+        #           } else {
+        #-----------------------------------------------------------------------
+        #     UNDER THIS CONDITION, CRSD < 1.0 AND NRSD > 1.0 AND PNINSD <PROMAX
+        #     SO HERE WE LET SEED N CONC INCREASE, AND BE EQUAL TO PNINSD.
+        #-----------------------------------------------------------------------
+        #               ANINSD = PNINSD
+        #            }
+        ANINSD = min(PNINSD, PROMAX)
+        
+        #-----------------------------------------------------------------------
+        #      IT IS NOT POSSIBLE FOR PNINSD < FNINSD AND YET NRSD > 1.0
+        #      IT IS NOT POSSIBLE FOR PNINSD > FNINSD AND YET NRSD < 1.0 EITHER
+        #      SO NRSD CAN ONLY BE < 1.0 IF NAVL < NREQ, AND THAT IS ONLY
+        #      IF PNINSD < FNINSD.  THIS WAS COVERED BEFORE
+        
+        #-----------------------------------------------------------------------
+        #-----------------------------------------------------------------------
+        #     CASE 2: Full seed load and neither N or C supply is limiting 
+        #         seed growth
+        #-----------------------------------------------------------------------
+      } else if (CRSD2 > 1.0 & CUMSIG < 0.98) {
+        #-----------------------------------------------------------------------
+        #      UNDER THIS CONDITION, N IS EXCESS RELATIVE TO C SUPPLY OR SD
+        #      DEMAND (NRSD > 1) AND C SUPPLY EXCEEDS SEED DEMAND (CRSD2 > 1).
+        #      ALSO, RESTRICTED THIS ONE TO OCCUR ONLY AFTER A FULL SEED LOAD
+        #      OCCURS.  THE "CUMSIG" MUST BE WORKED TO DROPPED BELOW 1.0 ONLY
+        #      WHEN SEVERAL DAYS OF "FULL SEED" LOAD OCCURS.  RESULTS FROM
+        #      SEVERAL DAYS OF CRSD OR CRSD2 < 1,  WE NEED THIS TO AVOID
+        #      PROBLEMS DURING EARLY PODSET WHEN CRSD IS VERY LARGE AND NRSD
+        #      ALSO LARGE.
+        #-----------------------------------------------------------------------
+        #      0.20 FRACTION OF EXCESS ASSIMILATE IS ALLOWED TO "PUSH" SINGLE
+        #      SEED GROWTH RATE (I.E., VIA INCREASED RSD).  THIS WILL DECREASE
+        #      AMOUNT OF STEM AND LEAF GROWTH DURING SEED FILL.
+        #      LIMIT THE ACTUAL N CONC TO PROMAX OR THE NAVL/(GDMSD*RSD).  THIS
+        #      ONE WILL NEED TO BE CHECKED CAREFULLY TO PREVENT REALLY HIGH OR
+        #      LOW N.  WE INTEND FOR IT TO ALLOW N CONC LOWER THAN FNINSD, BUT
+        #      WILL DO AN XRSD LIMIT ON SEED GROWTH RATE IF ANINSD < FNINSD
+        #
+        #      BECAUSE WE USE ONLY 20% OF EXCESS ASSIMILATE, I DON'T THINK WE
+        #      NEED TO RE-COMPUTE RSD AFTER COMPUTING COMPOSITIONS AND COSTS.
+        #
+        #      GIVE UP ON "BOOSTING" SEED GROWTH RATE, TRY TO INFLUENCE
+        #      COMPOSITION AS A RATIO OF N SUPPLY TO C SUPPLY, NORMALIZED
+        #      TO FNINSD.  RECIPROCAL OF RATION IS RATIOC.  ASSUME SLOPE OF
+        #      ONE-THIRD OF POSSIBLE CHANGE FROM FNINSD TO PROMAX OR PROMIN.
+        #       9/25/95 KJB
+        #-----------------------------------------------------------------------
+        ANINSD = FNINSD
+        if (NAVL > 0.0) {
+          RATION = (NAVL/(PGAVLR/AGRSD1))/FNINSD
+          RATIOC = 1.0 / RATION
+          if (RATION >= 1.0) {
+            ANINSD = min(FNINSD * (1.0 + (RATION - 1.0)/3.), PROMAX)
           } else {
-            ANINSD = FNINSD
-          }
-#-----------------------------------------------------------------------
-#  CHECK BECAUSE N CONC CAN GO ABOVE FNINSD IF PNINSD NEAR FNINSD
-#-----------------------------------------------------------------------
-          ANINSD = min(ANINSD,FNINSD)
-
-#-----------------------------------------------------------------------
-#-----------------------------------------------------------------------
-#     CASE 3: CRSD2 <= 1.0 - C supply is limiting seed growth.
-#-----------------------------------------------------------------------
-        } else {
-#      HERE NRSD > 1.0 AND PNINSD > FININSD, SO ALLOW INCREASING
-#      SEED N CONC.  CONSIDER TWO OPTIONS, C DEFICIENT OR THAT C
-#      SUPPLY IS EXCESS.  A CRSD <= 1.0 IS THE SAME AS CRSD2 <= 1.0
-#      FIRST OPTION IS IF C SUPPLY IS DEFICIENT, BUT N SUPPLY/DEMAND
-#      RATIO GREATER THAN 1.
-          if (CRSD2 <= 1.0) {
-#-----------------------------------------------------------------------
-#      DOES POSSIBLE N CONCENTRATION EXCEED MAX?
-#-----------------------------------------------------------------------
-#           if (PNINSD>PROMAX) {
-#             ANINSD = PROMAX
-#           } else {
-#-----------------------------------------------------------------------
-#     UNDER THIS CONDITION, CRSD < 1.0 AND NRSD > 1.0 AND PNINSD <PROMAX
-#     SO HERE WE LET SEED N CONC INCREASE, AND BE EQUAL TO PNINSD.
-#-----------------------------------------------------------------------
-#               ANINSD = PNINSD
-#            }
-            ANINSD = min(PNINSD, PROMAX)
-
-#-----------------------------------------------------------------------
-#      IT IS NOT POSSIBLE FOR PNINSD < FNINSD AND YET NRSD > 1.0
-#      IT IS NOT POSSIBLE FOR PNINSD > FNINSD AND YET NRSD < 1.0 EITHER
-#      SO NRSD CAN ONLY BE < 1.0 IF NAVL < NREQ, AND THAT IS ONLY
-#      IF PNINSD < FNINSD.  THIS WAS COVERED BEFORE
-
-#-----------------------------------------------------------------------
-#-----------------------------------------------------------------------
-#     CASE 2: Full seed load and neither N or C supply is limiting 
-#         seed growth
-#-----------------------------------------------------------------------
-          } else if (CRSD2 > 1.0 & CUMSIG < 0.98) {
-#-----------------------------------------------------------------------
-#      UNDER THIS CONDITION, N IS EXCESS RELATIVE TO C SUPPLY OR SD
-#      DEMAND (NRSD > 1) AND C SUPPLY EXCEEDS SEED DEMAND (CRSD2 > 1).
-#      ALSO, RESTRICTED THIS ONE TO OCCUR ONLY AFTER A FULL SEED LOAD
-#      OCCURS.  THE "CUMSIG" MUST BE WORKED TO DROPPED BELOW 1.0 ONLY
-#      WHEN SEVERAL DAYS OF "FULL SEED" LOAD OCCURS.  RESULTS FROM
-#      SEVERAL DAYS OF CRSD OR CRSD2 < 1,  WE NEED THIS TO AVOID
-#      PROBLEMS DURING EARLY PODSET WHEN CRSD IS VERY LARGE AND NRSD
-#      ALSO LARGE.
-#-----------------------------------------------------------------------
-#      0.20 FRACTION OF EXCESS ASSIMILATE IS ALLOWED TO "PUSH" SINGLE
-#      SEED GROWTH RATE (I.E., VIA INCREASED RSD).  THIS WILL DECREASE
-#      AMOUNT OF STEM AND LEAF GROWTH DURING SEED FILL.
-#      LIMIT THE ACTUAL N CONC TO PROMAX OR THE NAVL/(GDMSD*RSD).  THIS
-#      ONE WILL NEED TO BE CHECKED CAREFULLY TO PREVENT REALLY HIGH OR
-#      LOW N.  WE INTEND FOR IT TO ALLOW N CONC LOWER THAN FNINSD, BUT
-#      WILL DO AN XRSD LIMIT ON SEED GROWTH RATE IF ANINSD < FNINSD
-#
-#      BECAUSE WE USE ONLY 20% OF EXCESS ASSIMILATE, I DON'T THINK WE
-#      NEED TO RE-COMPUTE RSD AFTER COMPUTING COMPOSITIONS AND COSTS.
-#
-#      GIVE UP ON "BOOSTING" SEED GROWTH RATE, TRY TO INFLUENCE
-#      COMPOSITION AS A RATIO OF N SUPPLY TO C SUPPLY, NORMALIZED
-#      TO FNINSD.  RECIPROCAL OF RATION IS RATIOC.  ASSUME SLOPE OF
-#      ONE-THIRD OF POSSIBLE CHANGE FROM FNINSD TO PROMAX OR PROMIN.
-#       9/25/95 KJB
-#-----------------------------------------------------------------------
-            ANINSD = FNINSD
-            if (NAVL > 0.0) {
-              RATION = (NAVL/(PGAVLR/AGRSD1))/FNINSD
-              RATIOC = 1.0 / RATION
-              if (RATION >= 1.0) {
-                ANINSD = min(FNINSD * (1.0 + (RATION - 1.0)/3.), PROMAX)
-              } else {
-                # VERIFICAR: Por que está com esse comentário no meio da expressão?
-                ANINSD = max(FNINSD * (1.0-(RATIOC-1.0)/3.), PROMIN)
-              }
-            }
-
-#-----------------------------------------------------------------------
-#-----------------------------------------------------------------------
-#     CASE 1: Do not have full seed load and carbon supply is not 
-#         limiiting sedd growth.  Do not change composition.
-#-----------------------------------------------------------------------
-
-          } else if (CRSD2 > 1.0 & CUMSIG >= 0.98) {
-#-----------------------------------------------------------------------
-#  EVEN IF CRSD2 > 1 AND NRSD > 1, WE HAVE NOT REACHED A SEED LOAD
-#  SO HOLD CONCENTRATIONS AND COSTS UNCHANGED.
-#-----------------------------------------------------------------------
-            ANINSD = FNINSD
+            # VERIFICAR: Por que está com esse comentário no meio da expressão?
+            ANINSD = max(FNINSD * (1.0-(RATIOC-1.0)/3.), PROMIN)
           }
         }
-
-#-----------------------------------------------------------------------
-#-----------------------------------------------------------------------
-#  For cases 2, 3 and 4, adjust lipids and carbohydrate concentrations
-#-----------------------------------------------------------------------
-        if (NRSD <= 1.0 | CRSD2 <= 1.0 | CUMSIG < 0.98) {
-#-----------------------------------------------------------------------
-#     ADJUSTING SO LIPID AND CARBOHYDRATE TAKE UP DIFFERENCE
-#     MOST DATA SUGGEST THAT LIPID CHANGES 0.33 PER 1 PERCENT CHANGE
-#     IN PROTEIN.
-#-----------------------------------------------------------------------
-          DTLIP = 0.33*(FNINSD - ANINSD)*6.25
-          DTCAR = (FNINSD - ANINSD)*6.25  - DTLIP
-          POTLIP = POTLIP + DTLIP
-          POTCAR = POTCAR + DTCAR
-#     POTPRO = ANINSD*6.25
-          TOTAL  = POTLIP + ANINSD*6.25 + POTCAR + PMINSD + POASD + PLIGSD
-#             TOTAL not used - chp
-          AGRSD3 = PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + POTLIP*RLIP + POTCAR*RCH2O
-#-----------------------------------------------------------------------
-#     THIS IS CORRECT, ABOVE BASED ON N LIMIT, NEXT ON C LIMIT
-#     CONSIDERING ANY SHIFT IN PROTEIN CONC.
-#-----------------------------------------------------------------------
-          DMSDN = NAVL / ANINSD
-          DMSDC = PGAVLR / AGRSD3
-          RSD = min(min(DMSDN,DMSDC)/GDMSD,1.0)
-          RSD = max(0.0,RSD)
-        }
-#-----------------------------------------------------------------------
-#-----------------------------------------------------------------------
-
+        
+        #-----------------------------------------------------------------------
+        #-----------------------------------------------------------------------
+        #     CASE 1: Do not have full seed load and carbon supply is not 
+        #         limiiting sedd growth.  Do not change composition.
+        #-----------------------------------------------------------------------
+        
+      } else if (CRSD2 > 1.0 & CUMSIG >= 0.98) {
+        #-----------------------------------------------------------------------
+        #  EVEN IF CRSD2 > 1 AND NRSD > 1, WE HAVE NOT REACHED A SEED LOAD
+        #  SO HOLD CONCENTRATIONS AND COSTS UNCHANGED.
+        #-----------------------------------------------------------------------
+        ANINSD = FNINSD
       }
-
+    }
+    
+    #-----------------------------------------------------------------------
+    #-----------------------------------------------------------------------
+    #  For cases 2, 3 and 4, adjust lipids and carbohydrate concentrations
+    #-----------------------------------------------------------------------
+    if (NRSD <= 1.0 | CRSD2 <= 1.0 | CUMSIG < 0.98) {
+      #-----------------------------------------------------------------------
+      #     ADJUSTING SO LIPID AND CARBOHYDRATE TAKE UP DIFFERENCE
+      #     MOST DATA SUGGEST THAT LIPID CHANGES 0.33 PER 1 PERCENT CHANGE
+      #     IN PROTEIN.
+      #-----------------------------------------------------------------------
+      DTLIP = 0.33*(FNINSD - ANINSD)*6.25
+      DTCAR = (FNINSD - ANINSD)*6.25  - DTLIP
+      POTLIP = POTLIP + DTLIP
+      POTCAR = POTCAR + DTCAR
+      #     POTPRO = ANINSD*6.25
+      TOTAL  = POTLIP + ANINSD*6.25 + POTCAR + PMINSD + POASD + PLIGSD
+      #             TOTAL not used - chp
+      AGRSD3 = PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + POTLIP*RLIP + POTCAR*RCH2O
+      #-----------------------------------------------------------------------
+      #     THIS IS CORRECT, ABOVE BASED ON N LIMIT, NEXT ON C LIMIT
+      #     CONSIDERING ANY SHIFT IN PROTEIN CONC.
+      #-----------------------------------------------------------------------
+      DMSDN = NAVL / ANINSD
+      DMSDC = PGAVLR / AGRSD3
+      RSD = min(min(DMSDN,DMSDC)/GDMSD,1.0)
+      RSD = max(0.0,RSD)
+    }
+    #-----------------------------------------------------------------------
+    #-----------------------------------------------------------------------
+    
+  }
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     END OF DYNAMIC IF CONSTRUCT
+  #***********************************************************************
+  #TODO checar um ENDIF aqui
 #***********************************************************************
-#***********************************************************************
-#     END OF DYNAMIC IF CONSTRUCT
-#***********************************************************************
-      }
-#***********************************************************************
-      RETURN
-      END #SUBROUTINE PODCOMP
+#RETURN
+#END #SUBROUTINE PODCOMP
+return()
+}
 #=======================================================================
 
 #***********************************************************************

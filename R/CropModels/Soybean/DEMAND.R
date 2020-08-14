@@ -57,7 +57,6 @@ DEMAND <- function(DYNAMIC, CONTROL,
   #USE ModuleData
   #IMPLICIT NONE
   #SAVE
-  #TODO verificar se vamos utilizar
   #CHARACTER*2 CROP
   #CHARACTER*3 TYPSDT
   #CHARACTER*6   ERRKEY
@@ -65,21 +64,31 @@ DEMAND <- function(DYNAMIC, CONTROL,
   #CHARACTER*30 FILEIO
   #CHARACTER*78 MSG(2)
   #CHARACTER*92 FILECC, FILEGC
+  #TODO verificar se vamos utilizar e DYNAMIC
   #INTEGER DYNAMIC   #, TIMDIF
-  #TODO verificar se vamos utilizar/é output
-  #INTEGER NPP, I, NAGE, DAS
-  #INTEGER NDLEAF, NR1, NR2, NR5, NR7, NVEG0, YREND
+  #I
+  #NPP
+
+  NAGE   <- 0
+  DAS    <- 0 #TODO ver como está sendo usado no ECOSMOS
+  NDLEAF <- 0 # calculado no RSTAGES.for
+  NR1    <- 0 # calculado no RSTAGES.for
+  NR2    <- 0 # calculado no RSTAGES.for
+  NR5    <- 0 # calculado no RSTAGES.for
+  NR7    <- 0 # calculado no RSTAGES.for
+  NVEG0  <- 0 # calculado no RSTAGES.for
+  YREND  <- 0 #TODO checar oq significa
   
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
-  SDLIP <- 0.200 #Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
-  SDPRO <- 0.400 #Fraction protein in seeds (g(protein)/g(seed)) [from VAR# BR0001]
-  XFRT  <- 1.000 #Maximum fraction of daily growth that is partitioned to seed + shell
+  SDLIP <- 0.200 # Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
+  SDPRO <- 0.400 # Fraction protein in seeds (g(protein)/g(seed)) [from VAR# BR0001]
+  XFRT  <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
   
   #______________________________________________________________        
   # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
   # ECO# SB0602
-  LNGSH <- 10.0
+  LNGSH <- 10.0  # Time required for growth of individual shells (photothermal days)
   
   #______________________________________________________________        
   # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -239,7 +248,7 @@ DEMAND <- function(DYNAMIC, CONTROL,
   #NMOBMX  <-  'subi' como parametros de espécie (.SPE) 
   NMOBR   <- 0
   #NRCVR   <-  'subi' como parametros de espécie (.SPE) 
-  NSTRES  <- 0 # N stress factor (verificar de onde vem no ECOSMOS)
+  NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
   #NVSMOB  <-  'subi' como parametros de espécie (.SPE)  
   PAR     <- 0 # PAR em moles[quanta]/m2-d (verificar de onde vem do ECOSMOS)
   PCNL    <- 0 # calculado no GROW.for
@@ -327,7 +336,7 @@ DEMAND <- function(DYNAMIC, CONTROL,
     #  &  XFRUIT, XLEAF, XSLATM, XTRFAC, XVGROW, XXFTEM,    #Output
     #  &  YLEAF, YSLATM, YSTEM, YTRFAC, YVREF, YXFTEM)      #Output
     
-    IPDMND(
+    IPDMND( #TODO verificar se é necessário
       FILECC, FILEGC, FILEIO,                           #Input
       CARMIN, FINREF, FNSDT, FRLFF, FRLFMX,             #Output
       FRSTMF, LIPOPT, LIPTB, LNGSH, NMOBMX,             #Output
