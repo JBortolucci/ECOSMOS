@@ -26,430 +26,407 @@
 #             ERROR, FIND, IGNORE
 #========================================================================
 
-      SUBROUTINE VEGGR (DYNAMIC, 
-     &    AGRLF, AGRRT, AGRSTM, CMINEP, CSAVEV, DTX,      #Input
-     &    DXR57, ECONO, FILECC, FILEGC, FNINL, FNINR,     #Input
-     &    FNINS, KCAN, NAVL, NDMNEW, NDMOLD,              #Input
-     &    NFIXN, NMINEA, NR1, PAR, PCH2O, PG, PGAVL,      #Input
-     &    PStres2, ROWSPC, RVSTGE, STMWT, TGRO,           #Input
-     &    TRNU, TURFAC, VSTAGE, WCRLF, WCRRT, WCRSH,      #Input
-     &    WCRST, WTLF, XLAI, YRDOY, YREMRG,               #Input
-     &    AGRVG, FRLF, FRRT, FRSTM,                       #I/O
-     &    CADLF, CADST, CANHT, CANWH, CMINEA, CRUSLF,     #Output
-     &    CRUSRT, CRUSSH, CRUSST, EXCESS, NADLF, NADRT,   #Output
-     &    NADST, NGRLF, NGRRT, NGRST, NSTRES,             #Output
-     &    TNLEAK, WLDOTN, WRDOTN, WSDOTN)                 #Output
+simDataVars$AGRVG  <-  0 #TODO: VERIFICAR I/O
+simDataVars$FRLF  <-  0  #TODO: VERIFICAR I/O
+simDataVars$FRRT  <-  0  #TODO: VERIFICAR I/O
+simDataVars$FRSTM  <-  0 #TODO: VERIFICAR I/O
+simDataVars$CADLF  <-  0
+simDataVars$CADST  <-  0
+simDataVars$CANHT  <-  0
+simDataVars$CANWH  <-  0
+simDataVars$CMINEA  <-  0
+simDataVars$CRUSLF  <-  0
+simDataVars$CRUSRT  <-  0
+simDataVars$CRUSSH  <-  0
+simDataVars$CRUSST  <-  0
+simDataVars$EXCESS  <-  0
+simDataVars$NADLF  <-  0
+simDataVars$NADRT  <-  0
+simDataVars$NADST  <-  0
+simDataVars$NGRLF  <-  0
+simDataVars$NGRRT  <-  0
+simDataVars$NGRST  <-  0
+simDataVars$NSTRES  <-  0
+simDataVars$TNLEAK  <-  0
+simDataVars$WLDOTN  <-  0
+simDataVars$WRDOTN  <-  0
+simDataVars$WSDOTN  <-  0
 
-#-----------------------------------------------------------------------
-      USE ModuleDefs
-      USE ModuleData
-      IMPLICIT NONE
-      SAVE
+VEGGR <- function(DYNAMIC, EMERG, #TODO verificar qual dos dois 
+                  AGRLF, AGRRT, AGRSTM, CMINEP, CSAVEV, DTX,      #!Input
+                  DXR57, ECONO, FILECC, FILEGC, FNINL, FNINR,     #!Input
+                  FNINS, KCAN, NAVL, NDMNEW, NDMOLD,              #!Input
+                  NFIXN, NMINEA, NR1, PAR, PCH2O, PG, PGAVL,      #!Input
+                  PStres2, ROWSPC, RVSTGE, STMWT, TGRO,           #!Input
+                  TRNU, TURFAC, VSTAGE, WCRLF, WCRRT, WCRSH,      #!Input
+                  WCRST, WTLF, XLAI, YRDOY, YREMRG,               #!Input
+                  AGRVG, FRLF, FRRT, FRSTM,                       #!I/O
+                  CADLF, CADST, CANHT, CANWH, CMINEA, CRUSLF,     #!Output
+                  CRUSRT, CRUSSH, CRUSST, EXCESS, NADLF, NADRT,   #!Output
+                  NADST, NGRLF, NGRRT, NGRST, NSTRES,             #!Output
+                  TNLEAK, WLDOTN, WRDOTN, WSDOTN)      {          #!Output
+  
+  VEGGR <- 0
+  #-----------------------------------------------------------------------
+  
+  #TODO: verificar padrão ECOSMOS -> DYNAMIC
+  #TODO: verificar padrão ECOSMOS -> YRDOY, YREMRG, NR1, DAS
 
-      CHARACTER*6  ERRKEY
-      PARAMETER   (ERRKEY = 'VEGGR')
+  ROWSPC <- 0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
+  
+  #______________________________________________________________        
+  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*PHOTOSYNTHESIS PARAMETERS
+  KCAN   <- 0.67
+  #!*CARBON AND NITROGEN MINING PARAMETERS
+  CMOBMX <- 0.024
+  #!*RESPIRATION PARAMETERS
+  PCH2O  <- 1.13
+  #!*PLANT COMPOSITION VALUES
+  PROLFI <- 0.356 
+  PRORTI <- 0.092
+  PROSTI <- 0.150
+  PROLFG <- 0.285
+  PRORTG <- 0.064
+  PROSTG <- 0.100
+  #!*VEGETATIVE PARTITIONING PARAMETERS
+  ATOP   <- 1.00
+  #!*CARBON AND NITROGEN MINING PARAMETERS
+  CADSTF <- 0.75
+  #*NITROGEN STRESS PARAMETERS
+  NRATIO <- 1.00
 
-      CHARACTER*6  ECONO, SECTION
-      CHARACTER*80 C80
-      CHARACTER*92 FILECC, FILEGC
-
-      INTEGER DYNAMIC
-      INTEGER YRDOY, YREMRG, NR1, DAS
-      INTEGER I, LUNCRP, ERR, LINC, LNUM, ISECT, FOUND
-
-      REAL AGRLF, AGRRT, AGRSTM, CMINEP, CMOBMX
-      REAL DTX, DXR57, FNINL, FNINR, FNINS, KCAN
-      REAL NAVL, NDMNEW, NDMOLD, PAR, PCH2O, PG
-      REAL PROLFI, PRORTI, PROSTI, ROWSPC
-      REAL RVSTGE, STMWT, TURFAC, WCRLF, WCRRT, WCRSH, WCRST
-      REAL WTLF, XLAI
-
-      REAL AGRVG, CADLF, CADST, CANHT, CANWH, CMINEA
-      REAL CRUSLF, CRUSRT, CRUSST, CRUSSH, CUMTUR
-      REAL EXCESS, FRLF, FRRT, FRSTM, NADLF, NADRT, NADST
-      REAL NGRLF, NGRRT, NGRST, NSTRES, PGAVL
-      REAL TNLEAK, VSTAGE, WLDOTN, WRDOTN, WSDOTN
-
-      REAL ATOP, CADSTF, FNINLG, FNINRG, FNINSG
-      REAL PROLFG, PRORTG, PROSTG
-      REAL NRATIO,NGRVEG,NADRAT,NLEFT
-      REAL NGRVGG, NGRLFG,NGRSTG,NGRRTG
-      REAL PROLFT,PROSTT,PRORTT
-      REAL VGRDEM, SUPPN, PGLEFT, LSTR, CSAVEV
-      REAL NLEAK
-      REAL NMINEA, NFIXN, TRNU
-
-      REAL TGRO[TS]
-
-#     P module
-      REAL PStres2
-
-      TYPE (ControlType) CONTROL
+  #TODO: ver conexao com ECOSMOS.. provavel que virá do 'env'
+  TS <- 24
+  TGRO <- rep(0, TS)
+  
+  #TODO checar conexão no ECOSMOS
+  #DAS = CONTROL % DAS
+  
+  #-----------------------------------------------------------------------
+  #    Call CANOPY for input
+  #-----------------------------------------------------------------------
+  CANOPY(RUNINIT,
+         ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
+         RVSTGE, TGRO, TURFAC, VSTAGE, XLAI,             #Input
+         CANHT, CANWH)                                   #Output
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     Seasonal initialization - run once per season
+  #***********************************************************************
+  if (DYNAMIC == SEASINIT) {
+    #-----------------------------------------------------------------------
+    CADLF  = 0.0  
+    CADST  = 0.0  
+    CMINEA = 0.0  
+    CRUSLF = 0.0  
+    CRUSRT = 0.0  
+    CRUSST = 0.0  
+    CUMTUR = 1.0  
+    EXCESS = 1.0  
+    FNINLG = 0.0  
+    FNINRG = 0.0  
+    FNINSG = 0.0  
+    NADLF  = 0.0  
+    NADRT  = 0.0  
+    NADST  = 0.0  
+    NGRLF  = 0.0  
+    NGRRT  = 0.0  
+    NGRST  = 0.0  
+    NSTRES = 1.0  
+    PGLEFT = 0.0
+    SUPPN  = 0.0
+    TNLEAK = 0.0  
+    VGRDEM = 0.0
+    WLDOTN = 0.0  
+    WRDOTN = 0.0  
+    WSDOTN = 0.0  
+    
+    CANOPY(SEASINIT,
+           ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
+           RVSTGE, TGRO, TURFAC, VSTAGE, XLAI,             #Input
+           CANHT, CANWH)                                   #Output
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
+    #         or transplanting of plants
+    #***********************************************************************
+  } else if (DYNAMIC == EMERG) {
+    #-----------------------------------------------------------------------
+    FNINLG = PROLFG * 0.16   
+    FNINRG = PRORTG * 0.16   
+    FNINSG = PROSTG * 0.16   
+    CUMTUR = 1.0             
+    
+    CANOPY(EMERG,
+           ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
+           RVSTGE, TGRO, TURFAC, VSTAGE, XLAI,             #Input
+           CANHT, CANWH)                                   #Output
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     DAILY RATE/INTEGRATION
+    #***********************************************************************
+  } else if (DYNAMIC == INTEGR) {
+    #-----------------------------------------------------------------------
+    #-----------------------------------------------------------------------
+    #     Partitioning is modified by water stress and nitrogen stress
+    #-----------------------------------------------------------------------
+    SUPPN = NFIXN + TRNU + NMINEA
+    #    chp added check for YRDOY = YREMRG, but on the next day, it still
+    #     shows N stress because there is little supply.  Force a lag time?
+    #      if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0.) {
+    if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0. & YRDOY != YREMRG) {
+      NSTRES = min(1.0,SUPPN/(NDMNEW * 0.70))
+    } else {
+      NSTRES = 1.0
+    }
+    #      FRRT  = ATOP * (1.0 - (min(TURFAC,NSTRES)))*(1.0-FRRT) + FRRT
+    FRRT  = ATOP * (1.0 - (min(TURFAC, NSTRES, PStres2))) * (1.0 - FRRT) + FRRT
+    #-----------------------------------------------------------------------
+    #     Cumulative turgor factor that remembers veg drought stress
+    #     to shift partitioning between leaf and stem toward leaf,
+    #     especially after drought is released.
+    #     Sort of 20-day rolling average
+    #-----------------------------------------------------------------------
+    CUMTUR = 0.95*CUMTUR + 0.05*TURFAC
+    if (CUMTUR < 1.E-7) {CUMTUR = 0.0}    #prevent underflow
+    #-----------------------------------------------------------------------
+    #     0.6 IS A SCALAR, COULD BE LESS, was once 0.8 and 0.7
+    #     0.7 appears to be too much for peanut, but not for soybean.
+    #-----------------------------------------------------------------------
+    FRLF  = (1.0 + 0.6*(1.0-CUMTUR))*(1.-FRRT)*FRLF/(FRLF + FRSTM)
+    FRLF = min(FRLF, 0.90*(1. - FRRT))
+    FRSTM = 1.0 - FRRT - FRLF
+    #-----------------------------------------------------------------------
+    #     To prevent negative partitioning to root and limit leaf plus
+    #     stem to a maximum of 98 % of the vegetative partitioning
+    #-----------------------------------------------------------------------
+    FRLF  = min(FRLF,FRLF*0.98/(max(0.001,FRLF+FRSTM)))
+    FRSTM = min(FRSTM,FRSTM*0.98/(max(0.001,FRLF+FRSTM)))
+    FRRT  = 1.0 - FRLF - FRSTM
+    #-----------------------------------------------------------------------
+    #     Calculate weighted PHI + GR = 1/E = AGRVG for veg. growth
+    #-----------------------------------------------------------------------
+    AGRVG = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
+    #-----------------------------------------------------------------------
+    #     Calculate New Growth Rate of Leaves, Stems, and Roots
+    #-----------------------------------------------------------------------
+    VGRDEM = PGAVL / AGRVG
+    WLDOTN = FRLF * VGRDEM
+    WSDOTN = FRSTM * VGRDEM
+    WRDOTN = FRRT * VGRDEM
+    #-----------------------------------------------------------------------
+    #     Compute maximum N required for tissue growth
+    #-----------------------------------------------------------------------
+    NGRLF  = WLDOTN * FNINL
+    NGRST  = WSDOTN * FNINS
+    NGRRT  = WRDOTN * FNINR
+    NGRVEG = NGRLF + NGRST + NGRRT
+    #-----------------------------------------------------------------------
+    #     Compute minimum N required for tissue growth
+    #-----------------------------------------------------------------------
+    NGRLFG = WLDOTN * FNINLG
+    NGRSTG = WSDOTN * FNINSG
+    NGRRTG = WRDOTN * FNINRG
+    NGRVGG = NGRLFG + NGRSTG + NGRRTG
+    
+    NRATIO = 1.0
+    if (NAVL < NGRVGG) {
+      #-----------------------------------------------------------------------
+      #     Compute ratio for reducing leaf growth to prevent N conc of
+      #       new tissue from being below the minimum for growth
+      #-----------------------------------------------------------------------
+      if (NGRVGG > 0.0) {
+        NRATIO = NAVL / NGRVGG
+        WLDOTN = WLDOTN * NRATIO
+        WSDOTN = WSDOTN * NRATIO
+        WRDOTN = WRDOTN * NRATIO
+        NGRLF  = NGRLFG * NRATIO
+        NGRST  = NGRSTG * NRATIO
+        NGRRT  = NGRRTG * NRATIO
+        
+        #-----------------------------------------------------------------------
+        #     Adjust conversion costs to account for composition of tissue at
+        #       lower N concentration
+        #-----------------------------------------------------------------------
+        AGRVG = AGRLF * FRLF * (1.0 - (PROLFG - PROLFI)/(1.0 - PROLFI) )+ AGRRT * FRRT * (1.0 - (PRORTG - PRORTI)/(1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTG - PROSTI)/ (1.0 - PROSTI))
+      }
+    } else {
+      #-----------------------------------------------------------------------
+      #     NAVL IS between lower and maximum N limit in this case,
+      #       leaf expansion occurs as normal, but N concentration is reduced
+      #-----------------------------------------------------------------------
+      if (NGRVEG > 0.0 & NAVL < NGRVEG) {
+        NGRLF = min(NAVL * NGRLF / NGRVEG, NGRLF)
+        NGRST = min(NAVL * NGRST / NGRVEG, NGRST)
+        NGRRT = min(NAVL * NGRRT / NGRVEG, NGRRT)
+      }
+      #-----------------------------------------------------------------------
+      #     Compute protein fraction of new vegetative tissue growth
+      #-----------------------------------------------------------------------
+      if (WLDOTN > 0.0) {
+        PROLFT = NGRLF * (100./16.)/WLDOTN
+      } else {
+        PROLFT = 0.0
+      }
+      if (WSDOTN > 0.0) {
+        PROSTT = NGRST * (100./16.)/WSDOTN
+      } else {
+        PROSTT = 0.0
+      }
+      if (WRDOTN > 0.0) {
+        PRORTT = NGRRT * (100./16.)/WRDOTN
+      } else {
+        PRORTT = 0.0
+      }
+      #-----------------------------------------------------------------------
+      #     Recompute respiration costs if expansion occurs at low N-conc.,
+      #       allow N dilution during growth of leaves, stems, and roots
+      #-----------------------------------------------------------------------
+      AGRVG = AGRLF * FRLF * (1.0 - (PROLFT - PROLFI)/ (1.0-PROLFI)) + AGRRT * FRRT * (1.0 - (PRORTT - PRORTI)/ (1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTT - PROSTI)/(1.0 - PROSTI))
+    }
+    #-----------------------------------------------------------------------
+    #     Compute C and N remaining to add to reserves
+    #-----------------------------------------------------------------------
+    PGLEFT = max(0.0,PGAVL - ((WLDOTN + WSDOTN + WRDOTN) * AGRVG))
+    if (PGLEFT < 1.E-5) {PGLEFT = 0.0}
+    #-----------------------------------------------------------------------
+    #     Scales to 1.0 if PGLEFT is small fraction, and to 0.2 if large
+    #     fraction.  Used 0.04, so minor PGLEFT has no effect.  Used square
+    #     root.  Creates almost no effect if PGLEFT/PG is small, but goes to
+    #     0.2 as PGLEFT/PG  approaches 1.0.  0.04 could be parameterized as
+    #     kickoff point.  Upper cutoff is the value 1.04.  Limit of 1.04 -
+    #     1.00 forces relationship to stop at 0.04, gives 0.2 of normal PG.
+    #     value 1.04 -0.04 also can not be greater than 1.0 or we get
+    #     stimulation of photosynthesis and the sq root works differently.
+    #-----------------------------------------------------------------------
+    if (PG > 0.0001 & PGLEFT > 0.00001) {
+      EXCESS =  (1.20 - min(1.0, max(PGLEFT/PG,0.20)) )^0.5
+    } else {
+      EXCESS = 1.00
+    }
+    
+    CADST = 0.0
+    CADLF = 0.0
+    CMINEA = 0.0
+    CRUSLF = 0.0
+    CRUSST = 0.0
+    CRUSRT = 0.0
+    CRUSSH = 0.0
+    #-----------------------------------------------------------------------
+    #    Calculate Increase in Remobilizable C due to N shortage and
+    #      add to Carbon Pool.  Distribute to Leaves and Stems.
+    #-----------------------------------------------------------------------
+    #    Want half as much accumulation in stem in veg phae
+    #-----------------------------------------------------------------------
+    if (DAS < NR1) {
+      LSTR = (1.-0.6*CADSTF)/(0.6*CADSTF)
+    } else {
+      LSTR = (1.-CADSTF)/CADSTF
+    }
+    if (STMWT+WTLF > 0.0) {
+      LSTR = LSTR * WTLF/(STMWT+WTLF*LSTR)
+    }
+    if (PGLEFT >= CMINEP) {
+      CADLF = (PGLEFT-CMINEP)/PCH2O * LSTR
+      CADST = (PGLEFT-CMINEP) * (1. - LSTR) / PCH2O
+    } else {
       
-      CALL GET(CONTROL)
-      DAS = CONTROL % DAS
-
-#***********************************************************************
-#***********************************************************************
-#     Run Initialization - Called once per simulation
-#***********************************************************************
-      if (DYNAMIC == RUNINIT) {
-#-----------------------------------------------------------------------
-#     Read in values from input file, which were previously input
-#       in Subroutine IPCROP.
-#-----------------------------------------------------------------------
-      CALL GETLUN('FILEC', LUNCRP)
-      OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,0)}
-      LNUM = 0
-#-----------------------------------------------------------------------
-#    Find and Read Plant Composition Section
-#-----------------------------------------------------------------------
-#     Subroutine FIND finds appropriate SECTION in a file by
-#     searching for the specified 6-character string at beginning
-#     of each line.
-#-----------------------------------------------------------------------
-      SECTION = '#*PLAN'
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
+      #-----------------------------------------------------------------------
+      #    Calculate actual C used (CMINEA) , compute how much is taken
+      #    from LF, ST, RT, and SH, which may be less than orig calc of CMINEP
+      #
+      #    8/26/97 KJB  DTX IN PLACE OF 1 TO SLOW IT DOWN A BIT AT ALL TIMES
+      #    AND TO BE SENSITIVE TO TEMPERATURE PRIOR TO R5 STAGE, BUT
+      #    STILL WANT THE SPEED-UP CAUSED BY THE "+ DXR57" FEATURE AFTER R5.
+      #
+      #-----------------------------------------------------------------------
+      if (CMINEP > 0) {
+        CMINEA = CMINEP - PGLEFT
+        CRUSLF = CMINEA / CMINEP * CMOBMX * WCRLF * (DTX + DXR57)
+        CRUSST = CMINEA / CMINEP * CMOBMX * WCRST * (DTX + DXR57)
+        CRUSRT = CMINEA / CMINEP * CMOBMX * WCRRT * (DTX + DXR57)
+        CRUSSH = CMINEA / CMINEP * CMOBMX * WCRSH * (DTX + DXR57)
+      }
+    }
+    CADLF = CADLF + CSAVEV/PCH2O * LSTR
+    CADST = CADST + CSAVEV * (1. - LSTR)/PCH2O
+    
+    #-----------------------------------------------------------------------
+    #    Calculate Increase in Remobilizable N Due to a C shortage,
+    #      add to Nitrogen pool
+    #-----------------------------------------------------------------------
+    NLEFT  = max(0.0,NAVL  -  (NGRLF  + NGRST  + NGRRT))
+    
+    if (NLEFT > 0.0) {
+      if (NLEFT > NDMOLD) {
+        NLEAK  = NLEFT  - NDMOLD
+        TNLEAK = TNLEAK + NLEAK
+        NLEFT  = NLEFT  - NLEAK
       } else {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(2F6.0,6X,2F6.0)',IOSTAT=ERR) PROLFI, PROLFG, PROSTI, PROSTG
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(2F6.0)',IOSTAT=ERR) PRORTI, PRORTG
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+        NLEAK = 0.0
       }
-#-----------------------------------------------------------------------
-#    Find and Read Plant Composition Section
-#-----------------------------------------------------------------------
-      SECTION = '#*CARB'
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(2F6.0)',IOSTAT=ERR) CMOBMX, CADSTF
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      }
-#-----------------------------------------------------------------------
-#    Find and Read Partitioning Section
-#-----------------------------------------------------------------------
-      SECTION = '#*VEGE'
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-          for (I in 1:4) {
-            ISECT = 2
-            DO WHILE (ISECT != 1)  { #TODO: checar essa função no R
-            CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-            }
-          }
-        READ(C80,'(24X,F6.0)',IOSTAT=ERR) ATOP
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      }
-      
-      CLOSE (LUNCRP)
-
-#-----------------------------------------------------------------------
-#    Call CANOPY for input
-#-----------------------------------------------------------------------
-      CALL CANOPY(RUNINIT,
-     &    ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
-     &    RVSTGE, TGRO, TURFAC, VSTAGE, XLAI,             #Input
-     &    CANHT, CANWH)                                   #Output
-
-#***********************************************************************
-#***********************************************************************
-#     Seasonal initialization - run once per season
-#***********************************************************************
-      } else if (DYNAMIC == SEASINIT) {
-#-----------------------------------------------------------------------
-      CADLF  = 0.0  
-      CADST  = 0.0  
-      CMINEA = 0.0  
-      CRUSLF = 0.0  
-      CRUSRT = 0.0  
-      CRUSST = 0.0  
-      CUMTUR = 1.0  
-      EXCESS = 1.0  
-      FNINLG = 0.0  
-      FNINRG = 0.0  
-      FNINSG = 0.0  
-      NADLF  = 0.0  
-      NADRT  = 0.0  
-      NADST  = 0.0  
-      NGRLF  = 0.0  
-      NGRRT  = 0.0  
-      NGRST  = 0.0  
-      NSTRES = 1.0  
-      PGLEFT = 0.0
-      SUPPN  = 0.0
-      TNLEAK = 0.0  
-      VGRDEM = 0.0
-      WLDOTN = 0.0  
-      WRDOTN = 0.0  
-      WSDOTN = 0.0  
-
-      CALL CANOPY(SEASINIT,
-     &    ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
-     &    RVSTGE, TGRO, TURFAC, VSTAGE, XLAI,             #Input
-     &    CANHT, CANWH)                                   #Output
-
-#***********************************************************************
-#***********************************************************************
-#     EMERGENCE CALCULATIONS - Performed once per season upon emergence
-#         or transplanting of plants
-#***********************************************************************
-      } else if (DYNAMIC == EMERG) {
-#-----------------------------------------------------------------------
-      FNINLG = PROLFG * 0.16   
-      FNINRG = PRORTG * 0.16   
-      FNINSG = PROSTG * 0.16   
-      CUMTUR = 1.0             
-
-      CALL CANOPY(EMERG,
-     &    ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
-     &    RVSTGE, TGRO, TURFAC, VSTAGE, XLAI,             #Input
-     &    CANHT, CANWH)                                   #Output
-
-#***********************************************************************
-#***********************************************************************
-#     DAILY RATE/INTEGRATION
-#***********************************************************************
-      } else if (DYNAMIC == INTEGR) {
-#-----------------------------------------------------------------------
-#-----------------------------------------------------------------------
-#     Partitioning is modified by water stress and nitrogen stress
-#-----------------------------------------------------------------------
-      SUPPN = NFIXN + TRNU + NMINEA
-#    chp added check for YRDOY = YREMRG, but on the next day, it still
-#     shows N stress because there is little supply.  Force a lag time?
-#      if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0.) {
-      if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0. & YRDOY != YREMRG) {
-        NSTRES = min(1.0,SUPPN/(NDMNEW * 0.70))
-      } else {
-        NSTRES = 1.0
-      }
-#      FRRT  = ATOP * (1.0 - (min(TURFAC,NSTRES)))*(1.0-FRRT) + FRRT
-      FRRT  = ATOP * (1.0 - (min(TURFAC, NSTRES, PStres2))) * (1.0 - FRRT) + FRRT
-#-----------------------------------------------------------------------
-#     Cumulative turgor factor that remembers veg drought stress
-#     to shift partitioning between leaf and stem toward leaf,
-#     especially after drought is released.
-#     Sort of 20-day rolling average
-#-----------------------------------------------------------------------
-      CUMTUR = 0.95*CUMTUR + 0.05*TURFAC
-      if (CUMTUR < 1.E-7) {CUMTUR = 0.0}    #prevent underflow
-#-----------------------------------------------------------------------
-#     0.6 IS A SCALAR, COULD BE LESS, was once 0.8 and 0.7
-#     0.7 appears to be too much for peanut, but not for soybean.
-#-----------------------------------------------------------------------
-      FRLF  = (1.0 + 0.6*(1.0-CUMTUR))*(1.-FRRT)*FRLF/(FRLF + FRSTM)
-      FRLF = min(FRLF, 0.90*(1. - FRRT))
-      FRSTM = 1.0 - FRRT - FRLF
-#-----------------------------------------------------------------------
-#     To prevent negative partitioning to root and limit leaf plus
-#     stem to a maximum of 98 % of the vegetative partitioning
-#-----------------------------------------------------------------------
-      FRLF  = min(FRLF,FRLF*0.98/(max(0.001,FRLF+FRSTM)))
-      FRSTM = min(FRSTM,FRSTM*0.98/(max(0.001,FRLF+FRSTM)))
-      FRRT  = 1.0 - FRLF - FRSTM
-#-----------------------------------------------------------------------
-#     Calculate weighted PHI + GR = 1/E = AGRVG for veg. growth
-#-----------------------------------------------------------------------
-      AGRVG = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
-#-----------------------------------------------------------------------
-#     Calculate New Growth Rate of Leaves, Stems, and Roots
-#-----------------------------------------------------------------------
-      VGRDEM = PGAVL / AGRVG
-      WLDOTN = FRLF * VGRDEM
-      WSDOTN = FRSTM * VGRDEM
-      WRDOTN = FRRT * VGRDEM
-#-----------------------------------------------------------------------
-#     Compute maximum N required for tissue growth
-#-----------------------------------------------------------------------
-      NGRLF  = WLDOTN * FNINL
-      NGRST  = WSDOTN * FNINS
-      NGRRT  = WRDOTN * FNINR
-      NGRVEG = NGRLF + NGRST + NGRRT
-#-----------------------------------------------------------------------
-#     Compute minimum N required for tissue growth
-#-----------------------------------------------------------------------
-      NGRLFG = WLDOTN * FNINLG
-      NGRSTG = WSDOTN * FNINSG
-      NGRRTG = WRDOTN * FNINRG
-      NGRVGG = NGRLFG + NGRSTG + NGRRTG
-
-      NRATIO = 1.0
-      if (NAVL < NGRVGG) {
-#-----------------------------------------------------------------------
-#     Compute ratio for reducing leaf growth to prevent N conc of
-#       new tissue from being below the minimum for growth
-#-----------------------------------------------------------------------
-         if (NGRVGG > 0.0) {
-            NRATIO = NAVL / NGRVGG
-            WLDOTN = WLDOTN * NRATIO
-            WSDOTN = WSDOTN * NRATIO
-            WRDOTN = WRDOTN * NRATIO
-            NGRLF  = NGRLFG * NRATIO
-            NGRST  = NGRSTG * NRATIO
-            NGRRT  = NGRRTG * NRATIO
-
-#-----------------------------------------------------------------------
-#     Adjust conversion costs to account for composition of tissue at
-#       lower N concentration
-#-----------------------------------------------------------------------
-            AGRVG = AGRLF * FRLF * (1.0 - (PROLFG - PROLFI)/(1.0 - PROLFI) )+ AGRRT * FRRT * (1.0 - (PRORTG - PRORTI)/(1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTG - PROSTI)/ (1.0 - PROSTI))
-         }
-      } else {
-#-----------------------------------------------------------------------
-#     NAVL IS between lower and maximum N limit in this case,
-#       leaf expansion occurs as normal, but N concentration is reduced
-#-----------------------------------------------------------------------
-         if (NGRVEG > 0.0 & NAVL < NGRVEG) {
-            NGRLF = min(NAVL * NGRLF / NGRVEG, NGRLF)
-            NGRST = min(NAVL * NGRST / NGRVEG, NGRST)
-            NGRRT = min(NAVL * NGRRT / NGRVEG, NGRRT)
-         }
-#-----------------------------------------------------------------------
-#     Compute protein fraction of new vegetative tissue growth
-#-----------------------------------------------------------------------
-         if (WLDOTN > 0.0) {
-            PROLFT = NGRLF * (100./16.)/WLDOTN
-         } else {
-            PROLFT = 0.0
-         }
-         if (WSDOTN > 0.0) {
-            PROSTT = NGRST * (100./16.)/WSDOTN
-         } else {
-            PROSTT = 0.0
-         }
-         if (WRDOTN > 0.0) {
-            PRORTT = NGRRT * (100./16.)/WRDOTN
-         } else {
-            PRORTT = 0.0
-         }
-#-----------------------------------------------------------------------
-#     Recompute respiration costs if expansion occurs at low N-conc.,
-#       allow N dilution during growth of leaves, stems, and roots
-#-----------------------------------------------------------------------
-         AGRVG = AGRLF * FRLF * (1.0 - (PROLFT - PROLFI)/ (1.0-PROLFI)) + AGRRT * FRRT * (1.0 - (PRORTT - PRORTI)/ (1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTT - PROSTI)/(1.0 - PROSTI))
-      }
-#-----------------------------------------------------------------------
-#     Compute C and N remaining to add to reserves
-#-----------------------------------------------------------------------
-      PGLEFT = max(0.0,PGAVL - ((WLDOTN + WSDOTN + WRDOTN) * AGRVG))
-      if (PGLEFT < 1.E-5) {PGLEFT = 0.0}
-#-----------------------------------------------------------------------
-#     Scales to 1.0 if PGLEFT is small fraction, and to 0.2 if large
-#     fraction.  Used 0.04, so minor PGLEFT has no effect.  Used square
-#     root.  Creates almost no effect if PGLEFT/PG is small, but goes to
-#     0.2 as PGLEFT/PG  approaches 1.0.  0.04 could be parameterized as
-#     kickoff point.  Upper cutoff is the value 1.04.  Limit of 1.04 -
-#     1.00 forces relationship to stop at 0.04, gives 0.2 of normal PG.
-#     value 1.04 -0.04 also can not be greater than 1.0 or we get
-#     stimulation of photosynthesis and the sq root works differently.
-#-----------------------------------------------------------------------
-      if (PG > 0.0001 & PGLEFT > 0.00001) {
-         EXCESS =  (1.20 - min(1.0, max(PGLEFT/PG,0.20)) )^0.5
-      } else {
-         EXCESS = 1.00
-      }
-
-      CADST = 0.0
-      CADLF = 0.0
-      CMINEA = 0.0
-      CRUSLF = 0.0
-      CRUSST = 0.0
-      CRUSRT = 0.0
-      CRUSSH = 0.0
-#-----------------------------------------------------------------------
-#    Calculate Increase in Remobilizable C due to N shortage and
-#      add to Carbon Pool.  Distribute to Leaves and Stems.
-#-----------------------------------------------------------------------
-#    Want half as much accumulation in stem in veg phae
-#-----------------------------------------------------------------------
-      if (DAS < NR1) {
-         LSTR = (1.-0.6*CADSTF)/(0.6*CADSTF)
-      } else {
-         LSTR = (1.-CADSTF)/CADSTF
-      }
-      if (STMWT+WTLF > 0.0) {
-         LSTR = LSTR * WTLF/(STMWT+WTLF*LSTR)
-      }
-      if (PGLEFT >= CMINEP) {
-        CADLF = (PGLEFT-CMINEP)/PCH2O * LSTR
-        CADST = (PGLEFT-CMINEP) * (1. - LSTR) / PCH2O
-      } else {
-
-#-----------------------------------------------------------------------
-#    Calculate actual C used (CMINEA) , compute how much is taken
-#    from LF, ST, RT, and SH, which may be less than orig calc of CMINEP
-#
-#    8/26/97 KJB  DTX IN PLACE OF 1 TO SLOW IT DOWN A BIT AT ALL TIMES
-#    AND TO BE SENSITIVE TO TEMPERATURE PRIOR TO R5 STAGE, BUT
-#    STILL WANT THE SPEED-UP CAUSED BY THE "+ DXR57" FEATURE AFTER R5.
-#
-#-----------------------------------------------------------------------
-        if (CMINEP > 0) {
-          CMINEA = CMINEP - PGLEFT
-          CRUSLF = CMINEA / CMINEP * CMOBMX * WCRLF * (DTX + DXR57)
-          CRUSST = CMINEA / CMINEP * CMOBMX * WCRST * (DTX + DXR57)
-          CRUSRT = CMINEA / CMINEP * CMOBMX * WCRRT * (DTX + DXR57)
-          CRUSSH = CMINEA / CMINEP * CMOBMX * WCRSH * (DTX + DXR57)
-        }
-      }
-      CADLF = CADLF + CSAVEV/PCH2O * LSTR
-      CADST = CADST + CSAVEV * (1. - LSTR)/PCH2O
-
-#-----------------------------------------------------------------------
-#    Calculate Increase in Remobilizable N Due to a C shortage,
-#      add to Nitrogen pool
-#-----------------------------------------------------------------------
-      NLEFT  = max(0.0,NAVL  -  (NGRLF  + NGRST  + NGRRT))
-      
-      if (NLEFT > 0.0) {
-         if (NLEFT > NDMOLD) {
-            NLEAK  = NLEFT  - NDMOLD
-            TNLEAK = TNLEAK + NLEAK
-            NLEFT  = NLEFT  - NLEAK
-         } else {
-            NLEAK = 0.0
-         }
-         NADRAT = NLEFT / (FRLF*FNINL+FRSTM*FNINS+FRRT*FNINR)
-         NADLF  = NADRAT * FRLF * FNINL
-         NADST  = NADRAT * FRSTM * FNINS
-         NADRT  = NADRAT * FRRT * FNINR
-      } else {
-         NADRAT = 0.0
-         NADST  = 0.0
-         NADLF  = 0.0
-         NADRT  = 0.0
-      }
-
-#-----------------------------------------------------------------------
-#     Subroutine CANOPY calculates height and width of the canopy as a
-#     function of VSTAGE, air temperature, drought stress (TURFAC),
-#     daylenght and radiation (PAR).
-#-----------------------------------------------------------------------
-      CALL CANOPY(INTEGR,
-     &    ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
-     &    RVSTGE, TGRO, TURFAC, VSTAGE, XLAI,             #Input
-     &    CANHT, CANWH)                                   #Output
-
-#***********************************************************************
-#***********************************************************************
-#     END OF DYNAMIC IF CONSTRUCT
-#***********************************************************************
-      }
-#***********************************************************************
-      RETURN
-#-----------------------------------------------------------------------
-      END # SUBROUTINE VEGGR
+      NADRAT = NLEFT / (FRLF*FNINL+FRSTM*FNINS+FRRT*FNINR)
+      NADLF  = NADRAT * FRLF * FNINL
+      NADST  = NADRAT * FRSTM * FNINS
+      NADRT  = NADRAT * FRRT * FNINR
+    } else {
+      NADRAT = 0.0
+      NADST  = 0.0
+      NADLF  = 0.0
+      NADRT  = 0.0
+    }
+    
+    #-----------------------------------------------------------------------
+    #     Subroutine CANOPY calculates height and width of the canopy as a
+    #     function of VSTAGE, air temperature, drought stress (TURFAC),
+    #     daylenght and radiation (PAR).
+    #-----------------------------------------------------------------------
+    CANOPY(INTEGR,
+           ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
+           RVSTGE, TGRO, TURFAC, VSTAGE, XLAI,             #Input
+           CANHT, CANWH)                                   #Output
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     END OF DYNAMIC IF CONSTRUCT
+    #***********************************************************************
+  }
+  #***********************************************************************
+  assign("AGRVG", AGRVG, envir = env)
+  assign("FRLF", FRLF, envir = env)
+  assign("FRRT", FRRT, envir = env)
+  assign("FRSTM", FRSTM, envir = env)
+  assign("CADLF", CADLF, envir = env)
+  assign("CADST", CADST, envir = env)
+  assign("CANHT", CANHT, envir = env)
+  assign("CANWH", CANWH, envir = env)
+  assign("CMINEA", CMINEA, envir = env)
+  assign("CRUSLF", CRUSLF, envir = env)
+  assign("CRUSRT", CRUSRT, envir = env)
+  assign("CRUSSH", CRUSSH, envir = env)
+  assign("CRUSST", CRUSST, envir = env)
+  assign("EXCESS", EXCESS, envir = env)
+  assign("NADLF", NADLF, envir = env)
+  assign("NADRT", NADRT, envir = env)
+  assign("NADST", NADST, envir = env)
+  assign("NGRLF", NGRLF, envir = env)
+  assign("NGRRT", NGRRT, envir = env)
+  assign("NGRST", NGRST, envir = env)
+  assign("NSTRES", NSTRES, envir = env)
+  assign("TNLEAK", TNLEAK, envir = env)
+  assign("WLDOTN", WLDOTN, envir = env)
+  assign("WRDOTN", WRDOTN, envir = env)
+  assign("WSDOTN", WSDOTN, envir = env)
+  
+  return()
+  #RETURN
+  #-----------------------------------------------------------------------
+  #END # SUBROUTINE VEGGR
+}
 #-----------------------------------------------------------------------
 # AGRLF   Mass of CH2O required for new leaf growth (g[CH2O] / g[leaf])
 # AGRRT   Mass of CH2O required for new root growth (g[CH2O] / g[root])

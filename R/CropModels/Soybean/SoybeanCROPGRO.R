@@ -7,7 +7,7 @@ source("R/CropModels/Soybean/CURV.R")
   
     
     environment(PHENOL)              <- env
-  
+    environment(SENES)               <- env
     
 #   SUBROUTINE CROPGRO(CONTROL, ISWITCH, 
 #                      &    EOP, HARVFRAC, NH4, NO3, SOILPROP, SPi_AVAIL,   !Input
@@ -260,6 +260,7 @@ source("R/CropModels/Soybean/CURV.R")
       
       DYNAMIC = 'RATE'
       PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
+      
       DYNAMIC = 'INTEGR'
       PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
       

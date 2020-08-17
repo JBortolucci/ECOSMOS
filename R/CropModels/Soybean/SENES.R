@@ -21,10 +21,15 @@
      #&    RHOL, SLAAD, STMWT, SWFAC, VSTAGE, WTLF, XLAI,  #Input
      #&    SLDOT, SLNDOT, SSDOT, SSNDOT)                   #Output
 
-SENES <- function (DYNAMIC,
+simDataVars$SLDOT  <- 0
+simDataVars$SLNDOT <- 0
+simDataVars$SSDOT  <- 0
+simDataVars$SSNDOT <- 0
+
+SENES <- function (DYNAMIC,DAS,
                    FILECC, CLW, DTX, KCAN, NR7, NRUSLF, PAR,       #Input
-                   RHOL, SLAAD, STMWT, SWFAC, VSTAGE, WTLF, XLAI,  #Input
-                   SLDOT, SLNDOT, SSDOT, SSNDOT){                   #Output
+                   RHOL, SLAAD, STMWT, SWFAC, VSTAGE, WTLF, XLAI  #Input
+                   ){                   #Output
   
   #-----------------------------------------------------------------------
   #USE ModuleDefs
@@ -55,161 +60,21 @@ SENES <- function (DYNAMIC,
   SENPOR <- c(0.0, 0.0, 0.12, 0.12)
   XSENMX <- c(3.0, 5.0, 10.0, 30.0)
   XSTAGE <- c(0.0, 5.0, 14.0, 30.0)
-  
   #!*VEGETATIVE PARTITIONING PARAMETERS
   PORPT  <- 0.58
   #!*PHOTOSYNTHESIS PARAMETERS
   KCAN   <- 0.67
-
-  NR7  <- 0 # calculado no RSTAGES.for
-  NSWAB <- 5 # from (1) INTEGER NSWAB & (2) PARAMETER (NSWAB = 5)
-
-  DTX    <- 0 # calculado no PHENOL.for
-  NRUSLF <- 0 # calculado no MOBIL.for
-  PAR    <- 0 # PAR em moles[quanta]/m2-d (verificar de onde vem do ECOSMOS)
-  RATTP  <- 0 
-  RHOL   <- 0 # calculado no GROW.for
-  SLAAD  <- 0 # calculado no GROW.for
-  STMWT  <- 0 # calculado no GROW.for
-  #VSTAGE <- 0 # funcao no PHENOL.for
-  CLW    <- 0 # calculado no GROW.for
-  WTLF   <- 0 # calculado no GROW.for
-  XLAI   <- 0 # calculado no GROW.for
-  SLDOT  <- 0
-  SLNDOT <- 0
-  SSDOT  <- 0
-  SSNDOT <- 0
-  #ICMP   <-   'subi' como parametros de espécie (.SPE)
-  #KCAN   <-   'subi' como parametros de espécie (.SPE)
-  #PORPT  <-   'subi' como parametros de espécie (.SPE)
-  #SENDAY <-   'subi' como parametros de espécie (.SPE)
-  #SENRT2 <-   'subi' como parametros de espécie (.SPE)
-  #SENRTE <-   'subi' como parametros de espécie (.SPE)
-  #TCMP   <-   'subi' como parametros de espécie (.SPE)
-  LCMP   <- 0
-  LTSEN  <- 0
-  LFSEN  <- 0
-  PORLFT <- 0
-  SWFAC  <- 0 # water stress factor (verificar de onde vem no ECOSMOS)
-  WSLOSS <- 0
-  #TABEX  <- # funcao no UTILS.for
-  #SENMAX(4)   'subi' como parametros de espécie (.SPE)
-  #SENPOR(4)   'subi' como parametros de espécie (.SPE)
-  #XSENMX(4)   'subi' como parametros de espécie (.SPE)
-  #XSTAGE(4)   'subi' como parametros de espécie (.SPE)
-  SWFCAB <- rep(0,NSWAB) #TODO verificar sintaxe
+  # fim dos parametros de especie
+  
+  SWFCAB <- rep(0,NSWAB) #vetor usado internamente
   
   #TYPE (ControlType) CONTROL
   
-  #***********************************************************************
-  #***********************************************************************
-  #     Run Initialization - Called once per simulation
-  #***********************************************************************
-  if (DYNAMIC == RUNINIT) {
-    #-----------------------------------------------------------------------
-    #     Read in values from input file, which were previously input
-    #       in Subroutine IPCROP.
-    #-----------------------------------------------------------------------
-    CALL GETLUN('FILEC', LUNCRP)
-    OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-    if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,0)}
-    LNUM = 0
-    #-----------------------------------------------------------------------
-    #    Find and Read Photosynthesis Section
-    #-----------------------------------------------------------------------
-    #     Subroutine FIND finds appropriate SECTION in a file by
-    #     searching for the specified 6-character string at beginning
-    #     of each line.
-    #-----------------------------------------------------------------------
-    #CHP 7/30/2004 - Get KCAN from main routine.
-    #                May be overriden by value in ECOTYPE file.
-    #      SECTION = '#*PHOT'
-    #      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-    #      if (FOUND == 0) {
-    #        CALL ERROR(SECTION, 42, FILECC, LNUM)
-    #      } else {
-    #          ISECT = 2
-    #          DO WHILE (ISECT != 1)
-    #            CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-    #            if (ISECT == 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-    #          ENDDO
-    #          READ(CHAR,'(12X,F6.0)',IOSTAT=ERR) KCAN
-    #          if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-    #      }
-    #-----------------------------------------------------------------------
-    #    Find and Read Partitioning Section
-    #-----------------------------------------------------------------------
-    SECTION = '#*VEGE'
-    CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-    if (FOUND == 0) {
-      CALL ERROR(SECTION, 42, FILECC, LNUM)
-    } else {
-      for (I in 1:4){
-        
-        ISECT = 2
-        
-        # ALTERADO: DO-WHILE pode ser feito com o repeate {}. Isso vai repetir o código entre parênteses. Tomar cuidado pois repeate
-        #           pode facilmente criar um loop infinito, o que vai travar o programa. A condição de parada deve ser bem definida. Exemplo:
-        #   repeat {
-        #         
-        #      faça algo ...
-        #
-        #      if( condição == true ) break
-        #       
-        #   }
-        # Recomendo nesse caso usar while( condição ) { }
-        
-        while(ISECT != 1) {
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        }
-        
-        # DO WHILE (ISECT != 1) { 
-        #   CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        # }
-      }
-      READ(CHAR,'(6X,F6.0)',IOSTAT=ERR) PORPT
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-    }
-    
-    #-----------------------------------------------------------------------
-    #    Find and Read Senescence Section
-    #    NOTE: First search for Section finds '#*LEAF GROWTH PARAMETERS'
-    #          Second search finds '#*LEAF SENESCENCE FACTORS'
-    #-----------------------------------------------------------------------
-    SECTION = '#*LEAF'
-    CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-    if (FOUND == 0) {
-      CALL ERROR(SECTION, 42, FILECC, LNUM)
-    }
-    
-    CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-    if (FOUND == 0) {
-      CALL ERROR(SECTION, 42, FILECC, LNUM)
-    } else {
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-      READ(CHAR,'(3F6.0)',IOSTAT=ERR) SENRTE, SENRT2, SENDAY
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-      READ(CHAR,'(2F6.0)',IOSTAT=ERR) ICMP, TCMP
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-      READ(CHAR,'(8F6.0)',IOSTAT=ERR)(XSTAGE(II),II=1,4),(XSENMX(II),II=1,4)
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-      READ(CHAR,'(8F6.0)',IOSTAT=ERR) (SENPOR(II),II=1,4),(SENMAX(II),II=1,4)
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-    }
-    
-    CLOSE (LUNCRP)
-    
     #***********************************************************************
     #***********************************************************************
     #     Seasonal initialization - run once per season
     #***********************************************************************
-  } else if (DYNAMIC == SEASINIT) {
+    if (DYNAMIC == SEASINIT) {
     #-----------------------------------------------------------------------
     SSDOT  = 0.0
     SLDOT  = 0.0
@@ -227,12 +92,6 @@ SENES <- function (DYNAMIC,
     #***********************************************************************
   } else if (DYNAMIC == INTEGR) {
     #-----------------------------------------------------------------------
-    #     DAS   = max(0,TIMDIF(YRSIM,YRDOY))
-    #CALL GET(CONTROL)
-    
-    #TODO ver padrão ECOSMOS
-    DAS = CONTROL %% DAS
-    
     #Update value of RATTP.
     
     # ALTERADO: NSWAB, 2, -1 to seq(NSWAV, 2)
@@ -331,6 +190,11 @@ SENES <- function (DYNAMIC,
   #***********************************************************************
   #RETURN
   #END # SUBROUTINE SENES
+  assign("SLDOT",SLDOT , envir = env)
+  assign("SLNDOT",SLNDOT, envir = env)
+  assign("SSDOT",SSDOT , envir = env)
+  assign("SSNDOT",SSNDOT, envir = env)
+  
   return()
 }
 #***********************************************************************

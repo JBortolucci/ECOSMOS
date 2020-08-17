@@ -13,6 +13,12 @@
 #  Calls:      None
 #=======================================================================
 
+simDataVars$AGRSD1  <-  0
+simDataVars$AGRSD2  <-  0
+simDataVars$FNINSD  <-  0
+simDataVars$POTCAR  <-  0
+simDataVars$POTLIP  <-  0
+
 SDCOMP <- function (CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD,   #Input
                     RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA, SDLIP,     #Input
                     SDPRO, SLOSUM, TAVG,                            #Input
@@ -47,32 +53,6 @@ SDCOMP <- function (CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD,   #Input
   RNO3C  <- 2.556
   ROA    <- 0.929
   RPRO   <- 0.360
-
-  #.WTH 
-  TAVG <- 0 #TODO buscar do padrao do Ecosmos                    
-  
-  AGRSD1 <- 0 #output
-  AGRSD2 <- 0 #output
-  FNINSD <- 0 #output
-  POTCAR <- 0 #output
-  POTLIP <- 0 #output      
-  
-  #  SUBROUTINE SDCOMP(
-  #    &  CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD,     !Input
-  #    &  RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA, SDLIP,       !Input
-  #    &  SDPRO, SLOSUM, TAVG,                              !Input
-  #    &  AGRSD1, AGRSD2, FNINSD, POTCAR, POTLIP)           !Output
-  #-----------------------------------------------------------------------
-  #IMPLICIT NONE
-  #SAVE
-  #-----------------------------------------------------------------------
-  
-  #REAL LIPTEM, LIPOPT, LIPTB, GENSUM
-  #REAL POTPRO, CARMIN, SLOSUM, POTLIP, POTCAR
-  #REAL TAVG, SUMTEM, PSUMSD, TOTAL
-  #REAL AGRSD1, AGRSD2
-  #REAL PMINSD, POASD, PLIGSD, SDLIP, SDPRO, FNINSD
-  #REAL RNO3C, RLIG, RMIN, RCH2O, RLIP, ROA
   
   #***********************************************************************
   #***********************************************************************
@@ -123,11 +103,17 @@ SDCOMP <- function (CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD,   #Input
   
   #***********************************************************************
   #RETURN
-  return()
-  #TODO assign ?
   #-----------------------------------------------------------------------
   #END !SUBROUTINE SDCOMP
+  assign("AGRSD1", AGRSD1, envir = env)
+  assign("AGRSD2", AGRSD2, envir = env)
+  assign("FNINSD", FNINSD, envir = env)
+  assign("POTCAR", POTCAR, envir = env)
+  assign("POTLIP", POTLIP, envir = env)
+  
+  return()
 }
+
 #-----------------------------------------------------------------------
 # AGRSD1 CH2O requirement for seed growth, excluding cost for protein 
 #          content (g[CH2O] / g[seed])

@@ -27,18 +27,28 @@
 #                ERROR, FIND, IGNORE
 #=======================================================================
 
-    # SUBROUTINE PODS(DYNAMIC,  
-    #&    AGRSD1, AGRSH1, DLAYR, DRPP, DUL, FILECC,       #Input
-    #&    FILEGC,FILEIO, FNINL, FNINSD, FNINSH, GDMSD,    #Input
-    #&    GRRAT1, ISWWAT, LL, NAVL, NDSET, NLAYR, NRUSSH, #Input
-    #&    NSTRES, PGAVL, PHTHRS, PHTIM, PNTIM, PUNCSD,    #Input
-    #&    PUNCTR, RNITP, SDDES, SDGR, SHELWT, SW, SWFAC,  #Input
-    #&    TDUMX, TGRO, TURADD, XFRT, YRDOY, YRNR1, YRNR2, #Input
-    #&    PStres2, YRPLT,                                 #Input
-    #&    AGRSD3, LAGSD, LNGPEG, NGRSD, NGRSH, PCTMAT,    #Output
-    #&    PODNO, POTCAR, POTLIP, SDNO, SDVAR, SEEDNO,     #Output
-    #&    SHELN, SHVAR, WSDDTN, WSHDTN, WTABRT, WTSD,     #Output
-    #&    WTSHE, WTSHMT, FLWN)                            #Output
+simDataVars$AGRSD3  <-  0
+simDataVars$LAGSD   <-  0
+simDataVars$LNGPEG  <-  0
+simDataVars$NGRSD   <-  0
+simDataVars$NGRSH   <-  0
+simDataVars$PCTMAT  <-  0
+simDataVars$PODNO   <-  0
+simDataVars$POTCAR  <-  0
+simDataVars$POTLIP  <-  0
+simDataVars$SDNO    <-  0
+simDataVars$SDVAR   <-  0
+simDataVars$SEEDNO  <-  0
+simDataVars$SHELN   <-  0
+simDataVars$SHVAR   <-  0
+simDataVars$WSDDTN  <-  0
+simDataVars$WSHDTN  <-  0
+simDataVars$WTABRT  <-  0
+simDataVars$WTSD    <-  0
+simDataVars$WTSHE   <-  0
+simDataVars$WTSHMT  <-  0
+simDataVars$FLWN    <-  0
+  
 
 PODS <- function(EMERG, 
                  AGRSD1, AGRSH1, DLAYR, DRPP, DUL, FILECC,       #!Input
@@ -54,26 +64,7 @@ PODS <- function(EMERG,
                  WTSHE, WTSHMT, FLWN)         {                  #!Output
   
   PODS <- 0
-  
-  #-----------------------------------------------------------------------
-  #USE ModuleDefs
-  #USE ModuleData
-  #IMPLICIT NONE
-  #SAVE
-  
-  #CHARACTER*1   ISWWAT, ISWFWT
-  #CHARACTER*2   CROP
-  #CHARACTER*3   TYPPDT
-  #CHARACTER*6   ERRKEY
-  #PARAMETER (ERRKEY = 'PODS  ')
-  #CHARACTER*6   ECOTYP, ECONO
-  #CHARACTER*6   SECTION
-  #CHARACTER*30 FILEIO
-  #CHARACTER*78 MESSAGE(10)
-  #CHARACTER*80  C80
-  #CHARACTER*92  FILECC, FILEGC
-  #CHARACTER*255 C255
-  
+
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   XFRT    <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
@@ -101,7 +92,7 @@ PODS <- function(EMERG,
   #PHTHRS[11] <-  12.0     # R7-R8  - Time between physiological (R7) and harvest maturity (R8) (days)           
   #PHTHRS[12] <-  12.0     # FL-VS  - Time from first flower to last leaf on main stem (photothermal days)          
   
-  #TODO REMINDER: 5, 7 and 9 are solved in PHENOL.for .:. bring them here!
+  #TODO REMINDER: 5, 7 and 9 are solved in PHENOL.for .:. bring them here?
   #PHTHRS[5] = max(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
   #PHTHRS[7] = PHTHRS[6] + max(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
   #PHTHRS[9] = max(0.,PHTHRS[10] * PM09)
@@ -142,122 +133,14 @@ PODS <- function(EMERG,
   NDSET  <- 0 # calculado no RSTAGES.for
   TRIGGR <- 0
   
-  AGRSD1  <- 0 # from SDCOM.for
-  FNINSD  <- 0 # calculado no DEMAND.for
-  GDMSD   <- 0 # calculado no DEMAND.for
-  NAVL    <- 0 # calculado no PODCOMP subroutine dentro do PODS.for
-  WSDDTN  <- 0
-  WSHDTN  <- 0
-  NGRSD   <- 0
-  NGRSH   <- 0
-  TEMPOD  <- 0
-  PCTMAT  <- 0
-  WTSHM   <- 0
   NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
-  PGAVL   <- 0 # inicializado no CROPGRO.for 
-  #XFRT    <-  'subi' como parametros de cultivar (.CUL) 
-  LAGSD   <- 0 # calculado no DEMAND.for
-  THRESH  <- 0 # calculado no DEMAND.for
-  WTSHMT  <- 0
-  TURADD  <- 0 # calculado no DEMAND.for
-  SDGR    <- 0 # calculado no DEMAND.for
-  #DSWBAR  <-  'subi' como parametros de espécie (.SPE) 
-  SWBAR   <- 0
-  SWADD1  <- 0
-  SWADD2  <- 0
-  SHVAR   <- 0
-  #LNGSH   <-  'subi' como parametros de ecótipo (.ECO)
-  GRRAT1  <- 0 # calculado no DEMAND.for
-  LNGPEG  <- 0
-  AGRSH1  <- 0 # calculado no INCOMP.for *** precisará ser trazido do CROPGRO ***
-  FNINSH  <- 0 # calculado no DEMAND.for
-  NLEFT   <- 0
-  SHLAG   <- 0 # calculado no DEMAND.for
-  #PROSHI  <-  'subi' como parametros de espécie (.SPE) 
-  SHELWT  <- 0 # calculado no GROW.for
-  NRUSSH  <- 0 # calculado no MOBIL.for
-  WTABRT  <- 0
-  TDUMX   <- 0 # calculado no PHENOL.for
   SWFAC   <- 0 # water stress factor (verificar de onde vem no ECOSMOS)
-  #SETMAX  <-  'subi' como parametros de espécie (.SPE) 
-  DRPP    <- 0 # DRPP = FUDAY[6] no PHENOL.for
-  #SDPDVR  <-  'subi' como parametros de cultivar (.CUL) ***SDPDV no .CUL***
-  #RFLWAB  <-  'subi' como parametros de espécie (.SPE)  
-  PMAX    <- 0
-  SDVAR   <- 0
-  #PODUR   <-  'subi' como parametros de cultivar (.CUL)
-  MNESPM  <- 0
-  RNITP   <- 0 # calculado no GROW.for
-  #PROLFF  <-  'subi' como parametros de espécie (.SPE) 
-  FNINL   <- 0 # calculado no DEMAND.for
-  SEEDNO  <- 0
-  PODNO   <- 0
-  #XMPAGE  <-  'subi' como parametros de espécie (.SPE)
-  #WTPSD   <-  'subi' como parametros de cultivar (.CUL)
-  #SFDUR   <-  'subi' como parametros de cultivar (.CUL)
-  #PROSHF  <-  'subi' como parametros de espécie (.SPE)
-  
-  NAVPOD  <- 0
-  ADDSHL  <- 0
-  FLWADD  <- 0
-  PGLEFT  <- 0
-  PODMAT  <- 0
-  AFLW    <- 0
-  FLWRDY  <- 0
-  PODADD  <- 0
-  SHMINE  <- 0
-  ACCAGE  <- 0
-  PGAVLR  <- 0
-  REDPUN  <- 0
-  WTSHMY  <- 0
-  PAGE    <- 0
-  REDSHL  <- 0
-  SDMAX   <- 0
-  RSD     <- 0
-  PGNPOD  <- 0
-  SHMAXG  <- 0
-  SUPDAY  <- 0
-  SDMAXX  <- 0
-  SHRAT   <- 0
-  WTABR   <- 0
-  START   <- 0
-  PNAGE   <- 0
-  FLWFRC  <- 0
-  FLADD   <- 0
-  ACTSW   <- 0
-  POTSW   <- 0
-  DSW     <- 0
-  FLAYR   <- 0
-  CURV    <- 0 # funcao do UTILS.for
-  TABEX   <- 0 # funcao do UTILS.for
-  CUMSIG  <- 0
-  CNSTRES <- 0
-  AGRSD3  <- 0 # == AGRSD1 no codigo
-  ANINSD  <- 0 # == FNINSD no codigo
-  RNITPD  <- 0
-  POTLIP  <- 0
-  POTCAR  <- 0
-  CRSD    <- 0
-  NRSD    <- 0
-  NREQ    <- 0
-  
-  #     Puncture variables, not yet functional
-  #      REAL PUNCSD, PUNCTR, RPRPUN     
-  
-  #TODO verificar se (XX) seria rep(0,XX)
-  #!*SEED AND SHELL GROWTH PARAMETERS
-  #FNPDT(4)   <- 'subi' como parametros de espécie (.SPE) 
-  #XSWBAR(10) <- 'subi' como parametros de espécie (.SPE) 
-  #YSWBAR(10) <- 'subi' como parametros de espécie (.SPE) 
-  #XSWFAC(10) <- 'subi' como parametros de espécie (.SPE) 
-  #YSWFAC(10) <- 'subi' como parametros de espécie (.SPE) 
   
   DLAYR(NL)  <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS
   SW(NL)     <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS
   LL(NL)     <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS
   DUL(NL)    <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS
-  #PHTHRS(20) <- 'subi' como parametros de cultivar (.CUL) + buscar do env
-  #TGRO[TS]
+
   #TODO ler arquivo de output do Fortran
   TGRO   <- rep(1.,24)
   
@@ -273,168 +156,6 @@ PODS <- function(EMERG,
   AVTEM <- rep(0, NCOHORTS)
   FLWN  <- rep(0, NCOHORTS)
   
-  #     P module
-  PStres2 <- 1 # P stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar] 
-  CPSTRES <- 1 # Moving average of Pstres2
-    #TYPE (ControlType) CONTROL
-    
-    #***********************************************************************
-    #***********************************************************************
-    #     Run Initialization - Called once per simulation
-    #***********************************************************************
-    if (DYNAMIC == RUNINIT) {
-      #-----------------------------------------------------------------------
-      #    Find and Read Simulation Control Section from FILEIO
-      #               Previously read in IPIBS
-      #-----------------------------------------------------------------------
-      CALL GETLUN('FILEIO', LUNIO)
-      OPEN (LUNIO, FILE = FILEIO,STATUS = 'OLD',IOSTAT=ERR)
-      if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,0)
-      LNUM = 0
-      #-----------------------------------------------------------------------
-      #    Find and Read Cultivars Section from FILEIO
-      #-----------------------------------------------------------------------
-      SECTION = '*CULTI'
-      CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILEIO, LNUM)
-      } else {
-        READ(LUNIO,'(3X,A2)',IOSTAT=ERR) CROP ; LNUM = LNUM + 1
-        if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-      }
-      
-      #-----------------------------------------------------------------------
-      #    Find and Read Cultivars Section from FILEIO
-      #-----------------------------------------------------------------------
-      SECTION = '*CULTI'
-      CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILEIO, LNUM)
-      } else {
-        #        READ(LUNIO,'(24X,A6,66X,4F6.0)',IOSTAT=ERR)
-        #     &          ECONO, WTPSD, SFDUR, SDPDVR, PODUR ; LNUM = LNUM + 1
-        READ(LUNIO,'(24X,A6,66X,5F6.0)',IOSTAT=ERR)
-        &          ECONO, WTPSD, SFDUR, SDPDVR, PODUR, THRESH
-        LNUM = LNUM + 1
-        if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-      }
-      
-      CLOSE (LUNIO)
-      
-      #-----------------------------------------------------------------------
-      #     Read in values from input file, which were previously input
-      #       in Subroutine IPCROP.
-      #-----------------------------------------------------------------------
-      CALL GETLUN('FILEC', LUNCRP)
-      OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-      if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,0)
-      LNUM = 0
-      #-----------------------------------------------------------------------
-      #    Find and Read Plant Composition Section
-      #-----------------------------------------------------------------------
-      SECTION = '#*PLAN'
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(12X,F6.0)',IOSTAT=ERR) PROLFF
-        if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-        
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(18X,F6.0,6X,F6.0)',IOSTAT=ERR) PROSHI, PROSHF
-        if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-      }
-      #-----------------------------------------------------------------------
-      #    Find and Read Seed and Shell Growth Section
-      #-----------------------------------------------------------------------
-      SECTION = '#*SEED'
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      }
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(F6.0,6X,2F6.0)',IOSTAT=ERR) SETMAX, RFLWAB, XMPAGE
-        if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-        
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(F6.0,6X,F6.0)',IOSTAT=ERR) DSWBAR, SHLAG
-        if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-        
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(4F6.0,3X,A3)',IOSTAT=ERR)(FNPDT(II),II=1,4),TYPPDT
-        if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-        
-        for (I in 1:4) {
-          CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        }
-        READ(C80,'(4F6.0)',IOSTAT=ERR)(XSWFAC(II),II=1,4)
-        if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-        
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(4F6.0)',IOSTAT=ERR)(YSWFAC(II),II=1,4)
-        if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-        
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(5F6.0)',IOSTAT=ERR)(XSWBAR(II),II=1,5)
-        if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-        
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(5F6.0)',IOSTAT=ERR)(YSWBAR(II),II=1,5)
-        if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-      }
-      
-      #----------------------------------------------------------------
-      #        Find and Read Fresh weight option
-      #----------------------------------------------------------------
-      ISWFWT = 'N'        #Default - no fresh weight calculated
-      SECTION = '*FRESH WEIGHT'
-      REWIND(LUNCRP)
-      CALL FIND(LUNCRP, SECTION, LNUM, FOUND)
-      if (FOUND /= 0) {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        if (INDEX(C80(1:10),'Y') > 0) {
-          ISWFWT = 'Y'
-        }
-      }
-      
-      CLOSE (LUNCRP)
-      
-      #-----------------------------------------------------------------------
-      #    Read Ecotype Parameter File
-      #-----------------------------------------------------------------------
-      CALL GETLUN('FILEE', LUNECO)
-      OPEN (LUNECO,FILE = FILEGC,STATUS = 'OLD',IOSTAT=ERR)
-      if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEGC,0)
-      ECOTYP = '      '
-      LNUM = 0
-      DO WHILE (ECOTYP != ECONO) { #TODO: checar essa função no R
-        CALL IGNORE(LUNECO, LNUM, ISECT, C255)
-        if ((ISECT == 1) & (C255(1:1) != ' ') & (C255(1:1) != '*')) {
-          #          READ (C255,'(A6,66X,F6.0,30X,F6.0)',IOSTAT=ERR)
-          #     &        ECOTYP, LNGSH, THRESH
-          READ (C255,'(A6,66X,F6.0)',IOSTAT=ERR) ECOTYP, LNGSH
-          if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEGC,LNUM)
-          if (ECOTYP == ECONO) {
-            EXIT
-          }
-          
-        } else if (ISECT == 0) {
-          if (ECONO == 'DFAULT') CALL ERROR(ERRKEY,35,FILEGC,LNUM)
-          ECONO = 'DFAULT'
-          REWIND(LUNECO)
-          LNUM = 0
-        }
-      }
-      
-      CLOSE (LUNECO)
-      
-      #-----------------------------------------------------------------------
-      
       #TODO CHAMAR FUNCAO
       CALL PODCOMP(
         &  AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
@@ -470,7 +191,7 @@ PODS <- function(EMERG,
       #***********************************************************************
       #     Seasonal initialization - run once per season
       #***********************************************************************
-    } else if (DYNAMIC == SEASINIT) {
+    if (DYNAMIC == SEASINIT) {
       #-----------------------------------------------------------------------
       FNINSH = 0.0   
       NAVPOD = 0.0
@@ -975,6 +696,28 @@ PODS <- function(EMERG,
   #***********************************************************************
   #RETURN
   #END SUBROUTINE PODS
+  assign("AGRSD3", AGRSD3, envir = env)
+  assign("LAGSD", LAGSD, envir = env)
+  assign("LNGPEG", LNGPEG, envir = env)
+  assign("NGRSD", NGRSD, envir = env)
+  assign("NGRSH", NGRSH, envir = env)
+  assign("PCTMAT", PCTMAT, envir = env)
+  assign("PODNO", PODNO, envir = env)
+  assign("POTCAR", POTCAR, envir = env)
+  assign("POTLIP", POTLIP, envir = env)
+  assign("SDNO", SDNO, envir = env)
+  assign("SDVAR", SDVAR, envir = env)
+  assign("SEEDNO", SEEDNO, envir = env)
+  assign("SHELN", SHELN, envir = env)
+  assign("SHVAR", SHVAR, envir = env)
+  assign("WSDDTN", WSDDTN, envir = env)
+  assign("WSHDTN", WSHDTN, envir = env)
+  assign("WTABRT", WTABRT, envir = env)
+  assign("WTSD", WTSD, envir = env)
+  assign("WTSHE", WTSHE, envir = env)
+  assign("WTSHMT", WTSHMT, envir = env)
+  assign("FLWN", FLWN, envir = env)
+  
   return()
 }
 #=======================================================================
@@ -1012,29 +755,18 @@ PODS <- function(EMERG,
      #&  AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
      #&  DYNAMIC)                                        #Control
 
+simDataVars$AGRSD3 <- 0
+simDataVars$ANINSD <- 0
+simDataVars$CUMSIG <- 0 
+simDataVars$RSD    <- 0
+
 PODCOMP <- function(
   AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
   POTCAR, POTLIP,                                 #Input/Output
   AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
   DYNAMIC) {                                        #Control
   
-  #-----------------------------------------------------------------------
-  #USE ModuleDefs     #Definitions of constructed variable types, 
-  # which contain control information, soil
-  # parameters, hourly weather data.
-  #IMPLICIT NONE
-  #SAVE
-  
-  #CHARACTER*6 ERRKEY
-  #PARAMETER (ERRKEY = 'PODCOM')
-  
-  #CHARACTER*6 SECTION
-  #CHARACTER*80 C80
-  #CHARACTER*92 FILECC
-  
-  #INTEGER LUNCRP, ERR, LINC, LNUM, FOUND, ISECT, I
-  #INTEGER DYNAMIC
-  #TODO DYNAMIC
+  PODCOMP <- 0
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -1052,115 +784,13 @@ PODCOMP <- function(
   RMIN   <- 0.05
   ROA    <- 0.929
   
-  #TODO verificar se alguns anteriormente 'chamados' (PC) precisam dessa etapa novamente
-  AGRSD1  <- 0 #(PC) from SDCOM.for
-  AGRSD3  <- 0 #(PC) == AGRSD1 no codigo
-  ANINSD  <- 0 #(PC) == FNINSD no codigo
-  CRSD    <- 0 #(PC)
-  CRSD2   <- 0
-  CUMSIG  <- 0 #(PC)
-  DMSDC   <- 0
-  DMSDN   <- 0
-  DTCAR   <- 0
-  DTLIP   <- 0
-  FNINSD  <- 0 #(PC) calculado no DEMAND.for
-  GDMSD   <- 0 #(PC) calculado no DEMAND.for
-  NAVL    <- 0 #(PC) calculado no PODCOMP subroutine dentro do PODS.for
-  NREQ    <- 0 #(PC)
-  NRSD    <- 0 #(PC)
-  PGAVLR  <- 0 #(PC)
-  #PLIGSD  <-   'subi' como parametros de  espécie (.SPE)
-  #PMINSD  <-   'subi' como parametros de  espécie (.SPE)
-  PNINSD  <- 0
-  #POASD   <-   'subi' como parametros de  espécie (.SPE)
-  POTCAR  <- 0 #(PC)
-  POTLIP  <- 0 #(PC)
-  #PROMAX  <-   'subi' como parametros de  espécie (.SPE)
-  #PROMIN  <-   'subi' como parametros de  espécie (.SPE)
-  RATIOC  <- 0
-  RATION  <- 0
-  #RCH2O   <-   'subi' como parametros de  espécie (.SPE)
-  #RLIG    <-   'subi' como parametros de  espécie (.SPE)
-  #RLIP    <-   'subi' como parametros de  espécie (.SPE)
-  #RMIN    <-   'subi' como parametros de  espécie (.SPE)
-  #ROA     <-   'subi' como parametros de  espécie (.SPE)
-  RSD     <- 0
-  #THETA   <-   'subi' como parametros de  espécie (.SPE)
-  TOTAL   <- 0
-  XRSD    <- 0
   
-  #***********************************************************************
-  #***********************************************************************
-  #     Run Initialization - Called once per simulation
-  #***********************************************************************
-  if (DYNAMIC == RUNINIT) {
-    #***********************************************************************
-    #     Read in values from input file, which were previously input
-    #       in Subroutine IPCROP.
-    #-----------------------------------------------------------------------
-    CALL GETLUN('FILEC', LUNCRP)
-    OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-    if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,0)}
-    LNUM = 0
-    #-----------------------------------------------------------------------
-    #    Find and Read Respiration Section
-    #-----------------------------------------------------------------------
-    #     Subroutine FIND finds appropriate SECTION in a file by
-    #     searching for the specified 6-character string at beginning
-    #     of each line.
-    #-----------------------------------------------------------------------
-    SECTION = '#*RESP'
-    CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-    if (FOUND == 0) {
-      CALL ERROR(SECTION, 42, FILECC, LNUM)
-    } else {
-      for (I in 1:3) {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        if (ISECT == 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-      }
-      READ(C80,'(5F6.0)',IOSTAT=ERR) RCH2O, RLIP, RLIG, ROA, RMIN
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-    }
-    
-    #-----------------------------------------------------------------------
-    #    Find and Read Plant Composition Section
-    #-----------------------------------------------------------------------
-    SECTION = '#*PLAN'
-    CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-    if (FOUND == 0) {
-      CALL ERROR(SECTION, 42, FILECC, LNUM)
-    } else {
-      for (I in 1:3) {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        if (ISECT == 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      }
-      READ(C80,'(18X,3F6.0)',IOSTAT=ERR) PROMIN, PROMAX, THETA
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      
-      for (I in 1:3) {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        if (ISECT == 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      }
-      READ(C80,'(24X,F6.0)',IOSTAT=ERR) PLIGSD
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      
-      CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-      READ(C80,'(24X,F6.0)',IOSTAT=ERR) POASD
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      
-      CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-      READ(C80,'(24X,F6.0)',IOSTAT=ERR) PMINSD
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-    }
-    
-    CLOSE (LUNCRP)
-    
     #***********************************************************************
     #***********************************************************************
     #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
     #         or transplanting of plants
     #***********************************************************************
-  } else if (DYNAMIC == EMERG) {
+  if (DYNAMIC == EMERG) {
     #-----------------------------------------------------------------------
     #     Initialize plant variables at emergence
     #-----------------------------------------------------------------------
@@ -1392,6 +1022,11 @@ PODCOMP <- function(
 #***********************************************************************
 #RETURN
 #END #SUBROUTINE PODCOMP
+  assign("AGRSD3",AGRSD3, envir = env)
+  assign("ANINSD",ANINSD, envir = env)
+  assign("CUMSIG",CUMSIG, envir = env)
+  assign("RSD",   RSD   , envir = env)
+  
 return()
 }
 #=======================================================================

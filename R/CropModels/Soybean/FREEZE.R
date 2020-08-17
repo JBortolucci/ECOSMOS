@@ -14,15 +14,11 @@
 #  Called by  : CROPGRO
 #  Calls      : None
 #========================================================================
-#      SUBROUTINE FREEZE(
-#     &    FREEZ2, IDETO, NOUTDO, NRUSLF, SLDOT,           #Input
-#     &    TMIN, WTLF, YRDOY,  YRPLT,                      #Input
-#     &    MDATE,                                          #Input/Output
-#     &    WLFDOT)                                         #Output
-##-----------------------------------------------------------------------
-#      IMPLICIT NONE
-#      SAVE
-##-----------------------------------------------------------------------
+
+#simDataVars$MDATE  <- 0  #VERIFICAR INPUT/OUTPUT não se encaixa aqui, certo?
+simDataVars$WLFDOT  <-  0
+  
+
 FREEZE <- function(
   FREEZ2, NRUSLF, SLDOT,           #!Input
   TMIN, WTLF, YRDOY,  YRPLT,       #!Input
@@ -41,24 +37,12 @@ FREEZE <- function(
   #!*LEAF SENESCENCE FACTORS
   FREEZ2 <- -5.00
   
-  # acredito que nao serao usados! (variaveis para o OVERVIEW.OUT no DSSAT)
-  #IDETO
-  #NOUTDO
-  
   #TODO descobrir origens dessas variaveis
-  NRUSLF <- 0 # calculado no MOBIL.for
-  SLDOT  <- 0 # calculado no SENES.for
-  WTLF   <- 0 # calculado no GROW.for
-  MDATE  <- #!Input/Output
+  #MDATE  <- #!Input/Output
     
-    #TODO buscar no padrao do Ecosmos
-    TMIN  <- 0   
+  #TODO buscar no padrao do Ecosmos
   YRDOY <- 0 # usado para calcular dap/das == paste0(iyear,jday)
   YRPLT <- 0  # usado para calcular dap/das
-  
-  # outputs
-  WLFDOT <- 0
-  
   
   #-----------------------------------------------------------------------
   #DAP   = max(0,TIMDIF(YRPLT,YRDOY)) #TODO tradução timdif 
@@ -84,6 +68,9 @@ FREEZE <- function(
   #-----------------------------------------------------------------------
   #RETURN
   #END SUBROUTINE FREEZE
+  assign("MDATE", MDATE, envir = env)
+  assign("WLFDOT", WLFDOT, envir = env)
+  
   return()
 }
 

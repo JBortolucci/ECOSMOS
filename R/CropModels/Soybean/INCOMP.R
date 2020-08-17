@@ -15,265 +15,129 @@
 #  Calls  : ERROR, FIND, IGNORE
 #=======================================================================
 
-     # SUBROUTINE INCOMP(DYNAMIC,
-     #&    FILECC, FILEIO, FRLF, FRRT, FRSTM,              !Input
-     #&    AGRLF, AGRNOD, AGRRT, AGRSD1, AGRSD2, AGRSH1,   !Output
-     #&    AGRSH2, AGRSTM, AGRVG, AGRVG2, SDPROR)          !Output
+simDataVars$AGRLF   <-  0
+simDataVars$AGRNOD  <-  0
+simDataVars$AGRRT   <-  0
+simDataVars$AGRSD1  <-  0
+simDataVars$AGRSD2  <-  0
+simDataVars$AGRSH1  <-  0
+simDataVars$AGRSH2  <-  0
+simDataVars$AGRSTM  <-  0
+simDataVars$AGRVG   <-  0
+simDataVars$AGRVG2  <-  0
+simDataVars$SDPROR  <-  0
+
 
 INCOMP <- function(DYNAMIC,
                    FILECC, FILEIO, FRLF, FRRT, FRSTM,              #!Input
                    AGRLF, AGRNOD, AGRRT, AGRSD1, AGRSD2, AGRSH1,   #!Output
                    AGRSH2, AGRSTM, AGRVG, AGRVG2, SDPROR) {          #!Output
-
-INCOMP <- 0
-#-----------------------------------------------------------------------
-      #USE ModuleDefs     !Definitions of constructed variable types, 
-      #                   ! which contain control information, soil
-      #                   ! parameters, hourly weather data.
-      #IMPLICIT NONE
-      #SAVE
-
-      #CHARACTER*6 ERRKEY
-      #PARAMETER (ERRKEY = 'INCOMP')
-      #CHARACTER*6 SECTION
-      #CHARACTER*30 FILEIO
-      #CHARACTER*80 C80
-      #CHARACTER*92 FILECC
-
-      #INTEGER LUNCRP, LUNIO
-#TODO ver DYNAMIC
-      #INTEGER DYNAMIC, ERR, FOUND, ISECT, LINC, LNUM
-
-AGRLF  <-
-AGRNOD <-
-AGRRT  <-
-AGRSD1 <-
-AGRSD2 <-
-AGRSH1 <-
-AGRSH2 <-
-AGRSTM <-
-AGRVG  <-
-AGRVG2 <-
-FRLF   <-
-FRRT   <-
-FRSTM  <-
-PCARLF <-
-PCARNO <-
-PCARRT <-
-PCARSD <-
-PCARSH <-
-PCARST <-
-PLIGLF <-
-PLIGNO <-
-PLIGRT <-
-PLIGSD <-
-PLIGSH <-
-PLIGST <-
-PLIPLF <-
-PLIPNO <-
-PLIPRT <-
-PLIPSH <-
-PLIPST <-
-PMINLF <-
-PMINNO <-
-PMINRT <-
-PMINSD <-
-PMINSH <-
-PMINST <-
-POALF  <-
-POANO  <-
-POART  <-
-POASD  <-
-POASH  <-
-POAST  <-
-PROLFI <-
-PRORTI <-
-PROSHI <-
-PROST  <-
-RCH2O  <-
-RLIG   <-
-RLIP   <-
-RMIN   <-
-RNO3C  <-
-ROA    <-
-SDLIP  <-
-SDPRO  <-
-SDPROR <-
-SDPROS <-
-
-#***********************************************************************
-#***********************************************************************
-#     Run Initialization - Called once per simulation
-#***********************************************************************
-      if (DYNAMIC == RUNINIT) {
-#-----------------------------------------------------------------------
-#     Read INP file
-#-----------------------------------------------------------------------
-      CALL GETLUN('FILEIO', LUNIO)
-      OPEN (LUNIO, FILE = FILEIO,STATUS = 'OLD',IOSTAT=ERR)
-      if (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,0)
-      LNUM = 0
-#-----------------------------------------------------------------------
-#    Find and read 2ND Cultivar Section
-#-----------------------------------------------------------------------
-      SECTION = '*CULTI'
-      CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-
-      SECTION = '*CULTI'
-      CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILEIO, LNUM)
-      } else {
-        READ(LUNIO,'(126X,2F6.0)',IOSTAT=ERR) SDPRO, SDLIP
-        LNUM = LNUM + 1
-        if (ERR .NE. 0) {CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)}
-      }
-
-      CLOSE (LUNIO)
-
-#-----------------------------------------------------------------------
-#     Read in values from species file
-#-----------------------------------------------------------------------
-      CALL GETLUN('FILEC', LUNCRP)
-      OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,0)}
-      LNUM = 0
-#-----------------------------------------------------------------------
-#    Find and Read Respiration Section
-#-----------------------------------------------------------------------
-#     Subroutine FIND finds appropriate SECTION in a file by
-#     searching for the specified 6-character string at beginning
-#     of each line.
-#-----------------------------------------------------------------------
-      SECTION = '!*RESP'
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(F6.0)',IOSTAT=ERR) RNO3C
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(5F6.0)',IOSTAT=ERR) RCH2O, RLIP, RLIG, ROA, RMIN
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      }
-
-      SECTION = '!*PLAN'
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-#        READ(C80,'(F6.0,6X,2F6.0)',IOSTAT=ERR) PROLFI, PROLFF, PROSTI
-        READ(C80,'(F6.0,12X,F6.0)',IOSTAT=ERR) PROLFI, PROSTI
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(F6.0,12X,F6.0)',IOSTAT=ERR) PRORTI, PROSHI
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(F6.0)',IOSTAT=ERR) SDPROS
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(6F6.0)',IOSTAT=ERR)
-     &          PCARLF, PCARST, PCARRT, PCARSH, PCARSD, PCARNO
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(5F6.0)',IOSTAT=ERR)
-     &          PLIPLF, PLIPST, PLIPRT, PLIPSH, PLIPNO
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(6F6.0)',IOSTAT=ERR)
-     &          PLIGLF, PLIGST, PLIGRT, PLIGSH, PLIGSD, PLIGNO
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(6F6.0)',IOSTAT=ERR)
-     &          POALF, POAST, POART, POASH, POASD, POANO
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(6F6.0)',IOSTAT=ERR)
-     &          PMINLF, PMINST, PMINRT, PMINSH, PMINSD, PMINNO
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-      }
-
-      CLOSE (LUNCRP)
-
-#C-----------------------------------------------------------------------
-#C    Read Ecotype Parameter File
-#C-----------------------------------------------------------------------
-#      CALL GETLUN('FILEE', LUNECO)
-#      OPEN (LUNECO,FILE = FILEGC,STATUS = 'OLD',IOSTAT=ERR)
-#      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEGC,0)
-#      ECOTYP = '      '
-#      LNUM = 0
-#      DO WHILE (ECOTYP .NE. ECONO)
-#        CALL IGNORE(LUNECO, LNUM, ISECT, C255)
-#        IF (ISECT .EQ. 1 .AND. C255(1:1) .NE. ' ' .AND.
-#     &          C255(1:1) .NE. '*') THEN
-#          READ (C255,'(A6,108X,2F6.0)',IOSTAT=ERR)
-#     &        ECOTYP, SDPRO, SDLIP
-#          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEGC,LNUM)
-#          IF (ECOTYP .EQ. ECONO) THEN
-#            EXIT
-#          ENDIF
-#
-#        ELSE IF (ISECT .EQ. 0) THEN
-#          IF (ECONO .EQ. 'DFAULT') CALL ERROR(ERRKEY,35,FILEGC,LNUM)
-#          ECONO = 'DFAULT'
-#          REWIND(LUNECO)
-#          LNUM = 0
-#        ENDIF
-#      ENDDO
-#
-#      CLOSE (LUNECO)
-#
-#***********************************************************************
-#***********************************************************************
-#     Seasonal initialization - run once per season
-#***********************************************************************
-     } else if (DYNAMIC == SEASINIT) {
-#-----------------------------------------------------------------------
-#     COMPUTE RESPIRATION COEFFICIENTS BASED ON PLANT COMPOSITION
-#-----------------------------------------------------------------------
-#
-      AGRLF  =  PLIPLF*RLIP + PLIGLF*RLIG + POALF*ROA + PMINLF*RMIN + PCARLF*RCH2O
-      AGRSTM =  PLIPST*RLIP + PLIGST*RLIG + POAST*ROA + PMINST*RMIN + PCARST*RCH2O
-      AGRRT  =  PLIPRT*RLIP + PLIGRT*RLIG + POART*ROA + PMINRT*RMIN + PCARRT*RCH2O
-      AGRNOD =  PLIPNO*RLIP + PLIGNO*RLIG + POANO*ROA + PMINNO*RMIN + PCARNO*RCH2O
-
-#-----------------------------------------------------------------------
-#     AGRVG2, AGRSH2, AGRSD2 include protein component of vegetative 
-#     growth cost
-#-----------------------------------------------------------------------
-      AGRVG  = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
-      AGRVG2 = AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RNO3C
-
-#-----------------------------------------------------------------------
-      AGRSH1 =  PLIPSH*RLIP + PLIGSH*RLIG + POASH*ROA  + PMINSH*RMIN + PCARSH*RCH2O
-      AGRSH2 =  AGRSH1 + PROSHI*RNO3C 
-
-#-----------------------------------------------------------------------
-      SDPROR = (SDPRO - SDPROS) / ( SDLIP + PCARSD )
-      AGRSD1 = PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + (SDLIP*RLIP + PCARSD*RCH2O)*(1. - SDPROR)
-      AGRSD2 = AGRSD1 + SDPRO*RNO3C 
-
-#***********************************************************************
-#***********************************************************************
-     #END OF DYNAMIC IF CONSTRUCT
-#***********************************************************************
-      }
-#-----------------------------------------------------------------------
-      #RETURN
-      #END ! SUBROUTINE INCOMP
-      return()
+  
+  INCOMP <- 0
+  #TODO ver DYNAMIC e datas 
+  #INTEGER DYNAMIC, ERR, FOUND, ISECT, LINC, LNUM
+  #______________________________________________________________        
+  # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+  SDLIP <- 0.200 #Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
+  SDPRO <- 0.400 #Fraction protein in seeds (g(protein)/g(seed)) [from VAR# BR0001]
+  
+  #______________________________________________________________        
+  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*PLANT COMPOSITION VALUES
+  PCARLF   <- 0.405000001
+  PCARNO   <- 0.479999989
+  PCARRT   <- 0.711000025
+  PCARSD   <- 0.314999998
+  PCARSH   <- 0.379999995
+  PCARST   <- 0.663999975
+  PLIGLF   <- 7.00000003E-02
+  PLIGNO   <- 7.00000003E-02
+  PLIGRT   <- 7.00000003E-02
+  PLIGSD   <- 1.99999996E-02
+  PLIGSH   <- 0.280000001
+  PLIGST   <- 7.00000003E-02
+  PLIPLF   <- 2.50000004E-02
+  PLIPNO   <- 5.00000007E-02
+  PLIPRT   <- 1.99999996E-02
+  PLIPSH   <- 1.99999996E-02
+  PLIPST   <- 1.99999996E-02
+  PMINLF   <- 9.39999968E-02
+  PMINNO   <- 5.00000007E-02
+  PMINRT   <- 5.70000000E-02
+  PMINSD   <- 2.50000004E-02
+  PMINSH   <- 2.99999993E-02
+  PMINST   <- 4.60000001E-02
+  POALF    <- 5.00000007E-02
+  POANO    <- 5.00000007E-02
+  POART    <- 5.00000007E-02
+  POASD    <- 3.99999991E-02
+  POASH    <- 3.99999991E-02
+  POAST    <- 5.00000007E-02
+  PROLFI   <- 0.356000006
+  PRORTI   <- 9.20000002E-02
+  PROSHI   <- 0.250000000
+  PROSTI   <- 0.150000006
+  SDPROS   <- 0.400000006
+  #!*RESPIRATION PARAMETERS
+  RCH2O    <- 1.24199998
+  RLIG     <- 2.17400002
+  RLIP     <- 3.10599995
+  RMIN     <- 5.00000007E-02
+  RNO3C    <- 2.55599999
+  ROA      <- 0.929000020
+  
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     Seasonal initialization - run once per season
+  #***********************************************************************
+  if (DYNAMIC == SEASINIT) {
+    #-----------------------------------------------------------------------
+    #     COMPUTE RESPIRATION COEFFICIENTS BASED ON PLANT COMPOSITION
+    #-----------------------------------------------------------------------
+    #
+    AGRLF  =  PLIPLF*RLIP + PLIGLF*RLIG + POALF*ROA + PMINLF*RMIN + PCARLF*RCH2O
+    AGRSTM =  PLIPST*RLIP + PLIGST*RLIG + POAST*ROA + PMINST*RMIN + PCARST*RCH2O
+    AGRRT  =  PLIPRT*RLIP + PLIGRT*RLIG + POART*ROA + PMINRT*RMIN + PCARRT*RCH2O
+    AGRNOD =  PLIPNO*RLIP + PLIGNO*RLIG + POANO*ROA + PMINNO*RMIN + PCARNO*RCH2O
+    
+    #-----------------------------------------------------------------------
+    #     AGRVG2, AGRSH2, AGRSD2 include protein component of vegetative 
+    #     growth cost
+    #-----------------------------------------------------------------------
+    AGRVG  = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
+    AGRVG2 = AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RNO3C
+    
+    #-----------------------------------------------------------------------
+    AGRSH1 =  PLIPSH*RLIP + PLIGSH*RLIG + POASH*ROA  + PMINSH*RMIN + PCARSH*RCH2O
+    AGRSH2 =  AGRSH1 + PROSHI*RNO3C 
+    
+    #-----------------------------------------------------------------------
+    SDPROR = (SDPRO - SDPROS) / ( SDLIP + PCARSD )
+    AGRSD1 = PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + (SDLIP*RLIP + PCARSD*RCH2O)*(1. - SDPROR)
+    AGRSD2 = AGRSD1 + SDPRO*RNO3C 
+    
+    #***********************************************************************
+    #***********************************************************************
+    #END OF DYNAMIC IF CONSTRUCT
+    #***********************************************************************
+  }
+  #-----------------------------------------------------------------------
+  #RETURN
+  #END ! SUBROUTINE INCOMP
+  assign("AGRLF", AGRLF, envir = env)
+  assign("AGRNOD", AGRNOD, envir = env)
+  assign("AGRRT", AGRRT, envir = env)
+  assign("AGRSD1", AGRSD1, envir = env)
+  assign("AGRSD2", AGRSD2, envir = env)
+  assign("AGRSH1", AGRSH1, envir = env)
+  assign("AGRSH2", AGRSH2, envir = env)
+  assign("AGRSTM", AGRSTM, envir = env)
+  assign("AGRVG", AGRVG, envir = env)
+  assign("AGRVG2", AGRVG2, envir = env)
+  assign("SDPROR", SDPROR, envir = env)
+  
+  return()
 }
 #=======================================================================
 

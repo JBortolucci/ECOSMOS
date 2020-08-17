@@ -14,57 +14,61 @@
 #  Calls:        ERROR, FIND, IGNORE
 #=======================================================================
 
-     #  SUBROUTINE PODDET(
-     # &  FILECC, TGRO, WTLF, YRDOY, YRNR2,                 #Input
-     # &  PODWTD, SDNO, SHELN, SWIDOT,                      #Output
-     # &  WSHIDT, WTSD, WTSHE,                              #Output
-     # &  DYNAMIC)                                          #Control
+simDataVars$PODWTD  <-  0
+simDataVars$SDNO    <-  0
+simDataVars$SHELN   <-  0
+simDataVars$SWIDOT  <-  0
+simDataVars$WSHIDT  <-  0
+simDataVars$WTSD    <-  0
+simDataVars$WTSHE   <-  0
+simDataVars$EMERG   <-  0
+  
 
 #TODO REMINDER -> não usado pelo modelo, por enquanto!
 PODDET <- function(
-                   FILECC, TGRO, WTLF, YRDOY, YRNR2,                 #Input
-                   PODWTD, SDNO, SHELN, SWIDOT,                      #Output
-                   WSHIDT, WTSD, WTSHE,                              #Output
-                   DYNAMIC) {                                          #Control
-
+  FILECC, TGRO, WTLF, YRDOY, YRNR2,                 #Input
+  PODWTD, SDNO, SHELN, SWIDOT,                      #Output
+  WSHIDT, WTSD, WTSHE,                              #Output
+  DYNAMIC) {                                          #Control
+  
   PODDET <- 0
-#-----------------------------------------------------------------------
-      #USE ModuleDefs     #Definitions of constructed variable types, 
-                         # which contain control information, soil
-                         # parameters, hourly weather data.
-      #IMPLICIT NONE
-      #SAVE
-      #CHARACTER*6 ERRKEY
-      #PARAMETER (ERRKEY = 'PODDET')
-      #CHARACTER*6 SECTION
-      #CHARACTER*80 C80
-      #CHARACTER*92 FILECC
-      #INTEGER LUNCRP, ERR, LINC, LNUM, FOUND, ISECT, I
+  #-----------------------------------------------------------------------
+  #USE ModuleDefs     #Definitions of constructed variable types, 
+  # which contain control information, soil
+  # parameters, hourly weather data.
+  #IMPLICIT NONE
+  #SAVE
+  #CHARACTER*6 ERRKEY
+  #PARAMETER (ERRKEY = 'PODDET')
+  #CHARACTER*6 SECTION
+  #CHARACTER*80 C80
+  #CHARACTER*92 FILECC
+  #INTEGER LUNCRP, ERR, LINC, LNUM, FOUND, ISECT, I
   
   #TODO checar conexão no ECOSMOS 
   #DYNAMIC
   #YRDOY
   YRNR2 <- 0 #calculado no RSTAGES.for
   # NPP
-
+  
   SWIDOT <- 0
   WSHIDT <- 0
   WTLF   <- 0 # calculado no GROW.for
   XPD    <- 0
   PODWTD <- 0
-
+  
   TPODM  <- 0
   RLMPM  <- 0
   SL10   <- 0
   FT     <- 0
   FTHR   <- 0
   #CURV   <-  curva de temp
-
+  
   SDDAM  <- 0
   SHDAM  <- 0
   SUMSD  <- 0
   SUMSH  <- 0
-
+  
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*POD LOSS PARAMETERS
@@ -78,7 +82,7 @@ PODDET <- function(
   TO1	<- c(28, 26,  26, 0, 0)
   TO2	<- c(35, 30,  34, 0, 0)
   TM	<- c(45, 45,  45, 0, 0)
-
+  
   TDLM <- rep(0,20)
   #TGRO[TS]
   TGRO   <- rep(1.,24)
@@ -94,225 +98,178 @@ PODDET <- function(
   MSHELN <- rep(0, NCOHORTS)
   DTC    <- rep(0, NCOHORTS)
   
-#***********************************************************************
-#***********************************************************************
-#     Run Initialization - Called once per simulation
-#***********************************************************************
-      if (DYNAMIC == RUNINIT) {
-#-----------------------------------------------------------------------
-#     Read in values from input file, which were previously input
-#       in Subroutine IPCROP.
-#-----------------------------------------------------------------------
-      CALL GETLUN('FILEC', LUNCRP)
-      OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,0)}
-      LNUM = 0
-#-----------------------------------------------------------------------
-#    Find and Read Pod Loss Section
-#-----------------------------------------------------------------------
-#     Subroutine FIND finds appropriate SECTION in a file by
-#     searching for the specified 6-character string at beginning
-#     of each line.
-#-----------------------------------------------------------------------
-      SECTION = '#*POD '
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(6X,5F6.0)',IOSTAT=ERR) DWC, PR1DET, PR2DET, XP1DET, XP2DET
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
+  #         or transplanting of plants
+  #***********************************************************************
+  if (DYNAMIC == EMERG) {
+    #-----------------------------------------------------------------------
+    # ALTERADO: Provavelmente esse número é como o fortran referencia até onde o loop vai repetir.
+    for (I in 1:NCOHORTS) {
+      DTC[I]   = 0.0
+      MSHELN[I]= 0.0
+      WPODY[I] = 0.0
+      DAYS[I]  = 0.0
+    }
+    PODWTD = 0.0
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     DAILY RATE/INTEGRATION
+    #***********************************************************************
+  } else if (DYNAMIC == INTEGR) {
+    #-----------------------------------------------------------------------
+    #     Compute thermal time using hourly predicted air temperature
+    #     based on observed max and min temperature.
+    #--------------------------------------------------------------------
+    FT = 0.0
+    for (I in 1:TS) {
+      FTHR = CURV('LIN',TB[3],TO1[3],TO2[3],TM[3],TGRO[I])
+      FT = FT + FTHR/TS
+    }
+    #      24 changed to TS on 5 July 2017 by Bruce Kimball
+    # -------------------------------------------------------------------
+    #  Compute ratio of leaf area per pod cm2/pod
+    #  and leaf mass per pod mass g/g
+    # -------------------------------------------------------------------
+    TPODM = 0.0
+    RLMPM = 1.0
+    
+    # -------------------------------------------------------------------
+    #      Compute 10 day running average of leaf mass and PGAVL
+    # -------------------------------------------------------------------
+    # TODO VERIFICAR: 10,2,-1 deve ser de 10 até 2 no passo -1 (10, 9, 8, 7...)
+    for (I in seq(10, 2)) { #TODO: checar numero e sintate
+      TDLM[I]= TDLM[I-1]
+    }
+    TDLM[1] = WTLF
+    # -------------------------------------------------------------------
+    #     Compute slope of leaf mass curve
+    # -------------------------------------------------------------------
+    SL10 = (TDLM[1] - TDLM[10])/ 10.0
+    
+    #---------------------------------------------------------------------
+    if (YRNR2 >= 0) {
+      #---------------------------------------------------------------------
+      # ALTERADO: Sempre usar parenteses no for
+      for (NPP in 1:(YRDOY - YRNR2))  { 
+        TPODM = TPODM + WTSHE[NPP] + WTSD[NPP]
       }
-
-#-----------------------------------------------------------------------
-#    Find and Read Phenology Section
-#-----------------------------------------------------------------------
-      SECTION = '#*PHEN'
-      CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(4F6.0)',IOSTAT=ERR)TB(1),TO1(1),TO2(1),TM(1)
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(4F6.0)',IOSTAT=ERR)TB(2),TO1(2),TO2(2),TM(2)
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-        READ(C80,'(4F6.0)',IOSTAT=ERR)TB(3),TO1(3),TO2(3),TM(3)
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
+      
+      if (TPODM > 10.0) RLMPM = WTLF / TPODM
+      #-------------------------------------------------------------------
+      #     Main loop that cycles through detachment model
+      #--------------------------------------------------------------------
+      for (NPP in 1:(YRDOY - YRNR2)) { 
+        #--------------------------------------------------------------------
+        #     Determine maximum cohort shell mass and accumulate
+        #     days without carbohydrate on a cohort basis
+        #--------------------------------------------------------------------
+        if (SHELN[NPP] > MSHELN[NPP]) {
+          MSHELN[NPP] = SHELN[NPP]
         }
-
-      CLOSE (LUNCRP)
-
-      WSHIDT = 0.0
-      WTSD   = 0.0
-      WTSHE  = 0.0
-
-#***********************************************************************
-#***********************************************************************
-#     EMERGENCE CALCULATIONS - Performed once per season upon emergence
-#         or transplanting of plants
-#***********************************************************************
-      } else if (DYNAMIC == EMERG) {
-#-----------------------------------------------------------------------
-        # ALTERADO: Provavelmente esse número é como o fortran referencia até onde o loop vai repetir.
-        for (I in 1:NCOHORTS) {
-          DTC[I]   = 0.0
-          MSHELN[I]= 0.0
-          WPODY[I] = 0.0
-          DAYS[I]  = 0.0
-        }
-        PODWTD = 0.0
-
-#***********************************************************************
-#***********************************************************************
-#     DAILY RATE/INTEGRATION
-#***********************************************************************
-      } else if (DYNAMIC == INTEGR) {
-#-----------------------------------------------------------------------
-#     Compute thermal time using hourly predicted air temperature
-#     based on observed max and min temperature.
-#--------------------------------------------------------------------
-      FT = 0.0
-      for (I in 1:TS) {
-         FTHR = CURV('LIN',TB[3],TO1[3],TO2[3],TM[3],TGRO[I])
-         FT = FT + FTHR/TS
-      }
-#      24 changed to TS on 5 July 2017 by Bruce Kimball
-# -------------------------------------------------------------------
-#  Compute ratio of leaf area per pod cm2/pod
-#  and leaf mass per pod mass g/g
-# -------------------------------------------------------------------
-      TPODM = 0.0
-      RLMPM = 1.0
-
-# -------------------------------------------------------------------
-#      Compute 10 day running average of leaf mass and PGAVL
-# -------------------------------------------------------------------
-      # TODO VERIFICAR: 10,2,-1 deve ser de 10 até 2 no passo -1 (10, 9, 8, 7...)
-      for (I in seq(10, 2)) { #TODO: checar numero e sintate
-        TDLM[I]= TDLM[I-1]
-      }
-      TDLM[1] = WTLF
-# -------------------------------------------------------------------
-#     Compute slope of leaf mass curve
-# -------------------------------------------------------------------
-      SL10 = (TDLM[1] - TDLM[10])/ 10.0
-
-#---------------------------------------------------------------------
-      if (YRNR2 >= 0) {
-#---------------------------------------------------------------------
-        # ALTERADO: Sempre usar parenteses no for
-        for (NPP in 1:(YRDOY - YRNR2))  { 
-          TPODM = TPODM + WTSHE[NPP] + WTSD[NPP]
-        }
-
-        if (TPODM > 10.0) RLMPM = WTLF / TPODM
-#-------------------------------------------------------------------
-#     Main loop that cycles through detachment model
-#--------------------------------------------------------------------
-        for (NPP in 1:(YRDOY - YRNR2)) { 
-#--------------------------------------------------------------------
-#     Determine maximum cohort shell mass and accumulate
-#     days without carbohydrate on a cohort basis
-#--------------------------------------------------------------------
-          if (SHELN[NPP] > MSHELN[NPP]) {
-            MSHELN[NPP] = SHELN[NPP]
+        if (WTSD[NPP] + WTSHE[NPP] >= 0.01) {
+          if (WTSD[NPP] + WTSHE[NPP] <= WPODY[NPP] &  WTSD[NPP] > 0.0) {
+            DAYS[NPP] = DAYS[NPP] + 1.
           }
-          if (WTSD[NPP] + WTSHE[NPP] >= 0.01) {
-            if (WTSD[NPP] + WTSHE[NPP] <= WPODY[NPP] &  WTSD[NPP] > 0.0) {
-              DAYS[NPP] = DAYS[NPP] + 1.
-            }
-
-            if (WTSD[NPP] + WTSHE[NPP] > WPODY[NPP]) {
-              DAYS[NPP] = 0
-            }
-
-#-----------------------------------------------------------------------
-#     Accumulate pod detachment thermal time counter (DTC) based on
-#     ratio of LFM/PDM and 10 day average slope of the leaf mass curve
-#-----------------------------------------------------------------------
-#           if (RLMPM > PR1DET | SL10 > PR2DET) GOTO 700
-            if (RLMPM <= PR1DET & SL10 <= PR2DET) {
-              if ((SL10 <= PR2DET) | DAYS[NPP] > DWC | WTLF <= 10.) {
-                DTC[NPP] = DTC[NPP] + FT
-              }
-            } else {
-#           Accumulate DTC based on days without carbon before RLMPM < PR1DET
-#           and SL10 < PR2DET
-              if (DAYS[NPP] > DWC | WTLF <= 10.) {
-                DTC[NPP] = DTC[NPP] + FT
-              }
-            }
-#-----------------------------------------------------------------------
+          
+          if (WTSD[NPP] + WTSHE[NPP] > WPODY[NPP]) {
+            DAYS[NPP] = 0
           }
+          
+          #-----------------------------------------------------------------------
+          #     Accumulate pod detachment thermal time counter (DTC) based on
+          #     ratio of LFM/PDM and 10 day average slope of the leaf mass curve
+          #-----------------------------------------------------------------------
+          #           if (RLMPM > PR1DET | SL10 > PR2DET) GOTO 700
+          if (RLMPM <= PR1DET & SL10 <= PR2DET) {
+            if ((SL10 <= PR2DET) | DAYS[NPP] > DWC | WTLF <= 10.) {
+              DTC[NPP] = DTC[NPP] + FT
+            }
+          } else {
+            #           Accumulate DTC based on days without carbon before RLMPM < PR1DET
+            #           and SL10 < PR2DET
+            if (DAYS[NPP] > DWC | WTLF <= 10.) {
+              DTC[NPP] = DTC[NPP] + FT
+            }
+          }
+          #-----------------------------------------------------------------------
+        }
+      }
+      #--------------------------------------------------------------------
+      #     Compute detachment for each cohort
+      #--------------------------------------------------------------------
+      for (NPP in 1:(YRDOY - YRNR2)) { 
+        #       curve based on Drew control, disease and Lowman tag pod cohort study
+        if (DTC[NPP] > 0) {
+          
+          # ALTERADO: EXP por exp
+          XPD = MSHELN[NPP] * (1.0 - XP1DET * exp(XP2DET*DTC[NPP])/100)
+          XPD = max(0.0,XPD)
+          if (SHELN[NPP] > XPD) {
+            if (SHELN[NPP] >= 0.01 & DTC[NPP] <= 34.) {
+              PDET[NPP] = SHELN[NPP] - XPD
+              PDET[NPP] = max(0.0,PDET[NPP])
+              PODWTD = PODWTD + (WTSHE[NPP] + WTSD[NPP])*PDET[NPP] / SHELN[NPP]
+              
+              SDDAM =  WTSD[NPP] * PDET[NPP] / SHELN[NPP]
+              if (SDDAM > WTSD[NPP]) {
+                SWIDOT = SWIDOT + WTSD[NPP]
+              } else {
+                SWIDOT = SWIDOT + SDDAM
+              }
+              
+              SHDAM = WTSHE[NPP] * PDET[NPP] / SHELN[NPP]
+              if (SHDAM > WTSHE[NPP]) {
+                WSHIDT = WSHIDT + WTSHE[NPP]
+              } else {
+                WSHIDT = WSHIDT + SHDAM
+              }
+              
+              WTSD[NPP]  = WTSD[NPP] * (1. - PDET[NPP] / SHELN[NPP])
+              SDNO[NPP]  = SDNO[NPP] * (1. - PDET[NPP] / SHELN[NPP])
+              WTSHE[NPP] = WTSHE[NPP]* (1. - PDET[NPP] / SHELN[NPP])
+              SHELN[NPP] = SHELN[NPP]* (1. - PDET[NPP] / SHELN[NPP])
+              
+              WTSHE[NPP] = max(0.0,WTSHE[NPP])
+              SHELN[NPP] = max(0.0,SHELN[NPP])
+              WTSD[NPP]  = max(0.0,WTSD[NPP])
+              SDNO[NPP]  = max(0.0,SDNO[NPP])
+            }
+          }
+        }
+        WPODY[NPP] = WTSD[NPP] + WTSHE[NPP]
+      }
+      
+      SUMSD = 0.0
+      SUMSH = 0.0
+      for (NPP in 1:(YRDOY - YRNR2))  { 
+        SUMSD = SUMSD + WTSD[NPP]
+        SUMSH = SUMSH + WTSHE[NPP]
+      }
+    }
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     END OF DYNAMIC IF CONSTRUCT
+    #***********************************************************************
+  }
+  #***********************************************************************
+  #RETURN
+  #END # SUBROUTINE PODDET
+  assign("PODWTD", PODWTD, envir = env)
+  assign("SDNO", SDNO, envir = env)
+  assign("SHELN", SHELN, envir = env)
+  assign("SWIDOT", SWIDOT, envir = env)
+  assign("WSHIDT", WSHIDT, envir = env)
+  assign("WTSD", WTSD, envir = env)
+  assign("WTSHE", WTSHE, envir = env)
+  assign("EMERG", EMERG, envir = env)
+  
+  return()
 }
-#--------------------------------------------------------------------
-#     Compute detachment for each cohort
-#--------------------------------------------------------------------
-        for (NPP in 1:(YRDOY - YRNR2)) { 
-#       curve based on Drew control, disease and Lowman tag pod cohort study
-          if (DTC[NPP] > 0) {
-            
-            # ALTERADO: EXP por exp
-            XPD = MSHELN[NPP] * (1.0 - XP1DET * exp(XP2DET*DTC[NPP])/100)
-            XPD = max(0.0,XPD)
-            if (SHELN[NPP] > XPD) {
-              if (SHELN[NPP] >= 0.01 & DTC[NPP] <= 34.) {
-                PDET[NPP] = SHELN[NPP] - XPD
-                PDET[NPP] = max(0.0,PDET[NPP])
-                PODWTD = PODWTD + (WTSHE[NPP] + WTSD[NPP])*PDET[NPP] / SHELN[NPP]
-
-                SDDAM =  WTSD[NPP] * PDET[NPP] / SHELN[NPP]
-                if (SDDAM > WTSD[NPP]) {
-                  SWIDOT = SWIDOT + WTSD[NPP]
-                } else {
-                  SWIDOT = SWIDOT + SDDAM
-                }
-
-                SHDAM = WTSHE[NPP] * PDET[NPP] / SHELN[NPP]
-                if (SHDAM > WTSHE[NPP]) {
-                  WSHIDT = WSHIDT + WTSHE[NPP]
-                } else {
-                  WSHIDT = WSHIDT + SHDAM
-                }
-
-                WTSD[NPP]  = WTSD[NPP] * (1. - PDET[NPP] / SHELN[NPP])
-                SDNO[NPP]  = SDNO[NPP] * (1. - PDET[NPP] / SHELN[NPP])
-                WTSHE[NPP] = WTSHE[NPP]* (1. - PDET[NPP] / SHELN[NPP])
-                SHELN[NPP] = SHELN[NPP]* (1. - PDET[NPP] / SHELN[NPP])
-
-                WTSHE[NPP] = max(0.0,WTSHE[NPP])
-                SHELN[NPP] = max(0.0,SHELN[NPP])
-                WTSD[NPP]  = max(0.0,WTSD[NPP])
-                SDNO[NPP]  = max(0.0,SDNO[NPP])
-              }
-            }
-          }
-          WPODY[NPP] = WTSD[NPP] + WTSHE[NPP]
-       }
-
-        SUMSD = 0.0
-        SUMSH = 0.0
-        for (NPP in 1:(YRDOY - YRNR2))  { 
-          SUMSD = SUMSD + WTSD[NPP]
-          SUMSH = SUMSH + WTSHE[NPP]
-        }
-      }
-
-#***********************************************************************
-#***********************************************************************
-#     END OF DYNAMIC IF CONSTRUCT
-#***********************************************************************
-      }
-#***********************************************************************
-      #RETURN
-      #END # SUBROUTINE PODDET
-return()
-      }
 #=======================================================================
 
 #***********************************************************************

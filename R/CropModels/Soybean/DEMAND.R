@@ -18,21 +18,37 @@
 #  Calls:      SDCOMP, IPDMND
 #=======================================================================
 
-#SUBROUTINE DEMAND(DYNAMIC, CONTROL,
-#                  &  AGRLF, AGRRT, AGRSH2, AGRSTM, CROP, DRPP, DXR57,  #Input
-#                  &  FILECC, FILEGC, FILEIO, FNINSH, FRACDN, LAGSD,    #Input
-#                  &  LNGPEG, NDLEAF, NSTRES, PAR, PCNL, PCNRT, PCNST,  #Input
-#                  &  PGAVL, PUNCSD, PUNCTR, PLTPOP, RPROAV, RTWT,      #Input
-#                  &  SDDES, SDNO, SDVAR, SHELN, SHVAR, STMWT, SWFAC,   #Input
-#                  &  TAVG, TDUMX, TDUMX2, TGRO, TURFAC, VSTAGE, WCRLF, #Input
-#                  &  WCRRT, WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTLF,   #Input
-#                  &  WTSD, WTSHE, XPOD, NVEG0, NR1, NR2, NR5, NR7,     #Input
-#                  
-#                  &  AGRSD1, AGRSD2, AGRVG, AGRVG2, CDMREP, F, FNINL,  #Output
-#                  &  FNINR, FNINS, FNINSD, FRLF, FRRT, FRSTM, GDMSD,   #Output
-#                  &  GRRAT1, NDMNEW,  NDMOLD, NDMREP, NDMSDR, NDMTOT,  #Output
-#                  &  NDMVEG, NMINEP, NMOBR, PHTIM, PNTIM, POTCAR,      #Output
-#                  &  POTLIP, SDGR, TURADD, XFRT, YREND)                #Output
+simDataVars$AGRSD1  <-  0
+simDataVars$AGRSD2  <-  0
+simDataVars$AGRVG   <-  0
+simDataVars$AGRVG2  <-  0
+simDataVars$CDMREP  <-  0
+simDataVars$Fnew    <-  0 #*** Fnew is 'F' in the original file. Changed because F is logical in R. ***
+simDataVars$FNINL   <-  0
+simDataVars$FNINR   <-  0
+simDataVars$FNINS   <-  0
+simDataVars$FNINSD  <-  0
+simDataVars$FRLF    <-  0
+simDataVars$FRRT    <-  0
+simDataVars$FRSTM   <-  0
+simDataVars$GDMSD   <-  0
+simDataVars$GRRAT1  <-  0
+simDataVars$NDMNEW  <-  0
+simDataVars$NDMOLD  <-  0
+simDataVars$NDMREP  <-  0
+simDataVars$NDMSDR  <-  0
+simDataVars$NDMTOT  <-  0
+simDataVars$NDMVEG  <-  0
+simDataVars$NMINEP  <-  0
+simDataVars$NMOBR   <-  0
+simDataVars$PHTIM   <-  0
+simDataVars$PNTIM   <-  0
+simDataVars$POTCAR  <-  0
+simDataVars$POTLIP  <-  0
+simDataVars$SDGR    <-  0
+simDataVars$TURADD  <-  0
+simDataVars$XFRT    <-  0
+simDataVars$YREND   <-  0
 
 DEMAND <- function(DYNAMIC, CONTROL,
                    AGRLF, AGRRT, AGRSH2, AGRSTM, CROP, DRPP, DXR57,  #Input
@@ -68,15 +84,9 @@ DEMAND <- function(DYNAMIC, CONTROL,
   #INTEGER DYNAMIC   #, TIMDIF
   #I
   #NPP
-
+  
   NAGE   <- 0
   DAS    <- 0 #TODO ver como está sendo usado no ECOSMOS
-  NDLEAF <- 0 # calculado no RSTAGES.for
-  NR1    <- 0 # calculado no RSTAGES.for
-  NR2    <- 0 # calculado no RSTAGES.for
-  NR5    <- 0 # calculado no RSTAGES.for
-  NR7    <- 0 # calculado no RSTAGES.for
-  NVEG0  <- 0 # calculado no RSTAGES.for
   YREND  <- 0 #TODO checar oq significa
   
   #______________________________________________________________        
@@ -144,6 +154,7 @@ DEMAND <- function(DYNAMIC, CONTROL,
   RPRO   <- 0.360
   
   #TODO verificar se (10) e (25) seria rep(0,XX)
+  # vetores usados internamente
   XSLATM <- rep(0,10)
   YSLATM <- rep(0,10)
   XTRFAC <- rep(0,10)
@@ -166,194 +177,11 @@ DEMAND <- function(DYNAMIC, CONTROL,
   PHTIM <- rep(0, NCOHORTS)
   PNTIM <- rep(0, NCOHORTS)
   
-  FRSTMM  <- 0
-  YY      <- 0
-  XX      <- 0
-  TMPFAC  <- 0
-  REDPUN  <- 0
-  TMPFCS  <- 0
-  PAGE    <- 0
-  REDSHL  <- 0
-  SDMAX   <- 0
-  CDMSH   <- 0
-  GDMSH   <- 0
-  ADDSHL  <- 0
-  TEMXFR  <- 0
-  CAVTOT  <- 0
-  GDMSDO  <- 0
-  CNOLD   <- 0
-  NVSTL   <- 0
-  NVSTS   <- 0
-  NVSTR   <- 0
-  FRNLFT  <- 0
-  POTLIP  <- 0
-  POTCAR  <- 0
-  TPHFAC  <- 0
-  PARSLA  <- 0
-  FFVEG   <- 0
-  ROYES   <- 0
-  GAINNW  <- 0
-  GAINWT  <- 0
-  SLAVAR  <- 0
-  THRESH  <- 0
-  GRSH2   <- 0
-  AGRRT   <- 0
-  AGRSTM  <- 0
-  TURFSL  <- 0
-  
-  #TODO VERIFICAR nesta lista...
-  # ORIGENS DE ALGUNS DESSES VALORES QUE VIERAM DO print*,
-  # Aqueles que vem de outra função/subrotina: não sei se atribuo zero [0] ou não aqui
-  AGRLF   <- 0.783989966 # fixed value from print*, | não descobri de onde vem!
-  AGRSD1  <- 0 # from SDCOM.for
-  AGRSD2  <- 0 # from SDCOM.for
-  AGRVG   <- 0
-  AGRVG2  <- 0
-  CDMREP  <- 0
-  CDMSD   <- 0
-  CDMSDR  <- 0
-  CDMTOT  <- 0 # CDMTOT not used - chp
-  CDMVEG  <- 0
-  DRPP    <- 0 # DRPP = FUDAY[6] no PHENOL.for
-  DUMFAC  <- 0
-  DXR57   <- 0 # calculado no PHENOL.for
-  Fnew    <- 0 #*** Fnew is 'F' in the original file. Changed because F is logical in R. ***
-  FNINL   <- 0
-  FNINR   <- 0
-  FNINS   <- 0
-  FNINSD  <- 0
-  FNINSH  <- 0
-  FRACDN  <- 0 # calculado no PHENOL.for
-  FRLF    <- 0
-  # FRLFMX  <-  'subi' como parametros de espécie (.SPE)
-  FRRT    <- 0
-  FRSTM   <- 0
-  FVEG    <- 0
-  GDMSD   <- 0
-  GDMSDR  <- 0
-  GROMAX  <- 0
-  GRRAT1  <- 0
-  LAGSD   <- 0 # calculado no PODS.for
-  LNGPEG  <- 0 # calculado no PODS.for
-  #LNGSH   <-  'subi' como parametros de ecótipo (.ECO)
-  NDMNEW  <- 0
-  NDMOLD  <- 0
-  NDMREP  <- 0
-  NDMSD   <- 0
-  NDMSDR  <- 0
-  NDMSH   <- 0
-  NDMTOT  <- 0
-  NDMVEG  <- 0
-  NMINEP  <- 0
-  #NMOBMX  <-  'subi' como parametros de espécie (.SPE) 
-  NMOBR   <- 0
-  #NRCVR   <-  'subi' como parametros de espécie (.SPE) 
-  NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
-  #NVSMOB  <-  'subi' como parametros de espécie (.SPE)  
-  PAR     <- 0 # PAR em moles[quanta]/m2-d (verificar de onde vem do ECOSMOS)
-  PCNL    <- 0 # calculado no GROW.for
-  PCNRT   <- 0 # calculado no GROW.for
-  PCNST   <- 0 # calculado no GROW.for
-  PGAVL   <- 0 # inicializado no CROPGRO.for
-  #PLIGSD  <-  'subi' como parametros de espécie (.SPE)  
-  PLTPOP  <- 0 # plant population -> provavel q venha do arquivo experimental (densidade x espacamento)
-  #PMINSD  <-  'subi' como parametros de espécie (.SPE)  
-  #POASD   <-  'subi' como parametros de espécie (.SPE)   
-  #PROLFF  <-  'subi' como parametros de espécie (.SPE)    
-  #PROLFI  <-  'subi' como parametros de espécie (.SPE)    
-  #PRORTF  <-  'subi' como parametros de espécie (.SPE)    
-  #PRORTI  <-  'subi' como parametros de espécie (.SPE)    
-  #PROSTF  <-  'subi' como parametros de espécie (.SPE)    
-  #PROSTI  <-  'subi' como parametros de espécie (.SPE)    
-  #RCH2O   <-  'subi' como parametros de espécie (.SPE)
-  #RLIG    <-  'subi' como parametros de espécie (.SPE)
-  #RLIP    <-  'subi' como parametros de espécie (.SPE)
-  #RMIN    <-  'subi' como parametros de espécie (.SPE)
-  #RNO3C   <-  'subi' como parametros de espécie (.SPE)
-  #ROA     <-  'subi' como parametros de espécie (.SPE)
-  #RPRO    <-  'subi' como parametros de espécie (.SPE)
-  RPROAV  <- 0 # calculado no CROPGRO.for
-  RTWT    <- 0 # calculado no GROW.for
-  SDGR    <- 0
-  #SDLIP   <-  'subi' como parametros de cultivar (.CUL) 
-  #SDPRO   <-  'subi' como parametros de cultivar (.CUL)  
-  SDVAR   <- 0 # calculado no PODS.for
-  #SHLAG   <-  'subi' como parametros de espécie (.SPE) 
-  SHVAR   <- 0 # calculado no PODS.for
-  SIZELF  <- 200.000000 #indicado em alguns .ECO da familia CROPGRO, mas nao encontrei onde exatamente!
-  #SIZREF  <-  'subi' como parametros de espécie (.SPE)   
-  SIZRAT  <- 0
-  SLAMN   <- 0
-  SLAMX   <- 0
-  #SLAPAR  <-  'subi' como parametros de espécie (.SPE)
-  #SRMAX   <-  'subi' como parametros de espécie (.SPE)
-  STMWT   <- 0 # calculado no GROW.for
-  SWFAC   <- 0 # water stress factor (verificar de onde vem no ECOSMOS)
-  TAVG    <- 0 # buscar do padrao do Ecosmos    
-  TDUMX   <- 0 # calculado no PHENOL.for
-  TDUMX2  <- 0 # calculado no PHENOL.for
-  TURADD  <- 0
-  TURFAC  <- 0 # water stress factor (verificar de onde vem no ECOSMOS)
-  #TURSLA  <-  'subi' como parametros de espécie (.SPE)
-  TURXFR  <- 0
-  #VSSINK  <-  'subi' como parametros de espécie (.SPE)
-  VSTAGE  <- 0 # calculado no PHENOL.for
-  WCRLF   <- 0 # calculado no GROW.for
-  WCRRT   <- 0 # calculado no GROW.for
-  WCRST   <- 0 # calculado no GROW.for
-  WNRLF   <- 0 # calculado no GROW.for
-  WNRRT   <- 0 # calculado no GROW.for
-  WNRSH   <- 0 # calculado no GROW.for
-  WNRST   <- 0 # calculado no GROW.for
-  WTLF    <- 0 # calculado no GROW.for
-  #XFRMAX  <-  'subi' como parametros de espécie (.SPE)
-  #XFRT    <-  'subi' como parametros de cultivar (.CUL)
-  XFRUIT  <- 0 #XFRT   = XFRUIT at EMERG
-  XPOD    <- 0 # calculado no GROW.for
-  
-  ##CHP - puncture variables, not functional
-  #REAL PUNCSD, PUNCTR, RPRPUN
-  
-  #TYPE (ControlType) CONTROL
-  
-  
   #***********************************************************************
   #***********************************************************************
-  #     Run Initialization - Called once per simulation
+  #     Seasonal initialization - run once per season
   #***********************************************************************
-  if (DYNAMIC == RUNINIT) {
-    #-----------------------------------------------------------------------
-    #CALL IPDMND(
-    #  &  FILECC, FILEGC, FILEIO,                           #Input
-    #  &  CARMIN, FINREF, FNSDT, FRLFF, FRLFMX,             #Output
-    #  &  FRSTMF, LIPOPT, LIPTB, LNGSH, NMOBMX,             #Output
-    #  &  NRCVR, NVSMOB, PLIGSD, PMINSD, POASD,             #Output
-    #  &  PROLFF, PROLFI, PRORTF, PRORTI, PROSTF, PROSTI,   #Output
-    #  &  RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA,              #Output
-    #  &  RPRO, SDLIP, SDPRO, SHLAG, SLAMAX, SLAMIN,        #Output
-    #  &  SLAPAR, SLAREF, SLAVAR, SLOSUM, SIZELF, SIZREF,   #Output
-    #  &  SRMAX, THRESH, TURSLA, TYPSDT, VSSINK, XFRMAX,    #Output
-    #  &  XFRUIT, XLEAF, XSLATM, XTRFAC, XVGROW, XXFTEM,    #Output
-    #  &  YLEAF, YSLATM, YSTEM, YTRFAC, YVREF, YXFTEM)      #Output
-    
-    IPDMND( #TODO verificar se é necessário
-      FILECC, FILEGC, FILEIO,                           #Input
-      CARMIN, FINREF, FNSDT, FRLFF, FRLFMX,             #Output
-      FRSTMF, LIPOPT, LIPTB, LNGSH, NMOBMX,             #Output
-      NRCVR, NVSMOB, PLIGSD, PMINSD, POASD,             #Output
-      PROLFF, PROLFI, PRORTF, PRORTI, PROSTF, PROSTI,   #Output
-      RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA,              #Output
-      RPRO, SDLIP, SDPRO, SHLAG, SLAMAX, SLAMIN,        #Output
-      SLAPAR, SLAREF, SLAVAR, SLOSUM, SIZELF, SIZREF,   #Output
-      SRMAX, THRESH, TURSLA, TYPSDT, VSSINK, XFRMAX,    #Output
-      XFRUIT, XLEAF, XSLATM, XTRFAC, XVGROW, XXFTEM,    #Output
-      YLEAF, YSLATM, YSTEM, YTRFAC, YVREF, YXFTEM)      #Output
-    
-    #***********************************************************************
-    #***********************************************************************
-    #     Seasonal initialization - run once per season
-    #***********************************************************************
-  } else if (DYNAMIC == SEASINIT) {
+  if (DYNAMIC == SEASINIT) {
     #-----------------------------------------------------------------------
     CDMSDR = 0.0
     GDMSDR = 0.0
@@ -463,14 +291,14 @@ DEMAND <- function(DYNAMIC, CONTROL,
       #-----------------------------------------------------------------------
       #     Accumulate physiological age of flower (PNTIM) and pod (PHTIM) cohorts
       #-----------------------------------------------------------------------
-      if (DAS - NR1 + 1 > NCOHORTS) {
-        WRITE(MSG(1),'(A,I5)') 'Number of flower cohorts exceeds maximum limit of',NCOHORTS
-        CALL WARNING(1,ERRKEY,MSG)
-        CALL ErrorCode(CONTROL, 100, ERRKEY, YREND)
-        
-        # ALTERADO: RETURN
-        return()
-      }
+      #warning msg: if (DAS - NR1 + 1 > NCOHORTS) {
+      #warning msg:   WRITE(MSG(1),'(A,I5)') 'Number of flower cohorts exceeds maximum limit of',NCOHORTS
+      #warning msg:   CALL WARNING(1,ERRKEY,MSG)
+      #warning msg:   CALL ErrorCode(CONTROL, 100, ERRKEY, YREND)
+      #warning msg:   
+      #warning msg:   # ALTERADO: RETURN
+      #warning msg:   return()
+      #warning msg: }
       
       # VERIFICAR: Nao seria DAS <= NR1 ? Pois caso DAS seja menor, a linha a seguir dar? erro por ser indice negativo.
       if (DAS == NR1) {
@@ -873,659 +701,381 @@ DEMAND <- function(DYNAMIC, CONTROL,
   
   #RETURN
   #END SUBROUTINE DEMAND
+  assign("AGRSD1", AGRSD1, envir = env)
+  assign("AGRSD2", AGRSD2, envir = env)
+  assign("AGRVG", AGRVG, envir = env)
+  assign("AGRVG2", AGRVG2, envir = env)
+  assign("CDMREP", CDMREP, envir = env)
+  assign("F", F, envir = env)
+  assign("FNINL", FNINL, envir = env)
+  assign("FNINR", FNINR, envir = env)
+  assign("FNINS", FNINS, envir = env)
+  assign("FNINSD", FNINSD, envir = env)
+  assign("FRLF", FRLF, envir = env)
+  assign("FRRT", FRRT, envir = env)
+  assign("FRSTM", FRSTM, envir = env)
+  assign("GDMSD", GDMSD, envir = env)
+  assign("GRRAT1", GRRAT1, envir = env)
+  assign("NDMNEW", NDMNEW, envir = env)
+  assign("NDMOLD", NDMOLD, envir = env)
+  assign("NDMREP", NDMREP, envir = env)
+  assign("NDMSDR", NDMSDR, envir = env)
+  assign("NDMTOT", NDMTOT, envir = env)
+  assign("NDMVEG", NDMVEG, envir = env)
+  assign("NMINEP", NMINEP, envir = env)
+  assign("NMOBR", NMOBR, envir = env)
+  assign("PHTIM", PHTIM, envir = env)
+  assign("PNTIM", PNTIM, envir = env)
+  assign("POTCAR", POTCAR, envir = env)
+  assign("POTLIP", POTLIP, envir = env)
+  assign("SDGR", SDGR, envir = env)
+  assign("TURADD", TURADD, envir = env)
+  assign("XFRT", XFRT, envir = env)
+  assign("YREND", YREND, envir = env)
+  
   return()
 }
 
-
-#TODO VERIFICAR se a subrotina IPDMND é necessária!
 #=======================================================================
-
+#       Variable definitions for DEMAND and IPDMND
+#         Updated 25 Feb 2004
+#-----------------------------------------------------------------------
+# ADDSHL    Today's growth demand for shells of age NPP (g[shell] / m2 / d)
+# AGRLF     Mass of CH2O required for new leaf growth (g[CH2O] / g[leaf])
+# AGRRT     Mass of CH2O required for new root growth (g[CH2O] / g[root])
+# AGRSD1    CH2O requirement for seed growth, excluding cost for protein 
+#             content (g[CH2O] / g[seed])
+# AGRSD2    CH2O requirement for seed growth, including cost for protein 
+#             content (g[CH2O] / g[seed])
+# AGRSH2    CH2O requirement for shell growth, including cost for protein 
+#             content (g[CH2O] / g[shell])
+# AGRSTM    Mass of CH2O required for new stem growth (g[CH2O] / g[stem])
+# AGRVG     Mass of CH2O required for vegetative tissue growth including 
+#             stoichiometry and respiration (g[CH2O] / g[tissue])
+# AGRVG2    Total mass of CH2O required for vegetative tissue growth
+#            (g[CH2O] / g[tissue])
+# C255      255-character record read from file 
+# C80       80-character record read from file 
+# CARMIN    Minimum carbohydrate fraction 
+# CAVTOT    Total potential available CH2O for reproductive growth
+#            (g[CH2O] / m2)
+# CDMREP    Total CH2O needed for potential reproductive growth
+#            (g[CH2O] / m2 / d)
+# CDMSD     Total CH2O demand to grow seed demand (GDMSD)
+#            (g[CH2O] / m2 / d)
+# CDMSDR    CH2O required for seed growth from mobilized N
+#            (g[CH2O] / m2 / d)
+# CDMSH     Total CH2O demand to grow shell demand (GDMSH)
+#            (g[CH2O] / m2 / d)
+# CDMTOT    Total CH2O demand (g[CH2O] / m2 / d)
+# CDMVEG    Carbon demand for vegetative growth (g[CH2O] / m2 / d)
+# CNOLD     Available CH2O after reproductive growth (g[CH2O] / m2 / d)
+# CROP      Crop identification code 
+# DAS       Days after start of simulation (d)
+# DRPP      Photoperiod days which occur in a real day
+#            (photoperiod days / day)
+# DXR57     Relative time between first seed (NR5) and physiological 
+#             maturity (NR7) (fraction)
+# ECONO     Ecotype code - used to match ECOTYP in .ECO file 
+# ECOTYP    Ecotype code for this simulation 
+# ERR       Error code for file operation 
+# F         Specific leaf area of new leaf tissue growth, including N
+#            (cm2[leaf] / g[leaf])
+# FFVEG     Specific leaf area of new leaf tissue growth (interim value)
+#            (cm2[leaf] / g[leaf])
+# FILECC    Path plus filename for species file (*.spe) 
+# FILEGC    Pathname plus filename for ECO file 
+# FINREF    Specific leaf area (SLA) of leaves of standard crop cultivar 
+#             when plants emerge (cm2[leaf] / g[leaf])
+# FNINL     Maximum fraction of N for growing leaf tissue (g[N] / g[leaf])
+# FNINR     Maximum fraction of N for growing root tissue (g[N] / g[root])
+# FNINS     Maximum fraction of N for growing stem tissue (g[N] / g[stem])
+# FNINSD    Maximum fraction of N for growing seed tissue based on 
+#             temperature (g[N] / g[seed])
+# FNINSH    Maximum fraction of N for growing shell tissue
+#            (g[N] / g[shell])
+# FNSDT(I)  Temperature values which describe function for modifying seed 
+#             growth rate with temperature (ï¿½C)
+# FOUND     Indicator that good data was read from file by subroutine FIND 
+#             (0 - End-of-file encountered, 1 - NAME was found) 
+# FRACDN    Relative time between flowering (NR1) and last leaf appearance 
+#             (NDLEAF) 
+# FRLF      Fraction of vegetative tissue growth that goes to leaves on a 
+#             day (g[leaf] / g[veg])
+# FRLFF     Fraction of daily increase in vegetative weight which goes to 
+#             leaves after the day on which the maximum number of V-stages 
+#             occurs (NDVSTG). (g[leaf] / g[veg])
+# FRLFM     Fraction of growth going to leaves, decreases linearly between 
+#             R1 and NDLEAF (g[leaf] / g[veg])
+# FRLFMX    Maximum leaf partitioning (g[leaf] / g[veg])
+# FRNLFT    A quadratic function of the progress from NR5 to NR7 (DXR57), 
+#             used to compute the change in maximum tissue N content 
+#             between its maximum value and a fractional value (NRCVR) 
+#             between the minimum and maximum tissue  N concentrations 
+# FRRT      Fraction of vegetative tissue growth that goes to roots on a 
+#             day (g[root] / g[veg])
+# FRSTM     Fraction of vegetative tissue growth that goes to stems on a 
+#             day (g[stem] / g[veg])
+# FRSTMF    Fraction of daily dry weight increase in vegetative plant parts 
+#             which goes to stems after the day on which the maximum number 
+#             of V-stages occurs (NDVSTG). (g[stem] / g[veg])
+# FRSTMM    Fraction of growth going to stems, decreases linearly between 
+#             R1 and NDLEAF (g[stem] / g[veg])
+# FVEG      Specific leaf area prior to computing effects of temperature, 
+#             PAR, water stress (cm2[leaf] / g[leaf])
+# GAINNW    Leaf area added (prior to VSSINK) (cm2[leaf] / m2[ground])
+# GAINWT    Leaf weight added (prior to VSSINK and after NDLEAF)
+#            (g[leaf] / m2[ground])
+# GDMSD     Seed growth demand based on temperature and photoperiod
+#            (g[seed] / m2 / d)
+# GDMSDO    Seed growth demand (temporary value) (g[seed] / m2 / d)
+# GDMSDR    Potential seed growth from NDMSDR (amount of Mobilized N which 
+#             can be used for seed growth) (g[seed] / m2 / d)
+# GDMSH     Growth demand for shells (g[shell] / m2 / d)
+# GROMAX    Maximum leaf area which can be added per plant between 
+#             emergence and day of simulation as a function of V-stage on 
+#             day of simulation (cm2[leaf] / plant)
+# GROYES    Maximum leaf area which could have been added per plant between 
+#             emergence and yesterday as a function of V-stage
+#             (cm2[leaf] / plant)
+# GRRAT1    Maximum growth per individual shell (g / shell / d)
+# ISECT     Indicator of completion of IGNORE routine: 0 - End of file 
+#             encountered, 1 - Found a good line to read, 2 - End of 
+#             Section in file encountered denoted by * in column 1. 
+# LAGSD     Time required between shell growth and seed growth, per cohort
+#            (Photo-thermal days)
+# LINC      Line number of input file 
+# LIPOPT    Temperature above which lipid composition is at a maximum (ï¿½C)
+# LIPTB     Temperature below which lipid composition is zero (ï¿½C)
+# LNGPEG    Time between start of peg (full flower) and shell formation 
+#             (for peanuts only).  Defines slow growth period.
+#             (Photo-thermal days)
+# LNGSH     Time required for shell growth (Photo-thermal days)
+# LNUM      Current line number of input file 
+# LUNCRP    Logical unit number for FILEC (*.spe file) 
+# LUNECO    Logical unit number for FILEE (*.eco file) 
+# NAGE      Age of cohort (d)
+# NDLEAF    Day when leaf expansion ceased (d)
+# NDMNEW    Total N demand for new growth (g[N] / m2 / d)
+# NDMOLD    N demand for old tissue (g[N] / m2 / d)
+# NDMREP    Total N needed for potential reproductive growth
+#            (g[N] / m2 / d)
+# NDMSD     Total N demand to grow seed demand (GDMSD) (g[N] / m2 / d)
+# NDMSDR    Amount of Mobilized N which can be used for seed growth
+#            (g[N] / m2 / d)
+# NDMSH     Total N demand to grow shell demand (GDMSH) (g[N] / m2 / d)
+# NDMTOT    Total N demand (g[N] / m2 / d)
+# NDMVEG    N required for vegetative growth if all PGAVL is used as 
+#             computed (g[N] / m2 / d)
+# NMINEP    Potential N mobilization from storage (g[N] / m2 / d)
+# NMOBMX    Maximum fraction of N which can be mobilized in a day 
+# NMOBR     Stage-dependent potential N mining rate expressed as a fraction 
+#             of the maximum rate (NMOBMX) 
+# NPP       Cohort number used as index in loops 
+# NR1       Day when 50% of plants have at least one flower (d)
+# NR2       Day when 50% of plants have one fruit (pod or peg) (d)
+# NR5       Day when 50% of plants have pods with beginning seeds (d)
+# NR7       Day when 50% of plants first have yellowing or maturing pods
+#            (d)
+# NRCVR     Fractional value between minimum and maximum tissue N values 
+#             (0-1) 
+# NSTRES    Nitrogen stress factor (1=no stress, 0=max stress) 
+# NVEG0     Day of emergence (d)
+# NVSMOB    Relative rate of N mining during vegetative stage to that in 
+#             reproductive stage 
+# NVSTL     N content in leaves (fraction)
+# NVSTR     N content in roots (fraction)
+# NVSTS     N content in stems (fraction)
+# PAGE      Photothermal age of each cohort (Photo-thermal days)
+# PAR       Daily photosynthetically active radiation or photon flux 
+#             density (moles[quanta]/m2-d)
+# PARSLA    Effect of PAR on specific leaf area 
+# PCNL      Percentage of N in leaf tissue (100 g[N] / g[leaf])
+# PCNRT     Percent N in root tissue (100 g[N] / g[root])
+# PCNST     Percent N in stem tissue (100 g[N] / g[stem])
+# PGAVL     Total available CH2O available for growth & respiration
+#            (g[CH2O] / m2)
+# PHTIM     Cumulative photothermal time ages of seeds and shells 
+# PLIGSD    Proportion of seed tissue that is lignin (fraction)
+# PLTPOP    Plant population (# plants / m2)
+# PMINSD    Proportion of seed tissue that is mineral (fraction)
+# PNTIM(I)  Photothermal days from first flower when flowers in age group I 
+#             formed (p-t-d)
+# POASD     Proportion of seed tissue that is organic acid (fraction)
+# POTCAR    Potential carbohydrate composition of seed based on temperature
+#            (fraction)
+# POTLIP    Potential lipid composition of seed based on temperature
+#            (fraction)
+# PROLFF    Minimum leaf protein composition after N mining
+#            (g[protein] / g[leaf])
+# PROLFI    Maximum protein composition in leaves during growth with 
+#             luxurious supply of N (g[protein] / g[leaf tissue])
+# PRORTF    Minimum root protein composition after N mining
+#            (g[protein] / g[root])
+# PRORTI    Maximum protein composition in roots during growth with 
+#             luxurious supply of N (g[protein] / g[root])
+# PROSTF    Minimum stem protein composition after N mining
+#            (g[protein] / g[stem])
+# PROSTI    Maximum protein composition in stems during growth with 
+#             luxurious supply of N (g[protein] / g[stem])
+# PUNCSD    Cumulative puncture damage to seed (not yet implemented) 
+# PUNCTR    Cumulative puncture damage (not yet implemented) 
+# RCH2O     Respiration required for synthesizing CH2O structure
+#            (g[CH2O] / g[tissue])
+# REDPUN    Reduces growth of seed in an age group due to pest-caused 
+#             punctures in seed (0 to 1) (not yet implemented) 
+# REDSHL    Reduces growth of shell in an age group due to pest-caused 
+#             punctures in seed (0 to 1) 
+# RLIG      Respiration required for synthesizing lignin structure
+#            (g[CH2O] / g[lignin])
+# RLIP      Respiration required for synthesizing lipid structure
+#            (g[CH2O] / g[lipid])
+# RMIN      Respiration required for synthesizing mineral structure
+#            (g[CH2O] / g[mineral])
+# RNO3C     Respiration required for reducing NO3 to protein
+#            (g[CH2O] / g[protein])
+# ROA       Respiration required for synthesizing organic acids
+#            (g[CH2O] / g[product])
+# RPRO      Respiration required for re-synthesizing protein from mobilized 
+#             N (g[CH2O] / g[protein])
+# RPROAV    Respiration required for protein synthesis, average based on 
+#             sources of N (g[CH2O] / g[protein])
+# RPRPUN    Puncture damage reduction variable (not yet implemented) (0-1) 
+# RTWT      Dry mass of root tissue, including C and N
+#            (g[root] / m2[ground])
+# SDDES(J)  Number of seeds destroyed today in cohort J when shells are not 
+#             destroyed (#/m2/d)
+# SDGR      Potential growth rate per seed (g / seed / d)
+# SDLIP     Maximum lipid composition in seed (fraction)
+# SDMAX     A maximum amount of remaining growth for each cohort (g/m2)
+# SDNO(J)   Number of seeds for cohort J (#/m2)
+# SDPRO     Seed protein fraction at 25ï¿½C (g[protein] / g[seed])
+# SDVAR     Maximum cultivar-dependent seed growth rate, per seed
+#            (g / seed / d)
+# SECTION   Section name in input file 
+# SHELN(J)  Number of shells for cohort J (#/m2)
+# SHLAG     Shell (peg) growth rate during its initial slow growth phase 
+#             after beginning pegging (R2) as a fraction of shell growth 
+#             rate (SHVAR) during its rapid growth phase. 
+# SHVAR     Shell growth rate during its rapid growth phase, per shell
+#            (g / shell / d)
+# SIZELF    The size of a normal upper node leaf (nodes 8 - 10) used to 
+#             adjust leaf area expansion during sink-limited phase of 
+#             vegetative growth, i.e., prior to VSSINK nodes on the main stem
+#             (cm2/leaf)
+# SIZRAT    Ratio of upper node normal leaf size for given variety to that 
+#             for standard cultivar, used to adjust table of maximum leaf 
+#             area vs. V-stage 
+# SIZREF    The size of a normal upper node  leaf (nodes 8 - 10) of 
+#             standard cultivar. (cm2 / leaf)
+# SLAMAX    The maximum specific leaf area (SLA) for new leaves when grown 
+#             under low (nearly zero) radiation but optimum water and 
+#             temperature for the standard cultivar. (cm2 / g)
+# SLAMIN    The minimum specific leaf area (SLA) for new leaves when grown 
+#             under infinitely high radiation, optimum water and 
+#             temperature for the standard cultivar. (cm2 / g)
+# SLAMN     Minimum specific leaf area for new leaves when grown under high 
+#             radiation and optimum water and temperature conditions (cm2 / g)
+# SLAMX     Maximum specific leaf area for new leaves when grown under low 
+#             radiation, but optimum water and temperature conditions
+#             (cm2 / g)
+# SLAPAR    Coefficient in exponential equation to reduce SLA as PAR 
+#             increases (leaf curvature) 
+# SLAREF    Specific leaf area (SLA) for new leaves during peak vegetative 
+#             growth for the standard cultivar. (cm2/g)
+# SLAVAR    Specific leaf area (SLA) for new leaves during peak vegetative 
+#             growth for cultivar I, modified by environmental factor (cm2/g)
+# SLOSUM    Slope of temperature vs. SUMTEM line (1/ï¿½C)
+# SRMAX     Maximum fraction change in seed growth rate for long day 
+#             lengths 
+# STMWT     Dry mass of stem tissue, including C and N
+#            (g[stem] / m2[ground)
+# SWFAC     Effect of soil-water stress on photosynthesis, 1.0=no stress, 
+#             0.0=max stress 
+# TAVG      Average daily temperature (ï¿½C)
+# TDUMX     Photo-thermal time that occurs in a real day based on early 
+#             reproductive development temperature function
+#             (photo-thermal days / day)
+# TDUMX2    Photo-thermal time that occurs in a real day based on late 
+#             reproductive development temperature function
+#             (photo-thermal days / day)
+# TEMXFR    Temperature effect on partitioning to pods, high temp. 
+#             increases fraction of growth to vegetative tissue (0-1) 
+# TGRO(I)   Hourly canopy temperature (ï¿½C)
+# THRESH    The maximum ratio mass of seed to mass of seed plus shell at 
+#             maturity.  Causes seed to stop growing as their dry weights 
+#             increase until shells are filled in a cohort. 
+# TMPFAC    Modifies maximum growth rate for seed and shells depending on 
+#             temperature 
+# TMPFCS    Interim value of TMPFAC 
+# TPHFAC    Reduction in specific leaf area due to daytime temperature 
+#             being less than optimal (0-1) 
+# TURADD    Water stress factor (TURFAC) effect on reproductive growth and 
+#             pod addition.  Stress is defined to INCREASE growth and 
+#             addition. 
+# TURFAC    Water stress factor for expansion (0 - 1) 
+# TURFSL    Factor which applies water stress to specific leaf area of new 
+#             leaf tissue growth 
+# TURSLA    Water stress effects on leaf area expansion 
+# TURXFR    Turgor water stress factor used to modify partitioning to 
+#             reproductive growth 
+# TYPSDT    Curve type for temperature factor calculations (for use in 
+#             function subroutine CURV) 
+# VSSINK    Vegetative stage beyond which sink-limited leaf area expansion 
+#             can no longer limit photosynthesis or leaf area growth. 
+# VSTAGE    Number of nodes on main stem of plant (nodes)
+# WCRLF     Mass of CH2O reserves in leaves (g[leaf CH2O] / m2[ground])
+# WCRRT     Mass of CH2O reserves in roots (g[root CH2O] / m2[ground])
+# WCRST     Mass of CH2O reserves in stems (g[stem CH2O] / m2[ground])
+# WNRLF     N available for mobilization from leaves above lower limit of 
+#             mining (g[N] / m2)
+# WNRRT     N available for mobilization from roots above lower limit of 
+#             mining (g[N] / m2)
+# WNRSH     N available for mobilization from shells above lower limit of 
+#             mining (g[N] / m2)
+# WNRST     N available for mobilization from stems above lower limit of 
+#             mining (g[N] / m2)
+# WTLF      Dry mass of leaf tissue including C and N
+#            (g[leaf] / m2[ground])
+# WTSD(J)   Seed mass  for cohort J (g/m2)
+# WTSHE(J)  Shell mass  for cohort J (g/m2)
+# XFRMAX    Maximum increase in partitioning to fruits induced under water 
+#             stress, assuming no problem in pod setting 
+# XFRT      Current day's partitioning to reproductive growth (0-1)
+#            (g[fruit] / g[plant])
+# XFRUIT    Maximum fraction of daily available gross photosynthate (PG) 
+#             which is allowed to go to seeds plus shells, varies from 0 to 
+#             1.0. 
+# XLEAF(I)  V-stage at which partitioning to leaves is YLEAF(I).
+#            (leaf nodes)
+# XPOD      Growth partitioning to pods which slows node appearance
+#            (fraction)
+# XSLATM(I) Temperature values for function that reduces specific leaf area 
+#             (SLA) (ï¿½C)
+# XTRFAC(I) Values of TURFAC for function which reduces reproductive growth 
+#             based on water stress 
+# XVGROW(I) V-stage at which maximum leaf area growth per plant since 
+#             emergence is YVGROW(I). (# leaf nodes)
+# XX        Difference between partitioning fraction to stems at beginning 
+#             bloom (R1) and at the day on which the maximum number of 
+#             V-stages occurs (NDLEAF) 
+# XXFTEM(I) Array of temperature values in table lookup describing effect 
+#             of temperature on partitioning to pods (YXFTEM = 0 TO 1). (ï¿½C)
+# YLEAF(I)  Partitioning fraction to leaves at V-stage XLEAF(I)
+#            (g[leaf] / g[veg. plant])
+# YSLATM(I) Array which describes the effect of temperature on specific 
+#             leaf area 
+# YSTEM(I)  Partitioning factor for stem growth at V-stage XSTEM(I)
+#            (g[stem] / g[veg. plant])
+# YTRFAC(I) Factor which affects reproductive growth based on water stress 
+# YVGROW(I) Maximum leaf area grown per plant at V-stage XVGROW(I)
+#            (cm2 / plant)
+# YVREF(I)  Maximum leaf area grown per plant at V-stage XVGROW(I), for 
+#             reference cultivar. (cm2 / plant)
+# YXFTEM(I) Array describing the relative partitioning to pods (0 to 1 
+#             effect on XFRUIT) as temperature increases. 
+# YY        Used to linearly interpolate the difference in partitioning to 
+#             leaves between stages R1 and NDLEAF 
+#-----------------------------------------------------------------------
+#       END SUBROUTINE DEMAND
 #=======================================================================
-#  IPDMND, Subroutine, C.H. Porter
-#-----------------------------------------------------------------------
-#  Reads input data for DEMAND subroutine
-#-----------------------------------------------------------------------
-#  REVISION       HISTORY
-#  07/04/1998 CHP Written.
-#  08/12/2003 CHP Added I/O error checking
-#  11/26/2007 CHP THRESH, SDPRO, SDLIP moved from eco to cul file
-#-----------------------------------------------------------------------
-#  Called by:  DEMAND
-#  Calls:      FIND, ERROR, IGNORE
-#=======================================================================
-SUBROUTINE IPDMND(
-  &  FILECC, FILEGC, FILEIO,                           #Input
-  &  CARMIN, FINREF, FNSDT, FRLFF, FRLFMX,             #Output
-  &  FRSTMF, LIPOPT, LIPTB, LNGSH, NMOBMX,             #Output
-  &  NRCVR, NVSMOB, PLIGSD, PMINSD, POASD,             #Output
-  &  PROLFF, PROLFI, PRORTF, PRORTI, PROSTF, PROSTI,   #Output
-  &  RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA,              #Output
-  &  RPRO, SDLIP, SDPRO, SHLAG, SLAMAX, SLAMIN,        #Output
-  &  SLAPAR, SLAREF, SLAVAR, SLOSUM, SIZELF, SIZREF,   #Output
-  &  SRMAX, THRESH, TURSLA, TYPSDT, VSSINK, XFRMAX,    #Output
-  &  XFRUIT, XLEAF, XSLATM, XTRFAC, XVGROW, XXFTEM,    #Output
-  &  YLEAF, YSLATM, YSTEM, YTRFAC, YVREF, YXFTEM)      #Output
-
-#-----------------------------------------------------------------------
-IMPLICIT NONE
-#-----------------------------------------------------------------------
-CHARACTER*3   TYPSDT
-CHARACTER*6   ERRKEY
-PARAMETER (ERRKEY = 'DEMAND')
-CHARACTER*6   SECTION
-CHARACTER*6   ECOTYP, ECONO
-CHARACTER*30  FILEIO
-CHARACTER*80  C80
-CHARACTER*92  FILECC, FILEGC
-CHARACTER*255 C255
-
-INTEGER LUNCRP, LUNIO, LUNECO, ERR, LINC, LNUM, FOUND, ISECT
-INTEGER I, II
-
-REAL CARMIN, FINREF, FRLFF, FRLFMX, FRSTMF,
-&  LIPOPT, LIPTB, NMOBMX, NRCVR, NVSMOB,
-&  PLIGSD, PMINSD, POASD, PROLFF,
-&  PROLFI, PRORTF, PRORTI, PROSTF, PROSTI,
-&  RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA,
-&  RPRO, SHLAG, SLAMAX, SLAMIN, SLAPAR,
-&  SLAREF, SLAVAR, SLOSUM, SIZELF, SIZREF,
-&  SRMAX, TURSLA, VSSINK, XFRMAX, XFRUIT
-REAL LNGSH, THRESH, SDPRO, SDLIP
-
-REAL FNSDT(4)
-REAL XVGROW(6), YVREF(6)
-REAL XSLATM(10), YSLATM(10), XTRFAC(10), YTRFAC(10), XXFTEM(10), YXFTEM(10)
-REAL XLEAF(25), YLEAF(25), YSTEM(25)
-
-#-----------------------------------------------------------------------
-CALL GETLUN('FILEIO', LUNIO)
-OPEN (LUNIO, FILE = FILEIO,STATUS = 'OLD',IOSTAT=ERR)
-if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILEIO,0)}
-LNUM = 0
-#-----------------------------------------------------------------------
-#    Find and Read Field Section from FILEIO - previously read in IPIBS
-#       Look for the second section header beginning with '*CULTI'
-#-----------------------------------------------------------------------
-SECTION = '*CULTI'
-CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-if (FOUND == 0) {
-  CALL ERROR(SECTION, 42, FILEIO, LNUM)
-}
-CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-if (FOUND == 0) {
-  CALL ERROR(SECTION, 42, FILEIO, LNUM)
-} else {
-  READ(LUNIO,'(24X,A6,48X,3F6.0,24X,3F6.0)',IOSTAT=ERR) 
-  &      ECONO, SLAVAR, SIZELF, XFRUIT, THRESH, SDPRO, SDLIP
-  LNUM = LNUM + 1
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)}
-}
-
-CLOSE (LUNIO)
-
-#-----------------------------------------------------------------------
-#     Read in values from species file
-#-----------------------------------------------------------------------
-CALL GETLUN('FILEC', LUNCRP)
-OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-LNUM = 0
-if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-#-----------------------------------------------------------------------
-#    Find and Read Respiration Section
-#-----------------------------------------------------------------------
-SECTION = '#*RESP'
-CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-if (FOUND == 0) {
-  CALL ERROR(SECTION, 42, FILECC, LNUM)
-} else {
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(F6.0,6X,F6.0)',IOSTAT=ERR) RNO3C, RPRO
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(5F6.0)',IOSTAT=ERR)RCH2O,RLIP,RLIG,ROA,RMIN
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-}
-
-#-----------------------------------------------------------------------
-#    Find and Read Plant Composition Section
-#-----------------------------------------------------------------------
-SECTION = '#*PLAN'
-CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-if (FOUND == 0) {
-  CALL ERROR(SECTION, 42, FILECC, LNUM)
-} else {
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(F6.0,6X,2F6.0,6X,F6.0)',IOSTAT=ERR) PROLFI, PROLFF, PROSTI, PROSTF
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(F6.0,6X,F6.0)',IOSTAT=ERR) PRORTI, PRORTF
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(24X,F6.0)',IOSTAT=ERR) PLIGSD
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(24X,F6.0)',IOSTAT=ERR) POASD
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(24X,F6.0)',IOSTAT=ERR) PMINSD
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-}
-
-#-----------------------------------------------------------------------
-#    Find and Read Seed Composition Section
-#-----------------------------------------------------------------------
-SECTION = '#*SEED'
-CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-if (FOUND == 0) {
-  CALL ERROR(SECTION, 42, FILECC, LNUM)
-} else {
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(4F6.0)',IOSTAT=ERR) LIPTB, LIPOPT, SLOSUM, CARMIN
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  SLOSUM = SLOSUM / 100.0
-}
-
-#-----------------------------------------------------------------------
-#    Find and Read Carbon and Nitrogen Mining Section
-#-----------------------------------------------------------------------
-SECTION = '#*CARB'
-CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-if (FOUND == 0) {
-  CALL ERROR(SECTION, 42, FILECC, LNUM)
-} else {
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(18X,3F6.0)',IOSTAT=ERR) NMOBMX, NVSMOB, NRCVR
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-}
-
-#-----------------------------------------------------------------------
-#    Find and Read Vegetative Partitioning Section
-#-----------------------------------------------------------------------
-SECTION = '#*VEGE'
-CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-if (FOUND == 0) {
-  CALL ERROR(SECTION, 42, FILECC, LNUM)
-} else {
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(8F6.0)',IOSTAT=ERR)(XLEAF(II),II=1,8)
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(8F6.0)',IOSTAT=ERR)(YLEAF(II),II=1,8)
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(8F6.0)',IOSTAT=ERR)(YSTEM(II),II=1,8)
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(12X,2F6.0)',IOSTAT=ERR) FRSTMF, FRLFF
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(F6.0)',IOSTAT=ERR) FRLFMX
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-}
-
-#-----------------------------------------------------------------------
-#    Find and Read Leaf Growth Section
-#-----------------------------------------------------------------------
-SECTION = '#*LEAF'
-CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-if (FOUND == 0) {
-  CALL ERROR(SECTION, 42, FILECC, LNUM)
-} else {
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(4F6.0)',IOSTAT=ERR) FINREF, SLAREF, SIZREF, VSSINK
-  if (ERR != 0){CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(4F6.0)',IOSTAT=ERR) SLAMAX, SLAMIN, SLAPAR, TURSLA
-  if (ERR != 0){CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(6F6.0)',IOSTAT=ERR)(XVGROW(II),II=1,6)
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(6F6.0)',IOSTAT=ERR)(YVREF(II),II=1,6)
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(5F6.0)',IOSTAT=ERR)(XSLATM(II),II = 1,5)
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(5F6.0)',IOSTAT=ERR)(YSLATM(II),II = 1,5)
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-}
-
-#-----------------------------------------------------------------------
-#    Find and Read Seed and Shell Growth Section
-#-----------------------------------------------------------------------
-SECTION = '#*SEED'
-CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-if (FOUND == 0) {
-  CALL ERROR(SECTION, 42, FILECC, LNUM)
-} else {
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(6X,F6.0)',IOSTAT=ERR) SRMAX
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(6X,2F6.0)',IOSTAT=ERR) XFRMAX, SHLAG
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(4(1X,F5.2),3X,A3)',IOSTAT=ERR)(FNSDT(II),II=1,4), TYPSDT
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(6F6.0)',IOSTAT=ERR)(XXFTEM(II),II = 1,6)
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(6F6.0)',IOSTAT=ERR)(YXFTEM(II),II = 1,6)
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  for (I in 1:5) {
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  }
-  READ(C80,'(4F6.0)',IOSTAT=ERR)(XTRFAC(II),II = 1,4)
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-  
-  CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-  READ(C80,'(4F6.0)',IOSTAT=ERR)(YTRFAC(II),II = 1,4)
-  if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-}
-#-----------------------------------------------------------------------
-CLOSE(LUNCRP)
-
-#-----------------------------------------------------------------------
-#    Read Ecotype Parameter File
-#-----------------------------------------------------------------------
-CALL GETLUN('FILEE', LUNECO)
-OPEN (LUNECO,FILE = FILEGC,STATUS = 'OLD',IOSTAT=ERR)
-if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-ECOTYP = '      '
-LNUM = 0
-DO WHILE (ECOTYP != ECONO) { #TODO: checar essa função no R
-  CALL IGNORE(LUNECO, LNUM, ISECT, C255)
-  if ((ISECT == 1) & (C255(1:1) != ' ') & (C255(1:1) != '*')) {
-    #          READ (C255,'(A6,66X,F6.0,30X,3F6.0)',IOSTAT=ERR)
-    #     &        ECOTYP, LNGSH, THRESH, SDPRO, SDLIP
-    READ (C255,'(A6,66X,F6.0,30X)',IOSTAT=ERR) ECOTYP, LNGSH
-    if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-    if (ECOTYP == ECONO) {
-      EXIT
-    }
-    
-  } else { if (ISECT == 0) {
-    if (ECONO == 'DFAULT') {CALL ERROR(ERRKEY,35,FILEGC,LNUM)}
-    ECONO = 'DFAULT'
-    REWIND(LUNECO)
-    LNUM = 0
-  }
-  }
-  
-  CLOSE (LUNECO)
-  
-  #-----------------------------------------------------------------------
-  RETURN
-  #-----------------------------------------------------------------------
-  END  SUBROUTINE IPDMND
-  #=======================================================================
-  
-  #=======================================================================
-  #       Variable definitions for DEMAND and IPDMND
-  #         Updated 25 Feb 2004
-  #-----------------------------------------------------------------------
-  # ADDSHL    Today's growth demand for shells of age NPP (g[shell] / m2 / d)
-  # AGRLF     Mass of CH2O required for new leaf growth (g[CH2O] / g[leaf])
-  # AGRRT     Mass of CH2O required for new root growth (g[CH2O] / g[root])
-  # AGRSD1    CH2O requirement for seed growth, excluding cost for protein 
-  #             content (g[CH2O] / g[seed])
-  # AGRSD2    CH2O requirement for seed growth, including cost for protein 
-  #             content (g[CH2O] / g[seed])
-  # AGRSH2    CH2O requirement for shell growth, including cost for protein 
-  #             content (g[CH2O] / g[shell])
-  # AGRSTM    Mass of CH2O required for new stem growth (g[CH2O] / g[stem])
-  # AGRVG     Mass of CH2O required for vegetative tissue growth including 
-  #             stoichiometry and respiration (g[CH2O] / g[tissue])
-  # AGRVG2    Total mass of CH2O required for vegetative tissue growth
-  #            (g[CH2O] / g[tissue])
-  # C255      255-character record read from file 
-  # C80       80-character record read from file 
-  # CARMIN    Minimum carbohydrate fraction 
-  # CAVTOT    Total potential available CH2O for reproductive growth
-  #            (g[CH2O] / m2)
-  # CDMREP    Total CH2O needed for potential reproductive growth
-  #            (g[CH2O] / m2 / d)
-  # CDMSD     Total CH2O demand to grow seed demand (GDMSD)
-  #            (g[CH2O] / m2 / d)
-  # CDMSDR    CH2O required for seed growth from mobilized N
-  #            (g[CH2O] / m2 / d)
-  # CDMSH     Total CH2O demand to grow shell demand (GDMSH)
-  #            (g[CH2O] / m2 / d)
-  # CDMTOT    Total CH2O demand (g[CH2O] / m2 / d)
-  # CDMVEG    Carbon demand for vegetative growth (g[CH2O] / m2 / d)
-  # CNOLD     Available CH2O after reproductive growth (g[CH2O] / m2 / d)
-  # CROP      Crop identification code 
-  # DAS       Days after start of simulation (d)
-  # DRPP      Photoperiod days which occur in a real day
-  #            (photoperiod days / day)
-  # DXR57     Relative time between first seed (NR5) and physiological 
-  #             maturity (NR7) (fraction)
-  # ECONO     Ecotype code - used to match ECOTYP in .ECO file 
-  # ECOTYP    Ecotype code for this simulation 
-  # ERR       Error code for file operation 
-  # F         Specific leaf area of new leaf tissue growth, including N
-  #            (cm2[leaf] / g[leaf])
-  # FFVEG     Specific leaf area of new leaf tissue growth (interim value)
-  #            (cm2[leaf] / g[leaf])
-  # FILECC    Path plus filename for species file (*.spe) 
-  # FILEGC    Pathname plus filename for ECO file 
-  # FINREF    Specific leaf area (SLA) of leaves of standard crop cultivar 
-  #             when plants emerge (cm2[leaf] / g[leaf])
-  # FNINL     Maximum fraction of N for growing leaf tissue (g[N] / g[leaf])
-  # FNINR     Maximum fraction of N for growing root tissue (g[N] / g[root])
-  # FNINS     Maximum fraction of N for growing stem tissue (g[N] / g[stem])
-  # FNINSD    Maximum fraction of N for growing seed tissue based on 
-  #             temperature (g[N] / g[seed])
-  # FNINSH    Maximum fraction of N for growing shell tissue
-  #            (g[N] / g[shell])
-  # FNSDT(I)  Temperature values which describe function for modifying seed 
-  #             growth rate with temperature (ï¿½C)
-  # FOUND     Indicator that good data was read from file by subroutine FIND 
-  #             (0 - End-of-file encountered, 1 - NAME was found) 
-  # FRACDN    Relative time between flowering (NR1) and last leaf appearance 
-  #             (NDLEAF) 
-  # FRLF      Fraction of vegetative tissue growth that goes to leaves on a 
-  #             day (g[leaf] / g[veg])
-  # FRLFF     Fraction of daily increase in vegetative weight which goes to 
-  #             leaves after the day on which the maximum number of V-stages 
-  #             occurs (NDVSTG). (g[leaf] / g[veg])
-  # FRLFM     Fraction of growth going to leaves, decreases linearly between 
-  #             R1 and NDLEAF (g[leaf] / g[veg])
-  # FRLFMX    Maximum leaf partitioning (g[leaf] / g[veg])
-  # FRNLFT    A quadratic function of the progress from NR5 to NR7 (DXR57), 
-  #             used to compute the change in maximum tissue N content 
-  #             between its maximum value and a fractional value (NRCVR) 
-  #             between the minimum and maximum tissue  N concentrations 
-  # FRRT      Fraction of vegetative tissue growth that goes to roots on a 
-  #             day (g[root] / g[veg])
-  # FRSTM     Fraction of vegetative tissue growth that goes to stems on a 
-  #             day (g[stem] / g[veg])
-  # FRSTMF    Fraction of daily dry weight increase in vegetative plant parts 
-  #             which goes to stems after the day on which the maximum number 
-  #             of V-stages occurs (NDVSTG). (g[stem] / g[veg])
-  # FRSTMM    Fraction of growth going to stems, decreases linearly between 
-  #             R1 and NDLEAF (g[stem] / g[veg])
-  # FVEG      Specific leaf area prior to computing effects of temperature, 
-  #             PAR, water stress (cm2[leaf] / g[leaf])
-  # GAINNW    Leaf area added (prior to VSSINK) (cm2[leaf] / m2[ground])
-  # GAINWT    Leaf weight added (prior to VSSINK and after NDLEAF)
-  #            (g[leaf] / m2[ground])
-  # GDMSD     Seed growth demand based on temperature and photoperiod
-  #            (g[seed] / m2 / d)
-  # GDMSDO    Seed growth demand (temporary value) (g[seed] / m2 / d)
-  # GDMSDR    Potential seed growth from NDMSDR (amount of Mobilized N which 
-  #             can be used for seed growth) (g[seed] / m2 / d)
-  # GDMSH     Growth demand for shells (g[shell] / m2 / d)
-  # GROMAX    Maximum leaf area which can be added per plant between 
-  #             emergence and day of simulation as a function of V-stage on 
-  #             day of simulation (cm2[leaf] / plant)
-  # GROYES    Maximum leaf area which could have been added per plant between 
-  #             emergence and yesterday as a function of V-stage
-  #             (cm2[leaf] / plant)
-  # GRRAT1    Maximum growth per individual shell (g / shell / d)
-  # ISECT     Indicator of completion of IGNORE routine: 0 - End of file 
-  #             encountered, 1 - Found a good line to read, 2 - End of 
-  #             Section in file encountered denoted by * in column 1. 
-  # LAGSD     Time required between shell growth and seed growth, per cohort
-  #            (Photo-thermal days)
-  # LINC      Line number of input file 
-  # LIPOPT    Temperature above which lipid composition is at a maximum (ï¿½C)
-  # LIPTB     Temperature below which lipid composition is zero (ï¿½C)
-  # LNGPEG    Time between start of peg (full flower) and shell formation 
-  #             (for peanuts only).  Defines slow growth period.
-  #             (Photo-thermal days)
-  # LNGSH     Time required for shell growth (Photo-thermal days)
-  # LNUM      Current line number of input file 
-  # LUNCRP    Logical unit number for FILEC (*.spe file) 
-  # LUNECO    Logical unit number for FILEE (*.eco file) 
-  # NAGE      Age of cohort (d)
-  # NDLEAF    Day when leaf expansion ceased (d)
-  # NDMNEW    Total N demand for new growth (g[N] / m2 / d)
-  # NDMOLD    N demand for old tissue (g[N] / m2 / d)
-  # NDMREP    Total N needed for potential reproductive growth
-  #            (g[N] / m2 / d)
-  # NDMSD     Total N demand to grow seed demand (GDMSD) (g[N] / m2 / d)
-  # NDMSDR    Amount of Mobilized N which can be used for seed growth
-  #            (g[N] / m2 / d)
-  # NDMSH     Total N demand to grow shell demand (GDMSH) (g[N] / m2 / d)
-  # NDMTOT    Total N demand (g[N] / m2 / d)
-  # NDMVEG    N required for vegetative growth if all PGAVL is used as 
-  #             computed (g[N] / m2 / d)
-  # NMINEP    Potential N mobilization from storage (g[N] / m2 / d)
-  # NMOBMX    Maximum fraction of N which can be mobilized in a day 
-  # NMOBR     Stage-dependent potential N mining rate expressed as a fraction 
-  #             of the maximum rate (NMOBMX) 
-  # NPP       Cohort number used as index in loops 
-  # NR1       Day when 50% of plants have at least one flower (d)
-  # NR2       Day when 50% of plants have one fruit (pod or peg) (d)
-  # NR5       Day when 50% of plants have pods with beginning seeds (d)
-  # NR7       Day when 50% of plants first have yellowing or maturing pods
-  #            (d)
-  # NRCVR     Fractional value between minimum and maximum tissue N values 
-  #             (0-1) 
-  # NSTRES    Nitrogen stress factor (1=no stress, 0=max stress) 
-  # NVEG0     Day of emergence (d)
-  # NVSMOB    Relative rate of N mining during vegetative stage to that in 
-  #             reproductive stage 
-  # NVSTL     N content in leaves (fraction)
-  # NVSTR     N content in roots (fraction)
-  # NVSTS     N content in stems (fraction)
-  # PAGE      Photothermal age of each cohort (Photo-thermal days)
-  # PAR       Daily photosynthetically active radiation or photon flux 
-  #             density (moles[quanta]/m2-d)
-  # PARSLA    Effect of PAR on specific leaf area 
-  # PCNL      Percentage of N in leaf tissue (100 g[N] / g[leaf])
-  # PCNRT     Percent N in root tissue (100 g[N] / g[root])
-  # PCNST     Percent N in stem tissue (100 g[N] / g[stem])
-  # PGAVL     Total available CH2O available for growth & respiration
-  #            (g[CH2O] / m2)
-  # PHTIM     Cumulative photothermal time ages of seeds and shells 
-  # PLIGSD    Proportion of seed tissue that is lignin (fraction)
-  # PLTPOP    Plant population (# plants / m2)
-  # PMINSD    Proportion of seed tissue that is mineral (fraction)
-  # PNTIM(I)  Photothermal days from first flower when flowers in age group I 
-  #             formed (p-t-d)
-  # POASD     Proportion of seed tissue that is organic acid (fraction)
-  # POTCAR    Potential carbohydrate composition of seed based on temperature
-  #            (fraction)
-  # POTLIP    Potential lipid composition of seed based on temperature
-  #            (fraction)
-  # PROLFF    Minimum leaf protein composition after N mining
-  #            (g[protein] / g[leaf])
-  # PROLFI    Maximum protein composition in leaves during growth with 
-  #             luxurious supply of N (g[protein] / g[leaf tissue])
-  # PRORTF    Minimum root protein composition after N mining
-  #            (g[protein] / g[root])
-  # PRORTI    Maximum protein composition in roots during growth with 
-  #             luxurious supply of N (g[protein] / g[root])
-  # PROSTF    Minimum stem protein composition after N mining
-  #            (g[protein] / g[stem])
-  # PROSTI    Maximum protein composition in stems during growth with 
-  #             luxurious supply of N (g[protein] / g[stem])
-  # PUNCSD    Cumulative puncture damage to seed (not yet implemented) 
-  # PUNCTR    Cumulative puncture damage (not yet implemented) 
-  # RCH2O     Respiration required for synthesizing CH2O structure
-  #            (g[CH2O] / g[tissue])
-  # REDPUN    Reduces growth of seed in an age group due to pest-caused 
-  #             punctures in seed (0 to 1) (not yet implemented) 
-  # REDSHL    Reduces growth of shell in an age group due to pest-caused 
-  #             punctures in seed (0 to 1) 
-  # RLIG      Respiration required for synthesizing lignin structure
-  #            (g[CH2O] / g[lignin])
-  # RLIP      Respiration required for synthesizing lipid structure
-  #            (g[CH2O] / g[lipid])
-  # RMIN      Respiration required for synthesizing mineral structure
-  #            (g[CH2O] / g[mineral])
-  # RNO3C     Respiration required for reducing NO3 to protein
-  #            (g[CH2O] / g[protein])
-  # ROA       Respiration required for synthesizing organic acids
-  #            (g[CH2O] / g[product])
-  # RPRO      Respiration required for re-synthesizing protein from mobilized 
-  #             N (g[CH2O] / g[protein])
-  # RPROAV    Respiration required for protein synthesis, average based on 
-  #             sources of N (g[CH2O] / g[protein])
-  # RPRPUN    Puncture damage reduction variable (not yet implemented) (0-1) 
-  # RTWT      Dry mass of root tissue, including C and N
-  #            (g[root] / m2[ground])
-  # SDDES(J)  Number of seeds destroyed today in cohort J when shells are not 
-  #             destroyed (#/m2/d)
-  # SDGR      Potential growth rate per seed (g / seed / d)
-  # SDLIP     Maximum lipid composition in seed (fraction)
-  # SDMAX     A maximum amount of remaining growth for each cohort (g/m2)
-  # SDNO(J)   Number of seeds for cohort J (#/m2)
-  # SDPRO     Seed protein fraction at 25ï¿½C (g[protein] / g[seed])
-  # SDVAR     Maximum cultivar-dependent seed growth rate, per seed
-  #            (g / seed / d)
-  # SECTION   Section name in input file 
-  # SHELN(J)  Number of shells for cohort J (#/m2)
-  # SHLAG     Shell (peg) growth rate during its initial slow growth phase 
-  #             after beginning pegging (R2) as a fraction of shell growth 
-  #             rate (SHVAR) during its rapid growth phase. 
-  # SHVAR     Shell growth rate during its rapid growth phase, per shell
-  #            (g / shell / d)
-  # SIZELF    The size of a normal upper node leaf (nodes 8 - 10) used to 
-  #             adjust leaf area expansion during sink-limited phase of 
-  #             vegetative growth, i.e., prior to VSSINK nodes on the main stem
-  #             (cm2/leaf)
-  # SIZRAT    Ratio of upper node normal leaf size for given variety to that 
-  #             for standard cultivar, used to adjust table of maximum leaf 
-  #             area vs. V-stage 
-  # SIZREF    The size of a normal upper node  leaf (nodes 8 - 10) of 
-  #             standard cultivar. (cm2 / leaf)
-  # SLAMAX    The maximum specific leaf area (SLA) for new leaves when grown 
-  #             under low (nearly zero) radiation but optimum water and 
-  #             temperature for the standard cultivar. (cm2 / g)
-  # SLAMIN    The minimum specific leaf area (SLA) for new leaves when grown 
-  #             under infinitely high radiation, optimum water and 
-  #             temperature for the standard cultivar. (cm2 / g)
-  # SLAMN     Minimum specific leaf area for new leaves when grown under high 
-  #             radiation and optimum water and temperature conditions (cm2 / g)
-  # SLAMX     Maximum specific leaf area for new leaves when grown under low 
-  #             radiation, but optimum water and temperature conditions
-  #             (cm2 / g)
-  # SLAPAR    Coefficient in exponential equation to reduce SLA as PAR 
-  #             increases (leaf curvature) 
-  # SLAREF    Specific leaf area (SLA) for new leaves during peak vegetative 
-  #             growth for the standard cultivar. (cm2/g)
-  # SLAVAR    Specific leaf area (SLA) for new leaves during peak vegetative 
-  #             growth for cultivar I, modified by environmental factor (cm2/g)
-  # SLOSUM    Slope of temperature vs. SUMTEM line (1/ï¿½C)
-  # SRMAX     Maximum fraction change in seed growth rate for long day 
-  #             lengths 
-  # STMWT     Dry mass of stem tissue, including C and N
-  #            (g[stem] / m2[ground)
-  # SWFAC     Effect of soil-water stress on photosynthesis, 1.0=no stress, 
-  #             0.0=max stress 
-  # TAVG      Average daily temperature (ï¿½C)
-  # TDUMX     Photo-thermal time that occurs in a real day based on early 
-  #             reproductive development temperature function
-  #             (photo-thermal days / day)
-  # TDUMX2    Photo-thermal time that occurs in a real day based on late 
-  #             reproductive development temperature function
-  #             (photo-thermal days / day)
-  # TEMXFR    Temperature effect on partitioning to pods, high temp. 
-  #             increases fraction of growth to vegetative tissue (0-1) 
-  # TGRO(I)   Hourly canopy temperature (ï¿½C)
-  # THRESH    The maximum ratio mass of seed to mass of seed plus shell at 
-  #             maturity.  Causes seed to stop growing as their dry weights 
-  #             increase until shells are filled in a cohort. 
-  # TMPFAC    Modifies maximum growth rate for seed and shells depending on 
-  #             temperature 
-  # TMPFCS    Interim value of TMPFAC 
-  # TPHFAC    Reduction in specific leaf area due to daytime temperature 
-  #             being less than optimal (0-1) 
-  # TURADD    Water stress factor (TURFAC) effect on reproductive growth and 
-  #             pod addition.  Stress is defined to INCREASE growth and 
-  #             addition. 
-  # TURFAC    Water stress factor for expansion (0 - 1) 
-  # TURFSL    Factor which applies water stress to specific leaf area of new 
-  #             leaf tissue growth 
-  # TURSLA    Water stress effects on leaf area expansion 
-  # TURXFR    Turgor water stress factor used to modify partitioning to 
-  #             reproductive growth 
-  # TYPSDT    Curve type for temperature factor calculations (for use in 
-  #             function subroutine CURV) 
-  # VSSINK    Vegetative stage beyond which sink-limited leaf area expansion 
-  #             can no longer limit photosynthesis or leaf area growth. 
-  # VSTAGE    Number of nodes on main stem of plant (nodes)
-  # WCRLF     Mass of CH2O reserves in leaves (g[leaf CH2O] / m2[ground])
-  # WCRRT     Mass of CH2O reserves in roots (g[root CH2O] / m2[ground])
-  # WCRST     Mass of CH2O reserves in stems (g[stem CH2O] / m2[ground])
-  # WNRLF     N available for mobilization from leaves above lower limit of 
-  #             mining (g[N] / m2)
-  # WNRRT     N available for mobilization from roots above lower limit of 
-  #             mining (g[N] / m2)
-  # WNRSH     N available for mobilization from shells above lower limit of 
-  #             mining (g[N] / m2)
-  # WNRST     N available for mobilization from stems above lower limit of 
-  #             mining (g[N] / m2)
-  # WTLF      Dry mass of leaf tissue including C and N
-  #            (g[leaf] / m2[ground])
-  # WTSD(J)   Seed mass  for cohort J (g/m2)
-  # WTSHE(J)  Shell mass  for cohort J (g/m2)
-  # XFRMAX    Maximum increase in partitioning to fruits induced under water 
-  #             stress, assuming no problem in pod setting 
-  # XFRT      Current day's partitioning to reproductive growth (0-1)
-  #            (g[fruit] / g[plant])
-  # XFRUIT    Maximum fraction of daily available gross photosynthate (PG) 
-  #             which is allowed to go to seeds plus shells, varies from 0 to 
-  #             1.0. 
-  # XLEAF(I)  V-stage at which partitioning to leaves is YLEAF(I).
-  #            (leaf nodes)
-  # XPOD      Growth partitioning to pods which slows node appearance
-  #            (fraction)
-  # XSLATM(I) Temperature values for function that reduces specific leaf area 
-  #             (SLA) (ï¿½C)
-  # XTRFAC(I) Values of TURFAC for function which reduces reproductive growth 
-  #             based on water stress 
-  # XVGROW(I) V-stage at which maximum leaf area growth per plant since 
-  #             emergence is YVGROW(I). (# leaf nodes)
-  # XX        Difference between partitioning fraction to stems at beginning 
-  #             bloom (R1) and at the day on which the maximum number of 
-  #             V-stages occurs (NDLEAF) 
-  # XXFTEM(I) Array of temperature values in table lookup describing effect 
-  #             of temperature on partitioning to pods (YXFTEM = 0 TO 1). (ï¿½C)
-  # YLEAF(I)  Partitioning fraction to leaves at V-stage XLEAF(I)
-  #            (g[leaf] / g[veg. plant])
-  # YSLATM(I) Array which describes the effect of temperature on specific 
-  #             leaf area 
-  # YSTEM(I)  Partitioning factor for stem growth at V-stage XSTEM(I)
-  #            (g[stem] / g[veg. plant])
-  # YTRFAC(I) Factor which affects reproductive growth based on water stress 
-  # YVGROW(I) Maximum leaf area grown per plant at V-stage XVGROW(I)
-  #            (cm2 / plant)
-  # YVREF(I)  Maximum leaf area grown per plant at V-stage XVGROW(I), for 
-  #             reference cultivar. (cm2 / plant)
-  # YXFTEM(I) Array describing the relative partitioning to pods (0 to 1 
-  #             effect on XFRUIT) as temperature increases. 
-  # YY        Used to linearly interpolate the difference in partitioning to 
-  #             leaves between stages R1 and NDLEAF 
-  #-----------------------------------------------------------------------
-  #       END SUBROUTINE DEMAND
-  #=======================================================================

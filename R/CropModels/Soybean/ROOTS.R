@@ -29,11 +29,11 @@
 #  Calls      :  IPROOT, INROOT
 #=======================================================================
 
-     # SUBROUTINE ROOTS(DYNAMIC,
-     #&    AGRRT, CROP, DLAYR, DS, DTX, DUL, FILECC, FRRT, #Input
-     #&    ISWWAT, LL, NLAYR, PG, PLTPOP, RO, RP, RTWT,    #Input
-     #&    SAT, SW, SWFAC, VSTAGE, WR, WRDOTN, WTNEW,      #Input
-     #&    RLV, RTDEP, SATFAC, SENRT, SRDOT)               #Output
+simDataVars$RLV    <-  0
+simDataVars$RTDEP  <-  0
+simDataVars$SATFAC <-  0
+simDataVars$SENRT  <-  0
+simDataVars$SRDOT  <-  0
 
 ROOTS <- function(EMERG,
                   AGRRT, CROP, DLAYR, DS, DTX, DUL, FILECC, FRRT, #!Input
@@ -41,96 +41,61 @@ ROOTS <- function(EMERG,
                   SAT, SW, SWFAC, VSTAGE, WR, WRDOTN, WTNEW,      #!Input
                   RLV, RTDEP, SATFAC, SENRT, SRDOT)  {            #!Output
   
-  
-  #-----------------------------------------------------------------------
-  #USE ModuleDefs     #Definitions of constructed variable types, 
-  #                   # which contain control information, soil
-  #                   # parameters, hourly weather data.
-  #IMPLICIT NONE
-  #SAVE
+  ROOTS <- 0
   
   #CHARACTER*1 ISWWAT
   #CHARACTER*2 CROP
   #CHARACTER*92 FILECC
   
+  #TODO verificar padrão ECOSMOS
   #INTEGER L, L1, NLAYR
-  #TODO verificar se vamos utilizar e DYNAMIC
   #INTEGER DYNAMIC
   
-  CUMDEP
-  DEPMAX
-  DTX
-  FRRT
-  PG
-  RFAC1
-  RFAC2
-  RFAC3
-  RLDSM
-  RLNEW
-  RO
-  RP
-  RTDEP
-  RTSDF
-  RTSEN
-  RTWT
-  SRDOT
-  SWDF
-  SWFAC
-  TRLDF
-  TRLV
-  WRDOTN   #, TRTDY
-  CGRRT
-  AGRRT
-  SWEXF
-  PORMIN
-  RTEXF
-  RTSURV
-  RTDEPI
-  SUMEX
-  SUMRL
-  SATFAC
-  PLTPOP
-  WTNEW
-  VSTAGE
+  #TODO
+  #PG virá da fotossintese!
   
-  #TABEX              #Function subroutine located in UTILS.for
+  #______________________________________________________________        
+  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*ROOT PARAMETERS
+  RFAC1  <- 7500.0
+  RLDSM  <- 0.1
+  RTSDF  <- 0.015 
+  RTSEN  <- 0.020
+  PORMIN <- 0.02
+  RTEXF  <- 0.10
+  RTDEPI <- 20.0
+  XRTFAC <- c(0.00, 3.00, 6.00, 30.00)
+  YRTFAC <- c(2.50, 2.50, 2.60, 2.60)
+  RTWTMIN <- 0.0 #TODO ver com santiago e/ou Leandro
   
-  XRTFAC(4), YRTFAC(4)
-  DLAYR(NL), DS(NL), DUL(NL), ESW(NL), LL(NL), RLDF(NL)
-  RLGRW(NL), RLSEN(NL), RLV(NL), RLV_WS(NL), RRLF(NL)
-  SW(NL), SAT(NL), WR(NL)
-  GRESPR(NL), MRESPR(NL), RESPS(NL)
-  SENRT(NL)
+  RWMTXT <- as.character(rep(0,7)) #TODO verificar sintaxe e uso
   
-  # Added 10/20/2005 for minimum RLV calculations
-  # RTWTMIN = minimum root mass per layer; used to limit senescence
-  #           (g/m2) (species file parameter)
-  # TRLV_MIN  = conversion of RTWTMIN to RLV units per layer
-  TRLV_MIN
-  RLSENTOT
-  FACTOR
-  RTWTMIN
-  TotRootMass
-  CumRootMass
-  
-  #***********************************************************************
-  #***********************************************************************
-  #     Run Initialization - Called once per simulation
-  #***********************************************************************
-  if (DYNAMIC == RUNINIT) {
-    #-----------------------------------------------------------------------
-    #TODO ver se chama funcao ou nao (ou seja, incluir tudo como params)
-    CALL IPROOT(FILECC,                                 #Input
-                &  PORMIN, RFAC1, RLDSM, RTDEPI, RTEXF,              #Output
-                &  RTSEN, RTSDF, RTWTMIN, XRTFAC, YRTFAC)            #Output
-    
-    DEPMAX = DS[NLAYR]
-    
+  #TODO ver link com ECOSMOS
+  NL       = 20  #!Maximum number of soil layers 
+  DLAYR  <- rep(0, NL)
+  DS     <- rep(0, NL)
+  DUL    <- rep(0, NL)
+  ESW    <- rep(0, NL)
+  LL     <- rep(0, NL)
+  RLDF   <- rep(0, NL)
+  RLGRW  <- rep(0, NL)
+  RLSEN  <- rep(0, NL)
+  RLV    <- rep(0, NL)
+  RLV_WS <- rep(0, NL)
+  RRLF   <- rep(0, NL)
+  SW     <- rep(0, NL)
+  SAT    <- rep(0, NL)
+  WR     <- rep(0, NL)
+  GRESPR <- rep(0, NL)
+  MRESPR <- rep(0, NL)
+  RESPS  <- rep(0, NL)
+  SENRT  <- rep(0, NL)
+
     #***********************************************************************
     #***********************************************************************
     #     Seasonal initialization - run once per season
     #***********************************************************************
-  } else if (DYNAMIC == SEASINIT) {
+  if (DYNAMIC == SEASINIT) {
     #-----------------------------------------------------------------------
     SRDOT = 0.0       
     RLV   = 0.0
@@ -162,9 +127,8 @@ ROOTS <- function(EMERG,
     #   must preceed call to INROOT.)
     #-----------------------------------------------------------------------
     #TODO chamar funcao
-    CALL INROOT(
-      &  DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW, #Input
-      &  RLV, RTDEP)                                       #Output
+    INROOT(DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW, #Input
+                RLV, RTDEP)                                       #Output
     
     RFAC3 = RFAC1
     
@@ -411,101 +375,14 @@ ROOTS <- function(EMERG,
   #***********************************************************************
   #RETURN
   #END SUBROUTINE ROOTS
+  assign("RLV", RLV, envir = env)
+  assign("RTDEP", RTDEP, envir = env)
+  assign("SATFAC", SATFAC, envir = env)
+  assign("SENRT", SENRT, envir = env)
+  assign("SRDOT", SRDOT, envir = env)
+  
   return()
 }
-#=======================================================================
-
-
-#=======================================================================
-#  IPROOT Subroutine
-#  Reads root parameters from input files.
-#----------------------------------------------------------------------
-#  REVISION HISTORY
-#  09/13/1998 CHP Written
-#  08/12/2003 CHP Added I/O error checking
-#-----------------------------------------------------------------------
-#  Called : ROOTS
-#  Calls  : FIND, ERROR, IGNORE
-#=======================================================================
-      SUBROUTINE IPROOT(
-     &  FILECC,                                           #Input
-     &  PORMIN, RFAC1, RLDSM, RTDEPI, RTEXF,              #Output
-     &  RTSEN, RTSDF, RTWTMIN, XRTFAC, YRTFAC)            #Output
-
-#------------------------------------------------------------------
-      USE ModuleDefs     #Definitions of constructed variable types, 
-                         # which contain control information, soil
-                         # parameters, hourly weather data.
-# NL defined in ModuleDefs.for
-
-      IMPLICIT NONE
-
-      CHARACTER*6 ERRKEY
-      PARAMETER (ERRKEY = 'ROOTS')
-
-      CHARACTER*6 SECTION
-      CHARACTER*80 CHAR
-      CHARACTER*92 FILECC
-
-      INTEGER LUNCRP, ERR, LNUM, ISECT, FOUND, II
-
-      RTDEPI
-      RLDSM
-      PORMIN
-      RFAC1
-      RTSEN
-      RTSDF
-      RTEXF
-      XRTFAC(4)
-      YRTFAC(4)
-
-# Added 10/20/2005 for minimum root mass for senescence
-      #CHARACTER (len=7) RWMTXT
-      RWMTXT <- as.character(rep(0,7)) #TODO verificar sintaxe
-      RTWTMIN <- 0
-
-#-----------------------------------------------------------------------
-#     ***** READ ROOT GROWTH PARAMETERS *****************
-#-----------------------------------------------------------------------
-#     Read in values from input file, which were previously input
-#       in Subroutine IPCROP.
-#-----------------------------------------------------------------------
-      CALL GETLUN('FILEC', LUNCRP)
-      OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-      if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,0)}
-
-#-----------------------------------------------------------------------
-#    Find and Read Photosynthesis Section
-#-----------------------------------------------------------------------
-      SECTION = '#*ROOT'
-      CALL FIND(LUNCRP, SECTION, LNUM, FOUND)
-      if (FOUND == 0) {
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
-      } else {
-        CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        READ(CHAR,'(5F6.0)',IOSTAT=ERR) RTDEPI,RFAC1,RTSEN,RLDSM,RTSDF
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        READ(CHAR,'(8F6.0)',IOSTAT=ERR)(XRTFAC(II),YRTFAC(II),II = 1,4)
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        READ(CHAR,'(12X,2F6.0)',IOSTAT=ERR) PORMIN, RTEXF
-        if (ERR != 0) {CALL ERROR(ERRKEY,ERR,FILECC,LNUM)}
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        READ(CHAR,'(F6.0,T45,A7)',IOSTAT=ERR) RTWTMIN, RWMTXT
-        if (ERR != 0 | RWMTXT != 'RTWTMIN') {
-          RTWTMIN = 0.0
-        }
-      }
-
-      CLOSE (LUNCRP)
-
-#***********************************************************************
-      RETURN
-      END SUBROUTINE IPROOT
 #=======================================================================
 
 #=======================================================================
@@ -524,35 +401,28 @@ ROOTS <- function(EMERG,
      #&  DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW, #Input
      #&  RLV, RTDEP)                                       #Output
       
+      #TODO verificar se atribuição aqui é necessária!
+      simDataVars$RLV  <-  0
+      simDataVars$RTDEP  <-  0
+      
       INROOT <- function (
         DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW, #Input
         RLV, RTDEP) {                                      #Output
         
         INROOT <- 0
-        #------------------------------------------------------------------
-        #USE ModuleDefs     #Definitions of constructed variable types, 
-        # which contain control information, soil
-        # parameters, hourly weather data.
-        
-        # NL defined in ModuleDefs.for
         NL       = 20  #!Maximum number of soil layers 
-        #IMPLICIT NONE
-        
+
         #INTEGER L
         #TODO adequar ao padrão ECOSMOS
-        NLAYR
+        NLAYR <- 20
         
-        DEP
-        RLINIT
-        RTDEP
-        RTDEPI
-        CUMDEP
-        RFAC1
-        WTNEW
-        FRRT
-        PLTPOP
-        RLV(NL)
-        DLAYR(NL)
+        #!*ROOT PARAMETERS
+        RTDEPI  <- 20.0
+        #RFAC1 VERIFICAR: já chamado na ROOTS.for
+        
+        #TODO adequar ao padrão ECOSMOS
+        RLV   <- rep(0, NL)
+        DLAYR <- rep(0, NL)
         
         #***********************************************************************
         #     INITIALIZE ROOT DEPTH AT EMERGENCE
@@ -586,6 +456,9 @@ ROOTS <- function(EMERG,
         #***********************************************************************
         #RETURN
         #END SUBROUTINE INROOT
+        assign("RLV", RLV, envir = env)
+        assign("RTDEP", RTDEP, envir = env)
+        
         return()
       }
 #=======================================================================

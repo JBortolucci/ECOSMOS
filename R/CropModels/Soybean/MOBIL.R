@@ -12,97 +12,80 @@
 #  Called by:  PLANT
 #  Calls:      None
 #=======================================================================
-#  SUBROUTINE MOBIL(DYNAMIC,                           !Control
-#                   &    NDMNEW, NMINEP, NMOBR, RPRO, TRNU,              !Input
-#                   &    WNRLF, WNRRT, WNRSH, WNRST,                     !Input
-#                   &    NMINEA, NRUSLF, NRUSRT, NRUSSH, NRUSST)         !Output
-#
-#!-----------------------------------------------------------------------
-#  USE ModuleDefs     !Definitions of constructed variable types, 
-#! which contain control information, soil
-#! parameters, hourly weather data.
-#IMPLICIT NONE
-#SAVE
-#
-#INTEGER DYNAMIC
+
+simDataVars$NMINEA  <-  0
+simDataVars$NRUSLF  <-  0
+simDataVars$NRUSRT  <-  0
+simDataVars$NRUSSH  <-  0
+simDataVars$NRUSST  <-  0
 
 MOBIL <- function(DYNAMIC,
-                 NDMNEW, NMINEP, NMOBR, RPRO, TRNU,              #!Input
-                 WNRLF, WNRRT, WNRSH, WNRST,                     #!Input
-                 NMINEA, NRUSLF, NRUSRT, NRUSSH, NRUSST) {         #!Output
-
-#REAL CNMINE, NDMNEW, NMINEA, NMINEP, NMINER, NMOBR
-#REAL NRUSLF, NRUSRT, NRUSSH, NRUSST, RPRO
-#REAL TRNU, WNRLF, WNRRT, WNRSH, WNRST
-CNMINE <- 0 # não usado, aparentemente
-NDMNEW <- 0 # calculado no DEMAND.for
-NMINEA <- 0
-NMINEP <- 0 # calculado no DEMAND.for
-NMINER <- 0
-NMOBR  <- 0 # calculado no DEMAND.for
-NRUSLF <- 0
-NRUSRT <- 0
-NRUSSH <- 0
-NRUSST <- 0
-RPRO   <- 0.360 #!*RESPIRATION PARAMETERS (.SPE), mas não usado, aparentemente
-TRNU   <- 0 # calculado no NUPTAKE.for ?? iremos utilizar ??
-WNRLF  <- 0 # calculado no GROW.for
-WNRRT  <- 0 # calculado no GROW.for
-WNRSH  <- 0 # calculado no GROW.for
-WNRST  <- 0 # calculado no GROW.for
-
-#***********************************************************************
-#***********************************************************************
-#     Seasonal initialization - run once per season
-#***********************************************************************
-  if (DYNAMIC == SEASINIT) {
-#-----------------------------------------------------------------------
-  CNMINE = 0.0         
-  NMINEA = 0.0         
-  NRUSLF = 0.0         #moved from INPLNT
-  NRUSST = 0.0         
-  NRUSRT = 0.0         
-  NRUSSH = 0.0         
+                  NDMNEW, NMINEP, NMOBR, RPRO, TRNU,              #!Input
+                  WNRLF, WNRRT, WNRSH, WNRST,                     #!Input
+                  NMINEA, NRUSLF, NRUSRT, NRUSSH, NRUSST) {         #!Output
   
-#***********************************************************************
-#***********************************************************************
-#     DAILY RATE/INTEGRATION
-#***********************************************************************
- } else if (DYNAMIC == INTEGR) {
-#-----------------------------------------------------------------------
-CNMINE = 0.0
-NMINEA = 0.0
-NRUSLF = 0.0
-NRUSST = 0.0
-NRUSRT = 0.0
-NRUSSH = 0.0
-
-#-----------------------------------------------------------------------
-#    Leave MOBIL with N Mined from Leaf, Stem,Root, Shell, and
-#    Total Plant Tissue, and CH2O used in the Re-synthesis of Protein
-#-----------------------------------------------------------------------
-#      IF (TRNU .LT. NDMNEW .AND. NMINEP .GT. 1.E-4) THEN
-if (NDMNEW - TRNU > 1.E-5 & NMINEP > 1.E-4) {
-  NMINEA = NDMNEW - TRNU
-}
-if (NMINEA > NMINEP) {NMINEA = NMINEP
-NMINER = NMINEA/NMINEP * NMOBR
-NRUSLF = NMINER * WNRLF
-NRUSST = NMINER * WNRST
-NRUSRT = NMINER * WNRRT
-NRUSSH = NMINER * WNRSH
-CNMINE = NMINEA / 0.16 * RPRO        #Not used
-}
-
-#***********************************************************************
-#***********************************************************************
-#     END OF DYNAMIC IF CONSTRUCT
-#***********************************************************************
-}
-#***********************************************************************
-#  RETURN
-#END ! SUBROUTINE MOBIL
-return()
+  MOBIL <- 0
+  
+  RPRO   <- 0.360 #!*RESPIRATION PARAMETERS (.SPE), mas não usado, aparentemente
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     Seasonal initialization - run once per season
+  #***********************************************************************
+  if (DYNAMIC == SEASINIT) {
+    #-----------------------------------------------------------------------
+    CNMINE = 0.0         
+    NMINEA = 0.0         
+    NRUSLF = 0.0         #moved from INPLNT
+    NRUSST = 0.0         
+    NRUSRT = 0.0         
+    NRUSSH = 0.0         
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     DAILY RATE/INTEGRATION
+    #***********************************************************************
+  } else if (DYNAMIC == INTEGR) {
+    #-----------------------------------------------------------------------
+    CNMINE = 0.0
+    NMINEA = 0.0
+    NRUSLF = 0.0
+    NRUSST = 0.0
+    NRUSRT = 0.0
+    NRUSSH = 0.0
+    
+    #-----------------------------------------------------------------------
+    #    Leave MOBIL with N Mined from Leaf, Stem,Root, Shell, and
+    #    Total Plant Tissue, and CH2O used in the Re-synthesis of Protein
+    #-----------------------------------------------------------------------
+    #      IF (TRNU .LT. NDMNEW .AND. NMINEP .GT. 1.E-4) THEN
+    if (NDMNEW - TRNU > 1.E-5 & NMINEP > 1.E-4) {
+      NMINEA = NDMNEW - TRNU
+    }
+    if (NMINEA > NMINEP) {NMINEA = NMINEP
+    NMINER = NMINEA/NMINEP * NMOBR
+    NRUSLF = NMINER * WNRLF
+    NRUSST = NMINER * WNRST
+    NRUSRT = NMINER * WNRRT
+    NRUSSH = NMINER * WNRSH
+    CNMINE = NMINEA / 0.16 * RPRO        #Not used
+    }
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     END OF DYNAMIC IF CONSTRUCT
+    #***********************************************************************
+  }
+  #***********************************************************************
+  #  RETURN
+  #END ! SUBROUTINE MOBIL
+  assign("NMINEA", NMINEA, envir = env)
+  assign("NRUSLF", NRUSLF, envir = env)
+  assign("NRUSRT", NRUSRT, envir = env)
+  assign("NRUSSH", NRUSSH, envir = env)
+  assign("NRUSST", NRUSST, envir = env)
+  
+  return()
 }
 
 #-----------------------------------------------------------------------
