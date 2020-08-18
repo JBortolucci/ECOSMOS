@@ -316,6 +316,9 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
       snowa <- precip / plens
     }
   }
+
+  print('usando raina=raina+2')    
+  raina=raina+2
   
   # ---------------------------------------------------------------------- 
   # *  *  * irrigation calculations *  * *
