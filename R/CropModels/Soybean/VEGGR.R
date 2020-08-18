@@ -52,7 +52,7 @@ simDataVars$WLDOTN  <-  0
 simDataVars$WRDOTN  <-  0
 simDataVars$WSDOTN  <-  0
 
-VEGGR <- function(DYNAMIC, EMERG, #TODO verificar qual dos dois 
+VEGGR <- function(EMERG, #DINAMYC no original
                   AGRLF, AGRRT, AGRSTM, CMINEP, CSAVEV, DTX,      #!Input
                   DXR57, ECONO, FILECC, FILEGC, FNINL, FNINR,     #!Input
                   FNINS, KCAN, NAVL, NDMNEW, NDMOLD,              #!Input

@@ -31,19 +31,8 @@ SENES <- function (DYNAMIC,DAS,
                    RHOL, SLAAD, STMWT, SWFAC, VSTAGE, WTLF, XLAI  #Input
                    ){                   #Output
   
+  SENES <- 0
   #-----------------------------------------------------------------------
-  #USE ModuleDefs
-  #USE ModuleData
-  #IMPLICIT NONE
-  #SAVE
-  
-  #CHARACTER*6  ERRKEY, SECTION
-  #CHARACTER*80 CHAR
-  #CHARACTER*92 FILECC
-  #PARAMETER (ERRKEY = 'SENES')
-  
-  #INTEGER I, II, LUNCRP, ERR, LINC, LNUM, ISECT
-  #INTEGER FOUND
   #TODO checar conexão no ECOSMOS 
   #INTEGER DYNAMIC
   #INTEGER DAS

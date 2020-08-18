@@ -26,8 +26,8 @@ CANOPY <- function (DYNAMIC,
                     RVSTGE, TGRO, TURFAC, VSTAGE, XLAI,             #Input
                     CANHT, CANWH) {                                    #Output
   
-  #-----------------------------------------------------------------------
   CANOPY <- 0
+  #-----------------------------------------------------------------------
   
   #TODO verificar padrão ECOSMOS
   #INTEGER DYNAMIC

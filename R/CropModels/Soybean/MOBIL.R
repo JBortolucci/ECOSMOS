@@ -26,7 +26,8 @@ MOBIL <- function(DYNAMIC,
   
   MOBIL <- 0
   
-  RPRO   <- 0.360 #!*RESPIRATION PARAMETERS (.SPE), mas não usado, aparentemente
+  #!*RESPIRATION PARAMETERS (.SPE), mas não usado, aparentemente
+  RPRO   <- 0.360 
   
   #***********************************************************************
   #***********************************************************************

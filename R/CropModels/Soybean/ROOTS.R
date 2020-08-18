@@ -35,7 +35,7 @@ simDataVars$SATFAC <-  0
 simDataVars$SENRT  <-  0
 simDataVars$SRDOT  <-  0
 
-ROOTS <- function(EMERG,
+ROOTS <- function(EMERG, #DINAMYC no original
                   AGRRT, CROP, DLAYR, DS, DTX, DUL, FILECC, FRRT, #!Input
                   ISWWAT, LL, NLAYR, PG, PLTPOP, RO, RP, RTWT,    #!Input
                   SAT, SW, SWFAC, VSTAGE, WR, WRDOTN, WTNEW,      #!Input
@@ -43,16 +43,13 @@ ROOTS <- function(EMERG,
   
   ROOTS <- 0
   
+    #TODO verificar padrão ECOSMOS
   #CHARACTER*1 ISWWAT
-  #CHARACTER*2 CROP
-  #CHARACTER*92 FILECC
-  
-  #TODO verificar padrão ECOSMOS
   #INTEGER L, L1, NLAYR
   #INTEGER DYNAMIC
   
   #TODO
-  #PG virá da fotossintese!
+  #PG virá da subrotina da fotossintese!
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL

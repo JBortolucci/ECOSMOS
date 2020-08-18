@@ -27,11 +27,6 @@ FREEZE <- function(
   
   FREEZE <- 0
   
-  #CHARACTER*1  IDETO
-  #CHARACTER*78 MESSAGE(10)
-  #INTEGER MDATE, YRDOY, DAP, NOUTDO, YRPLT, TIMDIF
-  #REAL  WLFDOT, WTLF, SLDOT, NRUSLF, TMIN, FREEZ2
-  
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*LEAF SENESCENCE FACTORS
@@ -39,7 +34,7 @@ FREEZE <- function(
   
   #TODO descobrir origens dessas variaveis
   #MDATE  <- #!Input/Output
-    
+  
   #TODO buscar no padrao do Ecosmos
   YRDOY <- 0 # usado para calcular dap/das == paste0(iyear,jday)
   YRPLT <- 0  # usado para calcular dap/das

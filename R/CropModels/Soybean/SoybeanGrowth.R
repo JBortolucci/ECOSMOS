@@ -42,7 +42,7 @@ GROW <- function (CONTROL, ISWITCH, EMERG, SOILPROP,
   
 }
 
-ROOTS <- function(EMERG,
+ROOTS <- function(EMERG, #DINAMYC no original
           AGRRT, CROP, DLAYR, DS, DTX, DUL, FILECC, FRRT, #!Input
           ISWWAT, LL, NLAYR, PG, PLTPOP, RO, RP, RTWT,    #!Input
           SAT, SW, SWFAC, VSTAGE, WR, WRDOTN, WTNEW,      #!Input
@@ -68,7 +68,7 @@ DEMAND <- function(RUNINIT, CONTROL,
 
 }
   
-PODS <- function(EMERG, 
+PODS <- function(EMERG, #DINAMYC no original
          AGRSD1, AGRSH1, DLAYR, DRPP, DUL, FILECC,       #!Input
          FILEGC,FILEIO, FNINL, FNINSD, FNINSH, GDMSD,    #!Input
          GRRAT1, ISWWAT, LL, NAVL, NDSET, NLAYR, NRUSSH, #!Input
@@ -84,7 +84,7 @@ PODS <- function(EMERG,
 }
   
 #!-----------------------------------------------------------------------
-   VEGGR <- function(EMERG, 
+   VEGGR <- function(EMERG, #DINAMYC no original 
                  AGRLF, AGRRT, AGRSTM, CMINEP, CSAVEV, DTX,      #!Input
                  DXR57, ECONO, FILECC, FILEGC, FNINL, FNINR,     #!Input
                  FNINS, KCAN, NAVL, NDMNEW, NDMOLD,              #!Input

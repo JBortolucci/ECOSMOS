@@ -216,8 +216,8 @@ PODS <- function(EMERG,
       SHELN  = 0.0
       FLWN   = 0.0
       
-      #TODO CHAMAR FUNCAO
-      CALL FreshWt(SEASINIT, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
+      #TODO VERIFICAR: aparentemente usado apenas para "snap bean"
+      #CALL FreshWt(SEASINIT, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
       
       #***********************************************************************
       #***********************************************************************
@@ -637,8 +637,8 @@ PODS <- function(EMERG,
         #-----------------------------------------------------------------------
         if (YRDOY >= YRNR2 & YRNR2 > 0) {
           
-          #TODO CHAMAR FUNCAO
-          CALL FreshWt(INTEGR, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
+          #TODO VERIFICAR: aparentemente usado apenas para "snap bean"
+          #CALL FreshWt(INTEGR, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
           
           for (NPP in 1:(NR2TIM + 1)) { 
             #-----------------------------------------------------------------------
@@ -683,10 +683,10 @@ PODS <- function(EMERG,
     } else if (DYNAMIC == OUTPUT | DYNAMIC == SEASEND) {
       
       #-----------------------------------------------------------------------
-      if (YRDOY >= YRNR2 & YRNR2 > 0) {
-        #TODO CHAMAR FUNCAO
-        CALL FreshWt(DYNAMIC, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
-      }
+      #if (YRDOY >= YRNR2 & YRNR2 > 0) {
+      #  #TODO VERIFICAR: aparentemente usado apenas para "snap bean"
+      #  CALL FreshWt(DYNAMIC, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
+      #}
       
       #***********************************************************************
       #***********************************************************************

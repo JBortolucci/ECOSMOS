@@ -23,7 +23,6 @@ simDataVars$WTSD    <-  0
 simDataVars$WTSHE   <-  0
 simDataVars$EMERG   <-  0
   
-
 #TODO REMINDER -> não usado pelo modelo, por enquanto!
 PODDET <- function(
   FILECC, TGRO, WTLF, YRDOY, YRNR2,                 #Input
@@ -33,17 +32,6 @@ PODDET <- function(
   
   PODDET <- 0
   #-----------------------------------------------------------------------
-  #USE ModuleDefs     #Definitions of constructed variable types, 
-  # which contain control information, soil
-  # parameters, hourly weather data.
-  #IMPLICIT NONE
-  #SAVE
-  #CHARACTER*6 ERRKEY
-  #PARAMETER (ERRKEY = 'PODDET')
-  #CHARACTER*6 SECTION
-  #CHARACTER*80 C80
-  #CHARACTER*92 FILECC
-  #INTEGER LUNCRP, ERR, LINC, LNUM, FOUND, ISECT, I
   
   #TODO checar conexão no ECOSMOS 
   #DYNAMIC

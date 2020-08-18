@@ -69,20 +69,8 @@ DEMAND <- function(DYNAMIC, CONTROL,
   DEMAND <- 0
   
   ##-----------------------------------------------------------------------
-  #USE ModuleDefs
-  #USE ModuleData
-  #IMPLICIT NONE
-  #SAVE
-  #CHARACTER*2 CROP
-  #CHARACTER*3 TYPSDT
-  #CHARACTER*6   ERRKEY
-  #PARAMETER (ERRKEY = 'DEMAND')
-  #CHARACTER*30 FILEIO
-  #CHARACTER*78 MSG(2)
-  #CHARACTER*92 FILECC, FILEGC
-  #TODO verificar se vamos utilizar e DYNAMIC
+  #TODO verificar se vamos utilizar e como o DYNAMIC
   #INTEGER DYNAMIC   #, TIMDIF
-  #I
   #NPP
   
   NAGE   <- 0

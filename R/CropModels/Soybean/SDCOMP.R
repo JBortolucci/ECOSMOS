@@ -25,8 +25,7 @@ SDCOMP <- function (CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD,   #Input
                     AGRSD1, AGRSD2, FNINSD, POTCAR, POTLIP) {       #Output
   
   SDCOMP <- 0
-  #TODO atribuir variáveis e parametros
-  
+
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   SDLIP <- 0.200 #Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
