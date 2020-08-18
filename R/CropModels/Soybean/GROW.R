@@ -250,18 +250,18 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
   #***********************************************************************
   if (DYNAMIC == RUNINIT) {
     #-----------------------------------------------------------------------
-    CALL IPGROW(
-      &  FILEIO, FILECC,  CROP,                                  !Input
-      &  ALPHL,  ALPHR,  ALPHS,  ALPHSH,                         !Output
-      &  PCARLF, PCARST, PCARRT, PCARSH, PCARSD, PCARNO,         !Output
-      &  PLIGLF, PLIGST, PLIGRT, PLIGSH, PLIGSD, PLIGNO,         !Output
-      &  PLIPLF, PLIPST, PLIPRT, PLIPSH,                 PLIPNO, !Output
-      &  PMINLF, PMINST, PMINRT, PMINSH, PMINSD, PMINNO,         !Output
-      &  POALF,  POAST,  POART,  POASH,  POASD,  POANO,          !Output
-      &  PROLFF, PROSTF, PRORTF, PROSHF,                 PRONOD, !Output
-      &  PROLFI, PROSTI, PRORTI,                                 !Output
-      &  PLTPOP, ROWSPC, RMIN,   PLME,   SDWTPL,                 !Output
-      &  SDLIP,  SDPRO,  WTFSD,  WTPSD,   XPODF)                 !Output
+    #CALL IPGROW(
+    #  &  FILEIO, FILECC,  CROP,                                  !Input
+    #  &  ALPHL,  ALPHR,  ALPHS,  ALPHSH,                         !Output
+    #  &  PCARLF, PCARST, PCARRT, PCARSH, PCARSD, PCARNO,         !Output
+    #  &  PLIGLF, PLIGST, PLIGRT, PLIGSH, PLIGSD, PLIGNO,         !Output
+    #  &  PLIPLF, PLIPST, PLIPRT, PLIPSH,                 PLIPNO, !Output
+    #  &  PMINLF, PMINST, PMINRT, PMINSH, PMINSD, PMINNO,         !Output
+    #  &  POALF,  POAST,  POART,  POASH,  POASD,  POANO,          !Output
+    #  &  PROLFF, PROSTF, PRORTF, PROSHF,                 PRONOD, !Output
+    #  &  PROLFI, PROSTI, PRORTI,                                 !Output
+    #  &  PLTPOP, ROWSPC, RMIN,   PLME,   SDWTPL,                 !Output
+    #  &  SDLIP,  SDPRO,  WTFSD,  WTPSD,   XPODF)                 !Output
     
     if (CROP != 'FA') {
       #-----------------------------------------------------------------------
@@ -334,10 +334,10 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
     SenE   = 0.0
     
     # VERIFICAR: Atribuição de uma operação?
-    SENESCE % ResWt  = 0.0
-    SENESCE % ResLig = 0.0
-    SENESCE % ResE   = 0.0
-    SENESCE % CumResE[N] = 0.0
+    #SENESCE % ResWt  = 0.0
+    #SENESCE % ResLig = 0.0
+    #SENESCE % ResE   = 0.0
+    #SENESCE % CumResE[N] = 0.0
     
     SHELWT = 0.0
     SLAAD  = 0.0
@@ -620,7 +620,7 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
       } else if (XPODF == 'SD') {
         XPOD = 0.17 * (WSDDTN)/GROWTH + 0.83 * XPOD
       } else {
-        CALL ERROR(ERRKEY,1,'      ',0)
+        #CALL ERROR(ERRKEY,1,'      ',0)
       }
     }
     #-----------------------------------------------------------------------
@@ -1154,12 +1154,12 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
     }
     
     # VERIFICAR: Novamente expressão com operação a esquerda.
-    SENESCE % ResWt  = SenWt
-    SENESCE % ResLig = SenLig
+    #SENESCE % ResWt  = SenWt
+    #SENESCE % ResLig = SenLig
     
     # VERIFICAR: Começa indice començando com 0 e expressão a esquerda. No R o indexamento começa sempre do 1.
     for (L in 0:NLAYR) {
-      SENESCE % ResE[L,N]  = SenE[L,N] #TODO verificar sintaxe e conexao com demais subrotinas
+      #SENESCE % ResE[L,N]  = SenE[L,N] #TODO verificar sintaxe e conexao com demais subrotinas
       #        SENESCE % ResE(L,P)  = SenE(L,P)
       
       #        This is being done in OpSoilOrg:
@@ -1303,23 +1303,11 @@ STRESS <- function(
   #IMPLICIT NONE
   #SAVE
   #-----------------------------------------------------------------------
-  CHARACTER*1  IDETO, IHARI
-  CHARACTER*78 MESSAGE(10)
-  INTEGER NOUTDO, YRDOY, YRPLT, MDATE, DAP, TIMDIF
-  INTEGER YR, DOY
-  
-  AGEFAC
-  DWNOD
-  PODWT
-  RTWT
-  SDWT,
-  SHELWT
-  STMWT
-  TOPWT
-  TOTWT
-  TURFAC
-  WTLF
-  
+  #TODO VERIFICAR
+  #CHARACTER*1  IDETO, IHARI
+  #INTEGER NOUTDO, YRDOY, YRPLT, MDATE, DAP, TIMDIF
+  #INTEGER YR, DOY
+
   #-----------------------------------------------------------------------
   #     Set Ending Plant Weights, Dates of Stages if Plants Died
   #-----------------------------------------------------------------------
@@ -1338,25 +1326,25 @@ STRESS <- function(
     MDATE = YRDOY
   }
   #-----------------------------------------------------------------------
-  if (IHARI == 'M') {
-    DAP   = max(0,TIMDIF(YRPLT,YRDOY)) #TODO tradução timdif 
-    
-    !Message to WARNING.OUT
-    CALL YR_DOY(YRDOY, YR, DOY)
-    WRITE(MESSAGE(1), 100) DAP
-    WRITE(MESSAGE(2), 110) YR, DOY, TURFAC, AGEFAC
-    CALL WARNING(2,'CRPGRO', MESSAGE)
-    100 FORMAT('Plant died due to extreme stress at ', I3, ' days after planting.')
-    110 FORMAT('(DAY : ',I4,1X,I3,'; TURFAC : ',F5.2,'; AGEFAC : ', F5.2,'  )')
-    
-    #       Message to screen
-    #       WRITE (*,275) MESSAGE(1), MESSAGE(2)
-    #       Message to Overview.out
-    if (IDETO == 'Y') {
-      WRITE (NOUTDO,275) MESSAGE(1), MESSAGE(2)
-    }
-    275   FORMAT(/,2X,A78,/,2X,A78)
-  }
+  #if (IHARI == 'M') {
+  #  DAP   = max(0,TIMDIF(YRPLT,YRDOY)) #TODO tradução timdif 
+  #  
+  #  !Message to WARNING.OUT
+  #  CALL YR_DOY(YRDOY, YR, DOY)
+  #  WRITE(MESSAGE(1), 100) DAP
+  #  WRITE(MESSAGE(2), 110) YR, DOY, TURFAC, AGEFAC
+  #  CALL WARNING(2,'CRPGRO', MESSAGE)
+  #  100 FORMAT('Plant died due to extreme stress at ', I3, ' days after planting.')
+  #  110 FORMAT('(DAY : ',I4,1X,I3,'; TURFAC : ',F5.2,'; AGEFAC : ', F5.2,'  )')
+  #  
+  #  #       Message to screen
+  #  #       WRITE (*,275) MESSAGE(1), MESSAGE(2)
+  #  #       Message to Overview.out
+  #  if (IDETO == 'Y') {
+  #    WRITE (NOUTDO,275) MESSAGE(1), MESSAGE(2)
+  #  }
+  #  275   FORMAT(/,2X,A78,/,2X,A78)
+  #}
   #-----------------------------------------------------------------------
   assign("MDATE", MDATE, envir = env)
   # ALTERADO: RETURN to return()
@@ -1377,201 +1365,201 @@ STRESS <- function(
 #  Called : GROW
 #  Calls  : FIND, ERROR, IGNORE
 #=======================================================================
-SUBROUTINE IPGROW(
-  &  FILEIO, FILECC,  CROP,                            !Input
-  &  ALPHL,  ALPHR,  ALPHS,  ALPHSH,                   !Output
-  &  PCARLF, PCARST, PCARRT, PCARSH, PCARSD, PCARNO,   !Output
-  &  PLIGLF, PLIGST, PLIGRT, PLIGSH, PLIGSD, PLIGNO,   !Output
-  &  PLIPLF, PLIPST, PLIPRT, PLIPSH,         PLIPNO,   !Output
-  &  PMINLF, PMINST, PMINRT, PMINSH, PMINSD, PMINNO,   !Output
-  &  POALF,  POAST,  POART,  POASH,  POASD,  POANO,    !Output
-  &  PROLFF, PROSTF, PRORTF, PROSHF,         PRONOD,   !Output
-  &  PROLFI, PROSTI, PRORTI,                           !Output
-  &  PLTPOP, ROWSPC, RMIN,   PLME,   SDWTPL,           !Output
-  &  SDLIP,  SDPRO,  WTFSD,  WTPSD,   XPODF)           !Output
-
-#-----------------------------------------------------------------------
-IMPLICIT NONE
-SAVE
-#-----------------------------------------------------------------------
-CHARACTER*1 PLME, UPCASE
-CHARACTER*2 XPODF, CROP
-CHARACTER*6 ERRKEY
-PARAMETER (ERRKEY = 'IPGROW')
-CHARACTER*6 SECTION, ECONO  !, ECOTYP
-CHARACTER*30 FILEIO
-CHARACTER*80 C80
-CHARACTER*92 FILECC
-#      CHARACTER*255 C255
-
-INTEGER LUNCRP, LUNIO, I    !, LUNECO
-INTEGER ERR, LINC, LNUM, FOUND, ISECT
-
-REAL ROWSPC, RMIN, PLTPOP, WTFSD, WTPSD,
-&  SDPRO, SDLIP, SDWTPL,
-&  ALPHL,  ALPHS,  ALPHR,  ALPHSH,
-&  PROLFF, PROSTF, PRORTF, PROSHF,                 PRONOD,
-&  PROLFI, PROSTI, PRORTI,
-&  PCARLF, PCARST, PCARRT, PCARSH, PCARSD, PCARNO,
-&  PLIPLF, PLIPST, PLIPRT, PLIPSH,                 PLIPNO,
-&  PLIGLF, PLIGST, PLIGRT, PLIGSH, PLIGSD, PLIGNO,
-&  POALF,  POAST,  POART,  POASH,  POASD,  POANO,
-&  PMINLF, PMINST, PMINRT, PMINSH, PMINSD, PMINNO
-
-#-----------------------------------------------------------------------
-CALL GETLUN('FILEIO', LUNIO)
-OPEN (LUNIO, FILE = FILEIO,STATUS = 'OLD',IOSTAT=ERR)
-if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,0)
-LNUM = 0
-#-----------------------------------------------------------------------
-#    Find and read Cultivar Section
-#-----------------------------------------------------------------------
-SECTION = '*CULTI'
-CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-if (FOUND == 0) {
-  CALL ERROR(SECTION, 42, FILEIO, LNUM)
-} else {
-  READ (LUNIO,'(3X,A2)',IOSTAT=ERR) CROP; LNUM = LNUM + 1
-  if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-}
-
-if (CROP != 'FA') {
-  #-----------------------------------------------------------------------
-  #    Read Planting Details Section
-  #-----------------------------------------------------------------------
-  SECTION = '*PLANT'
-  CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-  if (FOUND == 0) {
-    CALL ERROR(SECTION, 42, FILEIO, LNUM)
-  } else {
-    READ(LUNIO,'(24X,F6.1,5X,A1,6X,F6.0,12X,F6.0)',IOSTAT=ERR) PLTPOP, PLME, ROWSPC, SDWTPL ; LNUM = LNUM + 1
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-  }
-  
-  #-----------------------------------------------------------------------
-  #    Read Cultivar Section
-  #-----------------------------------------------------------------------
-  SECTION = '*CULTI'
-  CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-  if (FOUND == 0) {
-    CALL ERROR(SECTION, 42, FILEIO, LNUM)
-  } else {
-    READ(LUNIO,'(24X,A6,66X,F6.0,24X,2F6.0)',IOSTAT=ERR)  ECONO, WTPSD, SDPRO, SDLIP
-    LNUM = LNUM + 1
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-  }
-  
-}
-
-CLOSE (LUNIO)
-
-if (CROP != 'FA') {
-  #-----------------------------------------------------------------------
-  #     Read in values from input file, which were previously input
-  #       in Subroutine IPCROP.
-  #-----------------------------------------------------------------------
-  CALL GETLUN('FILEC', LUNCRP)
-  OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
-  if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,0)
-  LNUM = 0
-  #-----------------------------------------------------------------------
-  #    Find and Read Respiration Section
-  #-----------------------------------------------------------------------
-  #     Subroutine FIND finds appropriate SECTION in a file by
-  #     searching for the specified 6-character string at beginning
-  #     of each line.
-  #-----------------------------------------------------------------------
-  SECTION = '#*RESP'
-  CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-  if (FOUND == 0) {
-    CALL ERROR(SECTION, 42, FILECC, LNUM)
-  } else {
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    READ(C80,'(24X,F6.0)',IOSTAT=ERR) RMIN
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-  }
-  
-  SECTION = '#*PLAN'
-  CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-  if (FOUND == 0) {
-    CALL ERROR(SECTION, 42, FILECC, LNUM)
-  } else {
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    READ(C80,'(F6.0,6X,2F6.0,6X,F6.0)',IOSTAT=ERR) PROLFI, PROLFF, PROSTI, PROSTF
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-    
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    READ(C80,'(F6.0,6X,F6.0,12X,F6.0)',IOSTAT=ERR) PRORTI, PRORTF, PROSHF
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-    
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    READ(C80,'(12X,F6.0)',IOSTAT=ERR) PRONOD
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-    
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    READ(C80,'(6F6.0)',IOSTAT=ERR) PCARLF, PCARST, PCARRT, PCARSH, PCARSD, PCARNO
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-    
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    READ(C80,'(5F6.0)',IOSTAT=ERR) PLIPLF, PLIPST, PLIPRT, PLIPSH, PLIPNO
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-    
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    READ(C80,'(6F6.0)',IOSTAT=ERR) PLIGLF, PLIGST, PLIGRT, PLIGSH, PLIGSD, PLIGNO
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-    
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    READ(C80,'(6F6.0)',IOSTAT=ERR) POALF, POAST, POART, POASH, POASD, POANO
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-    
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    READ(C80,'(6F6.0)',IOSTAT=ERR) PMINLF, PMINST, PMINRT, PMINSH, PMINSD, PMINNO
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-  }
-  
-  SECTION = '#*CARB'
-  CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-  if (FOUND == 0) {
-    CALL ERROR(SECTION, 42, FILECC, LNUM)
-  } else {
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    READ(C80,'(4X,A2)',IOSTAT=ERR) XPODF
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-    
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    READ(C80,'(4F6.0)',IOSTAT=ERR) ALPHL, ALPHS, ALPHR, ALPHSH
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-  }
-  
-  for (I in 1:2) {
-    XPODF(I:I) = UPCASE(XPODF(I:I))
-  }
-  
-  #-----------------------------------------------------------------------
-  SECTION = '#*VEGE'
-  CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-  if (FOUND == 0) {
-    CALL ERROR(SECTION, 42, FILECC, LNUM)
-  } else {
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
-    READ(C80,'(F6.0)',IOSTAT=ERR) WTFSD
-    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-  }
-  
-  CLOSE (LUNCRP)
-  
-}
-#-----------------------------------------------------------------------
-return()
-}  # SUBROUTINE IPGROW
+#SUBROUTINE IPGROW(
+#  &  FILEIO, FILECC,  CROP,                            !Input
+#  &  ALPHL,  ALPHR,  ALPHS,  ALPHSH,                   !Output
+#  &  PCARLF, PCARST, PCARRT, PCARSH, PCARSD, PCARNO,   !Output
+#  &  PLIGLF, PLIGST, PLIGRT, PLIGSH, PLIGSD, PLIGNO,   !Output
+#  &  PLIPLF, PLIPST, PLIPRT, PLIPSH,         PLIPNO,   !Output
+#  &  PMINLF, PMINST, PMINRT, PMINSH, PMINSD, PMINNO,   !Output
+#  &  POALF,  POAST,  POART,  POASH,  POASD,  POANO,    !Output
+#  &  PROLFF, PROSTF, PRORTF, PROSHF,         PRONOD,   !Output
+#  &  PROLFI, PROSTI, PRORTI,                           !Output
+#  &  PLTPOP, ROWSPC, RMIN,   PLME,   SDWTPL,           !Output
+#  &  SDLIP,  SDPRO,  WTFSD,  WTPSD,   XPODF)           !Output
+#
+##-----------------------------------------------------------------------
+#IMPLICIT NONE
+#SAVE
+##-----------------------------------------------------------------------
+#CHARACTER*1 PLME, UPCASE
+#CHARACTER*2 XPODF, CROP
+#CHARACTER*6 ERRKEY
+#PARAMETER (ERRKEY = 'IPGROW')
+#CHARACTER*6 SECTION, ECONO  !, ECOTYP
+#CHARACTER*30 FILEIO
+#CHARACTER*80 C80
+#CHARACTER*92 FILECC
+##      CHARACTER*255 C255
+#
+#INTEGER LUNCRP, LUNIO, I    !, LUNECO
+#INTEGER ERR, LINC, LNUM, FOUND, ISECT
+#
+#REAL ROWSPC, RMIN, PLTPOP, WTFSD, WTPSD,
+#&  SDPRO, SDLIP, SDWTPL,
+#&  ALPHL,  ALPHS,  ALPHR,  ALPHSH,
+#&  PROLFF, PROSTF, PRORTF, PROSHF,                 PRONOD,
+#&  PROLFI, PROSTI, PRORTI,
+#&  PCARLF, PCARST, PCARRT, PCARSH, PCARSD, PCARNO,
+#&  PLIPLF, PLIPST, PLIPRT, PLIPSH,                 PLIPNO,
+#&  PLIGLF, PLIGST, PLIGRT, PLIGSH, PLIGSD, PLIGNO,
+#&  POALF,  POAST,  POART,  POASH,  POASD,  POANO,
+#&  PMINLF, PMINST, PMINRT, PMINSH, PMINSD, PMINNO
+#
+##-----------------------------------------------------------------------
+#CALL GETLUN('FILEIO', LUNIO)
+#OPEN (LUNIO, FILE = FILEIO,STATUS = 'OLD',IOSTAT=ERR)
+#if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,0)
+#LNUM = 0
+##-----------------------------------------------------------------------
+##    Find and read Cultivar Section
+##-----------------------------------------------------------------------
+#SECTION = '*CULTI'
+#CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+#if (FOUND == 0) {
+#  CALL ERROR(SECTION, 42, FILEIO, LNUM)
+#} else {
+#  READ (LUNIO,'(3X,A2)',IOSTAT=ERR) CROP; LNUM = LNUM + 1
+#  if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+#}
+#
+#if (CROP != 'FA') {
+#  #-----------------------------------------------------------------------
+#  #    Read Planting Details Section
+#  #-----------------------------------------------------------------------
+#  SECTION = '*PLANT'
+#  CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+#  if (FOUND == 0) {
+#    CALL ERROR(SECTION, 42, FILEIO, LNUM)
+#  } else {
+#    READ(LUNIO,'(24X,F6.1,5X,A1,6X,F6.0,12X,F6.0)',IOSTAT=ERR) PLTPOP, PLME, ROWSPC, SDWTPL ; LNUM = LNUM + 1
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+#  }
+#  
+#  #-----------------------------------------------------------------------
+#  #    Read Cultivar Section
+#  #-----------------------------------------------------------------------
+#  SECTION = '*CULTI'
+#  CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+#  if (FOUND == 0) {
+#    CALL ERROR(SECTION, 42, FILEIO, LNUM)
+#  } else {
+#    READ(LUNIO,'(24X,A6,66X,F6.0,24X,2F6.0)',IOSTAT=ERR)  ECONO, WTPSD, SDPRO, SDLIP
+#    LNUM = LNUM + 1
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+#  }
+#  
+#}
+#
+#CLOSE (LUNIO)
+#
+#if (CROP != 'FA') {
+#  #-----------------------------------------------------------------------
+#  #     Read in values from input file, which were previously input
+#  #       in Subroutine IPCROP.
+#  #-----------------------------------------------------------------------
+#  CALL GETLUN('FILEC', LUNCRP)
+#  OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
+#  if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,0)
+#  LNUM = 0
+#  #-----------------------------------------------------------------------
+#  #    Find and Read Respiration Section
+#  #-----------------------------------------------------------------------
+#  #     Subroutine FIND finds appropriate SECTION in a file by
+#  #     searching for the specified 6-character string at beginning
+#  #     of each line.
+#  #-----------------------------------------------------------------------
+#  SECTION = '#*RESP'
+#  CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+#  if (FOUND == 0) {
+#    CALL ERROR(SECTION, 42, FILECC, LNUM)
+#  } else {
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    READ(C80,'(24X,F6.0)',IOSTAT=ERR) RMIN
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+#  }
+#  
+#  SECTION = '#*PLAN'
+#  CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+#  if (FOUND == 0) {
+#    CALL ERROR(SECTION, 42, FILECC, LNUM)
+#  } else {
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    READ(C80,'(F6.0,6X,2F6.0,6X,F6.0)',IOSTAT=ERR) PROLFI, PROLFF, PROSTI, PROSTF
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+#    
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    READ(C80,'(F6.0,6X,F6.0,12X,F6.0)',IOSTAT=ERR) PRORTI, PRORTF, PROSHF
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+#    
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    READ(C80,'(12X,F6.0)',IOSTAT=ERR) PRONOD
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+#    
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    READ(C80,'(6F6.0)',IOSTAT=ERR) PCARLF, PCARST, PCARRT, PCARSH, PCARSD, PCARNO
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+#    
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    READ(C80,'(5F6.0)',IOSTAT=ERR) PLIPLF, PLIPST, PLIPRT, PLIPSH, PLIPNO
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+#    
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    READ(C80,'(6F6.0)',IOSTAT=ERR) PLIGLF, PLIGST, PLIGRT, PLIGSH, PLIGSD, PLIGNO
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+#    
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    READ(C80,'(6F6.0)',IOSTAT=ERR) POALF, POAST, POART, POASH, POASD, POANO
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+#    
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    READ(C80,'(6F6.0)',IOSTAT=ERR) PMINLF, PMINST, PMINRT, PMINSH, PMINSD, PMINNO
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+#  }
+#  
+#  SECTION = '#*CARB'
+#  CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+#  if (FOUND == 0) {
+#    CALL ERROR(SECTION, 42, FILECC, LNUM)
+#  } else {
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    READ(C80,'(4X,A2)',IOSTAT=ERR) XPODF
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+#    
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    READ(C80,'(4F6.0)',IOSTAT=ERR) ALPHL, ALPHS, ALPHR, ALPHSH
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+#  }
+#  
+#  for (I in 1:2) {
+#    XPODF(I:I) = UPCASE(XPODF(I:I))
+#  }
+#  
+#  #-----------------------------------------------------------------------
+#  SECTION = '#*VEGE'
+#  CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+#  if (FOUND == 0) {
+#    CALL ERROR(SECTION, 42, FILECC, LNUM)
+#  } else {
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    CALL IGNORE(LUNCRP,LNUM,ISECT,C80)
+#    READ(C80,'(F6.0)',IOSTAT=ERR) WTFSD
+#    if (ERR != 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+#  }
+#  
+#  CLOSE (LUNCRP)
+#  
+#}
+##-----------------------------------------------------------------------
+#return()
+#}  # SUBROUTINE IPGROW
 #=======================================================================
-}
+#}
 #-----------------------------------------------------------------------
 #       Variable definitions: updated 27 Feb 04
 #-----------------------------------------------------------------------
