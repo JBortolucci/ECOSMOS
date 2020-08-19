@@ -59,7 +59,7 @@ RicePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   #_______________________________________________________________    
   #__________________ Start Planting Block _______________________
   
-  
+
   if (exist[i] == 1 && croplive[i] != 1 && cropplant[i] == 0) {
     
     
@@ -72,8 +72,7 @@ RicePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
       cropplant[i]    <- 1        # initialize freeze kill function to 1 - crops living 
       idop[i]         <- jday    
       cropy            <- 1
-      gddmaturity[i]  <- hybgdd[i]
-      
+
       print(paste('1st Plant Rice ', jday, imonth, iyear,hybgdd[i],gddmaturity[i],sep=' / '))
       
     }
