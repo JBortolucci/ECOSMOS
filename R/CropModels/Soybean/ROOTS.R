@@ -29,11 +29,17 @@
 #  Calls      :  IPROOT, INROOT
 #=======================================================================
 
-simDataVars$RLV    <-  0
-simDataVars$RTDEP  <-  0
-simDataVars$SATFAC <-  0
-simDataVars$SENRT  <-  0
-simDataVars$SRDOT  <-  0
+#simDataVars$RLV    <-  0
+#simDataVars$RTDEP  <-  0
+#simDataVars$SATFAC <-  0
+#simDataVars$SENRT  <-  0
+#simDataVars$SRDOT  <-  0
+
+RLV    <-  0
+RTDEP  <-  0
+SATFAC <-  0
+SENRT  <-  0
+SRDOT  <-  0
 
 ROOTS <- function(EMERG, #DINAMYC no original
                   AGRRT, CROP, DLAYR, DS, DTX, DUL, FILECC, FRRT, #!Input
@@ -41,9 +47,9 @@ ROOTS <- function(EMERG, #DINAMYC no original
                   SAT, SW, SWFAC, VSTAGE, WR, WRDOTN, WTNEW,      #!Input
                   RLV, RTDEP, SATFAC, SENRT, SRDOT)  {            #!Output
   
-  ROOTS <- 0
+  #ROOTS <- 0
   
-    #TODO verificar padrão ECOSMOS
+  #TODO verificar padrão ECOSMOS
   #CHARACTER*1 ISWWAT
   #INTEGER L, L1, NLAYR
   #INTEGER DYNAMIC
@@ -378,7 +384,7 @@ ROOTS <- function(EMERG, #DINAMYC no original
   assign("SENRT", SENRT, envir = env)
   assign("SRDOT", SRDOT, envir = env)
   
-  return()
+  #return()
 }
 #=======================================================================
 
@@ -399,14 +405,17 @@ ROOTS <- function(EMERG, #DINAMYC no original
      #&  RLV, RTDEP)                                       #Output
       
       #TODO verificar se atribuição aqui é necessária!
-      simDataVars$RLV  <-  0
-      simDataVars$RTDEP  <-  0
+      #simDataVars$RLV  <-  0
+      #simDataVars$RTDEP  <-  0
+      
+      RLV  <-  0
+      RTDEP  <-  0
       
       INROOT <- function (
         DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW, #Input
         RLV, RTDEP) {                                      #Output
         
-        INROOT <- 0
+        #INROOT <- 0
         NL       = 20  #!Maximum number of soil layers 
 
         #INTEGER L
@@ -456,7 +465,7 @@ ROOTS <- function(EMERG, #DINAMYC no original
         assign("RLV", RLV, envir = env)
         assign("RTDEP", RTDEP, envir = env)
         
-        return()
+        #return()
       }
 #=======================================================================
 

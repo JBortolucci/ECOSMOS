@@ -16,22 +16,22 @@
 #  Calls  : ERROR, FIND, IGNORE
 #========================================================================
 
-     # SUBROUTINE SENES(DYNAMIC,
-     #&    FILECC, CLW, DTX, KCAN, NR7, NRUSLF, PAR,       #Input
-     #&    RHOL, SLAAD, STMWT, SWFAC, VSTAGE, WTLF, XLAI,  #Input
-     #&    SLDOT, SLNDOT, SSDOT, SSNDOT)                   #Output
+#simDataVars$SLDOT  <- 0
+#simDataVars$SLNDOT <- 0
+#simDataVars$SSDOT  <- 0
+#simDataVars$SSNDOT <- 0
 
-simDataVars$SLDOT  <- 0
-simDataVars$SLNDOT <- 0
-simDataVars$SSDOT  <- 0
-simDataVars$SSNDOT <- 0
+SLDOT  <- 0
+SLNDOT <- 0
+SSDOT  <- 0
+SSNDOT <- 0
 
 SENES <- function (DYNAMIC,DAS,
                    FILECC, CLW, DTX, KCAN, NR7, NRUSLF, PAR,       #Input
                    RHOL, SLAAD, STMWT, SWFAC, VSTAGE, WTLF, XLAI  #Input
                    ){                   #Output
   
-  SENES <- 0
+  #SENES <- 0
   #-----------------------------------------------------------------------
   #TODO checar conexão no ECOSMOS 
   #INTEGER DYNAMIC
@@ -184,7 +184,7 @@ SENES <- function (DYNAMIC,DAS,
   assign("SSDOT",SSDOT , envir = env)
   assign("SSNDOT",SSNDOT, envir = env)
   
-  return()
+  #return()
 }
 #***********************************************************************
 #     SENES VARIABLE DEFINITIONS:

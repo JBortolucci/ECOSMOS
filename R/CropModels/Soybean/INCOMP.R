@@ -15,17 +15,29 @@
 #  Calls  : ERROR, FIND, IGNORE
 #=======================================================================
 
-simDataVars$AGRLF   <-  0
-simDataVars$AGRNOD  <-  0
-simDataVars$AGRRT   <-  0
-simDataVars$AGRSD1  <-  0
-simDataVars$AGRSD2  <-  0
-simDataVars$AGRSH1  <-  0
-simDataVars$AGRSH2  <-  0
-simDataVars$AGRSTM  <-  0
-simDataVars$AGRVG   <-  0
-simDataVars$AGRVG2  <-  0
-simDataVars$SDPROR  <-  0
+#simDataVars$AGRLF   <-  0
+#simDataVars$AGRNOD  <-  0
+#simDataVars$AGRRT   <-  0
+#simDataVars$AGRSD1  <-  0
+#simDataVars$AGRSD2  <-  0
+#simDataVars$AGRSH1  <-  0
+#simDataVars$AGRSH2  <-  0
+#simDataVars$AGRSTM  <-  0
+#simDataVars$AGRVG   <-  0
+#simDataVars$AGRVG2  <-  0
+#simDataVars$SDPROR  <-  0
+
+AGRLF   <-  0
+AGRNOD  <-  0
+AGRRT   <-  0
+AGRSD1  <-  0
+AGRSD2  <-  0
+AGRSH1  <-  0
+AGRSH2  <-  0
+AGRSTM  <-  0
+AGRVG   <-  0
+AGRVG2  <-  0
+SDPROR  <-  0
 
 
 INCOMP <- function(DYNAMIC,
@@ -33,7 +45,7 @@ INCOMP <- function(DYNAMIC,
                    AGRLF, AGRNOD, AGRRT, AGRSD1, AGRSD2, AGRSH1,   #!Output
                    AGRSH2, AGRSTM, AGRVG, AGRVG2, SDPROR) {          #!Output
   
-  INCOMP <- 0
+  #INCOMP <- 0
   #TODO ver DYNAMIC e datas 
   #INTEGER DYNAMIC, ERR, FOUND, ISECT, LINC, LNUM
   #______________________________________________________________        
@@ -137,7 +149,7 @@ INCOMP <- function(DYNAMIC,
   assign("AGRVG2", AGRVG2, envir = env)
   assign("SDPROR", SDPROR, envir = env)
   
-  return()
+  #return()
 }
 #=======================================================================
 

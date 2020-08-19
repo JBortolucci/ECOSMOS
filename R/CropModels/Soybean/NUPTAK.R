@@ -13,18 +13,24 @@
 #  Calls:        ERROR, FIND, IGNORE
 #=======================================================================
 
-simDataVars$TRNH4U <- 0
-simDataVars$TRNO3U <- 0
-simDataVars$TRNU   <- 0
-simDataVars$UNH4   <- 0
-simDataVars$UNO3   <- 0
+#simDataVars$TRNH4U <- 0
+#simDataVars$TRNO3U <- 0
+#simDataVars$TRNU   <- 0
+#simDataVars$UNH4   <- 0
+#simDataVars$UNO3   <- 0
+
+TRNH4U <- 0
+TRNO3U <- 0
+TRNU   <- 0
+UNH4   <- 0
+UNO3   <- 0
 
 NUPTAK <- function (DYNAMIC,
                     DLAYR, DUL, FILECC, KG2PPM, LL, NDMSDR, NDMTOT,   #Input
                     NH4, NO3, NLAYR, RLV, SAT, SW,                    #Input
                     TRNH4U, TRNO3U, TRNU, UNH4, UNO3) {                 #Output
   
-  NUPTAK <- 0
+  #NUPTAK <- 0
   #-----------------------------------------------------------------------
   
   #______________________________________________________________        
@@ -168,7 +174,7 @@ NUPTAK <- function (DYNAMIC,
   assign("UNH4", UNH4, envir = env)
   assign("UNO3", UNO3, envir = env)
   
-  return()
+  #return()
   #RETURN
   #END # SUBROUTINE NUPTAK
 }

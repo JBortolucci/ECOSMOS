@@ -16,8 +16,8 @@
 #========================================================================
 
 #simDataVars$MDATE  <- 0  #VERIFICAR INPUT/OUTPUT não se encaixa aqui, certo?
-simDataVars$WLFDOT  <-  0
-  
+#simDataVars$WLFDOT  <-  0
+WLFDOT  <-  0
 
 FREEZE <- function(
   FREEZ2, NRUSLF, SLDOT,           #!Input
@@ -25,7 +25,7 @@ FREEZE <- function(
   MDATE,                           #!Input/Output
   WLFDOT) {
   
-  FREEZE <- 0
+  #FREEZE <- 0
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -66,7 +66,7 @@ FREEZE <- function(
   assign("MDATE", MDATE, envir = env)
   assign("WLFDOT", WLFDOT, envir = env)
   
-  return()
+  #return()
 }
 
 #-----------------------------------------------------------------------

@@ -35,14 +35,23 @@
 #  Calls:        FIND, ERROR, IGNORE
 #=======================================================================
 
-simDataVars$CNOD   <-  0
-simDataVars$DWNOD  <-  0
-simDataVars$DWNODA <-  0
-simDataVars$NDTH   <-  0
-simDataVars$NFIXN  <-  0
-simDataVars$NODGR  <-  0
-simDataVars$WTNFX  <-  0
-simDataVars$SENNOD <-  0
+#simDataVars$CNOD   <-  0
+#simDataVars$DWNOD  <-  0
+#simDataVars$DWNODA <-  0
+#simDataVars$NDTH   <-  0
+#simDataVars$NFIXN  <-  0
+#simDataVars$NODGR  <-  0
+#simDataVars$WTNFX  <-  0
+#simDataVars$SENNOD <-  0
+
+CNOD   <-  0
+DWNOD  <-  0
+DWNODA <-  0
+NDTH   <-  0
+NFIXN  <-  0
+NODGR  <-  0
+WTNFX  <-  0
+SENNOD <-  0
 
 NFIX <- function(DYNAMIC,
                  AGRNOD, CNODMN, CTONOD, DLAYR, DXR57,           #Input
@@ -51,11 +60,12 @@ NFIX <- function(DYNAMIC,
                  CNOD, DWNOD, DWNODA, NDTH, NFIXN,               #Output
                  NODGR, WTNFX, SENNOD) {                          #Output
   
-  NFIX <- 0
+  #NFIX <- 0
   #-----------------------------------------------------------------------
-  NLAYR
-  DAS
-  DYNAMIC
+  #TODO ver padrão ECOSMOS
+  NLAYR <- 0 
+  DAS <- 0
+  DYNAMIC <- 0
   
   #______________________________________________________________        
   # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -129,7 +139,7 @@ NFIX <- function(DYNAMIC,
     #     DAS = MAX(0,TIMDIF(YRSIM,YRDOY))
     #CALL GET(CONTROL)
     #TODO ver padrão ECOSMOS
-    DAS = CONTROL % DAS
+    #DAS = CONTROL % DAS
     #-----------------------------------------------------------------------
     #   Set initial nodule mass to DWNODI as read from crop species file
     #-----------------------------------------------------------------------
@@ -205,7 +215,9 @@ NFIX <- function(DYNAMIC,
     #-----------------------------------------------------------------------
     # DETERMINE MEMORY OF PREVIOUS EIGHT DAYS OF SOIL WATER DEFICITS
     #-----------------------------------------------------------------------
-    for (J in 8,2,-1) { #TODO VER COM JAIR
+    #for (J in 8,2,-1) { #TODO VER COM JAIR
+      # TODO VERIFICAR: 10,2,-1 deve ser de 10 até 2 no passo -1 (10, 9, 8, 7...) [from PODDET.for]
+    for (J in seq(8, 2)) {  
       SWMEM[J] = SWMEM[J-1]
     }
     SWMEM(1) = SWFACT
@@ -294,7 +306,7 @@ NFIX <- function(DYNAMIC,
   assign("WTNFX", WTNFX, envir = env)
   assign("SENNOD", SENNOD, envir = env)
   
-  return()
+  #return()
   #RETURN
   #END # SUBROUTINE NFIX
 }
