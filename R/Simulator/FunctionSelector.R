@@ -50,8 +50,8 @@ SetCompiledFunctions <- function(){
   cascad2   <- cascad2Cpp
   noveg     <- novegCpp
   diurnalmet<- diurnalmetCpp
-  diurnal   <- diurnalCpp
-#  diurnal   <- diurnalR
+#  diurnal   <- diurnalCpp
+  diurnal   <- diurnalR
   assign("setsoi", setsoi, envir = globalenv())
   assign("fwetcal", fwetcal, envir = globalenv())
   assign("solset", solset, envir = globalenv())

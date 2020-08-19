@@ -317,9 +317,9 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
     }
   }
 
-  print('usando raina=raina+2')    
-  raina=raina+2
-  
+   
+   # raina=raina + 1.0/(3600) # rainfall rate (mm/s or kg m-2 s-1)
+   #  print(paste0('usando raina=raina+2 ->', raina)) 
   # ---------------------------------------------------------------------- 
   # *  *  * irrigation calculations *  * *
   # ---------------------------------------------------------------------- 
