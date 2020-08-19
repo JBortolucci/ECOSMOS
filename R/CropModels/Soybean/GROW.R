@@ -68,7 +68,21 @@ simDataVars$SDRATE  <-  0
 simDataVars$SDWT  <-  0
 simDataVars$SEEDNI  <-  0
 simDataVars$SEEDNO  <-  0
-simDataVars$SENESCE  <-  0
+# simDataVars$SENESCE  <-  0
+# SENESCE
+# NL = 20 
+simDataVars$SENESCE_ResWt   <-  rep(0,20)
+simDataVars$SENESCE_ResLig  <-  rep(0,20)
+simDataVars$SENESCE_ResE    <-  matrix(0,20,3)
+simDataVars$SENESCE_CumResWt  <-  0
+simDataVars$SENESCE_CumResE   <-  c()
+# HARVRES
+simDataVars$HARVRES_ResWt   <-  rep(0,20)
+simDataVars$HARVRES_ResLig  <-  rep(0,20)
+simDataVars$HARVRES_ResE    <-  matrix(0,20,3)
+simDataVars$HARVRES_CumResWt  <-  0
+simDataVars$HARVRES_CumResE   <-  c()
+
 simDataVars$SHELWT  <-  0
 simDataVars$SLA  <-  0
 simDataVars$SLAAD  <-  0
@@ -119,8 +133,10 @@ simDataVars$XPOD  <-  0
 simDataVars$ShutMob  <-  0
 simDataVars$RootMob  <-  0
 simDataVars$ShelMob  <-  0
+simDataVars$MDATE  <-  0
 
-GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP, 
+# TODO: DYNAMIC, EMERG, Qual utilizar?
+GROW <- function (DYNAMIC, EMERG, 
                   AGEFAC, CADLF, CADST, CRUSLF, CRUSRT, CRUSSH,     #!Input
                   CRUSST, DISLA, Fnew, FILECC, FRLF, FRSTM,         #!Input  #*** Fnew is 'F' in the original file. Changed because F is logical in R. ***
                   NADLF, NADRT, NADST, NDTH, NFIXN, NGRLF, NGRRT,   #!Input
@@ -132,24 +148,32 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
                   TURFAC, WLDOTN, WLIDOT, WRDOTN, WRIDOT, WSDDTN,   #!Input
                   WSDOTN, WSHDTN, WSIDOT, WTABRT, WTSHMT, YRNR1,    #!Input
                   MDATE, YRPLT,                                     #!Input
-                  SWIDOT, WLFDOT, WSHIDT, WTNFX, XHLAI,             #!Input/Output
-                  AREALF, BETN, CANNAA, CANWAA, CLW, CSW, DWNOD,    #!Output
-                  DWNODA, GROWTH, GRWRES, LAIMX, PCCSD, PCLSD,      #!Output
-                  PCNL, PCNRT, PCNSD, PCNSH, PCNST, PLTPOP,         #!Output
-                  PLIGLF, PLIGNO, PLIGRT, PLIGSD, PLIGSH, PLIGST,   #!Output
-                  PODWT, PUNCSD, PUNCTR, RHOL, RHOS, RNITP,         #!Output
-                  ROWSPC, RTWT, SDNPL, SDRATE, SDWT,                #!Output
-                  SEEDNI, SEEDNO, SENESCE, SHELWT, SLA,             #!Output
-                  SLAAD, STMWT, TOPWT, TOTWT, WCRLF, WCRRT, WCRSH,  #!Output
-                  WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTCO,          #!Output
-                  WTLF, WTLO, WTMAIN, WTNCAN, WTNEW, WTNLA, WTNLF,  #!Output
-                  WTNLO, WTNNA, WTNNAG, WTNNO, WTNNOD, WTNOO,       #!Output
-                  WTNRA, WTNRO, WTNRT, WTNSA, WTNSD, WTNSDA,        #!Output
-                  WTNSDO, WTNSH, WTNSHA, WTNSHO, WTNSO, WTNST,      #!Output
-                  WTNUP, WTRO, WTSDO, WTSHO, WTSO, XLAI, XPOD,      #!Output
-                  ShutMob, RootMob, ShelMob)  {                     #!Output
+                  SWIDOT, 
+                  # TODO: PEST vars 
+                  # WLFDOT, WSHIDT, 
+                  WTNFX, XHLAI)  {              #!Input/Output
+                  # Outputs
+                  # AREALF, BETN, CANNAA, CANWAA, CLW, CSW, DWNOD,    #!Output
+                  # DWNODA, GROWTH, GRWRES, LAIMX, PCCSD, PCLSD,      #!Output
+                  # PCNL, PCNRT, PCNSD, PCNSH, PCNST, PLTPOP,         #!Output
+                  # PLIGLF, PLIGNO, PLIGRT, PLIGSD, PLIGSH, PLIGST,   #!Output
+                  # PODWT, PUNCSD, PUNCTR, RHOL, RHOS, RNITP,         #!Output
+                  # ROWSPC, RTWT, SDNPL, SDRATE, SDWT,                #!Output
+                  # SEEDNI, SEEDNO, SENESCE, SHELWT, SLA,             #!Output
+                  # SLAAD, STMWT, TOPWT, TOTWT, WCRLF, WCRRT, WCRSH,  #!Output
+                  # WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTCO,          #!Output
+                  # WTLF, WTLO, WTMAIN, WTNCAN, WTNEW, WTNLA, WTNLF,  #!Output
+                  # WTNLO, WTNNA, WTNNAG, WTNNO, WTNNOD, WTNOO,       #!Output
+                  # WTNRA, WTNRO, WTNRT, WTNSA, WTNSD, WTNSDA,        #!Output
+                  # WTNSDO, WTNSH, WTNSHA, WTNSHO, WTNSO, WTNST,      #!Output
+                  # WTNUP, WTRO, WTSDO, WTSHO, WTSO, XLAI, XPOD,      #!Output
+                  # ShutMob, RootMob, ShelMob)  {                     #!Output
   
-  GROW <- 0
+  # GROW <- 0
+  environment(STRESS) <- env
+  
+  # TODO: Nitrogen
+  N = 1
   
   #TODO conectar com padrao ECOSMOS 
   #CHARACTER*1  ISWSYM, ISWNIT, IDETO, IHARI, PLME
@@ -224,13 +248,13 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
   NL       = 20  #!Maximum number of soil layers
   
   #TODO ajustar para padrão ECOSMOS?
-  SENRT(NL)
-  SENNOD(NL)
-  SenWt(0:NL)        #kg[dry matter]/ha
-  SenLig(0:NL)       #kg[lignin]/ha
-  SenE(0:NL,NELEM)   #kg[E]/ha (E=N, P, S,...)
-  NLPEST
-  NLAYR
+  
+  SenWt <- rep(0,NL)        #kg[dry matter]/ha
+  SenLig <- rep(0,NL)       #kg[lignin]/ha
+  # NELEM = 3
+  SenE <- matrix(0,NL,NELEM)   #kg[E]/ha (E=N, P, S,...)
+  NLPEST <- 0
+  NLAYR <- 0
   
   # danos por pestes...
   DISLA  <- 1 #TODO VERIFICAR PEST.for (Diseased leaf area (cm2[leaf]/m2[ground]/d))
@@ -333,11 +357,10 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
     SenLig = 0.0
     SenE   = 0.0
     
-    # VERIFICAR: Atribuição de uma operação?
-    #SENESCE % ResWt  = 0.0
-    #SENESCE % ResLig = 0.0
-    #SENESCE % ResE   = 0.0
-    #SENESCE % CumResE[N] = 0.0
+    simDataVars$SENESCE_ResWt   <-  0.0
+    simDataVars$SENESCE_ResLig  <-  0.0
+    simDataVars$SENESCE_ResE    <-  0.0
+    simDataVars$SENESCE_CumResE[N]   <-  0.0
     
     SHELWT = 0.0
     SLAAD  = 0.0
@@ -620,6 +643,7 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
       } else if (XPODF == 'SD') {
         XPOD = 0.17 * (WSDDTN)/GROWTH + 0.83 * XPOD
       } else {
+        # TODO:
         #CALL ERROR(ERRKEY,1,'      ',0)
       }
     }
@@ -1037,18 +1061,18 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
     #       At this time, the model does not senesce seed.   
     #     Convert from biomass to C with a factor 0.40.   
     #-----------------------------------------------------------------------
-    SenWt[0] = (SLDOT + WLFDOT + SSDOT + WTABRT)
+    SenWt[1] = (SLDOT + WLFDOT + SSDOT + WTABRT)
     #     Convert from g/m2 to kg/ha with a factor of 10.
-    SenWt[0] = max(SenWt[0], 0.) * 10.0    #kg[dry matter]/ha
+    SenWt[1] = max(SenWt[1], 0.) * 10.0    #kg[dry matter]/ha
     
     #-----------------------------------------------------------------------
     #     Surface nitrogen includes nitrogen losses computed above minus the
     #       pest damage components. 
     #-----------------------------------------------------------------------
-    # VERIFICAR: SenE é uma variável? Se sim, deve usar []
-    SenE(0,1) = NLOFF + NSOFF + NSHOFF - NLPEST  
+    # VERIFICAR: SenE é uma variável? Se sim, deve usar []c, verificar posicoes SenE
+    SenE[1,2] = NLOFF + NSOFF + NSHOFF - NLPEST  
     #     Convert from g/m2 to kg/ha with a factor of 10.
-    SenE(0,1) = max(SenE(0,1),0.) * 10.0             #kg[N]/ha
+    SenE[1,2] = max(SenE[1,2],0.) * 10.0             #kg[N]/ha
     
     #-----------------------------------------------------------------------
     #     Surface phosphorus senescence.  - do this is P routine
@@ -1059,16 +1083,17 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
     #     Contribution of lignin to surface litter from senesced and frozen 
     #       plant matter
     #-----------------------------------------------------------------------
-    SenLig[0] = (SLDOT + WLFDOT) * PLIGLF + SSDOT * PLIGST + WTABRT * PLIGSH
+    SenLig[1] = (SLDOT + WLFDOT) * PLIGLF + SSDOT * PLIGST + WTABRT * PLIGSH
     #     Convert from g/m2 to kg/ha with a factor of 10.
-    SenLig[0] = max(SenLig[0],0.) * 10.0             #kg[lig]/ha
+    SenLig[1] = max(SenLig[1],0.) * 10.0             #kg[lig]/ha
     
     #-----------------------------------------------------------------------
     #     Senescence of roots and nodules (kg/ha)
     #-----------------------------------------------------------------------
     for (L in 1:NLAYR) {
       SenWt[L]  = SENRT[L] + SENNOD[L]            #kg[dry matter]/ha
-      SenLig[L] = SENRT[L] * PLIGRT + SENNOD[L] * PLIGNO   #kg[lig]/ha
+      SenLig[L] = SENRT[L] * PLIGRT + SENNOD[L] * PLIGNO   #kg[lig]/ha\
+      # TODO: Verificar se comeca do 1 ou 2 
       #SenE(L,1) = (SENRT[L]* PRORTF + SENNOD[L] * PRONOD) * 0.16 
       #       01/19/2006 CHP Root senescence at current N% (per KJB and JWJ)
       SenE[L,1] = SENRT[L] * PCNRT / 100. + SENNOD[L] * PRONOD * 0.16 
@@ -1135,8 +1160,8 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
       STRESS(
              AGEFAC, DWNOD, IDETO, IHARI, NOUTDO, PODWT,     #!Input
              RTWT, SDWT, SHELWT, STMWT, TOPWT,               #!Input
-             TOTWT, TURFAC, WTLF, YRDOY, YRPLT,              #!Input
-             MDATE)                                          #!Output
+             TOTWT, TURFAC, WTLF, YRDOY, YRPLT)              #!Input
+             # MDATE)                                          #!Output
       return()
     }
     
@@ -1145,21 +1170,22 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
         STRESS(
           AGEFAC, DWNOD, IDETO, IHARI, NOUTDO, PODWT,     #!Input
           RTWT, SDWT, SHELWT, STMWT, TOPWT,               #!Input
-          TOTWT, TURFAC, WTLF, YRDOY, YRPLT,              #!Input
-          MDATE)   
+          TOTWT, TURFAC, WTLF, YRDOY, YRPLT)              #!Input
+          # MDATE)   
         
         # ALTERADO: RETURN to return()
         return()
       }
     }
     
-    # VERIFICAR: Novamente expressão com operação a esquerda.
-    #SENESCE % ResWt  = SenWt
-    #SENESCE % ResLig = SenLig
+    simDataVars$SENESCE_ResWt   <-  SenWt
+    simDataVars$SENESCE_ResLig  <-  SenLig
     
     # VERIFICAR: Começa indice començando com 0 e expressão a esquerda. No R o indexamento começa sempre do 1.
-    for (L in 0:NLAYR) {
+    for (L in 1:NLAYR) {
       #SENESCE % ResE[L,N]  = SenE[L,N] #TODO verificar sintaxe e conexao com demais subrotinas
+      simDataVars$SENESCE_ResE[L,N]    <-  SenE[L,N]
+      
       #        SENESCE % ResE(L,P)  = SenE(L,P)
       
       #        This is being done in OpSoilOrg:
@@ -1270,8 +1296,12 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
   assign("ShutMob", ShutMob, envir = env)
   assign("RootMob", RootMob, envir = env)
   assign("ShelMob", ShelMob, envir = env)
+  assign("SENESCE_ResWt", SENESCE_ResWt, envir = env)   
+  assign("SENESCE_ResLig", SENESCE_ResLig, envir = env)  
+  assign("SENESCE_ResE", SENESCE_ResE, envir = env)    
+  assign("SENESCE_CumResWt", SENESCE_CumResWt, envir = env)
+  assign("SENESCE_CumResE", SENESCE_CumResE, envir = env) 
   # ALTERADO: RETURN to return()
-  return()
 }  # SUBROUTINE GROW
 #=======================================================================
 
@@ -1292,13 +1322,11 @@ GROW <- function (CONTROL, ISWITCH, DYNAMIC, EMERG, SOILPROP,
 #&  TOTWT, TURFAC, WTLF, YRDOY, YRPLT,                !Input
 #&  MDATE)                                            !Output
 
-simDataVars$MDATE  <-  0
-
 STRESS <- function(
   AGEFAC, DWNOD, IDETO, IHARI, NOUTDO, PODWT,       #!Input
   RTWT, SDWT, SHELWT, STMWT, TOPWT,                 #!Input
-  TOTWT, TURFAC, WTLF, YRDOY, YRPLT,                #!Input
-  MDATE) {                                           #!Output
+  TOTWT, TURFAC, WTLF, YRDOY, YRPLT) {                #!Input
+  # MDATE) {                                           #!Output
   #-----------------------------------------------------------------------
   #IMPLICIT NONE
   #SAVE
@@ -1348,7 +1376,6 @@ STRESS <- function(
   #-----------------------------------------------------------------------
   assign("MDATE", MDATE, envir = env)
   # ALTERADO: RETURN to return()
-  return()
 }  # SUBROUTINE STRESS
 #=======================================================================
 

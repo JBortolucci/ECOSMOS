@@ -29,25 +29,23 @@
 #  Calls      :  IPROOT, INROOT
 #=======================================================================
 
-#simDataVars$RLV    <-  0
-#simDataVars$RTDEP  <-  0
-#simDataVars$SATFAC <-  0
-#simDataVars$SENRT  <-  0
-#simDataVars$SRDOT  <-  0
+simDataVars$RLV    <-  0
+simDataVars$RTDEP  <-  0
+simDataVars$SATFAC <-  0
+simDataVars$SENRT  <-  0
+simDataVars$SRDOT  <-  0
 
-RLV    <-  0
-RTDEP  <-  0
-SATFAC <-  0
-SENRT  <-  0
-SRDOT  <-  0
+# TODO: Verificar NL
+simDataVars$RLV  <-  rep(0, 20) # rep(0, NL)
+simDataVars$RTDEP  <-  0
 
-ROOTS <- function(EMERG, #DINAMYC no original
+ROOTS <- function(DINAMYC, #DINAMYC no original
                   AGRRT, CROP, DLAYR, DS, DTX, DUL, FILECC, FRRT, #!Input
                   ISWWAT, LL, NLAYR, PG, PLTPOP, RO, RP, RTWT,    #!Input
-                  SAT, SW, SWFAC, VSTAGE, WR, WRDOTN, WTNEW,      #!Input
-                  RLV, RTDEP, SATFAC, SENRT, SRDOT)  {            #!Output
+                  SAT, SW, SWFAC, VSTAGE, WR, WRDOTN, WTNEW)  {      #!Input
+                  # RLV, RTDEP, SATFAC, SENRT, SRDOT)  {            #!Output
   
-  #ROOTS <- 0
+  environment(INROOT) <- env
   
   #TODO verificar padrão ECOSMOS
   #CHARACTER*1 ISWWAT
@@ -71,35 +69,44 @@ ROOTS <- function(EMERG, #DINAMYC no original
   YRTFAC <- c(2.50, 2.50, 2.60, 2.60)
   RTWTMIN <- 0.0 #TODO ver com santiago e/ou Leandro
   
-  RWMTXT <- as.character(rep(0,7)) #TODO verificar sintaxe e uso
+  # TODO
+  # RWMTXT <- "X,SRMAX" #TODO verificar sintaxe e uso
   
-  #TODO ver link com ECOSMOS
+  #TODO ver link com ECOSMOS, verificar!!
   NL       = 20  #!Maximum number of soil layers 
-  DLAYR  <- rep(0, NL)
-  DS     <- rep(0, NL)
-  DUL    <- rep(0, NL)
+  # DLAYR  <- rep(0, NL)
+  DLAYR <-  c(5.00000000  ,    10.0000000   ,    15.0000000   ,    15.0000000   ,    15.0000000   ,    30.0000000    ,   30.0000000   ,    30.0000000     , -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000 )
+  # DS     <- rep(0, NL)
+  DS    <-  c(5.00000000  ,    15.0000000   ,    30.0000000   ,    45.0000000   ,    60.0000000   ,    90.0000000    ,   120.000000   ,    150.000000     ,  0.00000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000 )
+  # DUL    <- rep(0, NL)
+  DUL   <-  c(0.300000012 ,    0.289999992  ,    0.280000001  ,    0.273000002  ,    0.259999990  ,    0.259999990   ,   0.259999990  ,    0.259999990    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
   ESW    <- rep(0, NL)
-  LL     <- rep(0, NL)
+  # LL     <- rep(0, NL)
+  LL    <-  c(0.140000001 ,    0.140000001  ,    0.140000001  ,    0.150000006  ,    0.150000006  ,    0.150000006   ,   0.180000007  ,    0.180000007    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
   RLDF   <- rep(0, NL)
+  
   RLGRW  <- rep(0, NL)
   RLSEN  <- rep(0, NL)
   RLV    <- rep(0, NL)
   RLV_WS <- rep(0, NL)
   RRLF   <- rep(0, NL)
-  SW     <- rep(0, NL)
-  SAT    <- rep(0, NL)
-  WR     <- rep(0, NL)
-  GRESPR <- rep(0, NL)
-  MRESPR <- rep(0, NL)
-  RESPS  <- rep(0, NL)
+  
+  # SW     <- rep(0, NL)
+  SW    <-  c(0.219999999 ,    0.219999999  ,    0.213000000  ,    0.207000002  ,    0.200000003  ,    0.180000007   ,   0.180000007  ,    0.180000007    ,   0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000  ,     0.00000000 ,      0.00000000)
+  # SAT    <- rep(0, NL)
+  SAT   <-  c(0.360000014 ,    0.349999994  ,    0.333000004  ,    0.326999992  ,    0.319999993  ,    0.319999993   ,   0.319999993  ,    0.319999993    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
+  # WR     <- rep(0, NL)
+  WR    <-  c(1.00000000  ,    1.00000000   ,    1.00000000   ,   0.393000007   ,   0.259999990   ,   0.170000002    ,  0.159999996   ,    3.99999991E-02 , -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000 )
+  
   SENRT  <- rep(0, NL)
-
-    #***********************************************************************
-    #***********************************************************************
-    #     Seasonal initialization - run once per season
-    #***********************************************************************
+  
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     Seasonal initialization - run once per season
+  #***********************************************************************
   if (DYNAMIC == SEASINIT) {
-    #-----------------------------------------------------------------------
+    #---------------------------------------------------------------------
     SRDOT = 0.0       
     RLV   = 0.0
     RTDEP = 0.0       
@@ -130,12 +137,13 @@ ROOTS <- function(EMERG, #DINAMYC no original
     #   must preceed call to INROOT.)
     #-----------------------------------------------------------------------
     #TODO chamar funcao
-    INROOT(DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW, #Input
-                RLV, RTDEP)                                       #Output
+    INROOT(DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW) #Input
+           # RLV, RTDEP)                                       #Output
     
     RFAC3 = RFAC1
     
     TRLV = 0.0
+    # TODO: verificar o indice 1 ou 2
     for (L in 1:NLAYR) {
       TRLV = TRLV + RLV[L] * DLAYR[L] # cm[root] / cm2[ground]
     }
@@ -164,14 +172,13 @@ ROOTS <- function(EMERG, #DINAMYC no original
     # TRTDY = 0.0
     # 1/19/2006 Remove TRTDY and replace with TRLV -- RLV is only updated
     #     once, so yesterday's value is stored in TRLV here.
+    # TODO: verificar o indice 1 ou 2
     for (L in 1:NLAYR) {
       # TRTDY = TRTDY + RLV(L) * DLAYR(L) # cm[root] / cm2[ground]
       RRLF[L]   = 0.0
       RLSEN[L]  = 0.0
       RLGRW[L]  = 0.0
-      MRESPR[L] = 0.0
-      GRESPR[L] = 0.0
-      RESPS[L]  = 0.0
+      
     }
     
     # Update RFAC3 based on yesterday's RTWT and TRLV
@@ -202,6 +209,7 @@ ROOTS <- function(EMERG, #DINAMYC no original
     RLV_WS = 0.0
     RLSEN  = 0.0
     
+    # TODO: verificar o indice 1 ou 2
     for (L in 1:NLAYR) {
       
       L1 = L
@@ -293,6 +301,7 @@ ROOTS <- function(EMERG, #DINAMYC no original
     SRDOT = 0.0
     RLSENTOT = 0.0
     
+    # TODO: verificar o indice 1 ou 2
     for (L in 1:L1) {
       if (TRLDF < 0.00001) {
         RRLF[L] = 1.0
@@ -303,9 +312,9 @@ ROOTS <- function(EMERG, #DINAMYC no original
       #       MRESPR, GRESPR, and RESPS are not used anywhere
       #                       chp 9/22/98
       #-----------------------------------------------------------------------
-      MRESPR[L] = (RLV[L]/RFAC1*RO*DLAYR[L]*100.0 +RRLF[L]*FRRT*PG*RP) * 44.0 / 30.0
-      GRESPR[L] = RRLF[L] * (CGRRT-WRDOTN) * 44.0 /30.0
-      RESPS[L] = MRESPR[L] + GRESPR[L]
+      # MRESPR[L] = (RLV[L]/RFAC1*RO*DLAYR[L]*100.0 +RRLF[L]*FRRT*PG*RP) * 44.0 / 30.0
+      # GRESPR[L] = RRLF[L] * (CGRRT-WRDOTN) * 44.0 /30.0
+      # RESPS[L] = MRESPR[L] + GRESPR[L]
       #-----------------------------------------------------------------------
       RLGRW[L] = RRLF[L] * RLNEW / DLAYR[L] #cm[root]/cm3[ground]
       
@@ -335,6 +344,7 @@ ROOTS <- function(EMERG, #DINAMYC no original
     
     # Update RLV and TRLV based on today's growth and senescence
     TRLV = 0.0
+    # TODO: verificar o indice 1 ou 2
     for (L in 1:NLAYR) {
       RLV[L] = RLV[L] + RLGRW[L] - RLSEN[L] - RLV_WS[L]
       TRLV = TRLV + RLV[L] * DLAYR[L]
@@ -400,73 +410,67 @@ ROOTS <- function(EMERG, #DINAMYC no original
 #  Called : CROPGRO
 #  Calls  : None
 #=======================================================================
-     # SUBROUTINE INROOT(
-     #&  DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW, #Input
-     #&  RLV, RTDEP)                                       #Output
-      
-      #TODO verificar se atribuição aqui é necessária!
-      #simDataVars$RLV  <-  0
-      #simDataVars$RTDEP  <-  0
-      
-      RLV  <-  0
-      RTDEP  <-  0
-      
-      INROOT <- function (
-        DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW, #Input
-        RLV, RTDEP) {                                      #Output
-        
-        #INROOT <- 0
-        NL       = 20  #!Maximum number of soil layers 
+# SUBROUTINE INROOT(
+#&  DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW, #Input
+#&  RLV, RTDEP)                                       #Output
 
-        #INTEGER L
-        #TODO adequar ao padrão ECOSMOS
-        NLAYR <- 20
-        
-        #!*ROOT PARAMETERS
-        RTDEPI  <- 20.0
-        #RFAC1 VERIFICAR: já chamado na ROOTS.for
-        
-        #TODO adequar ao padrão ECOSMOS
-        RLV   <- rep(0, NL)
-        DLAYR <- rep(0, NL)
-        
-        #***********************************************************************
-        #     INITIALIZE ROOT DEPTH AT EMERGENCE
-        #-----------------------------------------------------------------------
-        RTDEP = RTDEPI
-        #-----------------------------------------------------------------------
-        #     DISTRIBUTE ROOT LENGTH EVENLY IN ALL LAYERS TO A DEPTH OF
-        #     RTDEPTI (ROOT DEPTH AT EMERGENCE)
-        #-----------------------------------------------------------------------
-        CUMDEP = 0.
-        
-        for (L in 1:NLAYR) {
-          RLV[L] = 0.0
-        }
-        
-        for (L in 1:NLAYR) {
-          DEP = min(RTDEP - CUMDEP, DLAYR[L])
-          RLINIT = WTNEW * FRRT * PLTPOP * RFAC1 * DEP / ( RTDEP * 10000 )
-          #        cm[root]   g[root]    plants  cm[root]   m2
-          #        -------- = -------- * ------ * ------- * ---
-          #      cm2[ground]   plant       m2     g[root]   cm2
-          
-          CUMDEP = CUMDEP + DEP
-          RLV[L] = RLINIT / DLAYR[L]
-          if (CUMDEP >= RTDEP) {
-            break
-            #GO TO 300
-          }
-        }
-        
-        #***********************************************************************
-        #RETURN
-        #END SUBROUTINE INROOT
-        assign("RLV", RLV, envir = env)
-        assign("RTDEP", RTDEP, envir = env)
-        
-        #return()
-      }
+
+INROOT <- function (
+  DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW) { #Input
+  # RLV, RTDEP) {                                      #Output
+  
+  #INROOT <- 0
+  NL       = 20  #!Maximum number of soil layers 
+  
+  #INTEGER L
+  #TODO adequar ao padrão ECOSMOS
+  NLAYR <- 20
+  
+  #!*ROOT PARAMETERS
+  RTDEPI  <- 20.0
+  #RFAC1 VERIFICAR: já chamado na ROOTS.for
+  
+  #TODO adequar ao padrão ECOSMOS
+  # RLV   <- rep(0, NL)
+  # DLAYR <- rep(0, NL)
+  # 
+  #***********************************************************************
+  #     INITIALIZE ROOT DEPTH AT EMERGENCE
+  #-----------------------------------------------------------------------
+  RTDEP = RTDEPI
+  #-----------------------------------------------------------------------
+  #     DISTRIBUTE ROOT LENGTH EVENLY IN ALL LAYERS TO A DEPTH OF
+  #     RTDEPTI (ROOT DEPTH AT EMERGENCE)
+  #-----------------------------------------------------------------------
+  CUMDEP = 0.
+  
+  for (L in 1:NLAYR) {
+    RLV[L] = 0.0
+  }
+  
+  for (L in 1:NLAYR) {
+    DEP = min(RTDEP - CUMDEP, DLAYR[L])
+    RLINIT = WTNEW * FRRT * PLTPOP * RFAC1 * DEP / ( RTDEP * 10000 )
+    #        cm[root]   g[root]    plants  cm[root]   m2
+    #        -------- = -------- * ------ * ------- * ---
+    #      cm2[ground]   plant       m2     g[root]   cm2
+    
+    CUMDEP = CUMDEP + DEP
+    RLV[L] = RLINIT / DLAYR[L]
+    if (CUMDEP >= RTDEP) {
+      break
+      #GO TO 300
+    }
+  }
+  
+  #***********************************************************************
+  #RETURN
+  #END SUBROUTINE INROOT
+  assign("RLV", RLV, envir = env)
+  assign("RTDEP", RTDEP, envir = env)
+  
+  #return()
+}
 #=======================================================================
 
 #-----------------------------------------------------------------------
