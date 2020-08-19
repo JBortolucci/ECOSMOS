@@ -35,12 +35,12 @@ MOBIL <- function(DYNAMIC,
   #***********************************************************************
   if (DYNAMIC == SEASINIT) {
     #-----------------------------------------------------------------------
-    CNMINE = 0.0         
-    NMINEA = 0.0         
-    NRUSLF = 0.0         #moved from INPLNT
-    NRUSST = 0.0         
-    NRUSRT = 0.0         
-    NRUSSH = 0.0         
+    CNMINE <- 0.0         
+    NMINEA <- 0.0         
+    NRUSLF <- 0.0         #moved from INPLNT
+    NRUSST <- 0.0         
+    NRUSRT <- 0.0         
+    NRUSSH <- 0.0         
     
     #***********************************************************************
     #***********************************************************************
@@ -48,12 +48,12 @@ MOBIL <- function(DYNAMIC,
     #***********************************************************************
   } else if (DYNAMIC == INTEGR) {
     #-----------------------------------------------------------------------
-    CNMINE = 0.0
-    NMINEA = 0.0
-    NRUSLF = 0.0
-    NRUSST = 0.0
-    NRUSRT = 0.0
-    NRUSSH = 0.0
+    CNMINE <- 0.0
+    NMINEA <- 0.0
+    NRUSLF <- 0.0
+    NRUSST <- 0.0
+    NRUSRT <- 0.0
+    NRUSSH <- 0.0
     
     #-----------------------------------------------------------------------
     #    Leave MOBIL with N Mined from Leaf, Stem,Root, Shell, and
@@ -61,15 +61,16 @@ MOBIL <- function(DYNAMIC,
     #-----------------------------------------------------------------------
     #      IF (TRNU .LT. NDMNEW .AND. NMINEP .GT. 1.E-4) THEN
     if (NDMNEW - TRNU > 1.E-5 & NMINEP > 1.E-4) {
-      NMINEA = NDMNEW - TRNU
+      NMINEA <- NDMNEW - TRNU
     }
-    if (NMINEA > NMINEP) {NMINEA = NMINEP
-    NMINER = NMINEA/NMINEP * NMOBR
-    NRUSLF = NMINER * WNRLF
-    NRUSST = NMINER * WNRST
-    NRUSRT = NMINER * WNRRT
-    NRUSSH = NMINER * WNRSH
-    CNMINE = NMINEA / 0.16 * RPRO        #Not used
+    if (NMINEA > NMINEP) {
+      NMINEA <- NMINEP
+      NMINER <- NMINEA/NMINEP * NMOBR
+      NRUSLF <- NMINER * WNRLF
+      NRUSST <- NMINER * WNRST
+      NRUSRT <- NMINER * WNRRT
+      NRUSSH <- NMINER * WNRSH
+      CNMINE <- NMINEA / 0.16 * RPRO        #Not used
     }
     
     #***********************************************************************
