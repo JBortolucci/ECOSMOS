@@ -48,6 +48,10 @@ simDataVars$WTSD    <-  0
 simDataVars$WTSHE   <-  0
 simDataVars$WTSHMT  <-  0
 simDataVars$FLWN    <-  0
+simDataVars$AGRSD3  <-  0
+simDataVars$ANINSD  <-  0
+simDataVars$CUMSIG  <-  0 
+simDataVars$RSD     <-  0
   
 
 PODS <- function(EMERG, 
@@ -57,14 +61,13 @@ PODS <- function(EMERG,
                  NSTRES, PGAVL, PHTHRS, PHTIM, PNTIM, PUNCSD,    #!Input
                  PUNCTR, RNITP, SDDES, SDGR, SHELWT, SW, SWFAC,  #!Input
                  TDUMX, TGRO, TURADD, XFRT, YRDOY, YRNR1, YRNR2, #!Input
-                 PStres2, YRPLT,                                 #!Input
-                 AGRSD3, LAGSD, LNGPEG, NGRSD, NGRSH, PCTMAT,    #!Output
-                 PODNO, POTCAR, POTLIP, SDNO, SDVAR, SEEDNO,     #!Output
-                 SHELN, SHVAR, WSDDTN, WSHDTN, WTABRT, WTSD,     #!Output
-                 WTSHE, WTSHMT, FLWN)         {                  #!Output
+                 PStres2, YRPLT)         {                       #!Input
+                 # AGRSD3, LAGSD, LNGPEG, NGRSD, NGRSH, PCTMAT,    #!Output
+                 # PODNO, POTCAR, POTLIP, SDNO, SDVAR, SEEDNO,     #!Output
+                 # SHELN, SHVAR, WSDDTN, WSHDTN, WTABRT, WTSD,     #!Output
+                 # WTSHE, WTSHMT, FLWN)         {                  #!Output
   
-  PODS <- 0
-
+  
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   XFRT    <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
@@ -136,11 +139,23 @@ PODS <- function(EMERG,
   NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
   SWFAC   <- 0 # water stress factor (verificar de onde vem no ECOSMOS)
   
-  DLAYR(NL)  <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS
-  SW(NL)     <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS
-  LL(NL)     <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS
-  DUL(NL)    <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS
-
+  #TODO: Verificar
+  # DLAYR(NL)  <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS   #Ja foi criado na ROOTS, Passar para o ambiente global ?? 
+  # SW(NL)     <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS   #Ja foi criado na ROOTS, Passar para o ambiente global ?? 
+  # LL(NL)     <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS   #Ja foi criado na ROOTS, Passar para o ambiente global ?? 
+  # DUL(NL)    <- #TODO ver com Santiago como ele linkou com o padrão ECOSMOS   #Ja foi criado na ROOTS, Passar para o ambiente global ?? 
+    
+  # DLAYR  <- rep(0, NL)
+  DLAYR <-  c(5.00000000  ,    10.0000000   ,    15.0000000   ,    15.0000000   ,    15.0000000   ,    30.0000000    ,   30.0000000   ,    30.0000000     , -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000 )
+  # SW     <- rep(0, NL)
+  SW    <-  c(0.219999999 ,    0.219999999  ,    0.213000000  ,    0.207000002  ,    0.200000003  ,    0.180000007   ,   0.180000007  ,    0.180000007    ,   0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000  ,     0.00000000 ,      0.00000000)
+  # LL     <- rep(0, NL)
+  LL    <-  c(0.140000001 ,    0.140000001  ,    0.140000001  ,    0.150000006  ,    0.150000006  ,    0.150000006   ,   0.180000007  ,    0.180000007    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
+  # DUL    <- rep(0, NL)
+  DUL   <-  c(0.300000012 ,    0.289999992  ,    0.280000001  ,    0.273000002  ,    0.259999990  ,    0.259999990   ,   0.259999990  ,    0.259999990    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
+  
+  
+  
   #TODO ler arquivo de output do Fortran
   TGRO   <- rep(1.,24)
   
@@ -156,12 +171,11 @@ PODS <- function(EMERG,
   AVTEM <- rep(0, NCOHORTS)
   FLWN  <- rep(0, NCOHORTS)
   
-      #TODO CHAMAR FUNCAO
-      # CALL PODCOMP(
-      #   &  AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
-      #   &  POTCAR, POTLIP,                                 #Input/Output
-      #   &  AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
-      #   &  RUNINIT)                                        #Control
+   PODCOMP(
+        AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
+        POTCAR, POTLIP,                                 #Input/Output
+        AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
+        RUNINIT)                                        #Control
       
       
       #-----------------------------------------------------------------------
@@ -249,12 +263,11 @@ PODS <- function(EMERG,
         AVTEM[NPP] <- 0.0
       }
       
-      #TODO CHAMAR FUNCAO
-      # CALL PODCOMP(
-      #   &    AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,  #Input
-      #   &    POTCAR, POTLIP,                               #Input/Output
-      #   &    AGRSD3, ANINSD, CUMSIG, RSD,                  #Output
-      #   &    EMERG)                                        #Control
+      PODCOMP(
+        AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,  #Input
+        POTCAR, POTLIP,                               #Input/Output
+        AGRSD3, ANINSD, CUMSIG, RSD,                  #Output
+        EMERG)                                        #Control
       
       #***********************************************************************
       #***********************************************************************
@@ -758,18 +771,11 @@ PODS <- function(EMERG,
      #&  AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
      #&  DYNAMIC)                                        #Control
 
-simDataVars$AGRSD3 <- 0
-simDataVars$ANINSD <- 0
-simDataVars$CUMSIG <- 0 
-simDataVars$RSD    <- 0
-
 PODCOMP <- function(
   AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
   POTCAR, POTLIP,                                 #Input/Output
   AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
   DYNAMIC) {                                        #Control
-  
-  PODCOMP <- 0
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL

@@ -58,15 +58,13 @@ DEMAND <- function(DYNAMIC, CONTROL,
                    SDDES, SDNO, SDVAR, SHELN, SHVAR, STMWT, SWFAC,   #Input
                    TAVG, TDUMX, TDUMX2, TGRO, TURFAC, VSTAGE, WCRLF, #Input
                    WCRRT, WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTLF,   #Input
-                   WTSD, WTSHE, XPOD, NVEG0, NR1, NR2, NR5, NR7,     #Input
-                   
-                   AGRSD1, AGRSD2, AGRVG, AGRVG2, CDMREP, Fnew, FNINL,  #Output *** Fnew is 'F' in the original file. Changed because F is logical in R. ***
-                   FNINR, FNINS, FNINSD, FRLF, FRRT, FRSTM, GDMSD,   #Output
-                   GRRAT1, NDMNEW,  NDMOLD, NDMREP, NDMSDR, NDMTOT,  #Output
-                   NDMVEG, NMINEP, NMOBR, PHTIM, PNTIM, POTCAR,      #Output
-                   POTLIP, SDGR, TURADD, XFRT, YREND) {                #Output
-  
-  DEMAND <- 0
+                   WTSD, WTSHE, XPOD, NVEG0, NR1, NR2, NR5, NR7) {     #Input
+                   # 
+                   # AGRSD1, AGRSD2, AGRVG, AGRVG2, CDMREP, Fnew, FNINL,  #Output *** Fnew is 'F' in the original file. Changed because F is logical in R. ***
+                   # FNINR, FNINS, FNINSD, FRLF, FRRT, FRSTM, GDMSD,   #Output
+                   # GRRAT1, NDMNEW,  NDMOLD, NDMREP, NDMSDR, NDMTOT,  #Output
+                   # NDMVEG, NMINEP, NMOBR, PHTIM, PNTIM, POTCAR,      #Output
+                   # POTLIP, SDGR, TURADD, XFRT, YREND) {                #Output
   
   ##-----------------------------------------------------------------------
   #TODO verificar se vamos utilizar e como o DYNAMIC
@@ -694,7 +692,7 @@ DEMAND <- function(DYNAMIC, CONTROL,
   assign("AGRVG", AGRVG, envir = env)
   assign("AGRVG2", AGRVG2, envir = env)
   assign("CDMREP", CDMREP, envir = env)
-  assign("F", F, envir = env)
+  assign("F", F, envir = env)                   # Fnew ??
   assign("FNINL", FNINL, envir = env)
   assign("FNINR", FNINR, envir = env)
   assign("FNINS", FNINS, envir = env)
