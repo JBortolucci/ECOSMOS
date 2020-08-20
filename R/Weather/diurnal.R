@@ -135,8 +135,7 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
     if(stinrad >= 0) {
       cloud <- 0.76 * (1 - (stinrad / dailyrad)) / 0.509  #invert the original equation for trans
       cloud <- max(0,min(cloud,1))
-      if(jday == 1)
-        print(paste0('be sure that is reading solar radiation (MJ / m2day) stinrad'))
+      # if(jday == 1)print(paste0('be sure that is reading solar radiation (MJ / m2day) stinrad'))
     }
     
     dailyrad <- 0
@@ -318,7 +317,7 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   }
 
    
-   # raina=raina + 1.0/(3600) # rainfall rate (mm/s or kg m-2 s-1)
+    raina=raina + 1.0/(3600) # rainfall rate (mm/s or kg m-2 s-1)
    #  print(paste0('usando raina=raina+2 ->', raina)) 
   # ---------------------------------------------------------------------- 
   # *  *  * irrigation calculations *  * *

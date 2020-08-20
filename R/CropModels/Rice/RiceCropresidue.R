@@ -139,10 +139,10 @@ RiceCropresidue <- function (year, year0, jday, index) {
     
     fallw <- 0.0
     
-    cbior <- 0.0
-    cbiol <- 0.0
-    cbiog <- 0.0
-    cbios <- 0.0
+    cbior[j] <- 0.0
+    cbiol[j] <- 0.0
+    cbiog[j] <- 0.0
+    cbios[j] <- 0.0
     
     
 
@@ -195,8 +195,8 @@ RiceCropresidue <- function (year, year0, jday, index) {
   assign("ccdays", ccdays, envir = env)
   assign("cbior", cbior, envir = env)
   assign("cbiol", cbiol, envir = env)
-  assign("cbiog", cbiocr, envir = env)
-  assign("cbios", cbiob, envir = env)
+  assign("cbiog", cbiog, envir = env)
+  assign("cbios", cbios, envir = env)
   assign("hui", hui, envir = env)
   assign("aybprod", aybprod, envir = env)
   assign("ayrprod", ayrprod, envir = env)

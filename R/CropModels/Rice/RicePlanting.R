@@ -13,7 +13,7 @@ RicePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   
   
   if(pstart[i] == cdays && exist[i] == 1 && croplive[i] != 1) {
-    print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i]," cdays ",cdays,sep=" / "))
+    # print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i]," cdays ",cdays,sep=" / "))
   }
   
   
@@ -73,7 +73,7 @@ RicePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
       idop[i]         <- jday    
       cropy            <- 1
 
-      print(paste('1st Plant Rice ', jday, imonth, iyear,hybgdd[i],gddmaturity[i],sep=' / '))
+      # print(paste('1st Plant Rice ', jday, imonth, iyear,hybgdd[i],gddmaturity[i],sep=' / '))
       
     }
     

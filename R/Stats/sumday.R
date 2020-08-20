@@ -112,10 +112,10 @@ sumday <- function (istep, plens, iyear, jday) {
     
     precipfac <- precip - adrain - adsnow
     
-    if ( ((precipfac <  -0.1) || (precipfac > 0.1)) &&  
-         ( iyear < imetyear || iyear > imetend ||  
-           (iyear == imetyear && jday < dmetyear) ||  
-           (iyear == imetend && jday > dmetend) ) ) print(paste0('ERROR in sumday:', 1, jday, adrain + adsnow, precip))
+   # if ( ((precipfac <  -0.1) || (precipfac > 0.1)) &&  
+   #      ( iyear < imetyear || iyear > imetend ||  
+   #        (iyear == imetyear && jday < dmetyear) ||  
+   #        (iyear == imetend && jday > dmetend) ) ) print(paste0('ERROR in sumday:', 1, jday, adrain + adsnow, precip))
   }
   
   # End of verification

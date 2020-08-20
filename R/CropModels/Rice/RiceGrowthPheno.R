@@ -11,6 +11,7 @@ simDataVars$TMAXC      <- 0
 simDataVars$TMINC      <- 0
 simDataVars$TTSUM      <- 0
 simDataVars$DRLVTa     <- 0
+simDataVars$ID     <- 0
 
 
 RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
@@ -42,12 +43,10 @@ RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     Phenology(idpp[i],jday)
     
     
-    print(paste('Phenology',idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,sep = " | "    ))
     
     
     #To do: levar os parametros para a plant_params.csv    
     if(idpp[i]==1){     
-      
       cbiow[i]  <- 0.00
       cbiob[i]  <- 0.00
       cbior[i]  <- 0.00
@@ -200,12 +199,24 @@ RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     #___________________________________________________
     #       Harvest
     
+    fileout=paste("RICE_DAILY.csv")
+    # ID<-simConfigs[[i]]$id
+      if(idpp[i]==1)ID<-paste0(jday,iyear)
+    write(paste( ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS ,
+                    aroot[i],aleaf[i],astem[i],arepr[i],cbior[i],cbiol[i],cbios[i],cbiog[i],plai[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
+    
+    
+    
     if(cropy == 1) {
       
       if ( DVS >= 2.0 ) { # maximum harvest date
         
-        print(paste('Harvest RICE - = ',cropy,iyear,jday,idpp[i],rm))
+        print(paste('Harvest RICE ',ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai[i],cbiog[i],sep = " ; "    ))
         
+        fileout=paste("RICE_OUT.csv")
+          write(paste(ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai,cbiog[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
+
+
         
         croplive[i]   <- 0.0
         cropy         <- 0.0
@@ -251,8 +262,8 @@ RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("astem", astem, envir = env)
   assign("arepr", arepr, envir = env)
   assign("cbiol", cbiol, envir = env)
-  assign("cbiog", cbiocr, envir = env)
-  assign("cbios", cbiob, envir = env)
+  assign("cbiog", cbiog, envir = env)
+  assign("cbios", cbios, envir = env)
   assign("cbior", cbior, envir = env)
   assign("plai", plai, envir = env)
   assign("peaklai", peaklai, envir = env)
@@ -276,7 +287,9 @@ RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("TMAXC"  ,TMAXC  ,envir = env)
   assign("TMINC"  ,TMINC  ,envir = env)
   assign("TTSUM"  ,TTSUM  ,envir = env)
+  assign("ID"  ,ID  ,envir = env)
   
+
   
   
 }
@@ -287,7 +300,8 @@ RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
 
 
 Phenology = function(DAS,jday){
-  
+ 
+# To do: levar para o plant_params   
   #========================================#
   DEGTRAD =  0.017453292   
   TMD     =  42         
@@ -300,10 +314,17 @@ Phenology = function(DAS,jday){
   
   #========================================#
   
-  DVRJ = 0.001323
-  DVRI = 0.000842
-  DVRP = 0.000799
-  DVRR = 0.002423
+    #DVRJ = 0.001323  # Catiana
+    #DVRI = 0.000842  # Catiana
+    #DVRP = 0.000799  # Catiana
+    #DVRR = 0.002423  # Catiana
+    DVRJ = 0.001323 # TAIM
+    DVRI = 0.000842 # TAIM
+    DVRP = 0.000799 # TAIM
+    DVRR = 0.004423 # TAIM
+
+  
+  
   #========================================#
   
   

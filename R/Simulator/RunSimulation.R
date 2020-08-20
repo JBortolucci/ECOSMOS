@@ -405,7 +405,7 @@ GeneralModel <- function(simVars = NULL) {
           if(simVars$endCycle) {
             
             
-            print(paste0("Harvest ", simVars$plantList[[i]]$name, " - cycle ", simVars$plantList[[i]]$currentCycle))
+            #print(paste0("Harvest ", simVars$plantList[[i]]$name, " - cycle ", simVars$plantList[[i]]$currentCycle))
             simVars$plantList[[i]]$currentCycle <- simVars$plantList[[i]]$currentCycle + 1
             
             # reset end cycle variable
@@ -413,7 +413,7 @@ GeneralModel <- function(simVars = NULL) {
             
             if(simVars$plantList[[i]]$currentCycle > simVars$plantList[[i]]$totalCycles) {
               
-              print(paste0("Crop ", simVars$plantList[[i]]$name, " is finished"))
+              #print(paste0("Crop ", simVars$plantList[[i]]$name, " is finished"))
               # turn off current plant
               simVars$plantList[[simVars$currentPlant]]$active <- F
               simVars$exist[simVars$currentPlant]              <- 0
