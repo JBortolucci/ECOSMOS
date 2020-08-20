@@ -1,7 +1,7 @@
 
 source("R/CropModels/Soybean/SoybeanPhenocrop.R")
-#source("R/CropModels/Soybean/SoybeanGrowth.R")
-source("R/CropModels/Soybean/CURV.R")
+# source("R/CropModels/Soybean/SoybeanGrowth.R")
+source("R/CropModels/Soybean/UTILS.R")
 
   SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   
