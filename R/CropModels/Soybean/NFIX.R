@@ -35,37 +35,23 @@
 #  Calls:        FIND, ERROR, IGNORE
 #=======================================================================
 
-#simDataVars$CNOD   <-  0
-#simDataVars$DWNOD  <-  0
-#simDataVars$DWNODA <-  0
-#simDataVars$NDTH   <-  0
-#simDataVars$NFIXN  <-  0
-#simDataVars$NODGR  <-  0
-#simDataVars$WTNFX  <-  0
-#simDataVars$SENNOD <-  0
-
-CNOD   <-  0
-DWNOD  <-  0
-DWNODA <-  0
-NDTH   <-  0
-NFIXN  <-  0
-NODGR  <-  0
-WTNFX  <-  0
-SENNOD <-  0
+simDataVars$CNOD   <-  0
+simDataVars$DWNOD  <-  0
+simDataVars$DWNODA <-  0
+simDataVars$NDTH   <-  0
+simDataVars$NFIXN  <-  0
+simDataVars$NODGR  <-  0
+simDataVars$WTNFX  <-  0
 
 NFIX <- function(DYNAMIC,
                  AGRNOD, CNODMN, CTONOD, DLAYR, DXR57,           #Input
                  FILECC, FILEIO, NLAYR, NR7, PLTPOP,             #Input
-                 SAT, ST, SW, TURFAC,                            #Input
-                 CNOD, DWNOD, DWNODA, NDTH, NFIXN,               #Output
-                 NODGR, WTNFX, SENNOD) {                          #Output
+                 SAT, ST, SW, TURFAC) {                            #Input
+                 # CNOD, DWNOD, DWNODA, NDTH, NFIXN,               #Output
+                 # NODGR, WTNFX, SENNOD) {                          #Output
   
-  #NFIX <- 0
-  #-----------------------------------------------------------------------
-  #TODO ver padrão ECOSMOS
-  NLAYR <- 0 
-  DAS <- 0
-  DYNAMIC <- 0
+  # TODO:Remover 
+  DAS <- idpp[i] 
   
   #______________________________________________________________        
   # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -92,25 +78,30 @@ NFIX <- function(DYNAMIC,
   
   #fim dos parametros de planta
   
-  CTONOD #TODO descobrir de onde vem exatamente (CROPGRO.for inicia como 0)
-  CNODMN #TODO descobrir de onde vem exatamente (CROPGRO.for inicia como 0)
+  CTONOD <- 0  #TODO descobrir de onde vem exatamente (CROPGRO.for inicia como 0)
+  CNODMN <- 0 #TODO descobrir de onde vem exatamente (CROPGRO.for inicia como 0)
   
-  EFNFIX #TODO descobrir de onde vem exatamente (relacionado à inoculação)
-  EFINOC #TODO descobrir de onde vem exatamente (relacionado à inoculação)
+  EFNFIX <- 1 #TODO descobrir de onde vem exatamente (relacionado à inoculação)
+  EFINOC <- 1 #TODO descobrir de onde vem exatamente (relacionado à inoculação)
   EFINOC <- ifelse(EFINOC <= 0.0, 1.0, EFINOC) # veio da inicialização ('INITI' section)
   EFNFIX <- ifelse(EFNFIX <= 0.0, 1.0, EFNFIX) # veio da inicialização ('INITI' section)
   
   PLTPOP <- 40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
 
-  SWMEM(9) #TODO ver com JAIR
+  SWMEM  <- rep(0, 9) #TODO ver com JAIR
   
   #TODO ver padrão ECOSMOS
-  DLAYR(NL)
-  SAT(NL)
-  SW(NL)
-  ST(NL)
-  LAYERFRAC(NL)
-  SENNOD(NL)
+  # DLAYR  <- rep(0, NL)
+  DLAYR <-  c(5.00000000  ,    10.0000000   ,    15.0000000   ,    15.0000000   ,    15.0000000   ,    30.0000000    ,   30.0000000   ,    30.0000000     , -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000 )
+  # SAT    <- rep(0, NL)
+  SAT   <-  c(0.360000014 ,    0.349999994  ,    0.333000004  ,    0.326999992  ,    0.319999993  ,    0.319999993   ,   0.319999993  ,    0.319999993    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
+  # SW     <- rep(0, NL)
+  SW    <-  c(0.219999999 ,    0.219999999  ,    0.213000000  ,    0.207000002  ,    0.200000003  ,    0.180000007   ,   0.180000007  ,    0.180000007    ,   0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000  ,     0.00000000 ,      0.00000000)
+  
+  #NL = 20
+  ST<- rep(0,20)
+  LAYERFRAC <- rep(0,20)
+  SENNOD    <- rep(0,20)
   
   #***********************************************************************
   #***********************************************************************
@@ -126,7 +117,7 @@ NFIX <- function(DYNAMIC,
     NODGR  = 0.0    
     WTNFX  = 0.0    
     SDWNOD = 0 
-    SENNOD = 0.0 
+    SENNOD = rep(0,9)
     
     DNOD   = 30.0
     
@@ -138,8 +129,8 @@ NFIX <- function(DYNAMIC,
     #-----------------------------------------------------------------------
     #     DAS = MAX(0,TIMDIF(YRSIM,YRDOY))
     #CALL GET(CONTROL)
-    #TODO ver padrão ECOSMOS
-    #DAS = CONTROL % DAS
+    # TODO:Remover 
+    DAS <- idpp[i]
     #-----------------------------------------------------------------------
     #   Set initial nodule mass to DWNODI as read from crop species file
     #-----------------------------------------------------------------------
@@ -306,9 +297,7 @@ NFIX <- function(DYNAMIC,
   assign("WTNFX", WTNFX, envir = env)
   assign("SENNOD", SENNOD, envir = env)
   
-  #return()
-  #RETURN
-  #END # SUBROUTINE NFIX
+  return()
 }
 #=======================================================================
 # ACSTF    Weighted average soil temperature effect on N fixation (cm)

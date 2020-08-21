@@ -24,7 +24,6 @@ MOBIL <- function(DYNAMIC,
                   WNRLF, WNRRT, WNRSH, WNRST,                     #!Input
                   NMINEA, NRUSLF, NRUSRT, NRUSSH, NRUSST) {         #!Output
   
-  MOBIL <- 0
   
   #!*RESPIRATION PARAMETERS (.SPE), mas não usado, aparentemente
   RPRO   <- 0.360 
