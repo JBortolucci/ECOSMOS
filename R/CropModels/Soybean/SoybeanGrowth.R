@@ -247,9 +247,49 @@ simDataVars$MDATE  <- 0  #VERIFICAR INPUT/OUTPUT não se encaixa aqui, certo?
 simDataVars$WLFDOT  <-  0
 #-----------------END FREEZE VARS-----------------
 
+#-------------------INCOMP VARS-------------------
+simDataVars$AGRLF   <-  0
+simDataVars$AGRNOD  <-  0
+simDataVars$AGRRT   <-  0
+simDataVars$AGRSD1  <-  0
+simDataVars$AGRSD2  <-  0
+simDataVars$AGRSH1  <-  0
+simDataVars$AGRSH2  <-  0
+simDataVars$AGRSTM  <-  0
+simDataVars$AGRVG   <-  0
+simDataVars$AGRVG2  <-  0
+simDataVars$SDPROR  <-  0
+#-----------------END INCOMP VARS-----------------
 
-#----------------GROW FUNCTION-------------------
-GROW <- function (DYNAMIC, EMERG, 
+#-------------------NUPTAK VARS-------------------
+simDataVars$TRNH4U <- 0
+simDataVars$TRNO3U <- 0
+simDataVars$TRNU   <- 0
+simDataVars$UNH4   <- 0
+simDataVars$UNO3   <- 0
+#-----------------END INCOMP VARS-----------------
+
+#--------------------MOBIL VARS-------------------
+simDataVars$NMINEA  <-  0
+simDataVars$NRUSLF  <-  0
+simDataVars$NRUSRT  <-  0
+simDataVars$NRUSSH  <-  0
+simDataVars$NRUSST  <-  0
+#------------------END MOBIL VARS-----------------
+
+#--------------------NFIX VARS--------------------
+simDataVars$CNOD   <-  0
+simDataVars$DWNOD  <-  0
+simDataVars$DWNODA <-  0
+simDataVars$NDTH   <-  0
+simDataVars$NFIXN  <-  0
+simDataVars$NODGR  <-  0
+simDataVars$WTNFX  <-  0
+#-------------------END NFIX VARS-----------------
+
+
+#----------------GROW FUNCTION--------------------
+GROW <- function (DYNAMIC,
                   AGEFAC, CADLF, CADST, CRUSLF, CRUSRT, CRUSSH,     #!Input
                   CRUSST, DISLA, Fnew, FILECC, FRLF, FRSTM,         #!Input  #*** Fnew is 'F' in the original file. Changed because F is logical in R. ***
                   NADLF, NADRT, NADST, NDTH, NFIXN, NGRLF, NGRRT,   #!Input
@@ -359,8 +399,15 @@ GROW <- function (DYNAMIC, EMERG,
   #***********************************************************************
   #     Run Initialization - Called once per simulation
   #***********************************************************************
-  if (DYNAMIC == RUNINIT) {
+  
     
+    #***********************************************************************
+    #***********************************************************************
+    #     Seasonal initialization - run once per season
+    #***********************************************************************
+  if (DYNAMIC == 'SEASINIT') {
+    #-----------------------------------------------------------------------
+    # veio do RUNINIT
     if (CROP != 'FA') {
       #-----------------------------------------------------------------------
       #       Copied from IPIBS
@@ -388,12 +435,6 @@ GROW <- function (DYNAMIC, EMERG,
       #-----------------------------------------------------------------------
     }
     
-    #***********************************************************************
-    #***********************************************************************
-    #     Seasonal initialization - run once per season
-    #***********************************************************************
-  } else if (DYNAMIC == SEASINIT) {
-    #-----------------------------------------------------------------------
     ALFDOT = 0.0
     AREALF = 0.0
     AREAH  = 0.0
@@ -517,7 +558,8 @@ GROW <- function (DYNAMIC, EMERG,
     #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
     #         or transplanting of plants
     #***********************************************************************
-  } else if (DYNAMIC == EMERG) {
+    # TODO: Verificar com Santiago EMERG
+   } else if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
     #     Net growth rates
     WLDOT  = 0.0
@@ -611,7 +653,7 @@ GROW <- function (DYNAMIC, EMERG,
     #***********************************************************************
     #     Daily integration
     #***********************************************************************
-  } else if (DYNAMIC == INTEGR) {
+  } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     NLPEST = 0.0    #CHP - N loss due to pest damage
     
@@ -1440,6 +1482,7 @@ ROOTS <- function(DINAMYC,
   LL    <-  c(0.140000001 ,    0.140000001  ,    0.140000001  ,    0.150000006  ,    0.150000006  ,    0.150000006   ,   0.180000007  ,    0.180000007    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
   RLDF   <- rep(0, NL)
   
+  
   RLGRW  <- rep(0, NL)
   RLSEN  <- rep(0, NL)
   RLV    <- rep(0, NL)
@@ -1460,7 +1503,7 @@ ROOTS <- function(DINAMYC,
   #***********************************************************************
   #     Seasonal initialization - run once per season
   #***********************************************************************
-  if (DYNAMIC == SEASINIT) {
+  if (DYNAMIC == 'SEASINIT') {
     #---------------------------------------------------------------------
     SRDOT = 0.0       
     RLV   = 0.0
@@ -1485,7 +1528,7 @@ ROOTS <- function(DINAMYC,
     # EMERGENCE CALCULATIONS - Performed once per season upon emergence
     #         or transplanting of plants
     #***********************************************************************
-  } else if (DYNAMIC == EMERG) {
+  } else if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
     #   Call INROOT for initialization of root variables on
     #   day of emergence.  (GROW emergence initialization
@@ -1512,7 +1555,7 @@ ROOTS <- function(DINAMYC,
     #***********************************************************************
     #     DAILY RATE/INTEGRATION
     #***********************************************************************
-  } else if (DYNAMIC == INTEGR) {
+  } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     #     Calculate Root Depth Rate of Increase, Physiological Day (RFAC2)
     #-----------------------------------------------------------------------
@@ -1906,7 +1949,7 @@ DEMAND <- function(DYNAMIC,
   #***********************************************************************
   #     Seasonal initialization - run once per season
   #***********************************************************************
-  if (DYNAMIC == SEASINIT) {
+  if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
     CDMSDR = 0.0
     GDMSDR = 0.0
@@ -1957,7 +2000,7 @@ DEMAND <- function(DYNAMIC,
     #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
     #         or transplanting of plants
     #***********************************************************************
-  } else if (DYNAMIC == EMERG) {
+  } else if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
     XFRT   = XFRUIT
     ADDSHL = 0.0
@@ -1983,7 +2026,7 @@ DEMAND <- function(DYNAMIC,
     #***********************************************************************
     #     DAILY RATE/INTEGRATION
     #***********************************************************************
-  } else if (DYNAMIC == INTEGR) {
+  } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     #     DAS = max(0,TIMDIF(YRSIM,YRDOY))
     #CALL GET(CONTROL)
@@ -2532,7 +2575,7 @@ SDCOMP <- function (CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD,   #Input
 }
 #--------------END DEMAND FUNCTION---------------
 #----------------PODS FUNCTION-------------------
-PODS <- function(EMERG, 
+PODS <- function(DINAMYC, 
                  AGRSD1, AGRSH1, DLAYR, DRPP, DUL, FILECC,       #!Input
                  FILEGC,FILEIO, FNINL, FNINSD, FNINSH, GDMSD,    #!Input
                  GRRAT1, ISWWAT, LL, NAVL, NDSET, NLAYR, NRUSSH, #!Input
@@ -2676,7 +2719,7 @@ PODS <- function(EMERG,
   #***********************************************************************
   #     Seasonal initialization - run once per season
   #***********************************************************************
-  if (DYNAMIC == SEASINIT) {
+  if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
     FNINSH <- 0.0   
     NAVPOD <- 0.0
@@ -2709,7 +2752,7 @@ PODS <- function(EMERG,
     #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
     #         or transplanting of plants
     #***********************************************************************
-  } else if (DYNAMIC == EMERG) {
+  } else if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
     ACCAGE  <- 0.0
     AFLW    <- 0.0
@@ -2734,7 +2777,7 @@ PODS <- function(EMERG,
       AVTEM[NPP] <- 0.0
     }
     
-    PODCOMP(EMERG,
+    PODCOMP('EMERG',
       AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,  #Input
       POTCAR, POTLIP)                               #Input/Output
    
@@ -2742,7 +2785,7 @@ PODS <- function(EMERG,
     #***********************************************************************
     #     DAILY RATE/INTEGRATION
     #***********************************************************************
-  } else if (DYNAMIC == INTEGR) {
+  } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     #     Daily Initialization.
     #-----------------------------------------------------------------------
@@ -2854,7 +2897,7 @@ PODS <- function(EMERG,
         #     Detailed seed composition calculations
         #-----------------------------------------------------------------------
         
-        PODCOMP(INTEGR,
+        PODCOMP('INTEGR',
                 AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
                 POTCAR, POTLIP)                                 #Input/Output
         
@@ -3152,7 +3195,7 @@ PODS <- function(EMERG,
     #***********************************************************************
     #     OUTPUT
     #***********************************************************************
-  } else if (DYNAMIC == OUTPUT | DYNAMIC == SEASEND) {
+  } else if (DYNAMIC == 'OUTPUT' | DYNAMIC == 'SEASEND') {
     
     #-----------------------------------------------------------------------
     #if (YRDOY >= YRNR2 & YRNR2 > 0) {
@@ -3217,7 +3260,7 @@ PODCOMP <- function(DYNAMIC,
   #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
   #         or transplanting of plants
   #***********************************************************************
-  if (DYNAMIC == EMERG) {
+  if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
     #     Initialize plant variables at emergence
     #-----------------------------------------------------------------------
@@ -3229,7 +3272,7 @@ PODCOMP <- function(DYNAMIC,
     #***********************************************************************
     #     DAILY INTEGRATION
     #***********************************************************************
-  } else if (DYNAMIC == INTEGR) {
+  } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     #     Daily initialize, each should change before seed cohorts section
     #-----------------------------------------------------------------------
@@ -3450,7 +3493,7 @@ PODCOMP <- function(DYNAMIC,
 }
 #--------------END PODS FUNCTION---------------
 #---------------VEGGR FUNCTION-----------------
-VEGGR <- function(EMERG, #DINAMYC no original
+VEGGR <- function(DINAMYC, 
                   AGRLF, AGRRT, AGRSTM, CMINEP, CSAVEV, DTX,      #!Input
                   DXR57, ECONO, FILECC, FILEGC, FNINL, FNINR,     #!Input
                   FNINS, KCAN, NAVL, NDMNEW, NDMOLD,              #!Input
@@ -3507,7 +3550,7 @@ VEGGR <- function(EMERG, #DINAMYC no original
   #***********************************************************************
   #     Seasonal initialization - run once per season
   #***********************************************************************
-  if (DYNAMIC == SEASINIT) {
+  if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
     CADLF  = 0.0  
     CADST  = 0.0  
@@ -3535,7 +3578,7 @@ VEGGR <- function(EMERG, #DINAMYC no original
     WRDOTN = 0.0  
     WSDOTN = 0.0  
     
-    CANOPY(SEASINIT,
+    CANOPY('SEASINIT',
            ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
            RVSTGE, TGRO, TURFAC, VSTAGE, XLAI)             #Input
     
@@ -3544,14 +3587,14 @@ VEGGR <- function(EMERG, #DINAMYC no original
     #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
     #         or transplanting of plants
     #***********************************************************************
-  } else if (DYNAMIC == EMERG) {
+  } else if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
     FNINLG = PROLFG * 0.16   
     FNINRG = PRORTG * 0.16   
     FNINSG = PROSTG * 0.16   
     CUMTUR = 1.0             
     
-    CANOPY(EMERG,
+    CANOPY('EMERG',
            ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
            RVSTGE, TGRO, TURFAC, VSTAGE, XLAI)             #Input
     
@@ -3559,7 +3602,7 @@ VEGGR <- function(EMERG, #DINAMYC no original
     #***********************************************************************
     #     DAILY RATE/INTEGRATION
     #***********************************************************************
-  } else if (DYNAMIC == INTEGR) {
+  } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     #-----------------------------------------------------------------------
     #     Partitioning is modified by water stress and nitrogen stress
@@ -3775,7 +3818,7 @@ VEGGR <- function(EMERG, #DINAMYC no original
     #     function of VSTAGE, air temperature, drought stress (TURFAC),
     #     daylenght and radiation (PAR).
     #-----------------------------------------------------------------------
-    CANOPY(INTEGR,
+    CANOPY('INTEGR',
            ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
            RVSTGE, TGRO, TURFAC, VSTAGE, XLAI)             #Input
     # CANHT, CANWH)                                   #Output
@@ -3856,7 +3899,7 @@ CANOPY <- function (DYNAMIC,
   #***********************************************************************
   #     SEASONAL INITIALIZATION 
   #***********************************************************************
-  if (DYNAMIC == SEASINIT) {
+  if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
     CANHT = 0.0
     CANWH = 0.0
@@ -3866,7 +3909,7 @@ CANOPY <- function (DYNAMIC,
     #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
     #         or transplanting of plants
     #***********************************************************************
-  } else if  (DYNAMIC == EMERG) {
+  } else if  (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
     CANHT  = TABEX(YVSHT,XVSHT,VSTAGE,10)       
     CANWH  = TABEX(YVSWH,XVSHT,VSTAGE,10)       
@@ -3875,7 +3918,7 @@ CANOPY <- function (DYNAMIC,
     #***********************************************************************
     #     DAILY RATE/INTEGRATION
     #***********************************************************************
-  } else if  (DYNAMIC == INTEGR) {
+  } else if  (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     #     Calculate effect of temperature on canopy expansion, HWTEM
     #-----------------------------------------------------------------------
@@ -3972,7 +4015,7 @@ PODDET <- function(DYNAMIC,
   #     EMERGENCE CALCULATIONS - Performed once per season upon emergence
   #         or transplanting of plants
   #***********************************************************************
-  if (DYNAMIC == EMERG) {
+  if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
     # ALTERADO: Provavelmente esse número é como o fortran referencia até onde o loop vai repetir.
     for (I in 1:NCOHORTS) {
@@ -3987,7 +4030,7 @@ PODDET <- function(DYNAMIC,
     #***********************************************************************
     #     DAILY RATE/INTEGRATION
     #***********************************************************************
-  } else if (DYNAMIC == INTEGR) {
+  } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     #     Compute thermal time using hourly predicted air temperature
     #     based on observed max and min temperature.
@@ -4132,7 +4175,6 @@ PODDET <- function(DYNAMIC,
   assign("WSHIDT", WSHIDT, envir = env)
   assign("WTSD", WTSD, envir = env)
   assign("WTSHE", WTSHE, envir = env)
-  assign("EMERG", EMERG, envir = env)
   
   return()
 }
@@ -4174,7 +4216,7 @@ SENES <- function (DYNAMIC,DAS,
   #***********************************************************************
   #     Seasonal initialization - run once per season
   #***********************************************************************
-  if (DYNAMIC == SEASINIT) {
+  if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
     SSDOT  = 0.0
     SLDOT  = 0.0
@@ -4190,7 +4232,7 @@ SENES <- function (DYNAMIC,DAS,
     #***********************************************************************
     #     DAILY RATE/INTEGRATION
     #***********************************************************************
-  } else if (DYNAMIC == INTEGR) {
+  } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     #Update value of RATTP.
     
@@ -4341,3 +4383,602 @@ FREEZE <- function(
   return()
 }
 #--------------END FREEZE FUNCTION-------------
+
+
+#---------------INCOMP FUNCTION----------------
+INCOMP <- function(DYNAMIC,
+                   FILECC, FILEIO, FRLF, FRRT, FRSTM,              #!Input
+                   AGRLF, AGRNOD, AGRRT, AGRSD1, AGRSD2, AGRSH1,   #!Output
+                   AGRSH2, AGRSTM, AGRVG, AGRVG2, SDPROR) {          #!Output
+  
+  #INCOMP <- 0
+  #TODO ver DYNAMIC e datas 
+  #INTEGER DYNAMIC, ERR, FOUND, ISECT, LINC, LNUM
+  #______________________________________________________________        
+  # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+  SDLIP <- 0.200 #Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
+  SDPRO <- 0.400 #Fraction protein in seeds (g(protein)/g(seed)) [from VAR# BR0001]
+  
+  #______________________________________________________________        
+  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*PLANT COMPOSITION VALUES
+  PCARLF   <- 0.405000001
+  PCARNO   <- 0.479999989
+  PCARRT   <- 0.711000025
+  PCARSD   <- 0.314999998
+  PCARSH   <- 0.379999995
+  PCARST   <- 0.663999975
+  PLIGLF   <- 7.00000003E-02
+  PLIGNO   <- 7.00000003E-02
+  PLIGRT   <- 7.00000003E-02
+  PLIGSD   <- 1.99999996E-02
+  PLIGSH   <- 0.280000001
+  PLIGST   <- 7.00000003E-02
+  PLIPLF   <- 2.50000004E-02
+  PLIPNO   <- 5.00000007E-02
+  PLIPRT   <- 1.99999996E-02
+  PLIPSH   <- 1.99999996E-02
+  PLIPST   <- 1.99999996E-02
+  PMINLF   <- 9.39999968E-02
+  PMINNO   <- 5.00000007E-02
+  PMINRT   <- 5.70000000E-02
+  PMINSD   <- 2.50000004E-02
+  PMINSH   <- 2.99999993E-02
+  PMINST   <- 4.60000001E-02
+  POALF    <- 5.00000007E-02
+  POANO    <- 5.00000007E-02
+  POART    <- 5.00000007E-02
+  POASD    <- 3.99999991E-02
+  POASH    <- 3.99999991E-02
+  POAST    <- 5.00000007E-02
+  PROLFI   <- 0.356000006
+  PRORTI   <- 9.20000002E-02
+  PROSHI   <- 0.250000000
+  PROSTI   <- 0.150000006
+  SDPROS   <- 0.400000006
+  #!*RESPIRATION PARAMETERS
+  RCH2O    <- 1.24199998
+  RLIG     <- 2.17400002
+  RLIP     <- 3.10599995
+  RMIN     <- 5.00000007E-02
+  RNO3C    <- 2.55599999
+  ROA      <- 0.929000020
+  
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     Seasonal initialization - run once per season
+  #***********************************************************************
+  if (DYNAMIC == 'SEASINIT') {
+    #-----------------------------------------------------------------------
+    #     COMPUTE RESPIRATION COEFFICIENTS BASED ON PLANT COMPOSITION
+    #-----------------------------------------------------------------------
+    #
+    AGRLF  =  PLIPLF*RLIP + PLIGLF*RLIG + POALF*ROA + PMINLF*RMIN + PCARLF*RCH2O
+    AGRSTM =  PLIPST*RLIP + PLIGST*RLIG + POAST*ROA + PMINST*RMIN + PCARST*RCH2O
+    AGRRT  =  PLIPRT*RLIP + PLIGRT*RLIG + POART*ROA + PMINRT*RMIN + PCARRT*RCH2O
+    AGRNOD =  PLIPNO*RLIP + PLIGNO*RLIG + POANO*ROA + PMINNO*RMIN + PCARNO*RCH2O
+    
+    #-----------------------------------------------------------------------
+    #     AGRVG2, AGRSH2, AGRSD2 include protein component of vegetative 
+    #     growth cost
+    #-----------------------------------------------------------------------
+    AGRVG  = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
+    AGRVG2 = AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RNO3C
+    
+    #-----------------------------------------------------------------------
+    AGRSH1 =  PLIPSH*RLIP + PLIGSH*RLIG + POASH*ROA  + PMINSH*RMIN + PCARSH*RCH2O
+    AGRSH2 =  AGRSH1 + PROSHI*RNO3C 
+    
+    #-----------------------------------------------------------------------
+    SDPROR = (SDPRO - SDPROS) / ( SDLIP + PCARSD )
+    AGRSD1 = PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + (SDLIP*RLIP + PCARSD*RCH2O)*(1. - SDPROR)
+    AGRSD2 = AGRSD1 + SDPRO*RNO3C 
+    
+    #***********************************************************************
+    #***********************************************************************
+    #END OF DYNAMIC IF CONSTRUCT
+    #***********************************************************************
+  }
+  #-----------------------------------------------------------------------
+  #RETURN
+  #END ! SUBROUTINE INCOMP
+  assign("AGRLF", AGRLF, envir = env)
+  assign("AGRNOD", AGRNOD, envir = env)
+  assign("AGRRT", AGRRT, envir = env)
+  assign("AGRSD1", AGRSD1, envir = env)
+  assign("AGRSD2", AGRSD2, envir = env)
+  assign("AGRSH1", AGRSH1, envir = env)
+  assign("AGRSH2", AGRSH2, envir = env)
+  assign("AGRSTM", AGRSTM, envir = env)
+  assign("AGRVG", AGRVG, envir = env)
+  assign("AGRVG2", AGRVG2, envir = env)
+  assign("SDPROR", SDPROR, envir = env)
+  
+  return()
+}
+#--------------END INCOMP FUNCTION-------------
+#---------------NUPTAK FUNCTION----------------
+NUPTAK <- function (DYNAMIC,
+                    DLAYR, DUL, FILECC, KG2PPM, LL, NDMSDR, NDMTOT,   #Input
+                    NH4, NO3, NLAYR, RLV, SAT, SW ) {                   #Input
+  # TRNH4U, TRNO3U, TRNU, UNH4, UNO3) {                 #Output
+  
+  #______________________________________________________________        
+  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*ROOT PARAMETERS
+  RTNO3  <- 0.006
+  RTNH4  <- 0.006
+  # fim dos parametros de planta
+  
+  #TODO ver padrão ECOSMOS
+  # DLAYR  <- rep(0, NL)
+  DLAYR <-  c(5.00000000  ,    10.0000000   ,    15.0000000   ,    15.0000000   ,    15.0000000   ,    30.0000000    ,   30.0000000   ,    30.0000000     , -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000 )
+  # DUL    <- rep(0, NL)
+  DUL   <-  c(0.300000012 ,    0.289999992  ,    0.280000001  ,    0.273000002  ,    0.259999990  ,    0.259999990   ,   0.259999990  ,    0.259999990    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
+  # LL     <- rep(0, NL)
+  LL    <-  c(0.140000001 ,    0.140000001  ,    0.140000001  ,    0.150000006  ,    0.150000006  ,    0.150000006   ,   0.180000007  ,    0.180000007    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
+  # SW     <- rep(0, NL)
+  SW    <-  c(0.219999999 ,    0.219999999  ,    0.213000000  ,    0.207000002  ,    0.200000003  ,    0.180000007   ,   0.180000007  ,    0.180000007    ,   0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000  ,     0.00000000 ,      0.00000000)
+  # SAT    <- rep(0, NL)
+  SAT   <-  c(0.360000014 ,    0.349999994  ,    0.333000004  ,    0.326999992  ,    0.319999993  ,    0.319999993   ,   0.319999993  ,    0.319999993    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
+  RLV    <- rep(0, NL)
+  
+  SNO3   <- rep(0, NL)    #vem do INSOIL.for
+  SNH4   <- rep(0, NL)    #vem do INSOIL.for
+  KG2PPM <- rep(1, NL)    #vem do INSOIL.for  [KG2PPM(L) = 1.0/(BD(L) * 0.1 * DLAYR(L))]
+  NO3    <- rep(0, NL)    #vem do INSOIL.for
+  NH4    <- rep(0, NL)    #vem do INSOIL.for
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     Seasonal initialization - run once per season
+  #***********************************************************************
+  if (DYNAMIC == SEASINIT) {
+    #-----------------------------------------------------------------------
+    TRNO3U = 0.0 
+    TRNH4U = 0.0 
+    TRNU   = 0.0 
+    UNH4   = 0.0
+    UNO3   = 0.0
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     DAILY RATE/INTEGRATION
+    #***********************************************************************
+  } else if (DYNAMIC == INTEGR) {
+    #-----------------------------------------------------------------------
+    #   Initialize variables
+    #-----------------------------------------------------------------------
+    TRNU   = 0.0
+    TRNO3U = 0.0
+    TRNH4U = 0.0
+    NUF    = 0.0
+    XMIN   = 0.0
+    for (L in 1:NLAYR) {
+      RNO3U[L] = 0.0
+      RNH4U[L] = 0.0
+      UNH4[L]  = 0.0
+      UNO3[L]  = 0.0
+      #KG2PPM(L) = 10. / (BD(L) * DLAYR(L))
+      SNO3[L] = NO3[L] / KG2PPM[L]
+      SNH4[L] = NH4[L] / KG2PPM[L]
+    }
+    #-----------------------------------------------------------------------
+    #   Determine crop N demand (kg N/ha), after subtracting mobilized N
+    #-----------------------------------------------------------------------
+    ANDEM = (NDMTOT - NDMSDR) * 10.0
+    if (ANDEM > 1.E-9) {
+      #-----------------------------------------------------------------------
+      #   Calculate potential N uptake in soil layers with roots
+      #-----------------------------------------------------------------------
+      for (L in 1:NLAYR) {
+        if (RLV[L] > 1.E-6) {
+          FNH4 = 1.0 - exp(-0.08 * NH4[L])
+          FNO3 = 1.0 - exp(-0.08 * NO3[L])
+          if (FNO3 < 0.04) { FNO3 = 0.0 }
+          if (FNO3 > 1.0)  { FNO3 = 1.0 }
+          if (FNH4 < 0.04) { FNH4 = 0.0 }
+          if (FNH4 > 1.0)  { FNH4 = 1.0 }
+          
+          SMDFR = (SW[L] - LL[L]) / (DUL[L] - LL[L])
+          if (SMDFR < 0.0) {
+            SMDFR = 0.0
+          }
+          
+          if (SW[L] > DUL[L]) {
+            SMDFR = 1.0 - (SW[L] - DUL[L]) / (SAT[L] - DUL[L])
+          }
+          RFAC = RLV[L] * SMDFR * SMDFR * DLAYR[L] * 100.0
+          #-----------------------------------------------------------------------
+          #  RLV = Rootlength density (cm/cm3);SMDFR = relative drought factor
+          #  RTNO3 + RTNH4 = Nitrogen uptake / root length (mg N/cm)
+          #  RNO3U + RNH4  = Nitrogen uptake (kg N/ha)
+          #-----------------------------------------------------------------------
+          RNO3U[L] = RFAC * FNO3 * RTNO3
+          RNH4U[L] = RFAC * FNH4 * RTNH4
+          RNO3U[L] = max(0.0,RNO3U[L])
+          RNH4U[L] = max(0.0,RNH4U[L])
+          TRNU = TRNU + RNO3U[L] + RNH4U[L] #kg[N]/ha
+        }
+      }
+      #-----------------------------------------------------------------------
+      #   Calculate N uptake in soil layers with roots based on demand (kg/ha)
+      #-----------------------------------------------------------------------
+      if (ANDEM > TRNU) {
+        ANDEM = TRNU
+      }
+      #        IF (TRNU == 0.0) GO TO 600
+      if (TRNU > 0.001) {
+        NUF = ANDEM / TRNU
+        for (L in 1:NLAYR) {
+          if (RLV[L] > 0.0) {
+            UNO3[L] = RNO3U[L] * NUF
+            UNH4[L] = RNH4U[L] * NUF
+            XMIN    = 0.25 / KG2PPM[L]
+            MXNO3U  = max(0.0,(SNO3[L] - XMIN))
+            if (UNO3[L] > MXNO3U) {
+              UNO3[L] = MXNO3U
+            }
+            XMIN = 0.5 / KG2PPM[L]
+            MXNH4U  = max(0.0,(SNH4[L] - XMIN))
+            if (UNH4[L] > MXNH4U) {
+              UNH4[L] = MXNH4U
+            }
+            TRNO3U  = TRNO3U + UNO3[L]
+            TRNH4U  = TRNH4U + UNH4[L]
+          }
+        }
+        #-----------------------------------------------------------------------
+        #   Convert uptake to g/m^2
+        #-----------------------------------------------------------------------
+        TRNO3U = TRNO3U / 10.0
+        TRNH4U = TRNH4U / 10.0
+        TRNU   = TRNO3U + TRNH4U
+        #-----------------------------------------------------------------------
+      }
+    }
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     END OF DYNAMIC IF CONSTRUCT
+    #***********************************************************************
+  }
+  #***********************************************************************
+  assign("TRNH4U", TRNH4U, envir = env)
+  assign("TRNO3U", TRNO3U, envir = env)
+  assign("TRNU", TRNU, envir = env)
+  assign("UNH4", UNH4, envir = env)
+  assign("UNO3", UNO3, envir = env)
+  
+  return()
+}
+#--------------END NUPTAK FUNCTION-------------
+#---------------- MOBIL FUNCTION---------------
+MOBIL <- function(DYNAMIC,
+                  NDMNEW, NMINEP, NMOBR, RPRO, TRNU,              #!Input
+                  WNRLF, WNRRT, WNRSH, WNRST) {                     #!Input
+  
+  
+  #!*RESPIRATION PARAMETERS (.SPE), mas não usado, aparentemente
+  RPRO   <- 0.360 
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     Seasonal initialization - run once per season
+  #***********************************************************************
+  if (DYNAMIC == SEASINIT) {
+    #-----------------------------------------------------------------------
+    CNMINE <- 0.0         
+    NMINEA <- 0.0         
+    NRUSLF <- 0.0         #moved from INPLNT
+    NRUSST <- 0.0         
+    NRUSRT <- 0.0         
+    NRUSSH <- 0.0         
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     DAILY RATE/INTEGRATION
+    #***********************************************************************
+  } else if (DYNAMIC == INTEGR) {
+    #-----------------------------------------------------------------------
+    CNMINE <- 0.0
+    NMINEA <- 0.0
+    NRUSLF <- 0.0
+    NRUSST <- 0.0
+    NRUSRT <- 0.0
+    NRUSSH <- 0.0
+    
+    #-----------------------------------------------------------------------
+    #    Leave MOBIL with N Mined from Leaf, Stem,Root, Shell, and
+    #    Total Plant Tissue, and CH2O used in the Re-synthesis of Protein
+    #-----------------------------------------------------------------------
+    #      IF (TRNU .LT. NDMNEW .AND. NMINEP .GT. 1.E-4) THEN
+    if (NDMNEW - TRNU > 1.E-5 & NMINEP > 1.E-4) {
+      NMINEA <- NDMNEW - TRNU
+    }
+    if (NMINEA > NMINEP) {
+      NMINEA <- NMINEP
+      NMINER <- NMINEA/NMINEP * NMOBR
+      NRUSLF <- NMINER * WNRLF
+      NRUSST <- NMINER * WNRST
+      NRUSRT <- NMINER * WNRRT
+      NRUSSH <- NMINER * WNRSH
+      CNMINE <- NMINEA / 0.16 * RPRO        #Not used
+    }
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     END OF DYNAMIC IF CONSTRUCT
+    #***********************************************************************
+  }
+  #***********************************************************************
+  #  RETURN
+  #END ! SUBROUTINE MOBIL
+  assign("NMINEA", NMINEA, envir = env)
+  assign("NRUSLF", NRUSLF, envir = env)
+  assign("NRUSRT", NRUSRT, envir = env)
+  assign("NRUSSH", NRUSSH, envir = env)
+  assign("NRUSST", NRUSST, envir = env)
+  
+  return()
+}
+#----------------END MOBIL FUNCTION--------------
+#----------------NFIX FUNCTION--------------------
+NFIX <- function(DYNAMIC,
+                 AGRNOD, CNODMN, CTONOD, DLAYR, DXR57,           #Input
+                 FILECC, FILEIO, NLAYR, NR7, PLTPOP,             #Input
+                 SAT, ST, SW, TURFAC) {                            #Input
+  # CNOD, DWNOD, DWNODA, NDTH, NFIXN,               #Output
+  # NODGR, WTNFX, SENNOD) {                          #Output
+  
+  # TODO:Remover 
+  DAS <- idpp[i] 
+  
+  #______________________________________________________________        
+  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*NITROGEN FIXATION PARAMETERS
+  TYPFXT <- 'LIN'
+  TYPNGT <- 'LIN'
+  TYPFXD <- 'LIN'
+  TYPFXW <- 'LIN'
+  TYPFXA <- 'INL'
+  FNFXT  <- c(5.00,    20.0,  35.0,  44.0)
+  FNNGT  <- c(7.00,    22.0,  35.0,  44.0)
+  FNFXD  <- c(0.00,    0.85,  1.00,  10.0)
+  FNFXW  <- c(-0.02,  0.001,  1.00,  2.00)
+  FNFXA  <- c(0.00,    0.10,  1.00,  0.00)
+  NDTHMX <- 0.07
+  NODRGM <- 0.170
+  DWNODI <- 0.014
+  SNACTM <- 0.045
+  CNODCR <- 0.05
+  #!*RESPIRATION PARAMETERS
+  RFIXN  <- 2.830
+  #!*PLANT COMPOSITION VALUES
+  PRONOD <- 0.300
+  
+  #fim dos parametros de planta
+  
+  CTONOD <- 0  #TODO descobrir de onde vem exatamente (CROPGRO.for inicia como 0)
+  CNODMN <- 0 #TODO descobrir de onde vem exatamente (CROPGRO.for inicia como 0)
+  
+  EFNFIX <- 1 #TODO descobrir de onde vem exatamente (relacionado à inoculação)
+  EFINOC <- 1 #TODO descobrir de onde vem exatamente (relacionado à inoculação)
+  EFINOC <- ifelse(EFINOC <= 0.0, 1.0, EFINOC) # veio da inicialização ('INITI' section)
+  EFNFIX <- ifelse(EFNFIX <= 0.0, 1.0, EFNFIX) # veio da inicialização ('INITI' section)
+  
+  PLTPOP <- 40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
+  
+  SWMEM  <- rep(0, 9) #TODO ver com JAIR
+  
+  #TODO ver padrão ECOSMOS
+  # DLAYR  <- rep(0, NL)
+  DLAYR <-  c(5.00000000  ,    10.0000000   ,    15.0000000   ,    15.0000000   ,    15.0000000   ,    30.0000000    ,   30.0000000   ,    30.0000000     , -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000 )
+  # SAT    <- rep(0, NL)
+  SAT   <-  c(0.360000014 ,    0.349999994  ,    0.333000004  ,    0.326999992  ,    0.319999993  ,    0.319999993   ,   0.319999993  ,    0.319999993    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
+  # SW     <- rep(0, NL)
+  SW    <-  c(0.219999999 ,    0.219999999  ,    0.213000000  ,    0.207000002  ,    0.200000003  ,    0.180000007   ,   0.180000007  ,    0.180000007    ,   0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000  ,     0.00000000 ,      0.00000000)
+  
+  #NL = 20
+  ST<- rep(0,20)
+  LAYERFRAC <- rep(0,20)
+  SENNOD    <- rep(0,20)
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     Seasonal initialization - run once per season
+  #***********************************************************************
+  if (DYNAMIC == SEASINIT) {
+    #-----------------------------------------------------------------------
+    CNOD   = 0.0
+    DWNOD  = 0.0    
+    DWNODA = 0.0  
+    NDTH   = 0.0    
+    NFIXN  = 0.0    
+    NODGR  = 0.0    
+    WTNFX  = 0.0    
+    SDWNOD = 0 
+    SENNOD = rep(0,9)
+    
+    DNOD   = 30.0
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     DAILY RATE/INTEGRATION
+    #***********************************************************************
+  } else if (DYNAMIC == INTEGR) {
+    #-----------------------------------------------------------------------
+    #     DAS = MAX(0,TIMDIF(YRSIM,YRDOY))
+    #CALL GET(CONTROL)
+    # TODO:Remover 
+    DAS <- idpp[i]
+    #-----------------------------------------------------------------------
+    #   Set initial nodule mass to DWNODI as read from crop species file
+    #-----------------------------------------------------------------------
+    if (SDWNOD < 1) {
+      DWNOD  = DWNODI * PLTPOP
+      SDWNOD = 1
+      DWNODA = DWNODI * PLTPOP
+      WTNFX  = DWNODA * 0.16 * PRONOD
+      for (J in 1:8) {
+        SWMEM[J] = 1.0
+      }
+    }
+    
+    #-----------------------------------------------------------------------
+    #   Initialize soil water and temperature factors (top DNOD cm of soil)
+    #-----------------------------------------------------------------------
+    SWFACT = 1.0
+    FLDACT = 1.0
+    ACSTF  = 0.0
+    ACSTG  = 0.0
+    DSW    = 0.0
+    FLDSUM = 0.0
+    #-----------------------------------------------------------------------
+    #     Calculate carbon allocated per unit of nodule biomass:
+    #     CNODCR = C requirement for nodule respiration (g C/g nodule/d)
+    #-----------------------------------------------------------------------
+    CNFACT = 1.
+    if (DWNOD > 1.E-4) {
+      FRCNM = CTONOD/DWNOD
+      if (FRCNM < CNODCR) { CNFACT = FRCNM / CNODCR }
+    }
+    #-----------------------------------------------------------------------
+    #   Calculate soil water and temperature factors for each layer to DNOD
+    #-----------------------------------------------------------------------
+    LAYERFRAC = 0.0
+    DSWP = 0.0
+    DNOD = 50.0
+    for (I in 1:NLAYR) {
+      FLAYR = 1.0
+      DSW = DSW + DLAYR[I]
+      if (DSW > DNOD) { FLAYR = (DNOD-(DSW-DLAYR[I]))/DLAYR[I] }
+      
+      ACSTF = ACSTF + DLAYR[I] * FLAYR * CURV(TYPFXT,FNFXT[1],FNFXT[2],FNFXT[3],FNFXT[4],ST[I])
+      
+      ACSTG = ACSTG + DLAYR[I] * FLAYR * CURV(TYPNGT,FNNGT[1],FNNGT[2],FNNGT[3],FNNGT[4],ST[I])
+      
+      EPORS = max(SAT[I] - SW[I], 0.0)
+      FLDSUM = FLDSUM + DLAYR[I] * FLAYR * CURV(TYPFXW,FNFXW[1],FNFXW[2],FNFXW[3],FNFXW[4],EPORS)
+      
+      if (I == 1) {
+        LAYERFRAC[1] = DSW / DNOD
+      } else {
+        LAYERFRAC[I] = (DSW - DSWP)*FLAYR / DNOD
+      }
+      DSWP = DSW
+      if ( FLAYR < 1.0 ) { TNFIX  = ACSTF / DNOD }#GOTO 400
+      
+    }
+    #-----------------------------------------------------------------------
+    #   Constraints due to soil water and T and average nodule age:
+    #   TNFIX : soil T effect on N2 fixation
+    #   TNGRO : soil T effect on nodule growth
+    #   SWFACT: soil water deficit effect on N2 fixation and nodule growth
+    #   FLDACT: soil water flooding effect on N2 fixation and nodule growth
+    #   NFXAGE: average nodule age effect on nodule growth
+    #-----------------------------------------------------------------------
+    #400 TNFIX  = ACSTF / DNOD
+    TNGRO  = ACSTG / DNOD
+    FLDACT = FLDSUM / DNOD
+    
+    SWFACT = CURV(TYPFXD,FNFXD[1],FNFXD[2],FNFXD[3],FNFXD[4],TURFAC)
+    NFXAGE = CURV(TYPFXA,FNFXA[1],FNFXA[2],FNFXA[3],FNFXA[4],DXR57)
+    #-----------------------------------------------------------------------
+    # DETERMINE MEMORY OF PREVIOUS EIGHT DAYS OF SOIL WATER DEFICITS
+    #-----------------------------------------------------------------------
+    #for (J in 8,2,-1) { #TODO VER COM JAIR
+    # TODO VERIFICAR: 10,2,-1 deve ser de 10 até 2 no passo -1 (10, 9, 8, 7...) [from PODDET.for]
+    for (J in seq(8, 2)) {  
+      SWMEM[J] = SWMEM[J-1]
+    }
+    SWMEM(1) = SWFACT
+    
+    SWMEM8 = 0.0
+    for (J in 1:8) {
+      SWMEM8 = SWMEM8 + SWMEM[J]
+    }
+    SWMEM8 = SWMEM8/8
+    #-----------------------------------------------------------------------
+    #     Reserve CNODMN for nodule growth.  JWH 7/9/95
+    #-----------------------------------------------------------------------
+    CLEFT = CTONOD - CNODMN
+    #-----------------------------------------------------------------------
+    #    Compute Specific Nodule Activity taking into account the maximum
+    #       activity of the nodules (SNACTM), and strain effects only.
+    #    9/27/95 moved temp, water deficit, and soil water flooding effects
+    #    below to the primary rate.  We are not getting proper stress effects.
+    #-----------------------------------------------------------------------
+    SNACT  = SNACTM  * EFNFIX
+    #-----------------------------------------------------------------------
+    #       Compute nodule death rate as function of SW deficit, SW flooding,
+    #                               and carbon deficit (chp)
+    #-----------------------------------------------------------------------
+    RNDTH = NDTHMX * max((1.-FLDACT),(1.-SWFACT),(1.-CNFACT))
+    NDTH = min(1.0,RNDTH) * DWNOD               #g/m2
+    for (I in 1:NLAYR) {
+      SENNOD[I] = NDTH * LAYERFRAC[I] * 10.     #kg/ha
+    }
+    #-----------------------------------------------------------------------
+    #    Compute N-Fixation
+    #
+    #-----------------------------------------------------------------------
+    if (DAS < NR7) {
+      PNFIXN = min((CLEFT * 0.16 / RFIXN), (DWNOD * SNACT)) * TNFIX
+      NFIXN = PNFIXN * min(SWFACT, SWMEM8, FLDACT)
+    } else {
+      PNFIXN = 0.0
+      NFIXN = 0.0
+    }
+    #-----------------------------------------------------------------------
+    #    Compute C Used for N-Fixation
+    #-----------------------------------------------------------------------
+    PCSFIX = (PNFIXN / 0.16) * RFIXN
+    CUSFIX = (NFIXN  / 0.16) * RFIXN
+    CNOFIX = PCSFIX - CUSFIX
+    #-----------------------------------------------------------------------
+    #     Compute C Left to Grow New Nodule Mass
+    #     Includes minimum reserved for nodule growth (CNODMN) plus any C
+    #     left after N fixation.  JWH 7/11/95
+    #-----------------------------------------------------------------------
+    CLEFT = max(0.0,CLEFT - CUSFIX- 0.9*CNOFIX) + CNODMN
+    #-----------------------------------------------------------------------
+    #    Compute Potential Growth of Nodules (Demand)
+    #    EFNFIX = strain efficiency
+    #    EFINOC = inoculation effectiveness (or rhizobium density factor)
+    #-----------------------------------------------------------------------
+    if (DAS < NR7) {
+      NODRGR = NODRGM  * EFNFIX * EFINOC
+    } else {
+      NODRGR = 0.0
+    }
+    #-----------------------------------------------------------------------
+    #    Compute Nodule Growth, Limiting by Either Supply or Demand for C
+    #-----------------------------------------------------------------------
+    NODGR = min(CLEFT/AGRNOD,DWNOD*NODRGR) * TNGRO * min(SWFACT,FLDACT) * NFXAGE
+    CNODGR = NODGR * AGRNOD
+    #-----------------------------------------------------------------------
+    #    Compute C used in N-Fixation and Nodule Growth (Including
+    #    Respiration Costs) Today
+    #-----------------------------------------------------------------------
+    CNOD = CUSFIX + CNODGR
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     END OF DYNAMIC IF CONSTRUCT
+    #***********************************************************************
+  }
+  #***********************************************************************
+  assign("CNOD", CNOD, envir = env)
+  assign("DWNOD", DWNOD, envir = env)
+  assign("DWNODA", DWNODA, envir = env)
+  assign("NDTH", NDTH, envir = env)
+  assign("NFIXN", NFIXN, envir = env)
+  assign("NODGR", NODGR, envir = env)
+  assign("WTNFX", WTNFX, envir = env)
+  assign("SENNOD", SENNOD, envir = env)
+  
+  return()
+}
+#----------------END NFIX FUNCTION---------------
