@@ -16,15 +16,10 @@
 #  Calls  : ERROR, FIND, IGNORE
 #========================================================================
 
-#simDataVars$SLDOT  <- 0
-#simDataVars$SLNDOT <- 0
-#simDataVars$SSDOT  <- 0
-#simDataVars$SSNDOT <- 0
-
-SLDOT  <- 0
-SLNDOT <- 0
-SSDOT  <- 0
-SSNDOT <- 0
+simDataVars$SLDOT  <- 0
+simDataVars$SLNDOT <- 0
+simDataVars$SSDOT  <- 0
+simDataVars$SSNDOT <- 0
 
 SENES <- function (DYNAMIC,DAS,
                    FILECC, CLW, DTX, KCAN, NR7, NRUSLF, PAR,       #Input

@@ -395,12 +395,10 @@ PODS <- function(EMERG,
           #-----------------------------------------------------------------------
           #     Detailed seed composition calculations
           #-----------------------------------------------------------------------
-          #TODO CHAMAR FUNCAO
-          # CALL PODCOMP(
-          #   &      AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,  #Input
-          #   &      POTCAR, POTLIP,                               #Input/Output
-          #   &      AGRSD3, ANINSD, CUMSIG, RSD,                  #Output
-          #   &      INTEGR)                                       #Control
+          
+          PODCOMP(INTEGR,
+                   AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
+                   POTCAR, POTLIP)                                 #Input/Output
           
           #-----------------------------------------------------------------------
           #     Grow seed cohorts
@@ -771,11 +769,11 @@ PODS <- function(EMERG,
      #&  AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
      #&  DYNAMIC)                                        #Control
 
-PODCOMP <- function(
+PODCOMP <- function(DYNAMIC,
   AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
-  POTCAR, POTLIP,                                 #Input/Output
-  AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
-  DYNAMIC) {                                        #Control
+  POTCAR, POTLIP) {                                #Input/Output
+  # AGRSD3, ANINSD, CUMSIG, RSD,                    #Output
+  # DYNAMIC) {                                        #Control
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -1037,12 +1035,6 @@ PODCOMP <- function(
   assign("RSD",   RSD   , envir = env)
   
 return()
-}
-
-
-exemplo_soma <- function(a, b)
-{
-  print(a+b)
 }
 #=======================================================================
 
