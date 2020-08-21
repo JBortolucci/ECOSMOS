@@ -26,7 +26,6 @@ SENES <- function (DYNAMIC,DAS,
                    RHOL, SLAAD, STMWT, SWFAC, VSTAGE, WTLF, XLAI  #Input
                    ){                   #Output
   
-  #SENES <- 0
   #-----------------------------------------------------------------------
   #TODO checar conexão no ECOSMOS 
   #INTEGER DYNAMIC
@@ -179,7 +178,7 @@ SENES <- function (DYNAMIC,DAS,
   assign("SSDOT",SSDOT , envir = env)
   assign("SSNDOT",SSNDOT, envir = env)
   
-  #return()
+  return()
 }
 #***********************************************************************
 #     SENES VARIABLE DEFINITIONS:

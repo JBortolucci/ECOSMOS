@@ -15,15 +15,14 @@
 #  Calls      : None
 #========================================================================
 
-#simDataVars$MDATE  <- 0  #VERIFICAR INPUT/OUTPUT não se encaixa aqui, certo?
-#simDataVars$WLFDOT  <-  0
-WLFDOT  <-  0
+simDataVars$MDATE  <- 0  #VERIFICAR INPUT/OUTPUT não se encaixa aqui, certo?
+simDataVars$WLFDOT  <-  0
 
 FREEZE <- function(
   FREEZ2, NRUSLF, SLDOT,           #!Input
-  TMIN, WTLF, YRDOY,  YRPLT,       #!Input
-  MDATE,                           #!Input/Output
-  WLFDOT) {
+  TMIN, WTLF, YRDOY,  YRPLT) {       #!Input
+  # MDATE,                           #!Input/Output
+  # WLFDOT) {
   
   #FREEZE <- 0
   
@@ -66,7 +65,7 @@ FREEZE <- function(
   assign("MDATE", MDATE, envir = env)
   assign("WLFDOT", WLFDOT, envir = env)
   
-  #return()
+  return()
 }
 
 #-----------------------------------------------------------------------

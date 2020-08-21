@@ -21,11 +21,9 @@ simDataVars$POTLIP  <-  0
 
 SDCOMP <- function (CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD,   #Input
                     RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA, SDLIP,     #Input
-                    SDPRO, SLOSUM, TAVG,                            #Input
-                    AGRSD1, AGRSD2, FNINSD, POTCAR, POTLIP) {       #Output
+                    SDPRO, SLOSUM, TAVG  ) {                            #Input
+                    # AGRSD1, AGRSD2, FNINSD, POTCAR, POTLIP) {       #Output
   
-  SDCOMP <- 0
-
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   SDLIP <- 0.200 #Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
