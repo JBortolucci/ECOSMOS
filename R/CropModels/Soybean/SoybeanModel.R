@@ -1,16 +1,4 @@
 
-simDataVars$M2_AS_HA     <- 1/10000 #m2 as ha
-simDataVars$KG_AS_TONNES <- 1/1000 #kg as tonnes
-simDataVars$kg_C_M2_to_T_ha <- 10000/1000 #Tonnes per ha as kg per m2
-simDataVars$G_AS_KG         <- 1/1000 # grams as kilograms
-
-
-#initial values:
-simDataVars$Sapwood     <- 0.0001
-simDataVars$Heartwood   <- 0.0001
-simDataVars$Deadcoroots <- 0.0001
-
-simDataVars$tauleaf_branch <- 365
 
 
 ### End of companies params

@@ -25,12 +25,6 @@ simDataVars$PCNSD  <-  0
 simDataVars$PCNSH  <-  0
 simDataVars$PCNST  <-  0
 simDataVars$PLTPOP  <-  0
-simDataVars$PLIGLF  <-  0
-simDataVars$PLIGNO  <-  0
-simDataVars$PLIGRT  <-  0
-simDataVars$PLIGSD  <-  0
-simDataVars$PLIGSH  <-  0
-simDataVars$PLIGST  <-  0
 simDataVars$PODWT  <-  0
 simDataVars$PUNCSD  <-  0
 simDataVars$PUNCTR  <-  0
@@ -1334,12 +1328,6 @@ GROW <- function (DYNAMIC,
   assign("PCNSH", PCNSH, envir = env)
   assign("PCNST", PCNST, envir = env)
   assign("PLTPOP", PLTPOP, envir = env)
-  assign("PLIGLF", PLIGLF, envir = env)
-  assign("PLIGNO", PLIGNO, envir = env)
-  assign("PLIGRT", PLIGRT, envir = env)
-  assign("PLIGSD", PLIGSD, envir = env)
-  assign("PLIGSH", PLIGSH, envir = env)
-  assign("PLIGST", PLIGST, envir = env)
   assign("PODWT", PODWT, envir = env)
   assign("PUNCSD", PUNCSD, envir = env)
   assign("PUNCTR", PUNCTR, envir = env)
@@ -1843,15 +1831,7 @@ INROOT <- function (
 }
 #--------------END ROOTS FUNCTION----------------
 #---------------DEMAND FUNCTION------------------
-DEMAND <- function(DYNAMIC,
-                   AGRLF, AGRRT, AGRSH2, AGRSTM, CROP, DRPP, DXR57,  #Input
-                   FILECC, FILEGC, FILEIO, FNINSH, FRACDN, LAGSD,    #Input
-                   LNGPEG, NDLEAF, NSTRES, PAR, PCNL, PCNRT, PCNST,  #Input
-                   PGAVL, PUNCSD, PUNCTR, PLTPOP, RPROAV, RTWT,      #Input
-                   SDDES, SDNO, SDVAR, SHELN, SHVAR, STMWT, SWFAC,   #Input
-                   TAVG, TDUMX, TDUMX2, TGRO, TURFAC, VSTAGE, WCRLF, #Input
-                   WCRRT, WCRST, WNRLF, WNRRT, WNRSH, WNRST, WTLF,   #Input
-                   WTSD, WTSHE, XPOD, NVEG0, NR1, NR2, NR5, NR7) {     #Input
+DEMAND <- function(DYNAMIC, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
   
   NAGE   <- 0
   DAS    <- 0 #TODO ver como está sendo usado no ECOSMOS
@@ -1934,8 +1914,6 @@ DEMAND <- function(DYNAMIC,
   YSTEM  <- rep(0,25)
   
   #TGRO[TS]
-  TGRO   <- rep(1.,24)
-  
   NCOHORTS <- 300 #from line 51 in ModuleDefs.for NCOHORTS = 300, !Maximum number of cohorts
   SDDES <- rep(0, NCOHORTS)
   SDNO  <- rep(0, NCOHORTS)
@@ -2080,6 +2058,8 @@ DEMAND <- function(DYNAMIC,
       TMPFAC = 0
       TMPFCS = 0
       for (I in 1:TS) {
+        TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+        
         TMPFAC = CURV(TYPSDT,FNSDT[1], FNSDT[2], FNSDT[3], FNSDT[4], TGRO[I])
         TMPFCS = TMPFCS + TMPFAC
       }
@@ -2208,6 +2188,8 @@ DEMAND <- function(DYNAMIC,
     #-----------------------------------------------------------------------
     TEMXFR = 0.
     for (I in 1:TS) {
+       TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+      
       TEMXFR = TEMXFR + TABEX(YXFTEM,XXFTEM,TGRO[I],6)
     }
     TEMXFR = TEMXFR/TS
@@ -2325,6 +2307,8 @@ DEMAND <- function(DYNAMIC,
     #-----------------------------------------------------------------------
     TPHFAC = 0
     for (I in 1:TS){
+       TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+      
       TPHFAC = TPHFAC + TABEX (YSLATM,XSLATM,TGRO[I],5)
     }
     TPHFAC = TPHFAC/TS
@@ -2670,10 +2654,7 @@ PODS <- function(DINAMYC,
   # DUL    <- rep(0, NL)
   DUL   <-  c(0.300000012 ,    0.289999992  ,    0.280000001  ,    0.273000002  ,    0.259999990  ,    0.259999990   ,   0.259999990  ,    0.259999990    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
   
-  
-  
-  #TODO ler arquivo de output do Fortran
-  TGRO   <- rep(1.,24)
+
   
   NCOHORTS <- 300 #from line 51 in ModuleDefs.for NCOHORTS = 300, !Maximum number of cohorts
   SDDES <- rep(0, NCOHORTS)
@@ -2939,6 +2920,9 @@ PODS <- function(DINAMYC,
       #-----------------------------------------------------------------------
       TEMPOD <- 0.
       for (I in 1:TS) {
+        
+        TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+        
         TEMPOD <- TEMPOD + CURV(TYPPDT,FNPDT[1],FNPDT[2],FNPDT[3],FNPDT[4],TGRO[I])
       }
       
@@ -3230,8 +3214,10 @@ PODS <- function(DINAMYC,
   assign("WTSHE", WTSHE, envir = env)
   assign("WTSHMT", WTSHMT, envir = env)
   assign("FLWN", FLWN, envir = env)
+  assign("FNINSH",FNINSH, envir = env)
+  assign("REDSHL",REDSHL, envir = env)
   
-  return()
+  return() #PODS
 }
 
 PODCOMP <- function(DYNAMIC,
@@ -3505,6 +3491,9 @@ VEGGR <- function(DINAMYC,
   
   #-----------------------------------------------------------------------
   
+  YRDOY   = paste0(iyear,jday)
+  
+  
   #TODO: verificar padrão ECOSMOS -> DYNAMIC
   #TODO: verificar padrão ECOSMOS -> YRDOY, YREMRG, NR1, DAS
   
@@ -3532,10 +3521,7 @@ VEGGR <- function(DINAMYC,
   #*NITROGEN STRESS PARAMETERS
   NRATIO <- 1.00
   
-  #TODO: ver conexao com ECOSMOS.. provavel que virá do 'env'
-  TS <- 24
-  TGRO <- rep(0, TS)
-  
+
   #TODO checar conexão no ECOSMOS
   #DAS = CONTROL % DAS
   
@@ -3820,7 +3806,7 @@ VEGGR <- function(DINAMYC,
     #-----------------------------------------------------------------------
     CANOPY('INTEGR',
            ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
-           RVSTGE, TGRO, TURFAC, VSTAGE, XLAI)             #Input
+           RVSTGE,  TURFAC, VSTAGE, XLAI)             #Input
     # CANHT, CANWH)                                   #Output
     
     #***********************************************************************
@@ -3860,7 +3846,7 @@ VEGGR <- function(DINAMYC,
 
 CANOPY <- function (DYNAMIC, 
                     ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
-                    RVSTGE, TGRO, TURFAC, VSTAGE, XLAI) {             #Input
+                    RVSTGE, TURFAC, VSTAGE, XLAI) {             #Input
   
   
   #-----------------------------------------------------------------------
@@ -3891,9 +3877,7 @@ CANOPY <- function (DYNAMIC,
   YVSWH   <- c(0.0300, 0.0510, 0.0620, 0.0640, 0.0660, 0.0630, 0.0590, 0.0460, 0.0250, 0.0010)
   #fim dos parametros de planta
   
-  #TODO: ver conexao com ECOSMOS.. provavel que virá do 'env'
-  TS <- 24
-  TGRO <- rep(0, TS)
+
   
   #***********************************************************************
   #***********************************************************************
@@ -3924,6 +3908,9 @@ CANOPY <- function (DYNAMIC,
     #-----------------------------------------------------------------------
     HWTEM = 0.0
     for (I in 1:TS) {
+      
+       TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+      
       HWTEM = HWTEM + TABEX(YHWTEM,XHWTEM,TGRO(I),5)
     }
     HWTEM = HWTEM /TS
@@ -3980,7 +3967,7 @@ CANOPY <- function (DYNAMIC,
 #--------------END VEGGR FUNCTION--------------
 #---------------PODDET FUNCTION----------------
 PODDET <- function(DYNAMIC,
-                   FILECC, TGRO, WTLF, YRDOY, YRNR2) {         #Input
+                   FILECC, WTLF, YRDOY, YRNR2) {         #Input
   
   #-----------------------------------------------------------------------
   #______________________________________________________________        
@@ -3998,9 +3985,7 @@ PODDET <- function(DYNAMIC,
   TM	<- c(45, 45,  45, 0, 0)
   
   TDLM <- rep(0,20)
-  #TGRO[TS]
-  #TODO: Remover
-  TGRO   <- rep(1.,24)
+
   
   NCOHORTS <- 300 #from line 51 in ModuleDefs.for NCOHORTS = 300, !Maximum number of cohorts
   WPODY  <- rep(0, NCOHORTS)
@@ -4037,6 +4022,9 @@ PODDET <- function(DYNAMIC,
     #--------------------------------------------------------------------
     FT = 0.0
     for (I in 1:TS) {
+      
+       TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+      
       FTHR = CURV('LIN',TB[3],TO1[3],TO2[3],TM[3],TGRO[I])
       FT = FT + FTHR/TS
     }
@@ -4383,7 +4371,6 @@ FREEZE <- function(
   return()
 }
 #--------------END FREEZE FUNCTION-------------
-
 
 #---------------INCOMP FUNCTION----------------
 INCOMP <- function(DYNAMIC,
