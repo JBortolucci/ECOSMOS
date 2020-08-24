@@ -844,6 +844,7 @@ cbiol vector npft 0
 cbior vector npft 0
 cbiow vector npft 0
 cbiog vector npft 0
+cbiop vector npft 0
 cbios vector npft 0
 cbiocr vector npft 0
 cbiob vector npft 0

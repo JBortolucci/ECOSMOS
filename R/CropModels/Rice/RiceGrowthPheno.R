@@ -12,6 +12,8 @@ simDataVars$TMINC      <- 0
 simDataVars$TTSUM      <- 0
 simDataVars$DRLVTa     <- 0
 simDataVars$ID     <- 0
+simDataVars$SRCT     <- 0
+
 
 
 RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
@@ -125,7 +127,28 @@ RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     cbiol[i] <- cbiol[i] + aleaf[i] * max (0.0, adnpp[i])  - DRLVTa*cbiol[i]
     cbios[i] <- cbios[i] + astem[i] * max (0.0, adnpp[i]) 
-    cbiog[i] <- cbiog[i] + arepr[i] * max (0.0, adnpp[i]) 
+    cbiop[i] <- cbiop[i] + arepr[i] * max (0.0, adnpp[i]) 
+    if(DVS>=0.95) cbiog[i] <- cbiog[i] + arepr[i] * max (0.0, adnpp[i]) 
+    
+    # Translocation starts only when  storage organs are formed (at development stage 0.95),
+    if(ndiasR9==1)  SRCT<-cbios[i]*0.14  # stem reserves pool for translocation 
+    
+    if(ndiasR9>=1) {
+      
+      cbios[i] <- cbios[i] -  SRCT/20 # TO DO: Bryan, definir a equação desse percental e o tempo de retirada 
+      cbiop[i] <- cbiop[i] +  SRCT/20
+      cbiog[i] <- cbiog[i] +  SRCT/20
+    }
+    
+#    !----------Check sink limitation based on yesterday's growth rates
+# ! and adapt partitioning of stem-storage organ accordingly
+# BRYAN TO DO ->  IF (GRAINS) THEN
+# BRYAN TO DO ->  IF (GGR.GE.(PWRR-WRR)) THEN
+# BRYAN TO DO ->  FSO = MAX(0.,(PWRR-WRR)/(GCR*FSH))
+# BRYAN TO DO ->  FST = 1.-FSO-FLV
+# BRYAN TO DO ->  END IF
+# BRYAN TO DO ->  END IF    
+    
     # update vegetation's physical characteristics
     plai[i] <- cbiol[i] * specla[i] 
     
@@ -134,7 +157,7 @@ RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     greenfrac[i] <- 1.0
     
     
-    biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbiog[i]
+    biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbiop[i]
     
     # keep track of aboveground annual npp
     ayanpp[i] <- ayanpp[i] + adnpp[i] 
@@ -203,7 +226,7 @@ RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     # ID<-simConfigs[[i]]$id
       if(idpp[i]==1)ID<-paste0(jday,iyear)
     write(paste( ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS ,
-                    aroot[i],aleaf[i],astem[i],arepr[i],cbior[i],cbiol[i],cbios[i],cbiog[i],plai[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
+                    aroot[i],aleaf[i],astem[i],arepr[i],cbior[i],cbiol[i],cbios[i],cbiog[i],cbiop[i],plai[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
     
     
     
@@ -213,7 +236,7 @@ RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         print(paste('Harvest RICE ',ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai[i],cbiog[i],sep = " ; "    ))
         
-        fileout=paste("RICE_OUT.csv")
+        fileout=paste("RICE_SEASON.csv")
           write(paste(ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai,cbiog[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
 
 
@@ -263,6 +286,7 @@ RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("arepr", arepr, envir = env)
   assign("cbiol", cbiol, envir = env)
   assign("cbiog", cbiog, envir = env)
+  assign("cbiop", cbiop, envir = env)
   assign("cbios", cbios, envir = env)
   assign("cbior", cbior, envir = env)
   assign("plai", plai, envir = env)
@@ -289,7 +313,8 @@ RiceGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("TTSUM"  ,TTSUM  ,envir = env)
   assign("ID"  ,ID  ,envir = env)
   
-
+  assign("SRCT"  ,SRCT  ,envir = env)
+  
   
   
 }
