@@ -96,8 +96,15 @@ PHOTO <- function(CONTROL,
   #***********************************************************************
   #     Run Initialization - Called once per simulation
   #***********************************************************************
-  if (DYNAMIC == RUNINIT) {
+  
     
+    #***********************************************************************
+    #***********************************************************************
+    #     Seasonal initialization - run once per season
+    #***********************************************************************
+  if (DYNAMIC == 'SEASINIT') {
+    
+    # Veio do RUNINIT
     #-----------------------------------------------------------------------
     #     Adjust canopy photosynthesis for GENETIC input value of
     #     maximum leaf photosyntheses (LMXSTD).  Exponential curve from
@@ -109,11 +116,6 @@ PHOTO <- function(CONTROL,
       PGLFMX = 1.0
     }
     
-    #***********************************************************************
-    #***********************************************************************
-    #     Seasonal initialization - run once per season
-    #***********************************************************************
-  } else if (DYNAMIC == SEASINIT) {
     #-----------------------------------------------------------------------
     AGEFAC  = 1.0
     CUMSTR  = 0.0
@@ -124,7 +126,7 @@ PHOTO <- function(CONTROL,
     #***********************************************************************
     #     Daily rate calculations
     #***********************************************************************
-  } else if (DYNAMIC == RATE) {
+  } else if (DYNAMIC == 'RATE') {
     #-----------------------------------------------------------------------
     #     Calculate maximum photosynthesis as function of PAR, g CH2O/m2
     #-----------------------------------------------------------------------
@@ -185,7 +187,7 @@ PHOTO <- function(CONTROL,
     #***********************************************************************
     #     Daily integration
     #***********************************************************************
-    #      ELSEIF (DYNAMIC .EQ. INTEGR) THEN
+    #      ELSEIF (DYNAMIC .EQ. 'INTEGR') THEN
     #-----------------------------------------------------------------------
     #     Effect of daylength on daily gross PG, computer by KJB with
     #     stand alone model, and used by Ernie Piper in his dissertation
