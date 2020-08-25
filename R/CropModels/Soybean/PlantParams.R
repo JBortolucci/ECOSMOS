@@ -19,7 +19,7 @@ SDWTPL <- -99 # equivalente ao [.SBX] *PLANTING DETAILS: PLDS
 # CONTROL VARS (.SBX) 
 CROP <-'SB'
 
-# ESTAVA ANTES DE CHAMAR O PHENOCROP
+# CROPGRO (checar)
 {
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -148,35 +148,35 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   PCARNO  <- 0.479999989
   PCARRT  <- 0.711000025
   PCARSD  <- 0.314999998
-  PCARSH  <- 0.379999995
+  #remover PCARSH  <- 0.379999995
   PCARST  <- 0.663999975
   PLIGLF  <- 7.00000003E-02
   PLIGNO  <- 7.00000003E-02
   PLIGRT  <- 7.00000003E-02
-  PLIGSD  <- 1.99999996E-02
-  PLIGSH  <- 0.280000001
+  #remover PLIGSD  <- 1.99999996E-02
+  #remover PLIGSH  <- 0.280000001
   PLIGST  <- 7.00000003E-02
   PLIPLF  <- 2.50000004E-02
   PLIPNO  <- 5.00000007E-02
   PLIPRT  <- 1.99999996E-02
-  PLIPSH  <- 1.99999996E-02
+  #remover PLIPSH  <- 1.99999996E-02
   PLIPST  <- 1.99999996E-02
   PMINLF  <- 9.39999968E-02
   PMINNO  <- 5.00000007E-02
   PMINRT  <- 5.70000000E-02
-  PMINSD  <- 2.50000004E-02
-  PMINSH  <- 2.99999993E-02
+  #remover PMINSD  <- 2.50000004E-02
+  #remover PMINSH  <- 2.99999993E-02
   PMINST  <- 4.60000001E-02
   POALF   <- 5.00000007E-02
   POANO   <- 5.00000007E-02
   POART   <- 5.00000007E-02
   POASD   <- 3.99999991E-02
-  POASH   <- 3.99999991E-02
+  #remover POASH   <- 3.99999991E-02
   POAST   <- 5.00000007E-02
-  PROLFI  <- 0.356000006
+  #remover PROLFI  <- 0.356000006
   PRONOD  <- 0.300000012
-  PRORTI  <- 9.20000002E-02
-  PROSTI  <- 0.150000006
+  #remover PRORTI  <- 9.20000002E-02
+  #remover PROSTI  <- 0.150000006
   #!*CARBON AND NITROGEN MINING PARAMETERS
   ALPHL  <- 0.04
   ALPHS  <- 0.08
@@ -197,6 +197,7 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   RLDSM  <- 0.1
   RTSDF  <- 0.015 
   RTSEN  <- 0.020
+  RTDEPI  <- 20.0 # INROOT que chama
   #remover PORMIN <- 0.02
   RTEXF  <- 0.10
   RTDEPI <- 20.0
@@ -348,7 +349,7 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   XSWFAC  <- c(0.00,  0.50,  1.00,  1.00, rep(1,6)) #10 posicoes no fortran e 4 no .SPE
   YSWFAC  <- c(0.00,  1.00,  1.00,  1.00, rep(1,6)) #10 posicoes no fortran e 4 no .SPE
   #!*PLANT COMPOSITION VALUES
-  PROSHI  <- 0.250
+  #remover PROSHI  <- 0.250
   #remover PROLFF  <- 0.112
   #remover PROSHF  <- 0.050
 }
@@ -496,4 +497,63 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   #!*ROOT PARAMETERS
   RTNO3  <- 0.006
   RTNH4  <- 0.006
+}
+
+#INCOMP
+{
+  #______________________________________________________________        
+  # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+  #remover SDLIP <- 0.200 #Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
+  #remover SDPRO <- 0.400 #Fraction protein in seeds (g(protein)/g(seed)) [from VAR# BR0001]
+  
+  #______________________________________________________________        
+  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*PLANT COMPOSITION VALUES
+  #remover PCARLF   <- 0.405000001
+  #remover PCARNO   <- 0.479999989
+  #remover PCARRT   <- 0.711000025
+  #remover PCARSD   <- 0.314999998
+  #remover PCARSH   <- 0.379999995
+  #remover PCARST   <- 0.663999975
+  #remover PLIGLF   <- 7.00000003E-02
+  #remover PLIGNO   <- 7.00000003E-02
+  #remover PLIGRT   <- 7.00000003E-02
+  #remover PLIGSD   <- 1.99999996E-02
+  #remover PLIGSH   <- 0.280000001
+  #remover PLIGST   <- 7.00000003E-02
+  #remover PLIPLF   <- 2.50000004E-02
+  #remover PLIPNO   <- 5.00000007E-02
+  #remover PLIPRT   <- 1.99999996E-02
+  #remover PLIPSH   <- 1.99999996E-02
+  #remover PLIPST   <- 1.99999996E-02
+  #remover PMINLF   <- 9.39999968E-02
+  #remover PMINNO   <- 5.00000007E-02
+  #remover PMINRT   <- 5.70000000E-02
+  #remover PMINSD   <- 2.50000004E-02
+  #remover PMINSH   <- 2.99999993E-02
+  #remover PMINST   <- 4.60000001E-02
+  #remover POALF    <- 5.00000007E-02
+  #remover POANO    <- 5.00000007E-02
+  #remover POART    <- 5.00000007E-02
+  #remover POASD    <- 3.99999991E-02
+  #remover POASH    <- 3.99999991E-02
+  #remover POAST    <- 5.00000007E-02
+  #remover PROLFI   <- 0.356000006
+  #remover PRORTI   <- 9.20000002E-02
+  #remover PROSHI   <- 0.250000000
+  #remover PROSTI   <- 0.150000006
+  SDPROS   <- 0.400000006
+  #!*RESPIRATION PARAMETERS
+  #remover RCH2O    <- 1.24199998
+  #remover RLIG     <- 2.17400002
+  #remover RLIP     <- 3.10599995
+  #remover RMIN     <- 5.00000007E-02
+  #remover RNO3C    <- 2.55599999
+  #remover ROA      <- 0.929000020
+}
+
+#MOBIL
+{
+  #!*RESPIRATION PARAMETERS (.SPE), mas não usado, aparentemente
+  #remover RPRO   <- 0.360 
 }
