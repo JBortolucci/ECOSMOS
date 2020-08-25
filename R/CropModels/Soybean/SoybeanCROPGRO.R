@@ -9,34 +9,27 @@ source("R/CropModels/Soybean/UTILS.R")
 SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   
   
-  environment(PHENOL)              <- env
-  environment(SENES)               <- env
-  environment(GROW)              <- env
-  environment(ROOTS)              <- env
-  environment(DEMAND)              <- env
-  environment(PODS)              <- env
-  environment(VEGGR)              <- env
-  environment(PODDET)              <- env
-  environment(FREEZE)              <- env
-  environment(INCOMP)              <- env
-  environment(NUPTAK)              <- env
-  environment(MOBIL)              <- env
-  environment(NFIX)              <- env
-  
-  
-  
+  environment(PHENOL)       <- env
+  environment(SENES)        <- env
+  environment(GROW)         <- env
+  environment(ROOTS)        <- env
+  environment(DEMAND)       <- env
+  environment(PODS)         <- env
+  environment(VEGGR)        <- env
+  environment(PODDET)       <- env
+  environment(FREEZE)       <- env
+  environment(INCOMP)       <- env
+  environment(NUPTAK)       <- env
+  environment(MOBIL)        <- env
+  environment(NFIX)         <- env
   
   i <- index
-  
   greenfrac[i]<-1.0
   
   if (croplive[i]==1) {
-    
-    
+
     idpp[i] <- idpp[i] + 1
-    
-    
-    
+
     # to do, comparar o valor PAR com o usado pelo CROPGRO
     # vamos ter que criar uma leitura trazendo as variaveis do fortran
     
@@ -47,16 +40,19 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #PG        Daily gross photosynthesis (g[CH2O] / m2 - d)
     PG = max (0.0, adnpp[i]) *(1/0.45) * 10^3  ## adnpp       # daily total npp for each plant type (kg-C/m**2/day) 
     
-    
+    # Variáveis que, além destas mencionadas acima, provavelmente precisaremos para integração
+    # (Henrique, 2020-08-25)
+      # TMIN (Clima)
+      TMIN <- tmin
+      # AGEFAC (PHOTO.for ou ETPHR.for[SPAM])
+      # MAINR (RESPI.for)
+      # EOP (TRANS.for[SPAM])
     
     
     ISWWAT='Y'
-    
-    
-    #  TGRO esta' sendo atribuido internamente, para testar temos que passar via leituro do fortran
-    
-    
-    
+
+    #  TGRO esta sendo atribuido internamente, para testar temos que passar via leituro do fortran
+
     #To do: levar os parametros para a plant_params.csv    
     if(idpp[i]==1){     
       cbior[i]  <- 0.00
@@ -66,28 +62,28 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #_____________________________________________________________        
     #__________INICIO DAS CHAMADAS do CROPGRO ____________________    
     
-    
-    
-    TESTE <- 'Y'
+   TESTE <- 'Y'
     
     if (TESTE == 'Y'){ #### Subrotina: PHENOL ####  
+
+      DAS     <- idpp[i]
       
-      
-      
-      DAS    <- idpp[i]   
-      
+      VARAUX  <- read.table(file = 'C:/DSSAT47/Soybean/VARAUX.OUT', header = T)
+      PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
+      PG      <- VARAUX$PG[VARAUX$DAS==DAS]
+      AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]
+      MAINR   <- VARAUX$MAINR[VARAUX$DAS==DAS]
+      EOP     <- VARAUX$EOP[VARAUX$DAS==DAS]
+      RO     <- VARAUX$RO[VARAUX$DAS==DAS]
+      RP     <- VARAUX$RP[VARAUX$DAS==DAS]
       
       if(DAS==1){
-        
-        
-        
+ 
         #_______________________________________________        
         # DYNAMIC = 'RUNINIT'
         # To do, remover completamente, pois fizemos as leituras
         KTRANS = KEP
         KSEVAP = -99.   #Defaults to old method of light
-        
-        
         
         #***********************************************************************
         #***********************************************************************
@@ -159,8 +155,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         # NOUTDO     Logical unit for OVERVIEW.OUT file 
         
         #  PHENOL_OUT <- PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
-        
-        
+ 
         CMINEP = 0.0
         CNOD   = 0.0
         CNODMN = 0.0
@@ -181,19 +176,16 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         
         DYNAMIC = 'SEASINIT'
+        
         PHENOL (iyear, iyear0, jday, DAS,DYNAMIC) 
-        
-        
-        
-        
+         
         #-----------------------------------------------------------------------
         #     Initialization call to DEMAND must preceed initialization calls
         #         to INCOMP and GROW (need to initialize values of F, FRLF,
         #         FRRT, and FRSTM for use in those routines)  chp 9/22/98
         #-----------------------------------------------------------------------
-        
-        
-        DEMAND(DYNAMIC, CROP, PAR, PGAVL,RPROAV, TAVG,TGRO)     #Input
+         
+        DEMAND(DYNAMIC, CROP, PAR, PGAVL,RPROAV, TAVG,TGRO)
         
         #-----------------------------------------------------------------------
         #     Call plant COMPosition INitialization
@@ -201,28 +193,27 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #         initialize value of SDPROR for use in that routine) chp 9/22/98
         #-----------------------------------------------------------------------
         if (CROP != 'FA') {
-          INCOMP(DYNAMIC)          #Input
+          INCOMP(DYNAMIC)
         }
         
         #-----------------------------------------------------------------------
-        GROW(DYNAMIC)                        #Output
+        GROW(DYNAMIC)
         
         #-----------------------------------------------------------------------
         # To do Santiago
         NUPTAK(DYNAMIC,
-               DLAYR, DUL,  KG2PPM, LL,    #Input
-               NH4, NO3, NLAYR, SAT, SW)               #Input
+               DLAYR, DUL,  KG2PPM, LL,
+               NH4, NO3, NLAYR, SAT, SW)
         
         #-----------------------------------------------------------------------
-        MOBIL(DYNAMIC)         #Output
+        MOBIL(DYNAMIC)
         
         #-----------------------------------------------------------------------
         # To do Santiago
-        
-        NFIX(DYNAMIC, CNODMN, CTONOD) # falta linkar, DLAYR, NLAYR,SAT, ST, SW)                           #Input
+        NFIX(DYNAMIC, CNODMN, CTONOD) # falta linkar, DLAYR, NLAYR,SAT, ST, SW                           #Input
         
         #-----------------------------------------------------------------------
-        PODS(DINAMYC, TGRO, NAVL,ISWWAT)                            #Input
+        PODS(DINAMYC, TGRO, NAVL,ISWWAT)
         
         #-----------------------------------------------------------------------
         VEGGR (DINAMYC,DAS,iyear,jday, CMINEP, CSAVEV,   NAVL,  PAR, PG, PGAVL,TGRO)                 #Input
@@ -230,13 +221,12 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #     Call leaf senescence routine for initialization
         #-----------------------------------------------------------------------
-        SENES(DYNAMIC,DAS,PAR)                   #Input
+        SENES(DYNAMIC,DAS,PAR)
         
         #-----------------------------------------------------------------------
         #     Call to root growth and rooting depth routine
         #-----------------------------------------------------------------------
-        ROOTS(DINAMYC,CROP,  ISWWAT)               #Input
-        
+        ROOTS(DINAMYC,CROP,  ISWWAT)
         
       }
       
@@ -392,11 +382,10 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #    If ISWNIT = N - Do not call soil N routines, N assumed to be limited by C
         #-----------------------------------------------------------------------
         if (ISWNIT == 'Y') {
-          # TODO:
-          NUPTAK(DYNAMIC, 
-                 DLAYR, DUL, FILECC, KG2PPM, LL, NDMSDR, NDMTOT, #Input
-                 NH4, NO3, NLAYR, RLV, SAT, SW,                  #Input
-                 TRNH4U, TRNO3U, TRNU, UNH4, UNO3)               #Output
+          #TODO Santiago
+          NUPTAK(DYNAMIC,
+                 DLAYR, DUL,  KG2PPM, LL,
+                 NH4, NO3, NLAYR, SAT, SW)
           
           #-----------------------------------------------------------------------
           #    Account for C Used to reduce N Uptake to protein
@@ -598,6 +587,10 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     
     # parametros
+   
+   # Função precisaremos para integração com o balanço de carbono
+   # (Henrique, 2020-08-25)
+     # HARVRES e/ou HRes_CGRO
     
     #_________ FIM DAS CHAMADAS DO CROPGRO _______________________
     #_____________________________________________________________    

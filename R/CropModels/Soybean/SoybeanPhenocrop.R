@@ -1,28 +1,3 @@
-
-# Contem as subrotinas: (aqui como 'function's)
-# 1) PHENOL  (Calculates phenological development.)
-# 2) VSTAGES (Calculates V-stages)
-# 3) RSTAGES (Calculates phenological stages and individual phase durations)
-
-# os comentarios com 'R' na frente são para controle e serão removidos posteriormente
-# 'C' ou '!' sao comentarios do codigo original em fortran, portanto, nao usados pelo CROPGRO
-# checar 'ifelse's e 'inputs'
-# checar GO TO's e IF's sem THEN
-
-# fortran to R
-# .LT.  meaning <
-# .LE.  meaning <=
-# .GT.  meaning >
-# .GE.  meaning >=
-# .EQ.  meaning =
-# .NE.  meaning !=
-# .OR.  meaning |
-# .AND. meaning &
-# DO/ENDDO   meaning for()
-# ELSE IF    meaning else if
-# AMAX1 & AMIN1  meaning max and min
-
-
 #=======================================================================
 # PHENOL Subroutine CROPGRO-DSSAT
 #  PHENOL, Subroutine, J. W. Jones
