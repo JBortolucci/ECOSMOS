@@ -1267,20 +1267,14 @@ GROW <- function (DYNAMIC,
     #     Terminate growth if stress causes extremely low plant weights
     #-----------------------------------------------------------------------
     if (TOPWT < 0.00001 | STMWT < 0.00001) {
-      STRESS(
-        AGEFAC, DWNOD, IDETO, IHARI, NOUTDO, PODWT,     #!Input
-        RTWT, SDWT, SHELWT, STMWT, TOPWT,               #!Input
-        TOTWT, TURFAC, WTLF, YRDOY, YRPLT)              #!Input
+      STRESS(AGEFAC, iyear,jday)
       
       return()
     }
     
     if (IHARI != 'R' & IHARI != 'D') {
       if (RTWT  < 0.00001 | WTLF  < 0.00001) {
-        STRESS(
-          AGEFAC, DWNOD, IDETO, IHARI, NOUTDO, PODWT,     #!Input
-          RTWT, SDWT, SHELWT, STMWT, TOPWT,               #!Input
-          TOTWT, TURFAC, WTLF, YRDOY, YRPLT)              #!Input
+        STRESS(AGEFAC, iyear,jday)
         
         return()
       }
@@ -1334,7 +1328,7 @@ GROW <- function (DYNAMIC,
   assign("RHOL", RHOL, envir = env)
   assign("RHOS", RHOS, envir = env)
   assign("RNITP", RNITP, envir = env)
-  assign("ROWSPC", ROWSPC, envir = env)
+  assign("ROWSPC", ROWSPC, envir = env) #TODO ver se é necessário aqui
   assign("RTWT", RTWT, envir = env)
   assign("SDNPL", SDNPL, envir = env)
   assign("SDRATE", SDRATE, envir = env)
@@ -1401,10 +1395,7 @@ GROW <- function (DYNAMIC,
   return()
 }  
 
-STRESS <- function(
-  AGEFAC, DWNOD, IDETO, IHARI, NOUTDO, PODWT,       #!Input
-  RTWT, SDWT, SHELWT, STMWT, TOPWT,                 #!Input
-  TOTWT, TURFAC, WTLF, YRDOY, YRPLT) {                #!Input
+STRESS <- function(AGEFAC, iyear,jday) {
   
   #-----------------------------------------------------------------------
   #     Set Ending Plant Weights, Dates of Stages if Plants Died
@@ -1419,10 +1410,15 @@ STRESS <- function(
   PODWT  = max(0.,PODWT)
   DWNOD  = max(0.,DWNOD)
   
+  YRDOY <- paste0(iyear,jday)
+  
   if (MDATE < 0) {
     #        NR8   = max(0,TIMDIF(YRSIM,YRDOY))
     MDATE = YRDOY
   }
+  
+  DAP = idpp[i] #TODO VERIFICAR
+  #tem uma mensagem de erro aqui: 'Plant died due to extreme stress at 'xx' days after planting.')
   
   assign("MDATE", MDATE, envir = env)
   
@@ -2668,9 +2664,8 @@ PODS <- function(DINAMYC,
   AVTEM <- rep(0, NCOHORTS)
   FLWN  <- rep(0, NCOHORTS)
   
-  PODCOMP(RUNINIT,
-    AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
-    POTCAR, POTLIP)                                 #Input/Output
+  PODCOMP(DYNAMIC,
+    NAVL, PGAVLR)
   
   
   #-----------------------------------------------------------------------
@@ -2758,9 +2753,8 @@ PODS <- function(DINAMYC,
       AVTEM[NPP] <- 0.0
     }
     
-    PODCOMP('EMERG',
-      AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,  #Input
-      POTCAR, POTLIP)                               #Input/Output
+    PODCOMP(DYNAMIC,
+      NAVL, PGAVLR)
    
     #***********************************************************************
     #***********************************************************************
@@ -2878,9 +2872,8 @@ PODS <- function(DINAMYC,
         #     Detailed seed composition calculations
         #-----------------------------------------------------------------------
         
-        PODCOMP('INTEGR',
-                AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
-                POTCAR, POTLIP)                                 #Input/Output
+        PODCOMP(DYNAMIC,
+                NAVL, PGAVLR)
         
         #-----------------------------------------------------------------------
         #     Grow seed cohorts
@@ -3221,8 +3214,7 @@ PODS <- function(DINAMYC,
 }
 
 PODCOMP <- function(DYNAMIC,
-                    AGRSD1, FILECC, FNINSD, GDMSD, NAVL, PGAVLR,    #Input
-                    POTCAR, POTLIP) {                                #Input/Output
+                    NAVL, PGAVLR) {
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -3528,9 +3520,8 @@ VEGGR <- function(DINAMYC,
   #-----------------------------------------------------------------------
   #    Call CANOPY for input
   #-----------------------------------------------------------------------
-  CANOPY(RUNINIT,
-         ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
-         RVSTGE, TGRO, TURFAC, VSTAGE, XLAI)             #Input
+  CANOPY(DYNAMIC, #TODO: ver como vai ficar -> AQUI TAVA COMO RUNINIT antes
+         PAR, TGRO)
   
   #***********************************************************************
   #***********************************************************************
@@ -3564,9 +3555,8 @@ VEGGR <- function(DINAMYC,
     WRDOTN = 0.0  
     WSDOTN = 0.0  
     
-    CANOPY('SEASINIT',
-           ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
-           RVSTGE, TGRO, TURFAC, VSTAGE, XLAI)             #Input
+    CANOPY(DYNAMIC,
+           PAR, TGRO)
     
     #***********************************************************************
     #***********************************************************************
@@ -3580,9 +3570,8 @@ VEGGR <- function(DINAMYC,
     FNINSG = PROSTG * 0.16   
     CUMTUR = 1.0             
     
-    CANOPY('EMERG',
-           ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
-           RVSTGE, TGRO, TURFAC, VSTAGE, XLAI)             #Input
+    CANOPY(DYNAMIC,
+           PAR, TGRO)
     
     #***********************************************************************
     #***********************************************************************
@@ -3804,10 +3793,8 @@ VEGGR <- function(DINAMYC,
     #     function of VSTAGE, air temperature, drought stress (TURFAC),
     #     daylenght and radiation (PAR).
     #-----------------------------------------------------------------------
-    CANOPY('INTEGR',
-           ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
-           RVSTGE,  TURFAC, VSTAGE, XLAI)             #Input
-    # CANHT, CANWH)                                   #Output
+    CANOPY(DYNAMIC,
+           PAR, TGRO)
     
     #***********************************************************************
     #***********************************************************************
@@ -3845,8 +3832,7 @@ VEGGR <- function(DINAMYC,
 }
 
 CANOPY <- function (DYNAMIC, 
-                    ECONO, FILECC, FILEGC, KCAN, PAR, ROWSPC,       #Input
-                    RVSTGE, TURFAC, VSTAGE, XLAI) {             #Input
+                    PAR, TGRO) {
   
   
   #-----------------------------------------------------------------------
@@ -3876,8 +3862,6 @@ CANOPY <- function (DYNAMIC,
   YVSHT   <- c(0.0300, 0.0530, 0.0630, 0.0660, 0.0690, 0.0660, 0.0620, 0.0510, 0.0340, 0.0060)
   YVSWH   <- c(0.0300, 0.0510, 0.0620, 0.0640, 0.0660, 0.0630, 0.0590, 0.0460, 0.0250, 0.0010)
   #fim dos parametros de planta
-  
-
   
   #***********************************************************************
   #***********************************************************************
@@ -4327,9 +4311,7 @@ SENES <- function (DYNAMIC,DAS,
 }
 #--------------END SENES FUNCTION--------------
 #---------------FREEZE FUNCTION----------------
-FREEZE <- function(
-  FREEZ2, NRUSLF, SLDOT,           #!Input
-  TMIN, WTLF, YRDOY,  YRPLT) {       #!Input
+FREEZE <- function(TMIN, iyear, jday) {
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
