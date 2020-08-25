@@ -3950,8 +3950,7 @@ CANOPY <- function (DYNAMIC,
 }
 #--------------END VEGGR FUNCTION--------------
 #---------------PODDET FUNCTION----------------
-PODDET <- function(DYNAMIC,
-                   FILECC, WTLF, YRDOY, YRNR2) {         #Input
+PODDET <- function(DINAMYC, iyear, jday) {         #Input
   
   #-----------------------------------------------------------------------
   #______________________________________________________________        
