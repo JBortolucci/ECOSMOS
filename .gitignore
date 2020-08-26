@@ -38,3 +38,14 @@ vignettes/*.pdf
 
 # User files
 UserFiles/
+
+#Inst
+inst/
+
+#gitignore
+.gitignore
+
+#Output
+output/
+output/sim1_Daily_comparison.rds
+*.dat
