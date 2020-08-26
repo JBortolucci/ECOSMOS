@@ -1,2 +1,2 @@
-ID,LAT,LON,startYear,endYear,SOILID,StationID,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,cycle length,cycles,params
-sim1,-21.75,-47.25,2014,2018,FAYS,inst/input_1d/FAYS_279_2015_208_2018_Input_1hora.txt,1,1,0,0,sugarcane,244,2014,450,1,sugarcane1
+ID,LAT,LON,startY,endY,SOILID,StationID,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,cycle length,cycles,params
+simFAYS,-21.75,-47.25,2015,2018,FAYS,,0,1,0,0,sugarcane,244,2015,440,1,sugarcane1

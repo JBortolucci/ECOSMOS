@@ -16,8 +16,11 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
   
   stinrad   <- c() # daily Station Solar Radiation (MJ/m2/day)
   
-  latc <- gsub("\\.", "", sprintf('%.3f', lat + 0.125))
-  lonc <- gsub("\\.", "", sprintf('%.3f', lon - 0.125))
+  # latc <- gsub("\\.", "", sprintf('%.3f', lat + 0.125))
+  # lonc <- gsub("\\.", "", sprintf('%.3f', lon - 0.125))
+  latc <- gsub("\\.", "", sprintf('%.3f', lat ))
+  lonc <- gsub("\\.", "", sprintf('%.3f', lon ))
+  print(paste(latc,lonc,"Data Xavier",sep="/"))
   
   #### Get csv filename for current coordinate ####
   file_wth_TN_nm <- paste0(path, "Xavier_Tmin_", lonc, latc, ".csv")

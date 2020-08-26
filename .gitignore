@@ -49,3 +49,5 @@ inst/
 output/
 output/sim1_Daily_comparison.rds
 *.dat
+output/out_daily_tower_sim1.dat
+output/out_daily_tower_sim1.dat

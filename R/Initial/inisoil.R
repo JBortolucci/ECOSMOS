@@ -117,6 +117,15 @@ inisoil <- function() {
       # SRGF[k] <- tab.DSSAT$SRGF[k]
       # assign("SRGF", SRGF, envir = env)
       
+      
+      if(!is.na(tab.DSSAT$BEXP[k])) {
+        bex[k]    <- tab.DSSAT$BEXP[k]
+      } else{
+        bex[k]  <- 3.10 + 15.7 * fclay - 0.3 * fsand
+      }
+      assign("bex", bex, envir = env)
+      
+      
       if(!is.na(tab.DSSAT$Bperm[k])) {
         bperm <-  tab.DSSAT$Bperm[1]
         assign("bperm", bperm, envir = env)
