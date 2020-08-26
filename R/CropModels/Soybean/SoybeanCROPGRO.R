@@ -29,16 +29,28 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   if (croplive[i]==1) {
 
     idpp[i] <- idpp[i] + 1
+    
+    DAS     <- idpp[i]
+    
+    VARAUX  <- read.table(file = 'C:/DSSAT47/Soybean/VARAUX.OUT', header = T)
+    PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
+    PG      <- VARAUX$PG[VARAUX$DAS==DAS]
+    AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]
+    MAINR   <- VARAUX$MAINR[VARAUX$DAS==DAS]
+    EOP     <- VARAUX$EOP[VARAUX$DAS==DAS]
+    RO     <- VARAUX$RO[VARAUX$DAS==DAS]
+    RP     <- VARAUX$RP[VARAUX$DAS==DAS]
 
     # to do, comparar o valor PAR com o usado pelo CROPGRO
     # vamos ter que criar uma leitura trazendo as variaveis do fortran
     
     # PAR       Daily photosynthetically active radiation or photon flux density (moles[quanta]/m2-d)
-    PAR = (stinrad) * 4.59e-06 # from W/m2 to mole.m2/s
+    # PAR = (stinrad) * 4.59e-06 # from W/m2 to mole.m2/s # TODO: Usando VARAUX , VERIFICAR
     TAVG = td -273.16
     
     #PG        Daily gross photosynthesis (g[CH2O] / m2 - d)
-    PG = max (0.0, adnpp[i]) *(1/0.45) * 10^3  ## adnpp       # daily total npp for each plant type (kg-C/m**2/day) 
+    # TODO: Usando VARAUX , VERIFICAR
+    # PG = max (0.0, adnpp[i]) *(1/0.45) * 10^3  ## adnpp       # daily total npp for each plant type (kg-C/m**2/day) 
     
     # Variáveis que, além destas mencionadas acima, provavelmente precisaremos para integração
     # (Henrique, 2020-08-25)
@@ -48,8 +60,15 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       # MAINR (RESPI.for)
       # EOP (TRANS.for[SPAM])
     
-    
-    ISWWAT='Y'
+      ISWDIS<-'N'
+      ISWWAT<-'Y'
+      ISWNIT<-'Y'
+      ISWSYM<-'Y'
+      # TODO: VERIFICAR
+      # ISWPHO<-'N'
+      # MEPHO<-'L'
+      
+      
 
     #  TGRO esta sendo atribuido internamente, para testar temos que passar via leituro do fortran
 
@@ -66,17 +85,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     if (TESTE == 'Y'){ #### Subrotina: PHENOL ####  
 
-      DAS     <- idpp[i]
-      
-      VARAUX  <- read.table(file = 'C:/DSSAT47/Soybean/VARAUX.OUT', header = T)
-      PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
-      PG      <- VARAUX$PG[VARAUX$DAS==DAS]
-      AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]
-      MAINR   <- VARAUX$MAINR[VARAUX$DAS==DAS]
-      EOP     <- VARAUX$EOP[VARAUX$DAS==DAS]
-      RO     <- VARAUX$RO[VARAUX$DAS==DAS]
-      RP     <- VARAUX$RP[VARAUX$DAS==DAS]
-      
       if(DAS==1){
  
         #_______________________________________________        
@@ -185,7 +193,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #         FRRT, and FRSTM for use in those routines)  chp 9/22/98
         #-----------------------------------------------------------------------
          
-        DEMAND(DYNAMIC, CROP, PAR, PGAVL,RPROAV, TAVG,TGRO)
+        DEMAND(DYNAMIC,DAS , CROP, PAR, PGAVL,RPROAV, TAVG,TGRO)
         
         #-----------------------------------------------------------------------
         #     Call plant COMPosition INitialization
@@ -201,22 +209,20 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         #-----------------------------------------------------------------------
         # To do Santiago
-        NUPTAK(DYNAMIC,
-               DLAYR, DUL,  KG2PPM, LL,
-               NH4, NO3, NLAYR, SAT, SW)
+        NUPTAK(DYNAMIC)
         
         #-----------------------------------------------------------------------
         MOBIL(DYNAMIC)
         
         #-----------------------------------------------------------------------
         # To do Santiago
-        NFIX(DYNAMIC, CNODMN, CTONOD) # falta linkar, DLAYR, NLAYR,SAT, ST, SW                           #Input
+        NFIX(DYNAMIC, CNODMN, CTONOD) # falta linkar, DLAYR, NLAYR,SAT, ST, SW
         
         #-----------------------------------------------------------------------
-        PODS(DINAMYC, TGRO, NAVL,ISWWAT)
+        PODS(DINAMYC, DAS, TGRO, NAVL,ISWWAT)
         
         #-----------------------------------------------------------------------
-        VEGGR (DINAMYC,DAS,iyear,jday, CMINEP, CSAVEV,   NAVL,  PAR, PG, PGAVL,TGRO)                 #Input
+        VEGGR (DINAMYC,DAS,iyear,jday,CMINEP,CSAVEV,NAVL,PAR,PG,PGAVL,TGRO)
         
         #-----------------------------------------------------------------------
         #     Call leaf senescence routine for initialization
@@ -226,7 +232,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #     Call to root growth and rooting depth routine
         #-----------------------------------------------------------------------
-        ROOTS(DINAMYC,CROP,  ISWWAT)
+        ROOTS(DINAMYC,CROP,ISWWAT)
         
       }
       
@@ -264,6 +270,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       if (CROP != 'FA' & DAS > NVEG0) {
         #TODO usar PHOTO.R ou trazer AGEFAC and PG do DSSAT/Fortran
+        #TODO: Estamos trazendo AGEFAC and PG do DSSAT/Fortran
         # if (MEPHO == 'L') {
         #   #Retrieve AGEFAC and PG from ETPHOT routine.
         #   #CALL GET('SPAM', 'AGEFAC', AGEFAC)
@@ -346,6 +353,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #       Compute maintenance respiration and subtract from available CH2O
         #-----------------------------------------------------------------------
         # TODO: Pegar RO, RP, MAINR do fortran
+        # TODO: Estamos trazendo RO, RP and MAINR do DSSAT/Fortran
         # RESPIR(
         #   PG, R30C2, RES30C, TGRO, WTMAIN,                #Input
         #   RO, RP,                                         #Input/Output
@@ -382,10 +390,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #    If ISWNIT = N - Do not call soil N routines, N assumed to be limited by C
         #-----------------------------------------------------------------------
         if (ISWNIT == 'Y') {
-          #TODO Santiago
-          NUPTAK(DYNAMIC,
-                 DLAYR, DUL,  KG2PPM, LL,
-                 NH4, NO3, NLAYR, SAT, SW)
+          NUPTAK(DYNAMIC)
           
           #-----------------------------------------------------------------------
           #    Account for C Used to reduce N Uptake to protein

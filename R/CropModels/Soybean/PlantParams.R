@@ -203,7 +203,7 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   RTDEPI <- 20.0
   XRTFAC <- c(0.00, 3.00, 6.00, 30.00)
   YRTFAC <- c(2.50, 2.50, 2.60, 2.60)
-  RTWTMIN <- 0.0 #TODO ver com santiago e/ou Leandro
+  RTWTMIN <- 0.0
 }
 
 #DEMAND
@@ -244,6 +244,7 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   SLOSUM <- 0.908 #TODO checar SLOSUM*100 = 0.908 (no .SPE)
   #!*SEED AND SHELL GROWTH PARAMETERS
   FNSDT  <- c(14.0, 21.0, 26.5, 40.0) #+ QDR in .SPE
+  TYPSDT <- "QDR"
   SHLAG  <- 0
   SRMAX  <- 0.300000012
   XFRMAX <- 0
@@ -344,10 +345,11 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   XMPAGE  <- 100.0
   #TODO verificar esses vetores
   FNPDT   <- c(14.0,21.0,26.5,40.0) # + QDR no .SPE
-  XSWBAR  <- c(0.00,  0.01,  0.25,  1.00,  1.00, rep(1,5)) #10 posicoes no fortran e 5 no .SPE
-  YSWBAR  <- c(1.00,  1.00,  1.00,  1.00,  1.00, rep(1,5)) #10 posicoes no fortran e 5 no .SPE
-  XSWFAC  <- c(0.00,  0.50,  1.00,  1.00, rep(1,6)) #10 posicoes no fortran e 4 no .SPE
-  YSWFAC  <- c(0.00,  1.00,  1.00,  1.00, rep(1,6)) #10 posicoes no fortran e 4 no .SPE
+  TYPPDT <- "QDR"
+  XSWBAR  <- c(0.00,  0.01,  0.25,  1.00,  1.00)
+  YSWBAR  <- c(1.00,  1.00,  1.00,  1.00,  1.00)
+  XSWFAC  <- c(0.00,  0.50,  1.00,  1.00)
+  YSWFAC  <- c(0.00,  1.00,  1.00,  1.00)
   #!*PLANT COMPOSITION VALUES
   #remover PROSHI  <- 0.250
   #remover PROLFF  <- 0.112
