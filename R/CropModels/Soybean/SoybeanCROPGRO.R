@@ -1,5 +1,8 @@
 
-
+simDataVars$TGRO_T   <-read.table(file = 'C:/DSSAT47/Soybean/TGRO.OUT')
+simDataVars$VARAUX  <- read.table(file = 'C:/DSSAT47/Soybean/VARAUX.OUT', header = T)
+# Mudar 
+simDataVars$CROP    <-'SB'
 
 
 source("R/CropModels/Soybean/SoybeanPhenocrop.R")
@@ -27,12 +30,15 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   greenfrac[i]<-1.0
   
   if (croplive[i]==1) {
-
+    
     idpp[i] <- idpp[i] + 1
     
     DAS     <- idpp[i]
     
-    VARAUX  <- read.table(file = 'C:/DSSAT47/Soybean/VARAUX.OUT', header = T)
+    YRDOY   <- paste0(iyear,jday)
+    
+    TS <- 24
+    
     PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
     PG      <- VARAUX$PG[VARAUX$DAS==DAS]
     AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]
@@ -40,7 +46,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     EOP     <- VARAUX$EOP[VARAUX$DAS==DAS]
     RO     <- VARAUX$RO[VARAUX$DAS==DAS]
     RP     <- VARAUX$RP[VARAUX$DAS==DAS]
-
+    
     # to do, comparar o valor PAR com o usado pelo CROPGRO
     # vamos ter que criar uma leitura trazendo as variaveis do fortran
     
@@ -54,24 +60,27 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     # Variáveis que, além destas mencionadas acima, provavelmente precisaremos para integração
     # (Henrique, 2020-08-25)
-      # TMIN (Clima)
-      TMIN <- tmin
-      # AGEFAC (PHOTO.for ou ETPHR.for[SPAM])
-      # MAINR (RESPI.for)
-      # EOP (TRANS.for[SPAM])
+    # TMIN (Clima)
+    TMIN <- tmin
+    # AGEFAC (PHOTO.for ou ETPHR.for[SPAM])
+    # MAINR (RESPI.for)
+    # EOP (TRANS.for[SPAM])
     
-      ISWDIS<-'N'
-      ISWWAT<-'Y'
-      ISWNIT<-'Y'
-      ISWSYM<-'Y'
-      # TODO: VERIFICAR
-      # ISWPHO<-'N'
-      # MEPHO<-'L'
-      
-      
-
+    ISWDIS<-'N'
+    ISWWAT<-'Y'
+    ISWNIT<-'Y'
+    ISWSYM<-'Y'
+    # TODO: VERIFICAR
+    # ISWPHO<-'N'
+    # MEPHO<-'L'
+    
+    #!*POD LOSS PARAMETERS
+    DETACH  <-'N'
+    
+    
+    
     #  TGRO esta sendo atribuido internamente, para testar temos que passar via leituro do fortran
-
+    
     #To do: levar os parametros para a plant_params.csv    
     if(idpp[i]==1){     
       cbior[i]  <- 0.00
@@ -81,119 +90,117 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #_____________________________________________________________        
     #__________INICIO DAS CHAMADAS do CROPGRO ____________________    
     
-   TESTE <- 'Y'
+    TESTE <- 'Y'
     
     if (TESTE == 'Y'){ #### Subrotina: PHENOL ####  
-
+      
+      
+      #_______________________________________________        
+      # DYNAMIC = 'RUNINIT'
+      
+      #***********************************************************************
+      #***********************************************************************
+      #     Seasonal initialization - run once per season
+      #***********************************************************************
+      # DYNAMIC == SEASINIT       
+      
+      
+      #=======================================================================
+      #  IPPLNT, Subroutine, C.H. Porter
+      #-----------------------------------------------------------------------
+      #  Reads variables from crop or species specific data file
+      
+      
+      # To do: Henrique, limpar os parametros que ja estao sendo criados mais de uma vez        
+      # CONTROL VARS (.SBX) 
+      
+      #!*CARBON AND NITROGEN MINING PARAMETERS
+      CADPR1  <- 0.260   
+      CMOBMX  <- 0.024 
+      #!*EVAPOTRANSPIRATION    
+      EORATIO <- 1.1
+      KEP     <- 0.68
+      # To do, remover completamente, pois fizemos as leituras
+      KTRANS = KEP
+      KSEVAP = -99.   #Defaults to old method of light
+      #!*VEGETATIVE PARTITIONING PARAMETERS
+      FRCNOD  <- 0.05
+      #!*LEAF SENESCENCE FACTORS
+      FREEZ1  <- -2.22    
+      FREEZ2  <- -5.00 
+      #!*PHOTOSYNTHESIS PARAMETERS
+      KCAN     <-  0.67 
+      KC_SLOPE <-  0.10     
+      #!*PLANT COMPOSITION VALUES
+      PCARSH <- 0.380
+      PLIPSH <- 0.020
+      PLIGSD <- 0.020  
+      PLIGSH <- 0.280
+      PMINSD <- 0.025
+      PMINSH <- 0.030
+      POASD  <- 0.040 
+      POASH  <- 0.040
+      PROLFI <- 0.356
+      PRORTI <- 0.092
+      PROSHI <- 0.250
+      PROSTI <- 0.150
+      #!*RESPIRATION PARAMETERS
+      PCH2O  <- 1.13
+      R30C2  <- 0.0040 
+      RCH2O  <- 1.242
+      RES30C <- 3.5E-04
+      RFIXN  <- 2.830
+      RLIG   <- 2.174
+      RLIP   <- 3.106
+      RMIN   <- 0.05
+      RNH4C  <- 2.556
+      RNO3C  <- 2.556
+      ROA    <- 0.929
+      RPRO   <- 0.360
+      #!*ROOT PARAMETERS
+      PORMIN <- 0.02
+      RWUEP1 <- 1.50
+      RWUMX  <- 0.04
+      #!*NITROGEN FIXATION PARAMETERS
+      TTFIX  <- 0
+      # Não usados
+      # ECONO (ecotype id)  
+      # NOUTDO     Logical unit for OVERVIEW.OUT file 
+      
+      #  PHENOL_OUT <- PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
+      
+      CMINEP = 0.0
+      CNOD   = 0.0
+      CNODMN = 0.0
+      CTONOD = 0.0
+      MAINR  = 0.0
+      NAVL   = 0.0
+      RO     = 0.0
+      RP     = 0.0
+      RPROAV = RFIXN
+      
+      TURFAC = 1.0
+      SWFAC  = 1.0
+      
+      RSPNO3 = 0.0
+      RSPNH4 = 0.0
+      
+      KSTRES = 1.0
+      
+      # Estava antes das declaracoes de variaveis 
       if(DAS==1){
- 
-        #_______________________________________________        
-        # DYNAMIC = 'RUNINIT'
-        # To do, remover completamente, pois fizemos as leituras
-        KTRANS = KEP
-        KSEVAP = -99.   #Defaults to old method of light
-        
-        #***********************************************************************
-        #***********************************************************************
-        #     Seasonal initialization - run once per season
-        #***********************************************************************
-        # DYNAMIC == SEASINIT       
-        
-        
-        #=======================================================================
-        #  IPPLNT, Subroutine, C.H. Porter
-        #-----------------------------------------------------------------------
-        #  Reads variables from crop or species specific data file
-        
-        
-        # To do: Henrique, limpar os parametros que ja estao sendo criados mais de uma vez        
-        # CONTROL VARS (.SBX) 
-        CROP    <-'SB' 
-        
-        #!*CARBON AND NITROGEN MINING PARAMETERS
-        CADPR1  <- 0.260   
-        CMOBMX  <- 0.024 
-        #!*POD LOSS PARAMETERS
-        DETACH  <-'N'  
-        #!*EVAPOTRANSPIRATION    
-        EORATIO <- 1.1
-        KEP     <- 0.68
-        #!*VEGETATIVE PARTITIONING PARAMETERS
-        FRCNOD  <- 0.05
-        #!*LEAF SENESCENCE FACTORS
-        FREEZ1  <- -2.22    
-        FREEZ2  <- -5.00 
-        #!*PHOTOSYNTHESIS PARAMETERS
-        KCAN     <-  0.67 
-        KC_SLOPE <-  0.10     
-        #!*PLANT COMPOSITION VALUES
-        PCARSH <- 0.380
-        PLIPSH <- 0.020
-        PLIGSD <- 0.020  
-        PLIGSH <- 0.280
-        PMINSD <- 0.025
-        PMINSH <- 0.030
-        POASD  <- 0.040 
-        POASH  <- 0.040
-        PROLFI <- 0.356
-        PRORTI <- 0.092
-        PROSHI <- 0.250
-        PROSTI <- 0.150
-        #!*RESPIRATION PARAMETERS
-        PCH2O  <- 1.13
-        R30C2  <- 0.0040 
-        RCH2O  <- 1.242
-        RES30C <- 3.5E-04
-        RFIXN  <- 2.830
-        RLIG   <- 2.174
-        RLIP   <- 3.106
-        RMIN   <- 0.05
-        RNH4C  <- 2.556
-        RNO3C  <- 2.556
-        ROA    <- 0.929
-        RPRO   <- 0.360
-        #!*ROOT PARAMETERS
-        PORMIN <- 0.02
-        RWUEP1 <- 1.50
-        RWUMX  <- 0.04
-        #!*NITROGEN FIXATION PARAMETERS
-        TTFIX  <- 0
-        # Não usados
-        # ECONO (ecotype id)  
-        # NOUTDO     Logical unit for OVERVIEW.OUT file 
-        
-        #  PHENOL_OUT <- PHENOL (iyear, iyear0, jday, DAS,DYNAMIC)
- 
-        CMINEP = 0.0
-        CNOD   = 0.0
-        CNODMN = 0.0
-        CTONOD = 0.0
-        MAINR  = 0.0
-        NAVL   = 0.0
-        RO     = 0.0
-        RP     = 0.0
-        RPROAV = RFIXN
-        
-        TURFAC = 1.0
-        SWFAC  = 1.0
-        
-        RSPNO3 = 0.0
-        RSPNH4 = 0.0
-        
-        KSTRES = 1.0
-        
         
         DYNAMIC = 'SEASINIT'
         
         PHENOL (iyear, iyear0, jday, DAS,DYNAMIC) 
-         
+        
         #-----------------------------------------------------------------------
         #     Initialization call to DEMAND must preceed initialization calls
         #         to INCOMP and GROW (need to initialize values of F, FRLF,
         #         FRRT, and FRSTM for use in those routines)  chp 9/22/98
         #-----------------------------------------------------------------------
-         
-        DEMAND(DYNAMIC,DAS , CROP, PAR, PGAVL,RPROAV, TAVG,TGRO)
+        
+        DEMAND(DYNAMIC,DAS , CROP, PAR, PGAVL,RPROAV, TAVG)
         
         #-----------------------------------------------------------------------
         #     Call plant COMPosition INitialization
@@ -216,13 +223,13 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         #-----------------------------------------------------------------------
         # To do Santiago
-        NFIX(DYNAMIC, CNODMN, CTONOD) # falta linkar, DLAYR, NLAYR,SAT, ST, SW
+        NFIX(DYNAMIC, DAS, CNODMN, CTONOD) # falta linkar, DLAYR, NLAYR,SAT, ST, SW
         
         #-----------------------------------------------------------------------
-        PODS(DINAMYC, DAS, TGRO, NAVL,ISWWAT)
+        PODS(DYNAMIC, DAS, NAVL,ISWWAT)
         
         #-----------------------------------------------------------------------
-        VEGGR (DINAMYC,DAS,iyear,jday,CMINEP,CSAVEV,NAVL,PAR,PG,PGAVL,TGRO)
+        VEGGR (DYNAMIC,DAS,iyear,jday,CMINEP,CSAVEV,NAVL,PAR,PG,PGAVL)
         
         #-----------------------------------------------------------------------
         #     Call leaf senescence routine for initialization
@@ -232,7 +239,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #     Call to root growth and rooting depth routine
         #-----------------------------------------------------------------------
-        ROOTS(DINAMYC,CROP,ISWWAT)
+        ROOTS(DYNAMIC,CROP,ISWWAT)
         
       }
       
@@ -312,13 +319,13 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         #-----------------------------------------------------------------------
         #       DYNAMIC = EMERG (not INTEGR) here
-        DEMAND("EMERG", CROP, PAR, PGAVL,RPROAV, TAVG,TGRO)
+        DEMAND("EMERG", CROP, PAR, PGAVL,RPROAV, TAVG)
         
         #-----------------------------------------------------------------------
-        PODS("EMERG", TGRO, NAVL,ISWWAT)
+        PODS("EMERG", NAVL,ISWWAT)
         
         #-----------------------------------------------------------------------
-        VEGGR ("EMERG",DAS,iyear,jday, CMINEP, CSAVEV,   NAVL,  PAR, PG, PGAVL,TGRO)
+        VEGGR ("EMERG",DAS,iyear,jday, CMINEP, CSAVEV,   NAVL,  PAR, PG, PGAVL)
         
         #-----------------------------------------------------------------------
       }
@@ -358,7 +365,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #   PG, R30C2, RES30C, TGRO, WTMAIN,                #Input
         #   RO, RP,                                         #Input/Output
         #   MAINR)                                          #Output
-        
         if (MAINR > PGAVL) {
           PGAVL  = 0.0
         } else {
@@ -369,7 +375,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #    Call Subroutine to calculate Nitrogen and Carbon Demand for new growth
         #-----------------------------------------------------------------------
-        DEMAND(DYNAMIC, CROP, PAR, PGAVL,RPROAV, TAVG,TGRO)
+        DEMAND(DYNAMIC,DAS, CROP, PAR, PGAVL,RPROAV, TAVG)
         
         if (YRDOY == YREND) return()
         
@@ -460,7 +466,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         if (ISWNIT == 'Y' & ISWSYM == 'Y') {
           if (VSTAGE > TTFIX) {
-            NFIX(DYNAMIC, CNODMN, CTONOD)
+            NFIX(DYNAMIC, DAS, CNODMN, CTONOD)
           }
         }
         #-----------------------------------------------------------------------
@@ -483,7 +489,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #     Call routine to compute actual seed and shell growth
         #-----------------------------------------------------------------------
-        PODS(DINAMYC, TGRO, NAVL,ISWWAT)
+        PODS(DYNAMIC, NAVL,ISWWAT)
         
         #-----------------------------------------------------------------------
         #     Call specific routines for peanut to determine
@@ -492,7 +498,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #         Pod Detachment
         #-----------------------------------------------------------------------
         if (DETACH == 'Y' & DAS >= NR1) {
-          PODDET(DINAMYC, iyear, jday)
+          PODDET(DYNAMIC, iyear, jday)
         }
         
         #-----------------------------------------------------------------------
@@ -524,7 +530,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #     Call routine to compute actual vegetative growth, C to mine or add
         #-----------------------------------------------------------------------
-        VEGGR (DINAMYC,DAS,iyear,jday, CMINEP, CSAVEV,   NAVL,  PAR, PG, PGAVL,TGRO)
+        VEGGR (DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV,   NAVL,  PAR, PG, PGAVL)
         
         #-----------------------------------------------------------------------
         #     Compute C required for LF, ST, and RT growth, and remaining C and N
@@ -549,7 +555,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #     Call to root growth and rooting depth routine
         #-----------------------------------------------------------------------
-        ROOTS(DINAMYC,CROP,  ISWWAT)
+        ROOTS(DYNAMIC,CROP,  ISWWAT)
         
         #-----------------------------------------------------------------------
         #     Compute total C cost for growing seed, shell, and vegetative tissue
@@ -592,10 +598,10 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     
     # parametros
-   
-   # Função precisaremos para integração com o balanço de carbono
-   # (Henrique, 2020-08-25)
-     # HARVRES e/ou HRes_CGRO
+    
+    # Função precisaremos para integração com o balanço de carbono
+    # (Henrique, 2020-08-25)
+    # HARVRES e/ou HRes_CGRO
     
     #_________ FIM DAS CHAMADAS DO CROPGRO _______________________
     #_____________________________________________________________    
@@ -606,42 +612,27 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     
     
-    aroot<- min(max((1 -    FSHTBa),0),1)
-    aleaf<- min(max((FLVTBa*FSHTBa),0),1)
-    astem<- min(max((FSTTBa*FSHTBa),0),1)
-    arepr<- min(max((FSOTBa*FSHTBa),0),1)
+    # aroot<- min(max((1 -    FSHTBa),0),1)
+    # aleaf<- min(max((FLVTBa*FSHTBa),0),1)
+    # astem<- min(max((FSTTBa*FSHTBa),0),1)
+    # arepr<- min(max((FSOTBa*FSHTBa),0),1)
     
     
     # update carbon reservoirs using an analytical solution
     # to the original carbon balance differential equation
-    cbior[i] <- cbior[i] * exp(-1.0 / tauroot[i]) + aroot[i] * tauroot[i] * max(0.0,adnpp[i]) * (1.0 - exp(-1.0 / tauroot[i]))
+    # cbior[i] <- cbior[i] * exp(-1.0 / tauroot[i]) + aroot[i] * tauroot[i] * max(0.0,adnpp[i]) * (1.0 - exp(-1.0 / tauroot[i]))
     
-    cbiol[i] <- cbiol[i] + aleaf[i] * max (0.0, adnpp[i])  - DRLVTa*cbiol[i]
-    cbios[i] <- cbios[i] + astem[i] * max (0.0, adnpp[i]) 
-    cbiop[i] <- cbiop[i] + arepr[i] * max (0.0, adnpp[i]) 
-    if(DVS>=0.95) cbiog[i] <- cbiog[i] + arepr[i] * max (0.0, adnpp[i]) 
+    # cbiol[i] <- cbiol[i] + aleaf[i] * max (0.0, adnpp[i])  # - ??*cbiol[i]
+    # cbios[i] <- cbios[i] + astem[i] * max (0.0, adnpp[i]) 
+    # cbiop[i] <- cbiop[i] + arepr[i] * max (0.0, adnpp[i]) 
     
-    # Translocation starts only when  storage organs are formed (at development stage 0.95),
-    if(ndiasR9==1)  SRCT<-cbios[i]*0.14  # stem reserves pool for translocation 
-    
-    if(ndiasR9>=1) {
-      
-      cbios[i] <- cbios[i] -  SRCT/20 # TO DO: Bryan, definir a equação desse percental e o tempo de retirada 
-      cbiop[i] <- cbiop[i] +  SRCT/20
-      cbiog[i] <- cbiog[i] +  SRCT/20
-    }
     
     #    !----------Check sink limitation based on yesterday's growth rates
     # ! and adapt partitioning of stem-storage organ accordingly
-    # BRYAN TO DO ->  IF (GRAINS) THEN
-    # BRYAN TO DO ->  IF (GGR.GE.(PWRR-WRR)) THEN
-    # BRYAN TO DO ->  FSO = MAX(0.,(PWRR-WRR)/(GCR*FSH))
-    # BRYAN TO DO ->  FST = 1.-FSO-FLV
-    # BRYAN TO DO ->  END IF
-    # BRYAN TO DO ->  END IF    
     
     # update vegetation's physical characteristics
-    plai[i] <- cbiol[i] * specla[i] 
+    # plai[i] <- cbiol[i] * specla[i] 
+    plai[i] <- 0.01
     
     peaklai[i]  <- max(peaklai[i]  ,plai[i] )
     
@@ -713,22 +704,22 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #___________________________________________________
     #       Harvest
     
-    fileout=paste("RICE_DAILY.csv")
+    # fileout=paste("RICE_DAILY.csv")
     # ID<-simConfigs[[i]]$id
-    if(idpp[i]==1)ID<-paste0(jday,iyear)
-    write(paste( ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS ,
-                 aroot[i],aleaf[i],astem[i],arepr[i],cbior[i],cbiol[i],cbios[i],cbiog[i],cbiop[i],plai[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
+    # if(idpp[i]==1)ID<-paste0(jday,iyear)
+    # write(paste( ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS ,
+    #              aroot[i],aleaf[i],astem[i],arepr[i],cbior[i],cbiol[i],cbios[i],cbiog[i],cbiop[i],plai[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
     
     
     
     if(cropy == 1) {
       
-      if ( DVS >= 2.0 ) { # maximum harvest date
+      if ( RSTAGE == 8 ) { # maximum harvest date
         
-        print(paste('Harvest RICE ',ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai[i],cbiog[i],sep = " ; "    ))
+        # print(paste('Harvest RICE ',ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai[i],cbiog[i],sep = " ; "    ))
         
-        fileout=paste("RICE_SEASON.csv")
-        write(paste(ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai,cbiog[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
+        # fileout=paste("RICE_SEASON.csv")
+        # write(paste(ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai,cbiog[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
         
         
         
@@ -741,19 +732,11 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         peaklai[i]    <- 0.0
         endCycle      <- T
         
-        ndiasV6       <-0
-        ndiasR0       <-0
-        ndiasR4       <-0
-        ndiasR9       <-0
-        DVS           <-0 
-        TMAXC         <-0  
-        TMINC         <-0 
-        TTSUM         <-0 
         
         
       }
     } else {
-      print('Rice has only one cycle - Stop')
+      print('Soybean has only one cycle - Stop')
       stop()
     }
     
@@ -792,19 +775,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
   assign("cropy", cropy, envir = env)
-  
-  assign("DRLVTa",DRLVTa, envir = env)
-  assign("ndiasV6",ndiasV6,envir = env)
-  assign("ndiasR0",ndiasR0,envir = env)
-  assign("ndiasR4",ndiasR4,envir = env)
-  assign("ndiasR9",ndiasR9,envir = env)
-  assign("DVS"    ,DVS    ,envir = env)
-  assign("TMAXC"  ,TMAXC  ,envir = env)
-  assign("TMINC"  ,TMINC  ,envir = env)
-  assign("TTSUM"  ,TTSUM  ,envir = env)
-  assign("ID"  ,ID  ,envir = env)
-  
-  assign("SRCT"  ,SRCT  ,envir = env)
 }
 
 

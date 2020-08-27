@@ -148,6 +148,15 @@ simDataVars$SDGR    <-  0
 simDataVars$TURADD  <-  0
 simDataVars$XFRT    <-  0
 simDataVars$YREND   <-  0
+simDataVars$REDSHL  <-  0
+simDataVars$TMPFAC  <-  1.0
+simDataVars$CDMSD   <-  0
+simDataVars$SLAMN   <-  0
+simDataVars$DUMFAC  <- 0
+simDataVars$FVEG    <- 0
+simDataVars$SLAMX   <- 0
+simDataVars$GROMAX  <- 0
+simDataVars$SIZRAT  <- 0
 
 # simDataVars$AGRSD1  <-  0
 # simDataVars$AGRSD2  <-  0
@@ -182,6 +191,7 @@ simDataVars$FLWN    <- rep(0, 300)
 simDataVars$ANINSD  <-  0
 simDataVars$CUMSIG  <-  0 
 simDataVars$RSD     <-  0
+simDataVars$PGAVLR     <-  0
 #-----------------END PODS VARS-------------------
 
 #-------------------VEGGR VARS--------------------
@@ -277,6 +287,7 @@ simDataVars$NDTH   <-  0
 simDataVars$NFIXN  <-  0
 simDataVars$NODGR  <-  0
 # simDataVars$WTNFX  <-  0
+simDataVars$SDWNOD <-  0
 #-------------------END NFIX VARS-----------------
 
 
@@ -1312,7 +1323,7 @@ GROW <- function (DYNAMIC)  {
   assign("SDWT", SDWT, envir = env)
   assign("SEEDNI", SEEDNI, envir = env)
   assign("SEEDNO", SEEDNO, envir = env)
-  assign("SENESCE", SENESCE, envir = env)
+  # assign("SENESCE", SENESCE, envir = env)
   assign("SHELWT", SHELWT, envir = env)
   assign("SLA", SLA, envir = env)
   assign("SLAAD", SLAAD, envir = env)
@@ -1404,9 +1415,11 @@ STRESS <- function(AGEFAC, iyear,jday) {
 #--------------END GROW FUNCTION-----------------
 
 #---------------ROOTS FUNCTION-------------------
-ROOTS <- function(DINAMYC,CROP,  ISWWAT) { #TODO Santiago
+ROOTS <- function(DYNAMIC,CROP,  ISWWAT) { #TODO Santiago
   
   environment(INROOT) <- env
+  
+  NLAYR <- nsoilay
 
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -1486,7 +1499,7 @@ ROOTS <- function(DINAMYC,CROP,  ISWWAT) { #TODO Santiago
     #   day of emergence.  (GROW emergence initialization
     #   must preceed call to INROOT.)
     #-----------------------------------------------------------------------
-    INROOT()
+    INROOT(RFAC1)
     
     RFAC3 = RFAC1
     
@@ -1740,7 +1753,7 @@ ROOTS <- function(DINAMYC,CROP,  ISWWAT) { #TODO Santiago
   return()
 } 
 
-INROOT <- function (){  
+INROOT <- function (RFAC1){  
   
   #INROOT <- 0
   NL       = 20  #!Maximum number of soil layers 
@@ -1790,16 +1803,23 @@ INROOT <- function (){
 #--------------END ROOTS FUNCTION----------------
 
 #---------------DEMAND FUNCTION------------------
-DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
+DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
+  
+  environment(SDCOMP) <- env
   
   YREND  <- 0 #TODO checar oq significa, aparentemente usado para uma msg de erro
   
+  TS <- 24
+  
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
-  SDLIP <- 0.200 # Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
-  SDPRO <- 0.400 # Fraction protein in seeds (g(protein)/g(seed)) [from VAR# BR0001]
-  XFRT  <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
-  
+  SDLIP  <- 0.200 # Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
+  SDPRO  <- 0.400 # Fraction protein in seeds (g(protein)/g(seed)) [from VAR# BR0001]
+  XFRT   <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
+  SLAVAR <- 370   # Specific leaf area of cultivar under standard growth conditions (cm2/g)
+  SIZELF <- 200   # Maximum size of full leaf (three leaflets) (cm2)
+  THRESH <- 78    # Threshing percentage. The maximum ratio of (seed/(seed+shell)) at maturity. Causes seeds to stop growing as their dry weight
+  XFRUIT <- XFRT  # Maximum fraction of daily growth that is partitioned to seed + shell
   #______________________________________________________________        
   # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
   # ECO# SB0602
@@ -1807,8 +1827,12 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
   
   #______________________________________________________________        
   # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
-  #!*VEGETATIVE PARTITIONING PARAMETERS
+  # !*VEGETATIVE PARTITIONING PARAMETERS
+  XLEAF   <- c( 0.0,  1.,   3.3,   5.0,  7.8,  10.5,  30.0,  40.0)
+  YLEAF   <- c(0.41, 0.4,  0.42,  0.41, 0.36,  0.32,  0.31,  0.31)
+  YSTEM   <- c(0.09, 0.1,  0.21,  0.29, 0.37,  0.49,  0.49,  0.49)
   FRLFM   <- 0.70
+  
   #!*LEAF GROWTH PARAMETERS
   FINREF <- 180.
   SLAREF <- 350.
@@ -1821,6 +1845,8 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
   XVGROW <- c( 0.0,  1.0,  2.0,  3.0,  4.0,  5.0)
   YVREF  <- c( 0.0, 20.0, 55.0,110.0,200.0,320.0)
   YVGROW <- rep(0,6) #preenchido com uma função de interpolacao/lookup (TABEX)
+  XSLATM <- c(-50.0,  00.0,  12.0,  22.0,  60.0)         
+  YSLATM <- c( 0.25,  0.25,  0.25,  1.00,   1.0)
   #!*VEGETATIVE PARTITIONING PARAMETERS
   FRLFF  <- 0.24
   FRSTMF <- 0.55
@@ -1836,6 +1862,11 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
   SHLAG  <- 0
   SRMAX  <- 0.300000012
   XFRMAX <- 0
+  XXFTEM <- c(0.00, 5.00, 20.00, 35.00, 45.00, 60.00)
+  YXFTEM <- c(1.00, 1.00, 1.00 ,  1.00,  0.00,  0.00)
+  XTRFAC <- c(0.00,  0.50,  0.75,  1.00)              
+  YTRFAC <- c(0.00,  0.00,  0.00,  0.00)
+  
   #!*CARBON AND NITROGEN MINING PARAMETERS
   NMOBMX <- 0.090
   NRCVR  <- 0.15
@@ -1858,19 +1889,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
   RNO3C  <- 2.556
   ROA    <- 0.929
   RPRO   <- 0.360
-  
-  #TODO verificar se (10) e (25) seria rep(0,XX)
-  # vetores usados internamente
-  XSLATM <- rep(0,10)
-  YSLATM <- rep(0,10)
-  XTRFAC <- rep(0,10)
-  YTRFAC <- rep(0,10)
-  XXFTEM <- rep(0,10)
-  YXFTEM <- rep(0,10)
-  XLEAF  <- rep(0,25)
-  YLEAF  <- rep(0,25)
-  YSTEM  <- rep(0,25)
-  
+
   #TGRO[TS]
   NCOHORTS <- 300 #from line 51 in ModuleDefs.for NCOHORTS = 300, !Maximum number of cohorts
   SDDES <- rep(0, NCOHORTS)
@@ -1911,7 +1930,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
     #-----------------------------------------------------------------------
     if (CROP != 'FA') {
       DUMFAC = SLAVAR / SLAREF
-      Fnew   = DUMFAC * FINREF # VERIFICAR: F ? palavra reservada da linguagem. Substituir.
+      Fnew   = DUMFAC * FINREF 
       FVEG   = DUMFAC * SLAMAX
       SLAMN  = DUMFAC * SLAMIN
       SLAMX  = DUMFAC * SLAMAX
@@ -2007,7 +2026,8 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
       TMPFAC = 0
       TMPFCS = 0
       for (I in 1:TS) {
-        TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+        TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+        # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
         
         TMPFAC = CURV(TYPSDT,FNSDT[1], FNSDT[2], FNSDT[3], FNSDT[4], TGRO[I])
         TMPFCS = TMPFCS + TMPFAC
@@ -2134,7 +2154,8 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
     #-----------------------------------------------------------------------
     TEMXFR = 0.
     for (I in 1:TS) {
-       TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+      TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
       TEMXFR = TEMXFR + TABEX(YXFTEM,XXFTEM,TGRO[I],6)
     }
@@ -2253,7 +2274,8 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
     #-----------------------------------------------------------------------
     TPHFAC = 0
     for (I in 1:TS){
-       TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+      TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
       TPHFAC = TPHFAC + TABEX (YSLATM,XSLATM,TGRO[I],5)
     }
@@ -2261,8 +2283,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
     # 24 changed to TS by Bruce Kimball on 3Jul17
     
     #-----------------------------------------------------------------------
-    # VERIFICAR: EXP seria exponencial? Se for, trocar por 'exp()'
-    PARSLA = (SLAMN+(SLAMX-SLAMN) * EXP(SLAPAR*PAR)) / SLAMX
+    PARSLA = (SLAMN+(SLAMX-SLAMN) * exp(SLAPAR*PAR)) / SLAMX
     TURFSL = max(0.1, (1.0 - (1.0 - TURFAC)*TURSLA))
     #-----------------------------------------------------------------------
     #     Compute overall effect of TMP, PAR, water stress on SLA (F), first
@@ -2271,7 +2292,6 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
     #-----------------------------------------------------------------------
     FFVEG = FVEG * TPHFAC * PARSLA * TURFSL
     
-    # VERIFICAR: F novamente. Mudar
     Fnew = FFVEG 
     if (XFRT*FRACDN >= 0.05) { 
       Fnew = FFVEG * (1.0 - XFRT * FRACDN) 
@@ -2300,7 +2320,6 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
       #     CALCULATE MINIMUM WEIGHT NEEDED TO ADD GAINNW LEAF AREA/M2,
       #     AND AMOUNT OF LEAF WEIGHT WHICH CAN BE GROWN WITH PG AVAILABLE
       #-----------------------------------------------------------------------
-      # VERIFICAR: F novamente. Mudar
       if (Fnew > 1.E-5) {
         GAINWT = GAINNW/Fnew
       } else {
@@ -2413,6 +2432,16 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {     #Input
   assign("TURADD", TURADD, envir = env)
   assign("XFRT", XFRT, envir = env)
   assign("YREND", YREND, envir = env)
+  # TODO: Verificar assign REDSHL e TMPFAC, CDMSD, SLAMN
+  assign("REDSHL", REDSHL, envir = env)
+  assign("TMPFAC", TMPFAC, envir = env)
+  assign("CDMSD", CDMSD, envir = env)
+  assign("SLAMN", SLAMN, envir = env)
+  assign("DUMFAC", DUMFAC, envir = env)
+  assign("FVEG", FVEG, envir = env)
+  assign("SLAMX", SLAMX, envir = env)
+  assign("GROMAX", GROMAX, envir = env)
+  assign("SIZRAT", SIZRAT, envir = env)
   
   return()
 }
@@ -2505,13 +2534,18 @@ SDCOMP <- function (TAVG) {
 #--------------END DEMAND FUNCTION---------------
 
 #----------------PODS FUNCTION-------------------
-PODS <- function(DINAMYC, DAS, TGRO, NAVL,ISWWAT) {
+PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT) {
+  
+  environment(PODCOMP) <- env
+  
+  TS <- 24
   
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   XFRT    <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
-  SDPDVR  <- 370.0 # ***SDPDV no .CUL***
+  SDPDVR  <- 2.05 # ***SDPDV no .CUL*** Average seed per pod under standard growing conditions (#/pod)
   PODUR   <- 10.0  # Time required for cultivar to reach final pod load under optimal conditions (photothermal days)
+  THRESH  <- 78    # Threshing percentage. The maximum ratio of (seed/(seed+shell)) at maturity. Causes seeds to stop growing as their dry weight
   WTPSD   <- 0.19  # Maximum weight per seed (g)
   SFDUR   <- 21.0  # Seed filling duration for pod cohort at standard growth conditions (photothermal days)
   
@@ -2595,8 +2629,7 @@ PODS <- function(DINAMYC, DAS, TGRO, NAVL,ISWWAT) {
   AVTEM <- rep(0, NCOHORTS)
   FLWN  <- rep(0, NCOHORTS)
   
-  PODCOMP(DYNAMIC,
-    NAVL, PGAVLR)
+  PODCOMP(DYNAMIC,NAVL)
   
   #-----------------------------------------------------------------------
   #     Set minimum days for phenological events under optimum conditions
@@ -2683,8 +2716,7 @@ PODS <- function(DINAMYC, DAS, TGRO, NAVL,ISWWAT) {
       AVTEM[NPP] <- 0.0
     }
     
-    PODCOMP(DYNAMIC,
-      NAVL, PGAVLR)
+    PODCOMP(DYNAMIC, NAVL)
    
     #***********************************************************************
     #***********************************************************************
@@ -2797,8 +2829,7 @@ PODS <- function(DINAMYC, DAS, TGRO, NAVL,ISWWAT) {
         #     Detailed seed composition calculations
         #-----------------------------------------------------------------------
         
-        PODCOMP(DYNAMIC,
-                NAVL, PGAVLR)
+        PODCOMP(DYNAMIC, NAVL)
         
         #-----------------------------------------------------------------------
         #     Grow seed cohorts
@@ -2838,8 +2869,8 @@ PODS <- function(DINAMYC, DAS, TGRO, NAVL,ISWWAT) {
       #-----------------------------------------------------------------------
       TEMPOD <- 0.
       for (I in 1:TS) {
-        
-        TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+        TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+        # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
         
         TEMPOD <- TEMPOD + CURV(TYPPDT,FNPDT[1],FNPDT[2],FNPDT[3],FNPDT[4],TGRO[I])
       }
@@ -3134,11 +3165,13 @@ PODS <- function(DINAMYC, DAS, TGRO, NAVL,ISWWAT) {
   assign("FLWN", FLWN, envir = env)
   assign("FNINSH",FNINSH, envir = env)
   assign("REDSHL",REDSHL, envir = env)
+  # Verificar assign PGAVLR,
+  assign("PGAVLR",PGAVLR, envir = env)
   
   return() #PODS
 }
 
-PODCOMP <- function(DYNAMIC, NAVL, PGAVLR) {
+PODCOMP <- function(DYNAMIC, NAVL) {
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -3192,8 +3225,11 @@ PODCOMP <- function(DYNAMIC, NAVL, PGAVLR) {
       RSD <- 0.0
     } else if (GDMSD <= 0.0001) {
       RSD <- 1.0
+      
+      # TODO: Resolver o Else !!!!! verificar co fortran
     } else
       CRSD2 <- PGAVLR/(GDMSD*AGRSD1)
+    
     CRSD  <- min(CRSD2,1.0)
     NREQ <- FNINSD*(min(PGAVLR/AGRSD1,GDMSD))
     NRSD <- NAVL/NREQ
@@ -3351,6 +3387,7 @@ PODCOMP <- function(DYNAMIC, NAVL, PGAVLR) {
         #  SO HOLD CONCENTRATIONS AND COSTS UNCHANGED.
         #-----------------------------------------------------------------------
         ANINSD <- FNINSD
+        # TODO: Verificar o Else ate aqui 
       }
     }
     
@@ -3396,7 +3433,11 @@ PODCOMP <- function(DYNAMIC, NAVL, PGAVLR) {
 #--------------END PODS FUNCTION---------------
 
 #---------------VEGGR FUNCTION-----------------
-VEGGR <- function(DINAMYC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL,TGRO) {                 #!I/O
+VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) {                 
+  
+  environment(CANOPY) <- env
+  
+  TS <- 24
   
   #-----------------------------------------------------------------------
   
@@ -3431,7 +3472,7 @@ VEGGR <- function(DINAMYC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL,T
   #-----------------------------------------------------------------------
   #    Call CANOPY for input
   #-----------------------------------------------------------------------
-  CANOPY(DYNAMIC, PAR, TGRO)
+  CANOPY(DYNAMIC, PAR)
   
   #***********************************************************************
   #***********************************************************************
@@ -3465,8 +3506,7 @@ VEGGR <- function(DINAMYC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL,T
     WRDOTN = 0.0  
     WSDOTN = 0.0  
     
-    CANOPY(DYNAMIC,
-           PAR, TGRO)
+    CANOPY(DYNAMIC, PAR)
     
     #***********************************************************************
     #***********************************************************************
@@ -3481,7 +3521,7 @@ VEGGR <- function(DINAMYC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL,T
     CUMTUR = 1.0             
     
     CANOPY(DYNAMIC,
-           PAR, TGRO)
+           PAR)
     
     #***********************************************************************
     #***********************************************************************
@@ -3704,7 +3744,7 @@ VEGGR <- function(DINAMYC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL,T
     #     daylenght and radiation (PAR).
     #-----------------------------------------------------------------------
     CANOPY(DYNAMIC,
-           PAR, TGRO)
+           PAR)
     
     #***********************************************************************
     #***********************************************************************
@@ -3746,6 +3786,7 @@ CANOPY <- function (DYNAMIC, PAR, TGRO) {
   #-----------------------------------------------------------------------
   ROWSPC <- 0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
   
+  TS <- 24
   #______________________________________________________________        
   # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
   # ECO# SB0602
@@ -3796,8 +3837,8 @@ CANOPY <- function (DYNAMIC, PAR, TGRO) {
     #-----------------------------------------------------------------------
     HWTEM = 0.0
     for (I in 1:TS) {
-      
-      TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+      TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+      # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
       HWTEM = HWTEM + TABEX(YHWTEM,XHWTEM,TGRO(I),5)
     }
@@ -3855,7 +3896,9 @@ CANOPY <- function (DYNAMIC, PAR, TGRO) {
 #--------------END VEGGR FUNCTION--------------
 
 #---------------PODDET FUNCTION----------------
-PODDET <- function(DINAMYC, iyear, jday) {         #Input
+PODDET <- function(DYNAMIC, iyear, jday) {         #Input
+  
+  TS <- 24
   
   #-----------------------------------------------------------------------
   #______________________________________________________________        
@@ -3910,8 +3953,8 @@ PODDET <- function(DINAMYC, iyear, jday) {         #Input
     #--------------------------------------------------------------------
     FT = 0.0
     for (I in 1:TS) {
-      
-       TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+      TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
       FTHR = CURV('LIN',TB[3],TO1[3],TO2[3],TM[3],TGRO[I])
       FT = FT + FTHR/TS
@@ -4077,6 +4120,9 @@ SENES <- function (DYNAMIC,DAS,PAR) {
   KCAN   <- 0.67
   # fim dos parametros de especie
   
+  # PARAMETER (NSWAB = 5)
+  NSWAB  <- 5
+  SWFCAB <- rep(0,NSWAB)
   SWFCAB <- rep(0,NSWAB) #vetor usado internamente
   
   #TYPE (ControlType) CONTROL
@@ -4385,6 +4431,8 @@ NUPTAK <- function (DYNAMIC) {
   SW    <-  c(0.219999999 ,    0.219999999  ,    0.213000000  ,    0.207000002  ,    0.200000003  ,    0.180000007   ,   0.180000007  ,    0.180000007    ,   0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000  ,     0.00000000 ,      0.00000000)
   # SAT    <- rep(0, NL)
   SAT   <-  c(0.360000014 ,    0.349999994  ,    0.333000004  ,    0.326999992  ,    0.319999993  ,    0.319999993   ,   0.319999993  ,    0.319999993    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
+  # colocar Global
+  NL <- 20
   RLV    <- rep(0, NL)
   
   BD <- c(1.14999998,1.13499999,1.12000000,1.12000000,1.12000000,1.12000000,1.12000000,1.12000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000)
@@ -4404,11 +4452,16 @@ NUPTAK <- function (DYNAMIC) {
   NO3    <- rep(1, NL)    #vem do INSOIL.for
   NH4    <- rep(1, NL)    #vem do INSOIL.for
   
+  RNO3U <- rep(0, NLAYR)
+  RNH4U <- rep(0, NLAYR)
+  UNH4  <- rep(0, NLAYR)
+  UNO3  <- rep(0, NLAYR)
+  
   #***********************************************************************
   #***********************************************************************
   #     Seasonal initialization - run once per season
   #***********************************************************************
-  if (DYNAMIC == SEASINIT) {
+  if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
     TRNO3U = 0.0 
     TRNH4U = 0.0 
@@ -4420,7 +4473,7 @@ NUPTAK <- function (DYNAMIC) {
     #***********************************************************************
     #     DAILY RATE/INTEGRATION
     #***********************************************************************
-  } else if (DYNAMIC == INTEGR) {
+  } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     #   Initialize variables
     #-----------------------------------------------------------------------
@@ -4538,7 +4591,7 @@ MOBIL <- function(DYNAMIC) {
   #***********************************************************************
   #     Seasonal initialization - run once per season
   #***********************************************************************
-  if (DYNAMIC == SEASINIT) {
+  if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
     CNMINE <- 0.0         
     NMINEA <- 0.0         
@@ -4551,7 +4604,7 @@ MOBIL <- function(DYNAMIC) {
     #***********************************************************************
     #     DAILY RATE/INTEGRATION
     #***********************************************************************
-  } else if (DYNAMIC == INTEGR) {
+  } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     CNMINE <- 0.0
     NMINEA <- 0.0
@@ -4652,7 +4705,7 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
   #***********************************************************************
   #     Seasonal initialization - run once per season
   #***********************************************************************
-  if (DYNAMIC == SEASINIT) {
+  if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
     CNOD   = 0.0
     DWNOD  = 0.0    
@@ -4670,7 +4723,7 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
     #***********************************************************************
     #     DAILY RATE/INTEGRATION
     #***********************************************************************
-  } else if (DYNAMIC == INTEGR) {
+  } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     #   Set initial nodule mass to DWNODI as read from crop species file
     #-----------------------------------------------------------------------
@@ -4835,6 +4888,7 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
   assign("NODGR", NODGR, envir = env)
   assign("WTNFX", WTNFX, envir = env)
   assign("SENNOD", SENNOD, envir = env)
+  assign("SDWNOD", SDWNOD, envir = env)
   
   return()
 }
