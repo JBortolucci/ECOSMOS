@@ -248,7 +248,7 @@ CURV <- function(CTYPE,XB,X1,X2,XM,X) {
   #	If X1/XM is positive, X2 is the X-intercept
   #-------------------------------------------------------------------------------
   if(CTYPE == 'EXK' | CTYPE == 'exk') {
-    CURV = XB - EXP(X1*(X-X2)/XM)
+    CURV = XB - exp(X1*(X-X2)/XM)
   }
   #-------------------------------------------------------------------------------
   

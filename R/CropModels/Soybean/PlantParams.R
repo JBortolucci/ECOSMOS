@@ -212,8 +212,11 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   #remover SDLIP <- 0.200 # Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
   #remover SDPRO <- 0.400 # Fraction protein in seeds (g(protein)/g(seed)) [from VAR# BR0001]
-  XFRT  <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
-  
+  XFRT   <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
+  SLAVAR <- 370   # Specific leaf area of cultivar under standard growth conditions (cm2/g)
+  SIZELF <- 200   # Maximum size of full leaf (three leaflets) (cm2)
+  THRESH <- 78    # Threshing percentage. The maximum ratio of (seed/(seed+shell)) at maturity. Causes seeds to stop growing as their dry weight
+  XFRUIT <- XFRT  # Maximum fraction of daily growth that is partitioned to seed + shell
   #______________________________________________________________        
   # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
   # ECO# SB0602
@@ -230,13 +233,19 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   SLAMIN <- 250.0
   SLAPAR <- -0.048
   TURSLA <- 1.50
-  XVGROW <- c(0.0,  1.0,  2.0,  3.0,  4.0,  5.0)
-  YVREF  <- c(0.0, 20.0, 55.0,110.0,200.0,320.0)
+  XVGROW <- c( 0.0,  1.0,  2.0,  3.0,  4.0,  5.0)
+  YVREF  <- c( 0.0, 20.0, 55.0,110.0,200.0,320.0)
   YVGROW <- rep(0,6) #preenchido com uma função de interpolacao/lookup (TABEX)
+  XSLATM <- c(-50.0,  00.0,  12.0,  22.0,  60.0)         
+  YSLATM <- c( 0.25,  0.25,  0.25,  1.00,   1.0)
   #!*VEGETATIVE PARTITIONING PARAMETERS
   FRLFF  <- 0.24
   FRSTMF <- 0.55
   FRLFMX <- 0.70
+  FRLFM   <- 0.70 #TODO Ver exatamento qual está sendo usado
+  XLEAF   <- c( 0.0,  1.,   3.3,   5.0,  7.8,  10.5,  30.0,  40.0)
+  YLEAF   <- c(0.41, 0.4,  0.42,  0.41, 0.36,  0.32,  0.31,  0.31)
+  YSTEM   <- c(0.09, 0.1,  0.21,  0.29, 0.37,  0.49,  0.49,  0.49)
   #!*SEED  COMPOSITION VALUES 
   CARMIN <- 0.180
   LIPOPT <- 23.65 
@@ -248,6 +257,10 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   SHLAG  <- 0
   SRMAX  <- 0.300000012
   XFRMAX <- 0
+  XXFTEM <- c(0.00, 5.00, 20.00, 35.00, 45.00, 60.00)
+  YXFTEM <- c(1.00, 1.00, 1.00 ,  1.00,  0.00,  0.00)
+  XTRFAC <- c(0.00,  0.50,  0.75,  1.00)              
+  YTRFAC <- c(0.00,  0.00,  0.00,  0.00)
   #!*CARBON AND NITROGEN MINING PARAMETERS
   NMOBMX <- 0.090
   NRCVR  <- 0.15
@@ -307,9 +320,10 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   #remover XFRT    <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
-  SDPDVR  <- 370.0 # ***SDPDV no .CUL***
+  SDPDVR  <- 2.05 # ***SDPDV no .CUL*** Average seed per pod under standard growing conditions (#/pod)
   PODUR   <- 10.0  # Time required for cultivar to reach final pod load under optimal conditions (photothermal days)
-  #remove WTPSD   <- 0.19  # Maximum weight per seed (g)
+  #remover THRESH  <- 78    # Threshing percentage. The maximum ratio of (seed/(seed+shell)) at maturity. Causes seeds to stop growing as their dry weight
+  #removeR WTPSD   <- 0.19  # Maximum weight per seed (g)
   SFDUR   <- 21.0  # Seed filling duration for pod cohort at standard growth conditions (photothermal days)
   
   #remover PHTHRS  <- rep(0,20)
