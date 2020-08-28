@@ -104,6 +104,39 @@ simDataVars$ShutMob  <-  0
 simDataVars$RootMob  <-  0
 simDataVars$ShelMob  <-  0
 simDataVars$MDATE  <-  0
+
+simDataVars$CPFLF   <-  0
+simDataVars$CPFSTM  <-  0
+simDataVars$CPFRT   <-  0
+simDataVars$CPFNOD  <-  0
+simDataVars$CPFSH1  <-  0
+simDataVars$CPFSD1  <-  0
+simDataVars$PCNMIN  <-  0
+simDataVars$WTLSD  <-  0
+simDataVars$WTCSD  <-  0
+simDataVars$ALFDOT <- 0
+simDataVars$AREAH  <- 0
+simDataVars$NLDOT  <- 0
+simDataVars$NSDOT  <- 0
+simDataVars$NRDOT  <- 0
+simDataVars$NSDDOT <- 0
+simDataVars$NSHDOT <- 0
+simDataVars$NTOVR  <- 0
+simDataVars$RHOR   <- 0
+simDataVars$RHOSH  <- 0
+simDataVars$SDWTAM <- 0
+simDataVars$TGROW  <- 0
+simDataVars$WSDDOT <- 0
+simDataVars$WSHDOT <- 0
+simDataVars$WTCSD  <- 0
+simDataVars$WTLSD  <- 0
+simDataVars$WTNMOB <- 0
+simDataVars$WTNNA  <- 0
+simDataVars$SDPDOT  <- 0
+simDataVars$PUNDOT  <- 0
+simDataVars$NLPEST  <- 0
+
+
 #----------------END GROW VARS-------------------
 
 #-----------------ROOTS VARS---------------------
@@ -114,6 +147,9 @@ simDataVars$SRDOT  <-  0
 # TODO: NL = 20
 simDataVars$RLV    <- rep(0, 20) # rep(0, NL)
 simDataVars$RTDEP  <-  0
+
+simDataVars$TRLV  <-  0
+simDataVars$CumRootMass  <-  0
 #----------------END ROOTS VARS------------------
 
 #-----------------DEMAND VARS--------------------
@@ -192,6 +228,22 @@ simDataVars$ANINSD  <-  0
 simDataVars$CUMSIG  <-  0 
 simDataVars$RSD     <-  0
 simDataVars$PGAVLR     <-  0
+
+simDataVars$ACCAGE   <-  0
+simDataVars$AFLW     <-  0
+simDataVars$CNSTRES  <-  0
+simDataVars$CPSTRES  <-  0
+simDataVars$FNINSH   <-  0
+simDataVars$FLWRDY   <-  0
+simDataVars$PODADD   <-  0
+simDataVars$SHMINE   <-  0
+simDataVars$TEMPOD   <-  0
+simDataVars$TRIGGR   <-  0
+simDataVars$WTSHM    <-  0
+simDataVars$NAVPOD <- 0
+simDataVars$NR2TIM <- 0
+simDataVars$PGNPOD <- 0
+simDataVars$RPRPUN <- 0
 #-----------------END PODS VARS-------------------
 
 #-------------------VEGGR VARS--------------------
@@ -220,6 +272,11 @@ simDataVars$TNLEAK  <-  0
 simDataVars$WLDOTN  <-  0
 simDataVars$WRDOTN  <-  0
 simDataVars$WSDOTN  <-  0
+
+simDataVars$CUMTUR  <-  0
+simDataVars$FNINLG  <-  0
+simDataVars$FNINRG  <-  0
+simDataVars$FNINSG  <-  0
 
 #canopy
 # simDataVars$CANHT  <-  0
@@ -292,12 +349,14 @@ simDataVars$SDWNOD <-  0
 
 
 #----------------GROW FUNCTION--------------------
-GROW <- function (DYNAMIC)  {
+GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   
   environment(STRESS) <- env
   
   # TODO: Nitrogen
   N = 1
+  
+  YRDOY <- paste0(iyear,jday)
   
   PLME   <- 'S' # equivalente ao [.SBX] *PLANTING DETAILS: PLME  
   IHARI  <- 'M' # TODO VERIFICAR (provável que pertença ao '[.SBX] *HARVEST DETAILS')
@@ -356,6 +415,7 @@ GROW <- function (DYNAMIC)  {
   ALPHS  <- 0.08
   ALPHR  <- 0.04
   ALPHSH <- 0.08
+  XPODF <- 'SD'
   #!*VEGETATIVE PARTITIONING PARAMETERS
   WTFSD  <- 0.55
   #!*ROOT PARAMETERS
@@ -366,7 +426,7 @@ GROW <- function (DYNAMIC)  {
   
   SenWt <- rep(0,NL)        #kg[dry matter]/ha
   SenLig <- rep(0,NL)       #kg[lignin]/ha
-  NELEM = 1 #Numero de elementos usados na simulacao do Century! 
+  NELEM = 3 #Numero de elementos usados na simulacao do Century! 
   SenE <- matrix(0,NL,NELEM)   #kg[E]/ha (E=N, P, S,...)
   NLPEST <- 0
   NLAYR <- nsoilay
@@ -453,9 +513,9 @@ GROW <- function (DYNAMIC)  {
     SEEDNI = 0.0
     SEEDNO = 0.0
     
-    SenWt  = 0.0
-    SenLig = 0.0
-    SenE   = 0.0
+    SenWt  <-  rep(0,20)
+    SenLig <-  rep(0,20)
+    SenE <- matrix(0,NL,NELEM)
 
     #TODO: VERIFICAR
     simDataVars$SENESCE_ResWt   <-  rep(0,20)
@@ -1380,6 +1440,39 @@ GROW <- function (DYNAMIC)  {
   assign("SENESCE_CumResWt", SENESCE_CumResWt, envir = env)
   assign("SENESCE_CumResE", SENESCE_CumResE, envir = env) 
   
+  assign("CPFLF",  CPFLF , envir = env) 
+  assign("CPFSTM", CPFSTM, envir = env) 
+  assign("CPFRT",  CPFRT , envir = env) 
+  assign("CPFNOD", CPFNOD, envir = env) 
+  assign("CPFSH1", CPFSH1, envir = env) 
+  assign("CPFSD1", CPFSD1, envir = env) 
+  assign("PCNMIN", PCNMIN, envir = env) 
+  assign("WTLSD", WTLSD, envir = env) 
+  assign("WTCSD", WTCSD, envir = env) 
+  assign("ALFDOT",ALFDOT, envir = env)
+  assign("AREAH",AREAH , envir = env)
+  assign("NLDOT",NLDOT , envir = env)
+  assign("NSDOT",NSDOT , envir = env)
+  assign("NRDOT",NRDOT , envir = env)
+  assign("NSDDOT",NSDDOT, envir = env)
+  assign("NSHDOT",NSHDOT, envir = env)
+  assign("NTOVR",NTOVR , envir = env)
+  assign("RHOR",RHOR  , envir = env)
+  assign("RHOSH",RHOSH , envir = env)
+  assign("SDWTAM",SDWTAM, envir = env)
+  assign("TGROW",TGROW , envir = env)
+  assign("WSDDOT",WSDDOT, envir = env)
+  assign("WSHDOT",WSHDOT, envir = env)
+  assign("WTCSD",WTCSD , envir = env)
+  assign("WTLSD",WTLSD , envir = env)
+  assign("WTNMOB",WTNMOB, envir = env)
+  assign("WTNNA",WTNNA , envir = env)
+  assign("SDPDOT",SDPDOT , envir = env)
+  assign("PUNDOT",PUNDOT , envir = env)
+  assign("NLPEST",NLPEST , envir = env)
+  
+
+  
   return()
 }   
 
@@ -1567,8 +1660,10 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) { #TODO Santiago
     CUMDEP = 0.0
     SUMEX  = 0.0
     SUMRL  = 0.0
-    RLV_WS = 0.0
-    RLSEN  = 0.0
+    
+    #Fortran
+    RLV_WS <- rep(0, NL)
+    RLSEN  <- rep(0, NL)
     
     # TODO: verificar o indice 1 ou 2
     for (L in 1:NLAYR) {
@@ -1636,6 +1731,8 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) { #TODO Santiago
             # HELPS IOWA 88 AND VEG STRESS TRTS IN 1981 AND 1985. INCR SEED AND BIO.
             #-----------------------------------------------------------------------
           }
+          # VERIFICAR: DEPMAX estava sendo calculado no RUNINIT
+          DEPMAX = DS[NLAYR]
           if (RTDEP > DEPMAX) {
             RTDEP = DEPMAX
           }
@@ -1703,7 +1800,6 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) { #TODO Santiago
     
     # Update RLV and TRLV based on today's growth and senescence
     TRLV = 0.0
-    # TODO: verificar o indice 1 ou 2
     for (L in 1:NLAYR) {
       RLV[L] = RLV[L] + RLGRW[L] - RLSEN[L] - RLV_WS[L]
       TRLV = TRLV + RLV[L] * DLAYR[L]
@@ -1749,6 +1845,9 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) { #TODO Santiago
   assign("SATFAC", SATFAC, envir = env)
   assign("SENRT", SENRT, envir = env)
   assign("SRDOT", SRDOT, envir = env)
+  
+  assign("TRLV", TRLV, envir = env)
+  assign("CumRootMass", CumRootMass, envir = env)
   
   return()
 } 
@@ -2534,11 +2633,13 @@ SDCOMP <- function (TAVG) {
 #--------------END DEMAND FUNCTION---------------
 
 #----------------PODS FUNCTION-------------------
-PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT) {
+PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   
   environment(PODCOMP) <- env
   
   TS <- 24
+  
+  NLAYR <- nsoilay
   
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
@@ -2601,12 +2702,14 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT) {
   NR1TIM <- 0
   NR2TIM <- 0
   #TODO ver como está sendo usado no ECOSMOS, Santiago
-  #YRDOY  <- paste0(iyear,jday) 
-  YRPLT  <- 0 #TODO ver como está sendo usado no ECOSMOS
+  YRDOY  <- paste0(iyear,jday) 
+  YRPLT  <- YRDOY #TODO ver como está sendo usado no ECOSMOS
   TRIGGR <- 0
   
+  # TODO: Verificar Stress
+  PStres2 <- 1
   NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
-  SWFAC   <- 0 # water stress factor (verificar de onde vem no ECOSMOS)
+  SWFAC   <- 1 # water stress factor (verificar de onde vem no ECOSMOS)
   
   # DLAYR  <- rep(0, NL)
   DLAYR <-  c(5.00000000  ,    10.0000000   ,    15.0000000   ,    15.0000000   ,    15.0000000   ,    30.0000000    ,   30.0000000   ,    30.0000000     , -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000 )
@@ -2676,6 +2779,8 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT) {
     WTSD   <- 0.0
     WTSHE  <- 0.0
     
+    
+    # TODO: Verificar atribuições de vetores!!!!!
     RPRPUN <- 1.0 
     PGAVLR <- 0.0
     SDNO   <- 0.0
@@ -2740,7 +2845,16 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT) {
     #-----------------------------------------------------------------------
     if (YRDOY >= YRNR1 & YRNR1 > 0) {
       
-      NR1TIM <- max(TIMDIF(YRNR1,YRDOY),0) #TODO tradução timdif 
+      # TODO: adaptação para funcao timdif 
+      yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
+      yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
+      
+      yrnr1 <- as.character(paste0(substr(YRNR1,1,4),'-01-01'))
+      yrnr1 <- as.Date(yrnr1)+as.numeric(substr(YRNR1,5,7))-1
+      
+      NR1TIM <- max(as.numeric(yrdoy-yrnr1),0)
+      
+      # NR1TIM <- max(TIMDIF(YRNR1,YRDOY),0) #TODO tradução timdif 
       #-----------------------------------------------------------------------
       PGAVLR <- PGAVL * XFRT
       
@@ -2763,7 +2877,16 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT) {
         REDPUN <- 1.0
       }
       if (YRDOY > YRNR2 & YRNR2 > 0) {
-        NR2TIM <- max(TIMDIF(YRNR2,YRDOY),0) #TODO tradução timedif 
+        # TODO: adaptação para funcao timdif 
+        yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
+        yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
+        
+        yrnr2 <- as.character(paste0(substr(YRNR2,1,4),'-01-01'))
+        yrnr2 <- as.Date(yrnr2)+as.numeric(substr(YRNR2,5,7))-1
+        
+        NR2TIM <- max(as.numeric(yrdoy-yrnr2),0)
+        
+        # NR2TIM <- max(TIMDIF(YRNR2,YRDOY),0) #TODO tradução timedif 
         #-----------------------------------------------------------------------
         #     Remember yesterdays mature shell weight, WTSHMY
         #-----------------------------------------------------------------------
@@ -3167,6 +3290,21 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT) {
   assign("REDSHL",REDSHL, envir = env)
   # Verificar assign PGAVLR,
   assign("PGAVLR",PGAVLR, envir = env)
+   assign("ACCAGE",ACCAGE  , envir = env)
+   assign("AFLW",AFLW    , envir = env)
+   assign("CNSTRES",CNSTRES , envir = env)
+   assign("CPSTRES",CPSTRES , envir = env)
+   assign("FNINSH",FNINSH  , envir = env)
+   assign("FLWRDY",FLWRDY  , envir = env)
+   assign("PODADD",PODADD  , envir = env)
+   assign("SHMINE",SHMINE  , envir = env)
+   assign("TEMPOD",TEMPOD  , envir = env)
+   assign("TRIGGR",TRIGGR  , envir = env)
+   assign("WTSHM",WTSHM   , envir = env)
+   assign("NAVPOD",NAVPOD, envir = env)
+   assign("NR2TIM",NR2TIM, envir = env)
+   assign("PGNPOD",PGNPOD, envir = env)
+   assign("RPRPUN",RPRPUN, envir = env)
   
   return() #PODS
 }
@@ -3226,200 +3364,198 @@ PODCOMP <- function(DYNAMIC, NAVL) {
     } else if (GDMSD <= 0.0001) {
       RSD <- 1.0
       
-      # TODO: Resolver o Else !!!!! verificar co fortran
-    } else
-      CRSD2 <- PGAVLR/(GDMSD*AGRSD1)
-    
-    CRSD  <- min(CRSD2,1.0)
-    NREQ <- FNINSD*(min(PGAVLR/AGRSD1,GDMSD))
-    NRSD <- NAVL/NREQ
-    #-----------------------------------------------------------------------
-    #     Full seed load defined for either of all N or all C
-    #     being used for seed growth.
-    #-----------------------------------------------------------------------
-    CUMSIG <- 0.8 * CUMSIG + 0.2 * CRSD
-    #-----------------------------------------------------------------------
-    #     5-day moving average.  Does it work ?
-    #
-    #     Computing the possible seed N conc given the "total" NAVL
-    #     relative to PG available or seed growth demand
-    #-----------------------------------------------------------------------
-    PNINSD <- NAVL/(min(PGAVLR/AGRSD1,GDMSD))
-    #-----------------------------------------------------------------------
-    #     Set ANINSD equal to FNINSD to allow nitrogen to go to vegetative
-    #     parts when carbon is not limiting.  Note:  CRSD and NRSD are above
-    #     1 and upto 30 during the time seed setting occurs.  This is why we
-    #     can not let ANINSD = PNINSD or let RSD = CRSD during this phase.
-    
-    #-----------------------------------------------------------------------
-    #-----------------------------------------------------------------------
-    #     CASE 4: NRSD <= 1.0 - N supply limiting seed growth
-    #-----------------------------------------------------------------------
-    if (NRSD <= 1.0) {
-      #-----------------------------------------------------------------------
-      #   NOTE THAT WHEN NRSD < 1.0, { PNINSD < FNINSD.  IN THIS CASE,
-      #   THE N SUPPLY IS INSUFFICIENT TO GROW SEED AT FNINSD.  N IS LIMITED
-      #   RELATIVE TO C SUPPLY AND RELATIVE TO SEED DEMAND.  ALLOW SEED N CONC
-      #   TO DECLINE AND RECOMPUTE RSD & AGRSD3.  THERE IS NO CASE OF EXCESS C
-      #   SUPPLY HERE BECAUSE N STRESS BY THE DEFINED CURVE LIMITS SINGLE SEED
-      #   GROWTH RATE.  N STRESS INCREASINGLY LIMITS SEED GROWTH RATE AS PNINSD
-      #   DECLINES.  AS A RESULT OF "LIMITING" SEED GROWTH RATE, THE SEED N CONC
-      #   IS  HELD UP A BIT MORE BECAUSE LESS C IS USED.  SO ANINSD WILL BE
-      #   A BIT HIGHER THAN PNINSD HERE.  AGRSD3 AND RSD SHOULD BE RECOMPUTED.
-      #
-      #   MORE NOTES:  NOTE THAT NRSD AND PNINSD ALREADY CONSIDER CARBON SUPPLY
-      #   (PGAVLR) IN THEIR EQUATIONS.  THUS, IF C SUPPLY IS HIGH, { PNINSD
-      #   WILL BE LOW AND IT WILL BE CONSIDERED HERE.  IF C SUPPLY IS LOW, THE
-      #   PNINSD WILL BE HIGH (ABOVE FNINSD) AND NRSD > 1, AND IT WILL BE
-      #   CONSIDERED IN THE NEXT LOOP.
-      #
-      #        COMPUTE XRSD WITH RECT HYP EQ, WITH INIT SLOPE = 1/PROMIN
-      #        MAX = 1.0 AT FNINSD, AND THE Y IS 0 TO 1.0 AND X IS
-      #        INCOMING PNINSD FROM ZERO TO FNINSD.
-      #        THIS "RSD" DESCRIBES N LIMIT ON SEED GROWTH RATE
-      #        { COMPUTE "NEW" "ANINSD" BASED ON "N-LIMITED' SEED
-      #        GROWTH RATE.  USE THAT AS THE ANINSD, { CHECKS FOR
-      #        CARBOHYDRATE REQUIRED BASED ON NAVL AND PGAVLR
-      #
-      #-----------------------------------------------------------------------
-      #          SCALAR = (FNINSD/PROMIN + 1.0 - ((FNINSD/PROMIN + 1.0)**2
-      #     &          - 4*THETA*FNINSD/PROMIN*1.0)**0.5)/(2*THETA)
-      #          XRSD = ((PNINSD/PROMIN + 1.0 - ((PNINSD/PROMIN + 1.0)**2
-      #     &          - 4*THETA*PNINSD/PROMIN*1.0)**0.5)/(2*THETA))/SCALAR
-      
-      XRSD <- ((PNINSD/PROMIN + 1.0 - ((PNINSD/PROMIN + 1.0)^2 - 4*THETA*PNINSD/PROMIN*1.0)^0.5)/(2*THETA)) / ((FNINSD/PROMIN + 1.0 - ((FNINSD/PROMIN + 1.0)^2 - 4*THETA*FNINSD/PROMIN*1.0)^0.5)/(2*THETA))
-      
-      if (XRSD*min(PGAVLR/AGRSD1,GDMSD) > 1.E-5) {
-        ANINSD <- NAVL/(XRSD*min(PGAVLR/AGRSD1,GDMSD))
       } else {
-        ANINSD <- FNINSD
-      }
+      CRSD2 <- PGAVLR/(GDMSD*AGRSD1)
+      CRSD  <- min(CRSD2,1.0)
+      NREQ <- FNINSD*(min(PGAVLR/AGRSD1,GDMSD))
+      NRSD <- NAVL/NREQ
       #-----------------------------------------------------------------------
-      #  CHECK BECAUSE N CONC CAN GO ABOVE FNINSD IF PNINSD NEAR FNINSD
+      #     Full seed load defined for either of all N or all C
+      #     being used for seed growth.
       #-----------------------------------------------------------------------
-      ANINSD <- min(ANINSD,FNINSD)
+      CUMSIG <- 0.8 * CUMSIG + 0.2 * CRSD
+      #-----------------------------------------------------------------------
+      #     5-day moving average.  Does it work ?
+      #
+      #     Computing the possible seed N conc given the "total" NAVL
+      #     relative to PG available or seed growth demand
+      #-----------------------------------------------------------------------
+      PNINSD <- NAVL/(min(PGAVLR/AGRSD1,GDMSD))
+      #-----------------------------------------------------------------------
+      #     Set ANINSD equal to FNINSD to allow nitrogen to go to vegetative
+      #     parts when carbon is not limiting.  Note:  CRSD and NRSD are above
+      #     1 and upto 30 during the time seed setting occurs.  This is why we
+      #     can not let ANINSD = PNINSD or let RSD = CRSD during this phase.
       
       #-----------------------------------------------------------------------
       #-----------------------------------------------------------------------
-      #     CASE 3: CRSD2 <= 1.0 - C supply is limiting seed growth.
-      #-----------------------------------------------------------------------
-    } else {
-      #      HERE NRSD > 1.0 AND PNINSD > FININSD, SO ALLOW INCREASING
-      #      SEED N CONC.  CONSIDER TWO OPTIONS, C DEFICIENT OR THAT C
-      #      SUPPLY IS EXCESS.  A CRSD <= 1.0 IS THE SAME AS CRSD2 <= 1.0
-      #      FIRST OPTION IS IF C SUPPLY IS DEFICIENT, BUT N SUPPLY/DEMAND
-      #      RATIO GREATER THAN 1.
-      if (CRSD2 <= 1.0) {
+      #     CASE 4: NRSD <= 1.0 - N supply limiting seed growth
+      # -----------------------------------------------------------------------
+      if (NRSD <= 1.0) {
         #-----------------------------------------------------------------------
-        #      DOES POSSIBLE N CONCENTRATION EXCEED MAX?
-        #-----------------------------------------------------------------------
-        #           if (PNINSD>PROMAX) {
-        #             ANINSD = PROMAX
-        #           } else {
-        #-----------------------------------------------------------------------
-        #     UNDER THIS CONDITION, CRSD < 1.0 AND NRSD > 1.0 AND PNINSD <PROMAX
-        #     SO HERE WE LET SEED N CONC INCREASE, AND BE EQUAL TO PNINSD.
-        #-----------------------------------------------------------------------
-        #               ANINSD = PNINSD
-        #            }
-        ANINSD <- min(PNINSD, PROMAX)
-        
-        #-----------------------------------------------------------------------
-        #      IT IS NOT POSSIBLE FOR PNINSD < FNINSD AND YET NRSD > 1.0
-        #      IT IS NOT POSSIBLE FOR PNINSD > FNINSD AND YET NRSD < 1.0 EITHER
-        #      SO NRSD CAN ONLY BE < 1.0 IF NAVL < NREQ, AND THAT IS ONLY
-        #      IF PNINSD < FNINSD.  THIS WAS COVERED BEFORE
-        
-        #-----------------------------------------------------------------------
-        #-----------------------------------------------------------------------
-        #     CASE 2: Full seed load and neither N or C supply is limiting 
-        #         seed growth
-        #-----------------------------------------------------------------------
-      } else if (CRSD2 > 1.0 & CUMSIG < 0.98) {
-        #-----------------------------------------------------------------------
-        #      UNDER THIS CONDITION, N IS EXCESS RELATIVE TO C SUPPLY OR SD
-        #      DEMAND (NRSD > 1) AND C SUPPLY EXCEEDS SEED DEMAND (CRSD2 > 1).
-        #      ALSO, RESTRICTED THIS ONE TO OCCUR ONLY AFTER A FULL SEED LOAD
-        #      OCCURS.  THE "CUMSIG" MUST BE WORKED TO DROPPED BELOW 1.0 ONLY
-        #      WHEN SEVERAL DAYS OF "FULL SEED" LOAD OCCURS.  RESULTS FROM
-        #      SEVERAL DAYS OF CRSD OR CRSD2 < 1,  WE NEED THIS TO AVOID
-        #      PROBLEMS DURING EARLY PODSET WHEN CRSD IS VERY LARGE AND NRSD
-        #      ALSO LARGE.
-        #-----------------------------------------------------------------------
-        #      0.20 FRACTION OF EXCESS ASSIMILATE IS ALLOWED TO "PUSH" SINGLE
-        #      SEED GROWTH RATE (I.E., VIA INCREASED RSD).  THIS WILL DECREASE
-        #      AMOUNT OF STEM AND LEAF GROWTH DURING SEED FILL.
-        #      LIMIT THE ACTUAL N CONC TO PROMAX OR THE NAVL/(GDMSD*RSD).  THIS
-        #      ONE WILL NEED TO BE CHECKED CAREFULLY TO PREVENT REALLY HIGH OR
-        #      LOW N.  WE INTEND FOR IT TO ALLOW N CONC LOWER THAN FNINSD, BUT
-        #      WILL DO AN XRSD LIMIT ON SEED GROWTH RATE IF ANINSD < FNINSD
+        #   NOTE THAT WHEN NRSD < 1.0, { PNINSD < FNINSD.  IN THIS CASE,
+        #   THE N SUPPLY IS INSUFFICIENT TO GROW SEED AT FNINSD.  N IS LIMITED
+        #   RELATIVE TO C SUPPLY AND RELATIVE TO SEED DEMAND.  ALLOW SEED N CONC
+        #   TO DECLINE AND RECOMPUTE RSD & AGRSD3.  THERE IS NO CASE OF EXCESS C
+        #   SUPPLY HERE BECAUSE N STRESS BY THE DEFINED CURVE LIMITS SINGLE SEED
+        #   GROWTH RATE.  N STRESS INCREASINGLY LIMITS SEED GROWTH RATE AS PNINSD
+        #   DECLINES.  AS A RESULT OF "LIMITING" SEED GROWTH RATE, THE SEED N CONC
+        #   IS  HELD UP A BIT MORE BECAUSE LESS C IS USED.  SO ANINSD WILL BE
+        #   A BIT HIGHER THAN PNINSD HERE.  AGRSD3 AND RSD SHOULD BE RECOMPUTED.
         #
-        #      BECAUSE WE USE ONLY 20% OF EXCESS ASSIMILATE, I DON'T THINK WE
-        #      NEED TO RE-COMPUTE RSD AFTER COMPUTING COMPOSITIONS AND COSTS.
+        #   MORE NOTES:  NOTE THAT NRSD AND PNINSD ALREADY CONSIDER CARBON SUPPLY
+        #   (PGAVLR) IN THEIR EQUATIONS.  THUS, IF C SUPPLY IS HIGH, { PNINSD
+        #   WILL BE LOW AND IT WILL BE CONSIDERED HERE.  IF C SUPPLY IS LOW, THE
+        #   PNINSD WILL BE HIGH (ABOVE FNINSD) AND NRSD > 1, AND IT WILL BE
+        #   CONSIDERED IN THE NEXT LOOP.
         #
-        #      GIVE UP ON "BOOSTING" SEED GROWTH RATE, TRY TO INFLUENCE
-        #      COMPOSITION AS A RATIO OF N SUPPLY TO C SUPPLY, NORMALIZED
-        #      TO FNINSD.  RECIPROCAL OF RATION IS RATIOC.  ASSUME SLOPE OF
-        #      ONE-THIRD OF POSSIBLE CHANGE FROM FNINSD TO PROMAX OR PROMIN.
-        #       9/25/95 KJB
+        #        COMPUTE XRSD WITH RECT HYP EQ, WITH INIT SLOPE = 1/PROMIN
+        #        MAX = 1.0 AT FNINSD, AND THE Y IS 0 TO 1.0 AND X IS
+        #        INCOMING PNINSD FROM ZERO TO FNINSD.
+        #        THIS "RSD" DESCRIBES N LIMIT ON SEED GROWTH RATE
+        #        { COMPUTE "NEW" "ANINSD" BASED ON "N-LIMITED' SEED
+        #        GROWTH RATE.  USE THAT AS THE ANINSD, { CHECKS FOR
+        #        CARBOHYDRATE REQUIRED BASED ON NAVL AND PGAVLR
+        #
         #-----------------------------------------------------------------------
-        ANINSD <- FNINSD
-        if (NAVL > 0.0) {
-          RATION <- (NAVL/(PGAVLR/AGRSD1))/FNINSD
-          RATIOC <- 1.0 / RATION
-          if (RATION >= 1.0) {
-            ANINSD <- min(FNINSD * (1.0 + (RATION - 1.0)/3.), PROMAX)
-          } else {
-            # VERIFICAR: Por que está com esse comentário no meio da expressão?
-            ANINSD <- max(FNINSD * (1.0-(RATIOC-1.0)/3.), PROMIN)
-          }
+        #          SCALAR = (FNINSD/PROMIN + 1.0 - ((FNINSD/PROMIN + 1.0)**2
+        #     &          - 4*THETA*FNINSD/PROMIN*1.0)**0.5)/(2*THETA)
+        #          XRSD = ((PNINSD/PROMIN + 1.0 - ((PNINSD/PROMIN + 1.0)**2
+        #     &          - 4*THETA*PNINSD/PROMIN*1.0)**0.5)/(2*THETA))/SCALAR
+        
+        XRSD <- ((PNINSD/PROMIN + 1.0 - ((PNINSD/PROMIN + 1.0)^2 - 4*THETA*PNINSD/PROMIN*1.0)^0.5)/(2*THETA)) / ((FNINSD/PROMIN + 1.0 - ((FNINSD/PROMIN + 1.0)^2 - 4*THETA*FNINSD/PROMIN*1.0)^0.5)/(2*THETA))
+        
+        if (XRSD*min(PGAVLR/AGRSD1,GDMSD) > 1.E-5) {
+          ANINSD <- NAVL/(XRSD*min(PGAVLR/AGRSD1,GDMSD))
+        } else {
+          ANINSD <- FNINSD
         }
+        #-----------------------------------------------------------------------
+        #  CHECK BECAUSE N CONC CAN GO ABOVE FNINSD IF PNINSD NEAR FNINSD
+        #-----------------------------------------------------------------------
+        ANINSD <- min(ANINSD,FNINSD)
         
         #-----------------------------------------------------------------------
         #-----------------------------------------------------------------------
-        #     CASE 1: Do not have full seed load and carbon supply is not 
-        #         limiiting sedd growth.  Do not change composition.
+        #     CASE 3: CRSD2 <= 1.0 - C supply is limiting seed growth.
         #-----------------------------------------------------------------------
-        
-      } else if (CRSD2 > 1.0 & CUMSIG >= 0.98) {
-        #-----------------------------------------------------------------------
-        #  EVEN IF CRSD2 > 1 AND NRSD > 1, WE HAVE NOT REACHED A SEED LOAD
-        #  SO HOLD CONCENTRATIONS AND COSTS UNCHANGED.
-        #-----------------------------------------------------------------------
-        ANINSD <- FNINSD
-        # TODO: Verificar o Else ate aqui 
+      } else {
+        #      HERE NRSD > 1.0 AND PNINSD > FININSD, SO ALLOW INCREASING
+        #      SEED N CONC.  CONSIDER TWO OPTIONS, C DEFICIENT OR THAT C
+        #      SUPPLY IS EXCESS.  A CRSD <= 1.0 IS THE SAME AS CRSD2 <= 1.0
+        #      FIRST OPTION IS IF C SUPPLY IS DEFICIENT, BUT N SUPPLY/DEMAND
+        #      RATIO GREATER THAN 1.
+        if (CRSD2 <= 1.0) {
+          #-----------------------------------------------------------------------
+          #      DOES POSSIBLE N CONCENTRATION EXCEED MAX?
+          #-----------------------------------------------------------------------
+          #           if (PNINSD>PROMAX) {
+          #             ANINSD = PROMAX
+          #           } else {
+          #-----------------------------------------------------------------------
+          #     UNDER THIS CONDITION, CRSD < 1.0 AND NRSD > 1.0 AND PNINSD <PROMAX
+          #     SO HERE WE LET SEED N CONC INCREASE, AND BE EQUAL TO PNINSD.
+          #-----------------------------------------------------------------------
+          #               ANINSD = PNINSD
+          #            }
+          ANINSD <- min(PNINSD, PROMAX)
+          
+          #-----------------------------------------------------------------------
+          #      IT IS NOT POSSIBLE FOR PNINSD < FNINSD AND YET NRSD > 1.0
+          #      IT IS NOT POSSIBLE FOR PNINSD > FNINSD AND YET NRSD < 1.0 EITHER
+          #      SO NRSD CAN ONLY BE < 1.0 IF NAVL < NREQ, AND THAT IS ONLY
+          #      IF PNINSD < FNINSD.  THIS WAS COVERED BEFORE
+          
+          #-----------------------------------------------------------------------
+          #-----------------------------------------------------------------------
+          #     CASE 2: Full seed load and neither N or C supply is limiting 
+          #         seed growth
+          #-----------------------------------------------------------------------
+        } else if (CRSD2 > 1.0 & CUMSIG < 0.98) {
+          #-----------------------------------------------------------------------
+          #      UNDER THIS CONDITION, N IS EXCESS RELATIVE TO C SUPPLY OR SD
+          #      DEMAND (NRSD > 1) AND C SUPPLY EXCEEDS SEED DEMAND (CRSD2 > 1).
+          #      ALSO, RESTRICTED THIS ONE TO OCCUR ONLY AFTER A FULL SEED LOAD
+          #      OCCURS.  THE "CUMSIG" MUST BE WORKED TO DROPPED BELOW 1.0 ONLY
+          #      WHEN SEVERAL DAYS OF "FULL SEED" LOAD OCCURS.  RESULTS FROM
+          #      SEVERAL DAYS OF CRSD OR CRSD2 < 1,  WE NEED THIS TO AVOID
+          #      PROBLEMS DURING EARLY PODSET WHEN CRSD IS VERY LARGE AND NRSD
+          #      ALSO LARGE.
+          #-----------------------------------------------------------------------
+          #      0.20 FRACTION OF EXCESS ASSIMILATE IS ALLOWED TO "PUSH" SINGLE
+          #      SEED GROWTH RATE (I.E., VIA INCREASED RSD).  THIS WILL DECREASE
+          #      AMOUNT OF STEM AND LEAF GROWTH DURING SEED FILL.
+          #      LIMIT THE ACTUAL N CONC TO PROMAX OR THE NAVL/(GDMSD*RSD).  THIS
+          #      ONE WILL NEED TO BE CHECKED CAREFULLY TO PREVENT REALLY HIGH OR
+          #      LOW N.  WE INTEND FOR IT TO ALLOW N CONC LOWER THAN FNINSD, BUT
+          #      WILL DO AN XRSD LIMIT ON SEED GROWTH RATE IF ANINSD < FNINSD
+          #
+          #      BECAUSE WE USE ONLY 20% OF EXCESS ASSIMILATE, I DON'T THINK WE
+          #      NEED TO RE-COMPUTE RSD AFTER COMPUTING COMPOSITIONS AND COSTS.
+          #
+          #      GIVE UP ON "BOOSTING" SEED GROWTH RATE, TRY TO INFLUENCE
+          #      COMPOSITION AS A RATIO OF N SUPPLY TO C SUPPLY, NORMALIZED
+          #      TO FNINSD.  RECIPROCAL OF RATION IS RATIOC.  ASSUME SLOPE OF
+          #      ONE-THIRD OF POSSIBLE CHANGE FROM FNINSD TO PROMAX OR PROMIN.
+          #       9/25/95 KJB
+          #-----------------------------------------------------------------------
+          ANINSD <- FNINSD
+          if (NAVL > 0.0) {
+            RATION <- (NAVL/(PGAVLR/AGRSD1))/FNINSD
+            RATIOC <- 1.0 / RATION
+            if (RATION >= 1.0) {
+              ANINSD <- min(FNINSD * (1.0 + (RATION - 1.0)/3.), PROMAX)
+            } else {
+              # VERIFICAR: Por que está com esse comentário no meio da expressão?
+              ANINSD <- max(FNINSD * (1.0-(RATIOC-1.0)/3.), PROMIN)
+            }
+          }
+          
+          #-----------------------------------------------------------------------
+          #-----------------------------------------------------------------------
+          #     CASE 1: Do not have full seed load and carbon supply is not 
+          #         limiiting sedd growth.  Do not change composition.
+          #-----------------------------------------------------------------------
+          
+        } else if (CRSD2 > 1.0 & CUMSIG >= 0.98) {
+          #-----------------------------------------------------------------------
+          #  EVEN IF CRSD2 > 1 AND NRSD > 1, WE HAVE NOT REACHED A SEED LOAD
+          #  SO HOLD CONCENTRATIONS AND COSTS UNCHANGED.
+          #-----------------------------------------------------------------------
+          ANINSD <- FNINSD
+        }
       }
+      
+      #-----------------------------------------------------------------------
+      #-----------------------------------------------------------------------
+      #  For cases 2, 3 and 4, adjust lipids and carbohydrate concentrations
+      #-----------------------------------------------------------------------
+      if (NRSD <= 1.0 | CRSD2 <= 1.0 | CUMSIG < 0.98) {
+        #-----------------------------------------------------------------------
+        #     ADJUSTING SO LIPID AND CARBOHYDRATE TAKE UP DIFFERENCE
+        #     MOST DATA SUGGEST THAT LIPID CHANGES 0.33 PER 1 PERCENT CHANGE
+        #     IN PROTEIN.
+        #-----------------------------------------------------------------------
+        DTLIP <- 0.33*(FNINSD - ANINSD)*6.25
+        DTCAR <- (FNINSD - ANINSD)*6.25  - DTLIP
+        POTLIP <- POTLIP + DTLIP
+        POTCAR <- POTCAR + DTCAR
+        #     POTPRO = ANINSD*6.25
+        TOTAL  <- POTLIP + ANINSD*6.25 + POTCAR + PMINSD + POASD + PLIGSD
+        #             TOTAL not used - chp
+        AGRSD3 <- PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + POTLIP*RLIP + POTCAR*RCH2O
+        #-----------------------------------------------------------------------
+        #     THIS IS CORRECT, ABOVE BASED ON N LIMIT, NEXT ON C LIMIT
+        #     CONSIDERING ANY SHIFT IN PROTEIN CONC.
+        #-----------------------------------------------------------------------
+        DMSDN <- NAVL / ANINSD
+        DMSDC <- PGAVLR / AGRSD3
+        RSD <- min(min(DMSDN,DMSDC)/GDMSD,1.0)
+        RSD <- max(0.0,RSD)
+      }
+      #-----------------------------------------------------------------------
+      #-----------------------------------------------------------------------
     }
-    
-    #-----------------------------------------------------------------------
-    #-----------------------------------------------------------------------
-    #  For cases 2, 3 and 4, adjust lipids and carbohydrate concentrations
-    #-----------------------------------------------------------------------
-    if (NRSD <= 1.0 | CRSD2 <= 1.0 | CUMSIG < 0.98) {
-      #-----------------------------------------------------------------------
-      #     ADJUSTING SO LIPID AND CARBOHYDRATE TAKE UP DIFFERENCE
-      #     MOST DATA SUGGEST THAT LIPID CHANGES 0.33 PER 1 PERCENT CHANGE
-      #     IN PROTEIN.
-      #-----------------------------------------------------------------------
-      DTLIP <- 0.33*(FNINSD - ANINSD)*6.25
-      DTCAR <- (FNINSD - ANINSD)*6.25  - DTLIP
-      POTLIP <- POTLIP + DTLIP
-      POTCAR <- POTCAR + DTCAR
-      #     POTPRO = ANINSD*6.25
-      TOTAL  <- POTLIP + ANINSD*6.25 + POTCAR + PMINSD + POASD + PLIGSD
-      #             TOTAL not used - chp
-      AGRSD3 <- PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + POTLIP*RLIP + POTCAR*RCH2O
-      #-----------------------------------------------------------------------
-      #     THIS IS CORRECT, ABOVE BASED ON N LIMIT, NEXT ON C LIMIT
-      #     CONSIDERING ANY SHIFT IN PROTEIN CONC.
-      #-----------------------------------------------------------------------
-      DMSDN <- NAVL / ANINSD
-      DMSDC <- PGAVLR / AGRSD3
-      RSD <- min(min(DMSDN,DMSDC)/GDMSD,1.0)
-      RSD <- max(0.0,RSD)
-    }
-    #-----------------------------------------------------------------------
-    #-----------------------------------------------------------------------
     
   }
   
@@ -3469,10 +3605,15 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   #*NITROGEN STRESS PARAMETERS
   NRATIO <- 1.00
   
+  # TODO: Verificar Stress
+  PStres2 <- 1
+  NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
+  SWFAC   <- 1 # water stress factor (verificar de onde vem no ECOSMOS)
+  
   #-----------------------------------------------------------------------
   #    Call CANOPY for input
   #-----------------------------------------------------------------------
-  CANOPY(DYNAMIC, PAR)
+  CANOPY(DYNAMIC,DAS, PAR, TGRO)
   
   #***********************************************************************
   #***********************************************************************
@@ -3506,7 +3647,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     WRDOTN = 0.0  
     WSDOTN = 0.0  
     
-    CANOPY(DYNAMIC, PAR)
+    CANOPY(DYNAMIC,DAS, PAR, TGRO)
     
     #***********************************************************************
     #***********************************************************************
@@ -3520,8 +3661,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     FNINSG = PROSTG * 0.16   
     CUMTUR = 1.0             
     
-    CANOPY(DYNAMIC,
-           PAR)
+    CANOPY(DYNAMIC,DAS, PAR, TGRO)
     
     #***********************************************************************
     #***********************************************************************
@@ -3743,8 +3883,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #     function of VSTAGE, air temperature, drought stress (TURFAC),
     #     daylenght and radiation (PAR).
     #-----------------------------------------------------------------------
-    CANOPY(DYNAMIC,
-           PAR)
+    CANOPY(DYNAMIC,DAS, PAR, TGRO)
     
     #***********************************************************************
     #***********************************************************************
@@ -3778,10 +3917,15 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   assign("WRDOTN", WRDOTN, envir = env)
   assign("WSDOTN", WSDOTN, envir = env)
   
+  assign("CUMTUR", CUMTUR, envir = env)
+  assign("FNINLG", FNINLG, envir = env)
+  assign("FNINRG", FNINRG, envir = env)
+  assign("FNINSG", FNINRG, envir = env)
+  
   return()
 }
 
-CANOPY <- function (DYNAMIC, PAR, TGRO) {
+CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
   
   #-----------------------------------------------------------------------
   ROWSPC <- 0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
@@ -3840,7 +3984,7 @@ CANOPY <- function (DYNAMIC, PAR, TGRO) {
       TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
-      HWTEM = HWTEM + TABEX(YHWTEM,XHWTEM,TGRO(I),5)
+      HWTEM = HWTEM + TABEX(YHWTEM,XHWTEM,TGRO[I],5)
     }
     HWTEM = HWTEM /TS
     #       24 changed to TS on 5 July 2017 by Bruce Kimball

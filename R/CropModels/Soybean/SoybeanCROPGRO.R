@@ -44,8 +44,11 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]
     MAINR   <- VARAUX$MAINR[VARAUX$DAS==DAS]
     EOP     <- VARAUX$EOP[VARAUX$DAS==DAS]
-    RO     <- VARAUX$RO[VARAUX$DAS==DAS]
-    RP     <- VARAUX$RP[VARAUX$DAS==DAS]
+    RO      <- VARAUX$RO[VARAUX$DAS==DAS]
+    RP      <- VARAUX$RP[VARAUX$DAS==DAS]
+    TRWUP   <- VARAUX$TRWUP[VARAUX$DAS==DAS]
+    TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]
+    SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]
     
     # to do, comparar o valor PAR com o usado pelo CROPGRO
     # vamos ter que criar uma leitura trazendo as variaveis do fortran
@@ -212,7 +215,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         }
         
         #-----------------------------------------------------------------------
-        GROW(DYNAMIC)
+        GROW(DYNAMIC,iyear,jday, ISWNIT,ISWSYM)
         
         #-----------------------------------------------------------------------
         # To do Santiago
@@ -226,7 +229,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         NFIX(DYNAMIC, DAS, CNODMN, CTONOD) # falta linkar, DLAYR, NLAYR,SAT, ST, SW
         
         #-----------------------------------------------------------------------
-        PODS(DYNAMIC, DAS, NAVL,ISWWAT)
+        PODS(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday,PGAVL)
         
         #-----------------------------------------------------------------------
         VEGGR (DYNAMIC,DAS,iyear,jday,CMINEP,CSAVEV,NAVL,PAR,PG,PGAVL)
@@ -310,7 +313,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #----------------------------------------------------------------------
         #     On day of emergence, initialize:
         #-----------------------------------------------------------------------
-        GROW("EMERG")
+        GROW("EMERG",iyear,jday, ISWNIT,ISWSYM)
         
         #-----------------------------------------------------------------------
         #     Call to root growth and rooting depth routine
@@ -322,8 +325,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         DEMAND("EMERG", CROP, PAR, PGAVL,RPROAV, TAVG)
         
         #-----------------------------------------------------------------------
-        PODS("EMERG", NAVL,ISWWAT)
-        
+        PODS("EMERG", DAS, NAVL,ISWWAT,iyear,jday,PGAVL)
         #-----------------------------------------------------------------------
         VEGGR ("EMERG",DAS,iyear,jday, CMINEP, CSAVEV,   NAVL,  PAR, PG, PGAVL)
         
@@ -489,7 +491,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #     Call routine to compute actual seed and shell growth
         #-----------------------------------------------------------------------
-        PODS(DYNAMIC, NAVL,ISWWAT)
+        PODS(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday,PGAVL)
         
         #-----------------------------------------------------------------------
         #     Call specific routines for peanut to determine
@@ -579,7 +581,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #     Call routine to integrate growth and damage
         #-----------------------------------------------------------------------
-        GROW(DYNAMIC)
+        GROW(DYNAMIC,iyear,jday, ISWNIT,ISWSYM)
         
         
         if ((WTLF+STMWT)> 0.0001) {
