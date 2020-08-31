@@ -24,7 +24,7 @@ simDataVars$PCNRT  <-  0
 simDataVars$PCNSD  <-  0
 simDataVars$PCNSH  <-  0
 simDataVars$PCNST  <-  0
-# simDataVars$PLTPOP  <-  0
+simDataVars$PLTPOP  <-  0
 simDataVars$PODWT  <-  0
 simDataVars$PUNCSD  <-  0
 simDataVars$PUNCTR  <-  0
@@ -2397,7 +2397,6 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #     effect of PAR on SLA, COX PEANUT SCI. 5:27, 1978
     #-----------------------------------------------------------------------
     FFVEG = FVEG * TPHFAC * PARSLA * TURFSL
-    
     Fnew = FFVEG 
     if (XFRT*FRACDN >= 0.05) { 
       Fnew = FFVEG * (1.0 - XFRT * FRACDN) 

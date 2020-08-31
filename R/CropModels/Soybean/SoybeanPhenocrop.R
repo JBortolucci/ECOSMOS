@@ -32,7 +32,7 @@ simDataVars$NR2      <-0
 simDataVars$NR5      <-0
 simDataVars$NR7      <-0
 simDataVars$NVEG0    <-0
-simDataVars$PHTHRS   <-0
+simDataVars$PHTHRS   <-rep(0,20)
 simDataVars$RSTAGE   <-0
 simDataVars$RVSTGE   <-0
 simDataVars$VSTGED   <-0
@@ -141,7 +141,6 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
-  PHTHRS<-rep(0,20) 
   CSDL       <- 12.58 
   CSDVAR     <- CSDL  #code uses CSDVAR
   PPSEN      <- 0.311
@@ -214,7 +213,6 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     
     
     # TRIFOL<-TRIFL
-    
     PHTHRS[5] = max(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
     PHTHRS[7] = PHTHRS[6] + max(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
     PHTHRS[9] = max(0.,PHTHRS[10] * PM09)
@@ -262,7 +260,6 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     FT    <- rep(0,20)
     FUDAY <- rep(0,20)
     
-    
     RSTAGES (DAS,DYNAMIC,
              FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
              PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM)      # Input
@@ -272,7 +269,6 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
              NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
              TURFAC, XPOD, YRDOY, YRPLT,                     # Input
              DYNAMIC)                                       # Control
-    
     
     #***********************************************************************
     #***********************************************************************
@@ -846,6 +842,7 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     #     Check for first flower, stage 6, end of phase 5
     #-------------------------------------------------------------------------------
+    # if(DAS == 13) browser()
     if (DAS >= NVALPH[NPRIOR[5]] & NR1 >= NVALP0) {
       
       PROG[5] = FT[5] * FUDAY[5] * min(FSW[5],FNSTR[5],FPSTR[5]) * REM[NPRIOR[5]]
@@ -864,6 +861,8 @@ RSTAGES <- function (DAS,DYNAMIC,
         REM[6] = (PHZACC[5] - PHTHRS[5])/(PROG[5] + 0.00001)
       }
     }
+    
+    
     #-------------------------------------------------------------------------------
     #     Check for beginning ovule (peg), stage 7, end of phase 6
     #-------------------------------------------------------------------------------

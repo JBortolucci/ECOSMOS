@@ -83,12 +83,13 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
     dmresidue[j] <- dmleaf[j] + dmstem[j]
     
     
-    
+    # TODO: Adicionei o MAX
     # calculate aboveground residue dry matter total (including along the grow season)
-    rdm <- dmresidue[j] + (aylprod[j] * 10 / cgrain[j]) - dmleaf[j]     
+    rdm <- max(dmresidue[j] + (aylprod[j] * 10 / cgrain[j]) - dmleaf[j],0.001)     
     
     
     # calculate fractions for leaf and stem
+    # TODO: Checar divisão, RDM nao pode se 0
     fdml <- (aylprod[j] * 10 / cgrain[j]) / rdm 
     
     fdms <- (dmresidue[j] - dmleaf[j]) / rdm
