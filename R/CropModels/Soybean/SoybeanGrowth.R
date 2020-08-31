@@ -193,6 +193,19 @@ simDataVars$FVEG    <- 0
 simDataVars$SLAMX   <- 0
 simDataVars$GROMAX  <- 0
 simDataVars$SIZRAT  <- 0
+simDataVars$YY  <- 0
+simDataVars$XX  <- 0
+simDataVars$FRLFM  <- 0
+simDataVars$FRSTMM <- 0
+
+simDataVars$ADDSHL <- 0
+simDataVars$TURXFR <- 0
+simDataVars$NDMSD  <- 0
+simDataVars$GDMSDR <- 0
+simDataVars$CDMSDR <- 0
+simDataVars$NAGE   <- 0
+simDataVars$NDMSH  <- 0
+
 
 # simDataVars$AGRSD1  <-  0
 # simDataVars$AGRSD2  <-  0
@@ -1930,7 +1943,9 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
   XLEAF   <- c( 0.0,  1.,   3.3,   5.0,  7.8,  10.5,  30.0,  40.0)
   YLEAF   <- c(0.41, 0.4,  0.42,  0.41, 0.36,  0.32,  0.31,  0.31)
   YSTEM   <- c(0.09, 0.1,  0.21,  0.29, 0.37,  0.49,  0.49,  0.49)
-  FRLFM   <- 0.70
+  FRLFMX  <- 0.70
+  FRLFF   <- 0.24
+  FRSTMF  <- 0.55
   
   #!*LEAF GROWTH PARAMETERS
   FINREF <- 180.
@@ -1946,10 +1961,6 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
   YVGROW <- rep(0,6) #preenchido com uma função de interpolacao/lookup (TABEX)
   XSLATM <- c(-50.0,  00.0,  12.0,  22.0,  60.0)         
   YSLATM <- c( 0.25,  0.25,  0.25,  1.00,   1.0)
-  #!*VEGETATIVE PARTITIONING PARAMETERS
-  FRLFF  <- 0.24
-  FRSTMF <- 0.55
-  FRLFMX <- 0.70
   #!*SEED  COMPOSITION VALUES 
   CARMIN <- 0.180
   LIPOPT <- 23.65 
@@ -1992,10 +2003,6 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
   #TGRO[TS]
   NCOHORTS <- 300 #from line 51 in ModuleDefs.for NCOHORTS = 300, !Maximum number of cohorts
   SDDES <- rep(0, NCOHORTS)
-  SDNO  <- rep(0, NCOHORTS)
-  SHELN <- rep(0, NCOHORTS)
-  WTSD  <- rep(0, NCOHORTS)
-  WTSHE <- rep(0, NCOHORTS)
   PHTIM <- rep(0, NCOHORTS)
   PNTIM <- rep(0, NCOHORTS)
   
@@ -2116,7 +2123,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
       if (DAS <= NR2) {
         PHTIM[1] = 0.0
       } else {
-        PHTIM(DAS - NR2 + 1) = PHTIM(DAS - NR2) + TDUMX
+        PHTIM[DAS - NR2 + 1] = PHTIM[DAS - NR2] + TDUMX
       }
       
       #-----------------------------------------------------------------------
@@ -2230,7 +2237,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     if (DAS > NR2) {
       for (NPP in 1:(DAS - NR2)) {  
         NAGE = DAS - NR2 + 1 - NPP  #NAGE not used - chp
-        PAGE = PHTIM(DAS - NR2 + 1) - PHTIM[NPP]
+        PAGE = PHTIM[DAS - NR2 + 1] - PHTIM[NPP]
         if (PAGE <= LNGSH & SHELN[NPP] >= 0.001 & GRRAT1 >= 0.001) {
           if (PAGE >= LNGPEG) {
             #Shells between LNGPEG and LNGSH
@@ -2541,6 +2548,19 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
   assign("SLAMX", SLAMX, envir = env)
   assign("GROMAX", GROMAX, envir = env)
   assign("SIZRAT", SIZRAT, envir = env)
+  assign("YY", YY, envir = env)
+  assign("XX", XX, envir = env)
+  assign("FRLFM", FRLFM , envir = env)
+  assign("FRSTMM", FRSTMM, envir = env)
+  
+  assign("ADDSHL", ADDSHL, envir = env)
+  assign("TURXFR", TURXFR, envir = env)
+  assign("NDMSD",  NDMSD, envir = env)
+  assign("GDMSDR", GDMSDR, envir = env)
+  assign("CDMSDR", CDMSDR, envir = env)
+  assign("NAGE",   NAGE, envir = env)
+  assign("NDMSH",NDMSH, envir = env)
+  
   
   return()
 }
@@ -2606,7 +2626,7 @@ SDCOMP <- function (TAVG) {
   
   TOTAL  = POTLIP + POTPRO + POTCAR
   #      IF (TOTAL .NE. 1.0) THEN
-  if (ABS(TOTAL) - 1.0 > 0.0005) {
+  if (abs(TOTAL) - 1.0 > 0.0005) {
     POTPRO = POTPRO / TOTAL
     POTLIP = POTLIP / TOTAL
     POTCAR = POTCAR / TOTAL
@@ -2724,13 +2744,10 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   SDDES <- rep(0, NCOHORTS)
   SDNO  <- rep(0, NCOHORTS)
   SHELN <- rep(0, NCOHORTS)
-  WTSD  <- rep(0, NCOHORTS)
-  WTSHE <- rep(0, NCOHORTS)
   PHTIM <- rep(0, NCOHORTS)
   PNTIM <- rep(0, NCOHORTS)
   SUPDE <- rep(0, NCOHORTS)
   AVTEM <- rep(0, NCOHORTS)
-  FLWN  <- rep(0, NCOHORTS)
   
   PODCOMP(DYNAMIC,NAVL)
   
@@ -2776,8 +2793,8 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
     WTABRT <- 0.0   
     WTSHM  <- 0.0   
     WTSHMT <- 0.0   
-    WTSD   <- 0.0
-    WTSHE  <- 0.0
+    WTSD   <- rep(0, 300)
+    WTSHE  <- rep(0, 300)
     
     
     # TODO: Verificar atribuições de vetores!!!!!
@@ -2785,8 +2802,8 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
     PGAVLR <- 0.0
     SDNO   <- 0.0
     AGRSD3 <- AGRSD1
-    SHELN  <- 0.0
-    FLWN   <- 0.0
+    SHELN  <- rep(0, 300)
+    FLWN   <- rep(0, 300)
     
     #TODO VERIFICAR: aparentemente usado apenas para "snap bean"
     #CALL FreshWt(SEASINIT, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
@@ -3138,20 +3155,23 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
       #-----------------------------------------------------------------------
       AFLW <- RFLWAB * (1.0 - TDUMX) * (1.0 - SWADD2)
       FLWRDY <- 0.
-      for (NPP in 1:NR1TIM) { 
-        if (FLWN[NPP] > 0.0001) {
-          PNAGE <- PNTIM(NR1TIM + 1) - PNTIM[NPP]
-          FLWN[NPP] <- FLWN[NPP] * (1.0 - AFLW)
-          if (PNAGE >= PHTHRS[6]) {
-            #-----------------------------------------------------------------------
-            #     Allow flowers in each cohort to make pods over 2-3 days
-            #-----------------------------------------------------------------------
-            FLWFRC <- 0.
-            if (TDUMX > 0.0001) FLWFRC <- (PNAGE-PHTHRS[6])/TDUMX
-            FLWFRC <- min(FLWFRC,1.0)
-            FLWFRC <- max(FLWFRC,0.0)
-            FLWRDY <- FLWFRC*FLWN[NPP] + FLWRDY
-            FLWN[NPP] <- (1.0-FLWFRC)*FLWN[NPP]
+      #NR1TIM >= NPP, pois indice nao pode ser menor que 1 FLWN[NPP]
+      if (NR1TIM >= 1){
+        for (NPP in 1:NR1TIM) { 
+          if (FLWN[NPP] > 0.0001) {
+            PNAGE <- PNTIM[NR1TIM + 1] - PNTIM[NPP]
+            FLWN[NPP] <- FLWN[NPP] * (1.0 - AFLW)
+            if (PNAGE >= PHTHRS[6]) {
+              #-----------------------------------------------------------------------
+              #     Allow flowers in each cohort to make pods over 2-3 days
+              #-----------------------------------------------------------------------
+              FLWFRC <- 0.
+              if (TDUMX > 0.0001) FLWFRC <- (PNAGE-PHTHRS[6])/TDUMX
+              FLWFRC <- min(FLWFRC,1.0)
+              FLWFRC <- max(FLWFRC,0.0)
+              FLWRDY <- FLWFRC*FLWN[NPP] + FLWRDY
+              FLWN[NPP] <- (1.0-FLWFRC)*FLWN[NPP]
+            }
           }
         }
       }
@@ -3174,7 +3194,7 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
         RNITPD <- max(0.1,RNITPD)
         PODADD <- PMAX * TEMPOD * (DRPP^1.3) * min(SWADD1,SWADD2,RNITPD) * max((1.0 - ACCAGE),0.0)
         #    &       * max((1.0 - ACCAGE),0.0) * (1.0 + TURADD)
-        SHELN(NR2TIM + 1) = min(PODADD, PGNPOD/(SHMAXG*AGRSH1), FLADD, NAVPOD/(SHMAXG*(FNINSH*CNSTRES^0.5)))
+        SHELN[NR2TIM + 1] = min(PODADD, PGNPOD/(SHMAXG*AGRSH1), FLADD, NAVPOD/(SHMAXG*(FNINSH*CNSTRES^0.5)))
         #-----------------------------------------------------------------------
         #    KJB ADDED 1/27/96.  2 CONDITIONS: NDSET AND TRIGGER (CUMSIG >.98)
         #    MUST BE MET TO STOP POD ADDITION.  THUS, IF WE ARE THRU THE WINDOW
@@ -3195,9 +3215,9 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
       #-----------------------------------------------------------------------
       FLWADD <- 2. * PMAX * TEMPOD * (DRPP^1.3) * min(SWADD1,SWADD2,CNSTRES^0.5)
       #    &     min(SWADD1,SWADD2,CNSTRES**0.5) * (1.0 + TURADD)
-      FLWN(NR1TIM + 1) <- min(FLWADD,PGNPOD/(SHMAXG*0.1*AGRSH1), NAVPOD/(SHMAXG*0.1*(FNINSH*CNSTRES^0.5)))
+      FLWN[NR1TIM + 1] <- min(FLWADD,PGNPOD/(SHMAXG*0.1*AGRSH1), NAVPOD/(SHMAXG*0.1*(FNINSH*CNSTRES^0.5)))
       if (DAS >= NDSET & TRIGGR == 1) {
-        FLWN(NR1TIM + 1) <- 0.
+        FLWN[NR1TIM + 1] <- 0.
       }
       #-----------------------------------------------------------------------
       #     Calculate number of pods, including those with and without seeds
@@ -4338,7 +4358,7 @@ SENES <- function (DYNAMIC,DAS,PAR) {
       #-----------------------------------------------------------------------
       LTSEN = 0.0
       if (PAR > 0.) {
-        LCMP = -(1. / KCAN) * ALOG(ICMP / PAR)
+        LCMP = -(1. / KCAN) * log(ICMP / PAR)
         LTSEN = DTX * (XLAI - LCMP) / TCMP
         LTSEN = max(0.0, LTSEN)
       }

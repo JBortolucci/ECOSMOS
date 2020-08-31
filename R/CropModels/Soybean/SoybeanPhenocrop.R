@@ -61,6 +61,9 @@ simDataVars$PROG     <- rep(0,20)
 simDataVars$TGRO     <- rep(1.,24)
 simDataVars$CLDVAR   <- 0
 
+simDataVars$CLDVRR   <- 0
+simDataVars$CSDVRR   <- 0
+
 
 
 
@@ -162,6 +165,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   PHTHRS[11] <- 12.0     # R7-R8  - Time between physiological (R7) and harvest maturity (R8) (days)           
   PHTHRS[12] <- 12.00    # FL-VS  - Time from first flower to last leaf on main stem (photothermal days)          
   TRIFL      <- 0.32     # TRIFL   Rate of appearance of leaves on the mainstem (leaves per thermal day)
+  TRIFOL     <- TRIFL
   R1PPO      <- 0.459    # Increase in daylength sensitivity after R1 (CSDVAR and CLDVAR both decrease with the same amount) (h)
   OPTBI      <- 20.0     # Minimum daily temperature above which there is no effect on slowing normal development toward flowering (oC)
   SLOBI      <- 0.035    # Slope of relationship reducing progress toward flowering if tmin for the day is less than OPTBI
@@ -209,7 +213,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   if (DYNAMIC == 'SEASINIT') {
     
     
-    TRIFOL<-TRIFL
+    # TRIFOL<-TRIFL
     
     PHTHRS[5] = max(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
     PHTHRS[7] = PHTHRS[6] + max(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
@@ -508,6 +512,9 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   assign("TURFAC",TURFAC, envir = env)  
   assign("FNSTR",FNSTR , envir = env)
   assign("CLDVAR",CLDVAR , envir = env)
+  
+  assign("CLDVRR",CLDVRR , envir = env)
+  assign("CSDVRR",CSDVRR , envir = env)
   
   #-----------------------------------------------------------------------
   #     End Subroutine PHENOL
