@@ -214,7 +214,7 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   #remover SDPRO <- 0.400 # Fraction protein in seeds (g(protein)/g(seed)) [from VAR# BR0001]
   XFRT   <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
   SLAVAR <- 370   # Specific leaf area of cultivar under standard growth conditions (cm2/g)
-  SIZELF <- 200   # Maximum size of full leaf (three leaflets) (cm2)
+  SIZELF <- 200   # Maximum size of full leaf (three leaflets) (cm2) [SIZLF no .CUL]
   THRESH <- 78    # Threshing percentage. The maximum ratio of (seed/(seed+shell)) at maturity. Causes seeds to stop growing as their dry weight
   XFRUIT <- XFRT  # Maximum fraction of daily growth that is partitioned to seed + shell
   #______________________________________________________________        
