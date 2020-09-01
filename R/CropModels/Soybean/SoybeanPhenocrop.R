@@ -343,8 +343,8 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     
     SWFAC  = 1.0
     TURFAC = 1.0
-    if(stresstl<=0.9) TURFAC = (1./RWUEP1) * stresstl 
-    if(stresstl<=0.9) SWFAC  = stresstl 
+    # if(stresstl<=0.9) TURFAC = (1./RWUEP1) * stresstl 
+    # if(stresstl<=0.9) SWFAC  = stresstl 
     
     #        if (EOP > 0.001) {
     #        EP1 = EOP * 0.1           # EOP mm and EP1 cm
@@ -367,6 +367,8 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       for (I in 1:TS) {
         
         # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+        if (DAS == 112) browser()
+        
         TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
         
         

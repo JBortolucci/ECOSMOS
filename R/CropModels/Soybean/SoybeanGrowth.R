@@ -31,7 +31,7 @@ simDataVars$PUNCTR  <-  0
 simDataVars$RHOL  <-  0
 simDataVars$RHOS  <-  0
 simDataVars$RNITP  <-  0
-# simDataVars$ROWSPC  <-  0 #TODO ver necessidade
+simDataVars$ROWSPC  <-  50 #TODO: Mudar para parametro fixo
 simDataVars$RTWT  <-  0
 simDataVars$SDNPL  <-  0
 simDataVars$SDRATE  <-  0
@@ -136,6 +136,8 @@ simDataVars$SDPDOT  <- 0
 simDataVars$PUNDOT  <- 0
 simDataVars$NLPEST  <- 0
 
+simDataVars$outputGrow <-  file(paste0("C:/DSSAT47/Soybean/Grow_controle_R.OUT"), "w")
+
 
 #----------------END GROW VARS-------------------
 
@@ -206,6 +208,8 @@ simDataVars$CDMSDR <- 0
 simDataVars$NAGE   <- 0
 simDataVars$NDMSH  <- 0
 
+simDataVars$YVGROW <- rep(0,6)
+
 
 # simDataVars$AGRSD1  <-  0
 # simDataVars$AGRSD2  <-  0
@@ -257,6 +261,10 @@ simDataVars$NAVPOD <- 0
 simDataVars$NR2TIM <- 0
 simDataVars$PGNPOD <- 0
 simDataVars$RPRPUN <- 0
+
+simDataVars$SUPDE  <- rep(0, 300)
+simDataVars$AVTEM  <- rep(0, 300)
+simDataVars$SDDES  <- rep(0, 300)
 #-----------------END PODS VARS-------------------
 
 #-------------------VEGGR VARS--------------------
@@ -374,7 +382,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   PLME   <- 'S' # equivalente ao [.SBX] *PLANTING DETAILS: PLME  
   IHARI  <- 'M' # TODO VERIFICAR (provável que pertença ao '[.SBX] *HARVEST DETAILS')
   PLTPOP <- 40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
-  ROWSPC <- 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
+  # ROWSPC <- 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
   SDWTPL <- -99 # equivalente ao [.SBX] *PLANTING DETAILS: PLDS
   
   #______________________________________________________________        
@@ -729,6 +737,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #-----------------------------------------------------------------------
     #       WLDOT = Net leaf growth rate
     #-----------------------------------------------------------------------
+    # browser()
     WLDOT = WLDOTN - SLDOT - WLIDOT - WLFDOT - NRUSLF/0.16 - CRUSLF
     
     #     ShutMob is amount of leaf mass lost due to N and C mobilization
@@ -1483,9 +1492,27 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   assign("SDPDOT",SDPDOT , envir = env)
   assign("PUNDOT",PUNDOT , envir = env)
   assign("NLPEST",NLPEST , envir = env)
+  assign("ROWSPC",ROWSPC , envir = env)
   
-
-  
+  writeLines(paste0(SWIDOT,",", WLFDOT,",", WSHIDT,",", WTNFX,",", 
+                    XHLAI,",", AREALF,",", BETN,",", CANNAA,",", CANWAA,",", 
+                    CLW,",", CSW,",", DWNOD,",", DWNODA,",", GROWTH,",", GRWRES,",",
+                    LAIMX,",", PCCSD,",", PCLSD,",", PCNL,",", PCNRT,",", PCNSD,",", 
+                    PCNSH,",", PCNST,",", PLTPOP,",", PLIGLF,",", PLIGNO,",", 
+                    PLIGRT,",", PLIGSD,",", PLIGSH,",", PLIGST,",", PODWT,",", 
+                    PUNCSD,",", PUNCTR,",", RHOL,",", RHOS,",", RNITP,",", 
+                    ROWSPC,",", RTWT,",", SDNPL,",", SDRATE,",", SDWT,",", 
+                    SEEDNI,",", SEEDNO,",", SHELWT,",", SLA,",",
+                    SLAAD,",", STMWT,",", TOPWT,",", TOTWT,",", WCRLF,",", 
+                    WCRRT,",", WCRSH,",", WCRST,",", WNRLF,",", WNRRT,",", 
+                    WNRSH,",", WNRST,",", WTCO,",", WTLF,",", WTLO,",", 
+                    WTMAIN,",", WTNCAN,",", WTNEW,",", WTNLA,",", WTNLF,",", 
+                    WTNLO,",", WTNNA,",", WTNNAG,",", WTNNO,",", WTNNOD,",", 
+                    WTNOO,",", WTNRA,",", WTNRO,",", WTNRT,",", WTNSA,",", 
+                    WTNSD,",", WTNSDA,",", WTNSDO,",", WTNSH,",", WTNSHA,",", 
+                    WTNSHO,",", WTNSO,",", WTNST,",", WTNUP,",", WTRO,",", 
+                    WTSDO,",", WTSHO,",", WTSO,",", XLAI,",", XPOD,",", 
+                    ShutMob,",", RootMob,",", ShelMob) , outputGrow)
   return()
 }   
 
@@ -1958,7 +1985,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
   TURSLA <- 1.50
   XVGROW <- c( 0.0,  1.0,  2.0,  3.0,  4.0,  5.0)
   YVREF  <- c( 0.0, 20.0, 55.0,110.0,200.0,320.0)
-  YVGROW <- rep(0,6) #preenchido com uma função de interpolacao/lookup (TABEX)
+  # YVGROW <- rep(0,6) #preenchido com uma função de interpolacao/lookup (TABEX)
   XSLATM <- c(-50.0,  00.0,  12.0,  22.0,  60.0)         
   YSLATM <- c( 0.25,  0.25,  0.25,  1.00,   1.0)
   #!*SEED  COMPOSITION VALUES 
@@ -2002,9 +2029,9 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
 
   #TGRO[TS]
   NCOHORTS <- 300 #from line 51 in ModuleDefs.for NCOHORTS = 300, !Maximum number of cohorts
-  SDDES <- rep(0, NCOHORTS)
-  PHTIM <- rep(0, NCOHORTS)
-  PNTIM <- rep(0, NCOHORTS)
+  # SDDES <- rep(0, NCOHORTS)
+  # PHTIM <- rep(0, NCOHORTS)
+  # PNTIM <- rep(0, NCOHORTS)
   
   #***********************************************************************
   #***********************************************************************
@@ -2559,6 +2586,8 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
   assign("CDMSDR", CDMSDR, envir = env)
   assign("NAGE",   NAGE, envir = env)
   assign("NDMSH",NDMSH, envir = env)
+  assign("SDDES",SDDES, envir = env)
+  assign("YVGROW",YVGROW, envir = env)
   
   
   return()
@@ -2740,13 +2769,13 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   DUL   <-  c(0.300000012 ,    0.289999992  ,    0.280000001  ,    0.273000002  ,    0.259999990  ,    0.259999990   ,   0.259999990  ,    0.259999990    ,  -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
   
   NCOHORTS <- 300 #from line 51 in ModuleDefs.for NCOHORTS = 300, !Maximum number of cohorts
-  SDDES <- rep(0, NCOHORTS)
-  SDNO  <- rep(0, NCOHORTS)
-  SHELN <- rep(0, NCOHORTS)
-  PHTIM <- rep(0, NCOHORTS)
-  PNTIM <- rep(0, NCOHORTS)
-  SUPDE <- rep(0, NCOHORTS)
-  AVTEM <- rep(0, NCOHORTS)
+  # SDDES <- rep(0, NCOHORTS)
+  # SDNO  <- rep(0, NCOHORTS)
+  # SHELN <- rep(0, NCOHORTS)
+  # PHTIM <- rep(0, NCOHORTS)
+  # PNTIM <- rep(0, NCOHORTS)
+  # SUPDE <- rep(0, NCOHORTS)
+  # AVTEM <- rep(0, NCOHORTS)
   
   PODCOMP(DYNAMIC,NAVL)
   
@@ -2799,7 +2828,7 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
     # TODO: Verificar atribuições de vetores!!!!!
     RPRPUN <- 1.0 
     PGAVLR <- 0.0
-    SDNO   <- 0.0
+    SDNO   <- rep(0, 300)
     AGRSD3 <- AGRSD1
     SHELN  <- rep(0, 300)
     FLWN   <- rep(0, 300)
@@ -3324,6 +3353,10 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
    assign("NR2TIM",NR2TIM, envir = env)
    assign("PGNPOD",PGNPOD, envir = env)
    assign("RPRPUN",RPRPUN, envir = env)
+   assign("SUPDE",SUPDE, envir = env)
+   assign("AVTEM",AVTEM, envir = env)
+   
+   assign("SDDES",SDDES, envir = env)
   
   return() #PODS
 }
@@ -3600,7 +3633,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   
   #TODO: AVISO verificar com Santiago padrão ECOSMOS -> YREMRG, NR1
   
-  ROWSPC <- 0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
+  # ROWSPC <- 0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -3947,7 +3980,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
 CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
   
   #-----------------------------------------------------------------------
-  ROWSPC <- 0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
+  # ROWSPC <- 0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
   
   TS <- 24
   #______________________________________________________________        
