@@ -12,6 +12,8 @@ simDataVars$RPROAV <- 0
 simDataVars$RSPNO3 <- 0
 simDataVars$RSPNH4 <- 0
 simDataVars$KSTRES <- 0
+simDataVars$PGAVL  <- 0
+
 
 
 source("R/CropModels/Soybean/SoybeanPhenocrop.R")
@@ -417,6 +419,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
           #-----------------------------------------------------------------------
           RSPNO3 = TRNO3U/0.16 * RNO3C
           RSPNH4 = TRNH4U/0.16 * RNH4C
+          browser()
           if (PGAVL < (RSPNO3+RSPNH4)) {
             PGAVL = 0.0
           } else {
@@ -797,6 +800,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("RSPNO3",RSPNO3, envir = env)
   assign("RSPNH4",RSPNH4, envir = env)
   assign("KSTRES",KSTRES, envir = env)
+  assign("PGAVL",PGAVL, envir = env)
 }
 
 
