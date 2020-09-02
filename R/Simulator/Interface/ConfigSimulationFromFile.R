@@ -44,7 +44,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     tab.DSSAT <- read.csv('inst/input/perfil_solo_ecosmos_UPDATE.csv',sep = ",")
     if(!is.na(simConfigs[[i]]$soilId)) {
       simInstances[[id]]$layers    <- subset(tab.DSSAT, SID == simConfigs[[i]]$soilId)
-      # TODO: ajustar! Nsoilay - 1 para igualar valor com fortran 
+      # TODO: REMOVER depois dos testes! Nsoilay - 1 para igualar valor com fortran 
       simInstances[[id]]$nsoilay <- length(simInstances[[id]]$layers$SID) - 1
     }
 

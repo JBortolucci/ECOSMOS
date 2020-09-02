@@ -248,8 +248,8 @@ simDataVars$PGAVLR     <-  0
 
 simDataVars$ACCAGE   <-  0
 simDataVars$AFLW     <-  0
-simDataVars$CNSTRES  <-  0
-simDataVars$CPSTRES  <-  0
+simDataVars$CNSTRES  <-  1
+simDataVars$CPSTRES  <-  1
 simDataVars$FNINSH   <-  0
 simDataVars$FLWRDY   <-  0
 simDataVars$PODADD   <-  0
@@ -288,7 +288,7 @@ simDataVars$NADST  <-  0
 simDataVars$NGRLF  <-  0
 simDataVars$NGRRT  <-  0
 simDataVars$NGRST  <-  0
-simDataVars$NSTRES  <-  0
+simDataVars$NSTRES  <-  1
 simDataVars$TNLEAK  <-  0
 simDataVars$WLDOTN  <-  0
 simDataVars$WRDOTN  <-  0
@@ -343,7 +343,10 @@ simDataVars$SDPROR  <-  0
 
 #-------------------NUPTAK VARS-------------------
 simDataVars$TRNH4U <- 0
+# TODO: nsoilay : RNH4U <- rep(0, nsoilay) - RNO3U <- rep(0, 20)
+simDataVars$RNH4U <- rep(0, 20)
 simDataVars$TRNO3U <- 0
+simDataVars$RNO3U <- rep(0, 20)
 simDataVars$TRNU   <- 0
 simDataVars$UNH4   <- 0
 simDataVars$UNO3   <- 0
@@ -366,6 +369,7 @@ simDataVars$NFIXN  <-  0
 simDataVars$NODGR  <-  0
 # simDataVars$WTNFX  <-  0
 simDataVars$SDWNOD <-  0
+simDataVars$SENNOD    <- rep(0,20)
 #-------------------END NFIX VARS-----------------
 
 
@@ -737,8 +741,8 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #-----------------------------------------------------------------------
     #       WLDOT = Net leaf growth rate
     #-----------------------------------------------------------------------
-    # browser()
     WLDOT = WLDOTN - SLDOT - WLIDOT - WLFDOT - NRUSLF/0.16 - CRUSLF
+    # browser()
     
     #     ShutMob is amount of leaf mass lost due to N and C mobilization
     #     A positive value represents leaf mass lost. (kg/ha)
@@ -871,6 +875,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #     get increase in tissue N composition when tissue is aborted.  Need
     #     to account for mass, N and C lost this way in sections below
     #-----------------------------------------------------------------------
+    # browser()
     WRCLDT = ALPHL * WLDOTN - CRUSLF - RHOL*(SLNDOT+WLIDOT+WLFDOT)
     if (WTLF > 1.E-4) {
       WRCLDT = WRCLDT + CADLF * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
@@ -1513,6 +1518,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
                     WTNSHO,",", WTNSO,",", WTNST,",", WTNUP,",", WTRO,",", 
                     WTSDO,",", WTSHO,",", WTSO,",", XLAI,",", XPOD,",", 
                     ShutMob,",", RootMob,",", ShelMob) , outputGrow)
+  
   return()
 }   
 
@@ -3728,11 +3734,16 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #    chp added check for YRDOY = YREMRG, but on the next day, it still
     #     shows N stress because there is little supply.  Force a lag time?
     #      if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0.) {
-    if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0. & YRDOY != YREMRG) {
-      NSTRES = min(1.0,SUPPN/(NDMNEW * 0.70))
-    } else {
+    
+    
+    # TODO: deixar NSTRES = 1, ajustar SUPPN
+    # if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0. & YRDOY != YREMRG) {
+    #   NSTRES = min(1.0,SUPPN/(NDMNEW * 0.70))
+    # } else {
       NSTRES = 1.0
-    }
+    # }
+      
+      
     #      FRRT  = ATOP * (1.0 - (min(TURFAC,NSTRES)))*(1.0-FRRT) + FRRT
     FRRT  = ATOP * (1.0 - (min(TURFAC, NSTRES, PStres2))) * (1.0 - FRRT) + FRRT
     #-----------------------------------------------------------------------
@@ -3765,6 +3776,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #     Calculate New Growth Rate of Leaves, Stems, and Roots
     #-----------------------------------------------------------------------
     VGRDEM = PGAVL / AGRVG
+    # browser()
     WLDOTN = FRLF * VGRDEM
     WSDOTN = FRSTM * VGRDEM
     WRDOTN = FRRT * VGRDEM
@@ -4645,13 +4657,9 @@ NUPTAK <- function (DYNAMIC) {
     SNO3[L] = INO3[L] / KG2PPM[L]
     SNH4[L] = INH4[L] / KG2PPM[L]
   }
-  NO3    <- rep(1, NL)    #vem do INSOIL.for
-  NH4    <- rep(1, NL)    #vem do INSOIL.for
-  
-  RNO3U <- rep(0, NLAYR)
-  RNH4U <- rep(0, NLAYR)
-  UNH4  <- rep(0, NLAYR)
-  UNO3  <- rep(0, NLAYR)
+  #linkar com variavel do ecosmos depois
+  NO3    <- rep(2, NL)    #vem do INSOIL.for
+  NH4    <- rep(2, NL)    #vem do INSOIL.for
   
   #***********************************************************************
   #***********************************************************************
@@ -4662,8 +4670,8 @@ NUPTAK <- function (DYNAMIC) {
     TRNO3U = 0.0 
     TRNH4U = 0.0 
     TRNU   = 0.0 
-    UNH4   = 0.0
-    UNO3   = 0.0
+    UNH4   <- rep(0, NLAYR)
+    UNO3   <- rep(0, NLAYR)
     
     #***********************************************************************
     #***********************************************************************
@@ -4892,10 +4900,9 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
   # SW     <- rep(0, NL)
   SW    <-  c(0.219999999 ,    0.219999999  ,    0.213000000  ,    0.207000002  ,    0.200000003  ,    0.180000007   ,   0.180000007  ,    0.180000007    ,   0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000  ,     0.00000000 ,      0.00000000)
   
-  #NL = 20
-  ST<- rep(0,20)
-  LAYERFRAC <- rep(0,20)
-  SENNOD    <- rep(0,20)
+  # NL = 20
+  #TODO: linkar com ECOSMOS
+  ST<- rep(25,20)
   
   #***********************************************************************
   #***********************************************************************
@@ -4911,7 +4918,7 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
     NODGR  = 0.0    
     WTNFX  = 0.0    
     SDWNOD = 0 
-    SENNOD = rep(0,9)
+    SENNOD = rep(0,20)
     
     DNOD   = 30.0
     
@@ -4954,7 +4961,8 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
     #-----------------------------------------------------------------------
     #   Calculate soil water and temperature factors for each layer to DNOD
     #-----------------------------------------------------------------------
-    LAYERFRAC = 0.0
+    # TODO: NL <- 20, LAYERFRAC <- rep(0,NL)
+    LAYERFRAC <- rep(0,20)
     DSWP = 0.0
     DNOD = 50.0
     for (I in 1:NLAYR) {

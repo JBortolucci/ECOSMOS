@@ -367,10 +367,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       for (I in 1:TS) {
         
         # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
-        if (DAS == 112) browser()
-        
-        TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
-        
+        if (DAS < 112) TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
         
         FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
         FT[J] = FT[J] + FTHR/TS
@@ -986,6 +983,7 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     #     Check for stage NR8, stage 12, end of phase 11
     #-------------------------------------------------------------------------------
+    # if (DAS >= 111) browser()
     if (DAS >= NVALPH[NPRIOR[11]] & MDATE <= YRSIM) {
       
       PROG[11] = FT[11] * FUDAY[11]*min(FSW[11],FNSTR[11],FPSTR[11]) * REM[NPRIOR[11]]
