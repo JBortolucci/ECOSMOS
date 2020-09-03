@@ -419,7 +419,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
           #-----------------------------------------------------------------------
           RSPNO3 = TRNO3U/0.16 * RNO3C
           RSPNH4 = TRNH4U/0.16 * RNH4C
-          browser()
+          #browser()
           if (PGAVL < (RSPNO3+RSPNH4)) {
             PGAVL = 0.0
           } else {

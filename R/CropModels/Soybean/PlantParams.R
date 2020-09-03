@@ -12,7 +12,7 @@ ATEMP <-  -99.0
  
 IHARI  <- 'M' # TODO VERIFICAR (provável que pertença ao '[.SBX] *HARVEST DETAILS')
 PLTPOP <- 40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
-ROWSPC <- 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
+ROWSPC <- 50 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
 SDWTPL <- -99 # equivalente ao [.SBX] *PLANTING DETAILS: PLDS
 
 #______________________________________________________________        
@@ -200,7 +200,7 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   RTDEPI  <- 20.0 # INROOT que chama
   #remover PORMIN <- 0.02
   RTEXF  <- 0.10
-  RTDEPI <- 20.0
+  #remover RTDEPI <- 20.0
   XRTFAC <- c(0.00, 3.00, 6.00, 30.00)
   YRTFAC <- c(2.50, 2.50, 2.60, 2.60)
   RTWTMIN <- 0.0
@@ -235,14 +235,14 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   TURSLA <- 1.50
   XVGROW <- c( 0.0,  1.0,  2.0,  3.0,  4.0,  5.0)
   YVREF  <- c( 0.0, 20.0, 55.0,110.0,200.0,320.0)
-  YVGROW <- rep(0,6) #preenchido com uma função de interpolacao/lookup (TABEX)
+  #remover YVGROW <- rep(0,6) #preenchido com uma função de interpolacao/lookup (TABEX)
   XSLATM <- c(-50.0,  00.0,  12.0,  22.0,  60.0)         
   YSLATM <- c( 0.25,  0.25,  0.25,  1.00,   1.0)
   #!*VEGETATIVE PARTITIONING PARAMETERS
   FRLFF  <- 0.24
   FRSTMF <- 0.55
   FRLFMX <- 0.70
-  FRLFM   <- 0.70 #TODO Ver exatamento qual está sendo usado
+  #remover FRLFM   <- 0.70 #TODO Ver exatamento qual está sendo usado
   XLEAF   <- c( 0.0,  1.,   3.3,   5.0,  7.8,  10.5,  30.0,  40.0)
   YLEAF   <- c(0.41, 0.4,  0.42,  0.41, 0.36,  0.32,  0.31,  0.31)
   YSTEM   <- c(0.09, 0.1,  0.21,  0.29, 0.37,  0.49,  0.49,  0.49)
@@ -252,7 +252,7 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   LIPTB  <- 7.16
   SLOSUM <- 0.908 #TODO checar SLOSUM*100 = 0.908 (no .SPE)
   #!*SEED AND SHELL GROWTH PARAMETERS
-  FNSDT  <- c(14.0, 21.0, 26.5, 40.0) #+ QDR in .SPE
+  FNSDT  <- c(6.0,  21.0,  23.5,  41.0) #+ QDR in .SPE
   TYPSDT <- "QDR"
   SHLAG  <- 0
   SRMAX  <- 0.300000012
@@ -357,7 +357,6 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   SETMAX  <- 0.60
   RFLWAB  <- 0.0
   XMPAGE  <- 100.0
-  #TODO verificar esses vetores
   FNPDT   <- c(14.0,21.0,26.5,40.0) # + QDR no .SPE
   TYPPDT <- "QDR"
   XSWBAR  <- c(0.00,  0.01,  0.25,  1.00,  1.00)
@@ -427,7 +426,6 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   #!*PHOTOSYNTHESIS PARAMETERS
   #remover KCAN   <- 0.67
   #!*CANOPY HEIGHT AND WIDTH GROWTH PARAMETERS
-  # TODO verificar se são 5, 8 (.SPE) ou 10 (.for) posições no vetor 
   XHWPAR  <- c(0.00,  5.00,  7.50, 10.00, 15.00, 20.00, 30.00, 80.00)
   YHWPAR  <- c(4.00,  2.00,  1.50,  1.25,  1.05,  1.00,  1.00,  1.00)
   XHWTEM  <- c(-50.0,  00.0,  15.0,  26.0,  60.0)
