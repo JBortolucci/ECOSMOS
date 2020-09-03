@@ -203,7 +203,7 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   RTDEPI <- 20.0
   XRTFAC <- c(0.00, 3.00, 6.00, 30.00)
   YRTFAC <- c(2.50, 2.50, 2.60, 2.60)
-  RTWTMIN <- 0.0
+  RTWTMIN <- 0.0 #Soybean - Sempre ZERO
 }
 
 #DEMAND
@@ -212,11 +212,10 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   #remover SDLIP <- 0.200 # Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
   #remover SDPRO <- 0.400 # Fraction protein in seeds (g(protein)/g(seed)) [from VAR# BR0001]
-  XFRT   <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
   SLAVAR <- 370   # Specific leaf area of cultivar under standard growth conditions (cm2/g)
   SIZELF <- 200   # Maximum size of full leaf (three leaflets) (cm2) [SIZLF no .CUL]
   THRESH <- 78    # Threshing percentage. The maximum ratio of (seed/(seed+shell)) at maturity. Causes seeds to stop growing as their dry weight
-  XFRUIT <- XFRT  # Maximum fraction of daily growth that is partitioned to seed + shell
+  XFRUIT <- 1.000  # Maximum fraction of daily growth that is partitioned to seed + shell TODO: Igual a variavel XFRT no arquivo .cult
   #______________________________________________________________        
   # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
   # ECO# SB0602
@@ -250,9 +249,9 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   CARMIN <- 0.180
   LIPOPT <- 23.65 
   LIPTB  <- 7.16
-  SLOSUM <- 0.908 #TODO checar SLOSUM*100 = 0.908 (no .SPE)
+  SLOSUM <- 9.08000022E-03
   #!*SEED AND SHELL GROWTH PARAMETERS
-  FNSDT  <- c(14.0, 21.0, 26.5, 40.0) #+ QDR in .SPE
+  FNSDT  <- c(6.0,  21.0,  23.5,  41.0) #+ QDR in .SPE
   TYPSDT <- "QDR"
   SHLAG  <- 0
   SRMAX  <- 0.300000012
@@ -300,7 +299,6 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   #remover CARMIN <- 0.180
   #remover LIPOPT <- 23.65 
   #remover LIPTB  <- 7.16
-  #remover SLOSUM <- 0.908 #TODO checar SLOSUM*100 = 0.908 (no .SPE)
   #!*PLANT COMPOSITION VALUES
   #remover PLIGSD <- 0.020 
   #remover PMINSD <- 0.025

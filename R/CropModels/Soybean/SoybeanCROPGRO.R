@@ -1,6 +1,9 @@
 
 simDataVars$TGRO_T   <-read.table(file = 'C:/DSSAT47/Soybean/TGRO.OUT')
 simDataVars$VARAUX  <- read.table(file = 'C:/DSSAT47/Soybean/VARAUX.OUT', header = T)
+simDataVars$PGAVLAUX   <-read.table(file = 'C:/DSSAT47/Soybean/PGAVL.OUT',header = T)
+simDataVars$PGAVLCount <- 1
+
 # Mudar 
 simDataVars$CROP    <-'SB'
 
@@ -61,6 +64,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]
     SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]
     # PGAVL   <- VARAUX$PGAVL[VARAUX$DAS==DAS]
+    CMINEP   <- VARAUX$CMINEP[VARAUX$DAS==DAS]
     
     # to do, comparar o valor PAR com o usado pelo CROPGRO
     # vamos ter que criar uma leitura trazendo as variaveis do fortran
@@ -370,8 +374,10 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #
         #-----------------------------------------------------------------------
         CMINEP = CMOBMX * (DTX + DXR57) * (WCRST + WCRRT + WCRSH +WCRLF)
-        # browser()
         PGAVL = PG + CMINEP
+        
+        PGAVL <- PGAVLAUX$PGAVL[PGAVLCount]
+        PGAVLCount <- PGAVLCount + 1
         #-----------------------------------------------------------------------
         #       Compute maintenance respiration and subtract from available CH2O
         #-----------------------------------------------------------------------
@@ -386,6 +392,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         } else {
           PGAVL = PGAVL - MAINR
         }
+        PGAVL <- PGAVLAUX$PGAVL[PGAVLCount]
+        PGAVLCount <- PGAVLCount + 1
         
         
         #-----------------------------------------------------------------------
@@ -393,7 +401,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         DEMAND(DYNAMIC,DAS, CROP, PAR, PGAVL,RPROAV, TAVG)
         
-        if (YRDOY == YREND) return()
+        # if (YRDOY == YREND) return()
         
         #-----------------------------------------------------------------------
         #    Compute N Available From Seed, During Early Growth
@@ -419,12 +427,13 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
           #-----------------------------------------------------------------------
           RSPNO3 = TRNO3U/0.16 * RNO3C
           RSPNH4 = TRNH4U/0.16 * RNH4C
-          browser()
           if (PGAVL < (RSPNO3+RSPNH4)) {
             PGAVL = 0.0
           } else {
             PGAVL = PGAVL - (RSPNO3 + RSPNH4)
           }
+          PGAVL <- PGAVLAUX$PGAVL[PGAVLCount]
+          PGAVLCount <- PGAVLCount + 1
           #-----------------------------------------------------------------------
           #       Accumulate nitrogen for today's growth, NAVL
           #-----------------------------------------------------------------------
@@ -444,6 +453,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         } else {
           PGAVL = 0.0
         }
+        PGAVL <- PGAVLAUX$PGAVL[PGAVLCount]
+        PGAVLCount <- PGAVLCount + 1
         NAVL   = NAVL + NMINEA
         #-----------------------------------------------------------------------
         #     Allow some of today's PG to be used for N fixation, depending
@@ -502,6 +513,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         } else {
           PGAVL = 0.0
         }
+        PGAVL <- PGAVLAUX$PGAVL[PGAVLCount]
+        PGAVLCount <- PGAVLCount + 1
         NAVL = NAVL + NFIXN
         #-----------------------------------------------------------------------
         #     Call routine to compute actual seed and shell growth
@@ -535,6 +548,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         NAVL   = NAVL - (NGRSD + NGRSH)
         PGAVL  = max(0.0,PGAVL)
         NAVL   = max(0.0,NAVL)
+        PGAVL <- PGAVLAUX$PGAVL[PGAVLCount]
+        PGAVLCount <- PGAVLCount + 1
         
         #-----------------------------------------------------------------------
         #     CSAVEV is a faction of PG for vegetative growth that is stored
@@ -543,6 +558,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         CSAVEV = CADPR1 * PGAVL * FRACDN
         PGAVL = PGAVL - CSAVEV
+        PGAVL <- PGAVLAUX$PGAVL[PGAVLCount]
+        PGAVLCount <- PGAVLCount + 1
         
         #-----------------------------------------------------------------------
         #     Call routine to compute actual vegetative growth, C to mine or add
@@ -556,6 +573,9 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         NAVL = NAVL - (NGRLF + NGRST + NGRRT)
         NAVL = NAVL - (NADLF + NADST + NADRT)
         PGAVL = PGAVL - (CADST + CADLF) * PCH2O
+        
+        PGAVL <- PGAVLAUX$PGAVL[PGAVLCount]
+        PGAVLCount <- PGAVLCount + 1
         #-----------------------------------------------------------------------
         #     Call leaf senescence routine to compute leaf loss variables
         #-----------------------------------------------------------------------
@@ -801,6 +821,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("RSPNH4",RSPNH4, envir = env)
   assign("KSTRES",KSTRES, envir = env)
   assign("PGAVL",PGAVL, envir = env)
+  assign("PGAVLCount",PGAVLCount, envir = env)
 }
 
 
