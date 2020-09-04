@@ -2,7 +2,17 @@
 simDataVars$TGRO_T   <-read.table(file = 'C:/DSSAT47/Soybean/TGRO.OUT')
 simDataVars$VARAUX  <- read.table(file = 'C:/DSSAT47/Soybean/VARAUX.OUT', header = T)
 simDataVars$PGAVLAUX   <-read.table(file = 'C:/DSSAT47/Soybean/PGAVL.OUT',header = T)
+simDataVars$ST_T   <-read.table(file = 'C:/DSSAT47/Soybean/ST.OUT',row.names = NULL)
+simDataVars$SW_T   <-read.table(file = 'C:/DSSAT47/Soybean/SW.OUT',row.names = NULL)
+simDataVars$NO3_T   <-read.table(file = 'C:/DSSAT47/Soybean/NO3.OUT',row.names = NULL)
+simDataVars$NH4_T   <-read.table(file = 'C:/DSSAT47/Soybean/NH4.OUT',row.names = NULL)
 simDataVars$PGAVLCount <- 1
+
+NL <- 20
+simDataVars$SW  <- rep(0, NL)
+simDataVars$ST  <- rep(0, NL)
+simDataVars$NO3 <- rep(0, NL)
+simDataVars$NH4 <- rep(0, NL)
 
 # Mudar 
 simDataVars$CROP    <-'SB'
@@ -65,6 +75,15 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]
     # PGAVL   <- VARAUX$PGAVL[VARAUX$DAS==DAS]
     CMINEP   <- VARAUX$CMINEP[VARAUX$DAS==DAS]
+    
+    SW     <-  as.double(SW_T[DAS,][-1])
+    ST     <-  as.double(ST_T[DAS,][-1])
+    NO3     <-  as.double(NO3_T[DAS,][-1])
+    NH4     <-  as.double(NH4_T[DAS,][-1])
+    assign("SW",SW, envir = env)
+    assign("ST",ST, envir = env)
+    assign("NO3",NO3, envir = env)
+    assign("NH4",NH4, envir = env)
     
     # to do, comparar o valor PAR com o usado pelo CROPGRO
     # vamos ter que criar uma leitura trazendo as variaveis do fortran
