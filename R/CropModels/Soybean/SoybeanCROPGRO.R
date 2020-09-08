@@ -2,11 +2,13 @@
 simDataVars$TGRO_T   <-read.table(file = 'C:/DSSAT47/Soybean/TGRO.OUT')
 simDataVars$VARAUX  <- read.table(file = 'C:/DSSAT47/Soybean/VARAUX.OUT', header = T)
 simDataVars$PGAVLAUX   <-read.table(file = 'C:/DSSAT47/Soybean/PGAVL.OUT',header = T)
+simDataVars$NAVLAUX   <-read.table(file = 'C:/DSSAT47/Soybean/NAVL.OUT',header = T)
 simDataVars$ST_T   <-read.table(file = 'C:/DSSAT47/Soybean/ST.OUT',row.names = NULL)
 simDataVars$SW_T   <-read.table(file = 'C:/DSSAT47/Soybean/SW.OUT',row.names = NULL)
 simDataVars$NO3_T   <-read.table(file = 'C:/DSSAT47/Soybean/NO3.OUT',row.names = NULL)
 simDataVars$NH4_T   <-read.table(file = 'C:/DSSAT47/Soybean/NH4.OUT',row.names = NULL)
 simDataVars$PGAVLCount <- 1
+simDataVars$NAVLCount  <- 1
 
 NL <- 20
 simDataVars$SW  <- rep(0, NL)
@@ -428,10 +430,14 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         if (SDNPL > 0.0001) {
           NAVL = max(SDNPL * DTX / 7. , 0.0)
+          NAVL <- NAVLAUX$NAVL[NAVLCount]
+          NAVLCount <- NAVLCount + 1
           SDNPL = SDNPL - NAVL
         } else {
           SDNPL = 0.0
           NAVL = 0.0
+          NAVL <- NAVLAUX$NAVL[NAVLCount]
+          NAVLCount <- NAVLCount + 1
         }
         
         #-----------------------------------------------------------------------
@@ -457,7 +463,11 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
           #       Accumulate nitrogen for today's growth, NAVL
           #-----------------------------------------------------------------------
           NAVL = NAVL + TRNU
+          NAVL <- NAVLAUX$NAVL[NAVLCount]
+          NAVLCount <- NAVLCount + 1
         }
+        
+        
         #-----------------------------------------------------------------------
         #    CALL Nitrogen mobilization subroutine
         #    to compute availability of N from other tissue (NMINEA)
@@ -475,6 +485,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         PGAVL <- PGAVLAUX$PGAVL[PGAVLCount]
         PGAVLCount <- PGAVLCount + 1
         NAVL   = NAVL + NMINEA
+        NAVL <- NAVLAUX$NAVL[NAVLCount]
+        NAVLCount <- NAVLCount + 1
         #-----------------------------------------------------------------------
         #     Allow some of today's PG to be used for N fixation, depending
         #     on N uptake and mining, and on demand for N.
@@ -535,6 +547,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         PGAVL <- PGAVLAUX$PGAVL[PGAVLCount]
         PGAVLCount <- PGAVLCount + 1
         NAVL = NAVL + NFIXN
+        NAVL <- NAVLAUX$NAVL[NAVLCount]
+        NAVLCount <- NAVLCount + 1
         #-----------------------------------------------------------------------
         #     Call routine to compute actual seed and shell growth
         #-----------------------------------------------------------------------
@@ -569,6 +583,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         NAVL   = max(0.0,NAVL)
         PGAVL <- PGAVLAUX$PGAVL[PGAVLCount]
         PGAVLCount <- PGAVLCount + 1
+        NAVL <- NAVLAUX$NAVL[NAVLCount]
+        NAVLCount <- NAVLCount + 1
         
         #-----------------------------------------------------------------------
         #     CSAVEV is a faction of PG for vegetative growth that is stored
@@ -593,8 +609,11 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         NAVL = NAVL - (NADLF + NADST + NADRT)
         PGAVL = PGAVL - (CADST + CADLF) * PCH2O
         
+        
         PGAVL <- PGAVLAUX$PGAVL[PGAVLCount]
         PGAVLCount <- PGAVLCount + 1
+        NAVL <- NAVLAUX$NAVL[NAVLCount]
+        NAVLCount <- NAVLCount + 1
         #-----------------------------------------------------------------------
         #     Call leaf senescence routine to compute leaf loss variables
         #-----------------------------------------------------------------------
@@ -841,6 +860,12 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("KSTRES",KSTRES, envir = env)
   assign("PGAVL",PGAVL, envir = env)
   assign("PGAVLCount",PGAVLCount, envir = env)
+  assign("NAVLCount",NAVLCount, envir = env)
+  assign("NAVL",NAVL, envir = env)
+  assign("SDNPL", SDNPL, envir = env)
+  assign("AGRSH2", AGRSH2, envir = env)
+  assign("AGRVG2", AGRVG2, envir = env)
+  assign("AGRSD2", AGRSD2, envir = env)
 }
 
 

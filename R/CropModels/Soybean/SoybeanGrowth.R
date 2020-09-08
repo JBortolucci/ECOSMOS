@@ -184,7 +184,7 @@ simDataVars$POTCAR  <-  0
 simDataVars$POTLIP  <-  0
 simDataVars$SDGR    <-  0
 simDataVars$TURADD  <-  0
-simDataVars$XFRT    <-  1.000
+simDataVars$XFRT    <-  0
 # simDataVars$YREND   <-  0
 simDataVars$REDSHL  <-  0
 simDataVars$TMPFAC  <-  1.0
@@ -2541,7 +2541,6 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #***********************************************************************
   }
   
-  assign("AGRSD1", AGRSD1, envir = env)
   assign("AGRSD2", AGRSD2, envir = env)
   assign("AGRVG", AGRVG, envir = env)
   assign("AGRVG2", AGRVG2, envir = env)
@@ -3329,8 +3328,6 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   assign("NGRSH", NGRSH, envir = env)
   assign("PCTMAT", PCTMAT, envir = env)
   assign("PODNO", PODNO, envir = env)
-  assign("POTCAR", POTCAR, envir = env)
-  assign("POTLIP", POTLIP, envir = env)
   assign("SDNO", SDNO, envir = env)
   assign("SDVAR", SDVAR, envir = env)
   assign("SEEDNO", SEEDNO, envir = env)
@@ -3624,6 +3621,8 @@ PODCOMP <- function(DYNAMIC, NAVL) {
   assign("ANINSD",ANINSD, envir = env)
   assign("CUMSIG",CUMSIG, envir = env)
   assign("RSD",   RSD   , envir = env)
+  assign("POTCAR",POTCAR, envir = env)
+  assign("POTLIP",POTLIP, envir = env)
   
   return()
 }
@@ -3740,11 +3739,11 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     
     
     # TODO: deixar NSTRES = 1, ajustar SUPPN
-    # if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0. & YRDOY != YREMRG) {
-    #   NSTRES = min(1.0,SUPPN/(NDMNEW * 0.70))
-    # } else {
-    NSTRES = 1.0
-    # }
+    if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0. & YRDOY != YREMRG) {
+      NSTRES = min(1.0,SUPPN/(NDMNEW * 0.70))
+    } else {
+      NSTRES = 1.0
+    }
     
     
     #      FRRT  = ATOP * (1.0 - (min(TURFAC,NSTRES)))*(1.0-FRRT) + FRRT
@@ -4969,7 +4968,6 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
       if (DSW > DNOD) { FLAYR = (DNOD-(DSW-DLAYR[I]))/DLAYR[I] }
       
       ACSTF = ACSTF + DLAYR[I] * FLAYR * CURV(TYPFXT,FNFXT[1],FNFXT[2],FNFXT[3],FNFXT[4],ST[I])
-      
       ACSTG = ACSTG + DLAYR[I] * FLAYR * CURV(TYPNGT,FNNGT[1],FNNGT[2],FNNGT[3],FNNGT[4],ST[I])
       
       EPORS = max(SAT[I] - SW[I], 0.0)
@@ -4981,7 +4979,7 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
         LAYERFRAC[I] = (DSW - DSWP)*FLAYR / DNOD
       }
       DSWP = DSW
-      if ( FLAYR < 1.0 ) { TNFIX  = ACSTF / DNOD }#GOTO 400
+      if ( FLAYR < 1.0 ) break()
       
     }
     #-----------------------------------------------------------------------
@@ -4992,7 +4990,7 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
     #   FLDACT: soil water flooding effect on N2 fixation and nodule growth
     #   NFXAGE: average nodule age effect on nodule growth
     #-----------------------------------------------------------------------
-    #400 TNFIX  = ACSTF / DNOD
+    TNFIX  = ACSTF / DNOD
     TNGRO  = ACSTG / DNOD
     FLDACT = FLDSUM / DNOD
     
