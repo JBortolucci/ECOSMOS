@@ -144,37 +144,37 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   PROSTF  <- 0.035
   PRORTF  <- 0.056
   PROSHF  <- 0.050
-  PCARLF  <- 0.405000001
-  PCARNO  <- 0.479999989
-  PCARRT  <- 0.711000025
-  PCARSD  <- 0.314999998
+  PCARLF  <- 0.405
+  PCARNO  <- 0.480
+  PCARRT  <- 0.711
+  PCARSD  <- 0.315
   #remover PCARSH  <- 0.379999995
-  PCARST  <- 0.663999975
-  PLIGLF  <- 7.00000003E-02
-  PLIGNO  <- 7.00000003E-02
-  PLIGRT  <- 7.00000003E-02
+  PCARST  <- 0.664
+  PLIGLF  <- 0.070
+  PLIGNO  <- 0.070
+  PLIGRT  <- 0.070
   #remover PLIGSD  <- 1.99999996E-02
   #remover PLIGSH  <- 0.280000001
-  PLIGST  <- 7.00000003E-02
-  PLIPLF  <- 2.50000004E-02
-  PLIPNO  <- 5.00000007E-02
-  PLIPRT  <- 1.99999996E-02
+  PLIGST  <- 0.070
+  PLIPLF  <- 0.025
+  PLIPNO  <- 0.050
+  PLIPRT  <- 0.020
   #remover PLIPSH  <- 1.99999996E-02
-  PLIPST  <- 1.99999996E-02
-  PMINLF  <- 9.39999968E-02
-  PMINNO  <- 5.00000007E-02
-  PMINRT  <- 5.70000000E-02
+  PLIPST  <- 0.020
+  PMINLF  <- 0.094
+  PMINNO  <- 0.050
+  PMINRT  <- 0.057
   #remover PMINSD  <- 2.50000004E-02
   #remover PMINSH  <- 2.99999993E-02
-  PMINST  <- 4.60000001E-02
-  POALF   <- 5.00000007E-02
-  POANO   <- 5.00000007E-02
-  POART   <- 5.00000007E-02
-  POASD   <- 3.99999991E-02
+  PMINST  <- 0.046
+  POALF   <- 0.050
+  POANO   <- 0.050
+  POART   <- 0.050
+  POASD   <- 0.040
   #remover POASH   <- 3.99999991E-02
-  POAST   <- 5.00000007E-02
+  POAST   <- 0.050
   #remover PROLFI  <- 0.356000006
-  PRONOD  <- 0.300000012
+  PRONOD  <- 0.300
   #remover PRORTI  <- 9.20000002E-02
   #remover PROSTI  <- 0.150000006
   #!*CARBON AND NITROGEN MINING PARAMETERS
@@ -226,7 +226,7 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   #!*LEAF GROWTH PARAMETERS
   FINREF <- 180.
   SLAREF <- 350.
-  SIZREF <- 171.399994
+  SIZREF <- 171.4
   VSSINK <- 5.0
   SLAMAX <- 950.
   SLAMIN <- 250.0
@@ -254,7 +254,7 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   FNSDT  <- c(6.0,  21.0,  23.5,  41.0) #+ QDR in .SPE
   TYPSDT <- "QDR"
   SHLAG  <- 0
-  SRMAX  <- 0.300000012
+  SRMAX  <- 0.300
   XFRMAX <- 0
   XXFTEM <- c(0.00, 5.00, 20.00, 35.00, 45.00, 60.00)
   YXFTEM <- c(1.00, 1.00, 1.00 ,  1.00,  0.00,  0.00)
@@ -554,7 +554,7 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   #remover PRORTI   <- 9.20000002E-02
   #remover PROSHI   <- 0.250000000
   #remover PROSTI   <- 0.150000006
-  SDPROS   <- 0.400000006
+  SDPROS   <- 0.400
   #!*RESPIRATION PARAMETERS
   #remover RCH2O    <- 1.24199998
   #remover RLIG     <- 2.17400002
