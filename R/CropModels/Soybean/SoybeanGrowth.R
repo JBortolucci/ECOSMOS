@@ -265,6 +265,12 @@ simDataVars$RPRPUN <- 1
 simDataVars$SUPDE  <- rep(0, 300)
 simDataVars$AVTEM  <- rep(0, 300)
 simDataVars$SDDES  <- rep(0, 300)
+
+simDataVars$MNESPM  <- 0
+simDataVars$LNGPEG  <- 0
+simDataVars$LAGSD   <- 0
+simDataVars$SDVAR   <- 0
+simDataVars$SHVAR   <- 0
 #-----------------END PODS VARS-------------------
 
 #-------------------VEGGR VARS--------------------
@@ -744,7 +750,6 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #       WLDOT = Net leaf growth rate
     #-----------------------------------------------------------------------
     WLDOT = WLDOTN - SLDOT - WLIDOT - WLFDOT - NRUSLF/0.16 - CRUSLF
-    # browser()
     
     #     ShutMob is amount of leaf mass lost due to N and C mobilization
     #     A positive value represents leaf mass lost. (kg/ha)
@@ -877,7 +882,6 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #     get increase in tissue N composition when tissue is aborted.  Need
     #     to account for mass, N and C lost this way in sections below
     #-----------------------------------------------------------------------
-    # browser()
     WRCLDT = ALPHL * WLDOTN - CRUSLF - RHOL*(SLNDOT+WLIDOT+WLFDOT)
     if (WTLF > 1.E-4) {
       WRCLDT = WRCLDT + CADLF * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
@@ -2564,7 +2568,6 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
   assign("NMOBR", NMOBR, envir = env)
   assign("PHTIM", PHTIM, envir = env)
   assign("PNTIM", PNTIM, envir = env)
-  assign("POTCAR", POTCAR, envir = env)
   assign("POTLIP", POTLIP, envir = env)
   assign("SDGR", SDGR, envir = env)
   assign("TURADD", TURADD, envir = env)
@@ -2641,6 +2644,7 @@ SDCOMP <- function (TAVG) {
     LIPTEM= 0.0
   }
   POTLIP = SDLIP * LIPTEM
+  
   
   #-----------------------------------------------------------------------
   #     Determination of protein percentage
@@ -2784,30 +2788,6 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   # SUPDE <- rep(0, NCOHORTS)
   # AVTEM <- rep(0, NCOHORTS)
   
-  PODCOMP(DYNAMIC,NAVL)
-  
-  #-----------------------------------------------------------------------
-  #     Set minimum days for phenological events under optimum conditions
-  #     (temperature and short photoperiod)
-  #-----------------------------------------------------------------------
-  #     Number of days from end pod set to physiological maturity
-  MNESPM <- PHTHRS[10] - PHTHRS[9]
-  
-  #-----------------------------------------------------------------------
-  #     Number of days between start of peg (full flower) and shell
-  #     formation
-  #     Only used in peanut to define slow growth period.
-  LNGPEG <- PHTHRS[7] - PHTHRS[6]
-  
-  #-----------------------------------------------------------------------
-  #     Number of days between start of shell and seed formation of a pod
-  LAGSD  <- PHTHRS[8] - PHTHRS[6]
-  
-  #-----------------------------------------------------------------------
-  #     Compute reproductive rates from cultivar and ecotype coefficients
-  #-----------------------------------------------------------------------
-  SDVAR <- WTPSD / SFDUR
-  SHVAR <- WTPSD * SDPDVR * ((100.-THRESH)/THRESH)/((LNGSH-.85*LNGPEG)*((1.-PROSHI)/(1.-PROSHF)))
   
   #***********************************************************************
   #***********************************************************************
@@ -2815,6 +2795,32 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
+    PODCOMP(DYNAMIC,NAVL)
+    
+    #-----------------------------------------------------------------------
+    #     Set minimum days for phenological events under optimum conditions
+    #     (temperature and short photoperiod)
+    #-----------------------------------------------------------------------
+    #     Number of days from end pod set to physiological maturity
+    MNESPM <- PHTHRS[10] - PHTHRS[9]
+    
+    #-----------------------------------------------------------------------
+    #     Number of days between start of peg (full flower) and shell
+    #     formation
+    #     Only used in peanut to define slow growth period.
+    LNGPEG <- PHTHRS[7] - PHTHRS[6]
+    
+    #-----------------------------------------------------------------------
+    #     Number of days between start of shell and seed formation of a pod
+    LAGSD  <- PHTHRS[8] - PHTHRS[6]
+    
+    #-----------------------------------------------------------------------
+    #     Compute reproductive rates from cultivar and ecotype coefficients
+    #-----------------------------------------------------------------------
+    SDVAR <- WTPSD / SFDUR
+    SHVAR <- WTPSD * SDPDVR * ((100.-THRESH)/THRESH)/((LNGSH-.85*LNGPEG)*((1.-PROSHI)/(1.-PROSHF)))
+    
+    
     FNINSH <- 0.0   
     NAVPOD <- 0.0
     NGRSD  <- 0.0   
@@ -2909,6 +2915,7 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
       # NR1TIM <- max(TIMDIF(YRNR1,YRDOY),0) #TODO tradução timdif 
       #-----------------------------------------------------------------------
       PGAVLR <- PGAVL * XFRT
+      assign("PGAVLR",PGAVLR, envir = env)
       
       #-----------------------------------------------------------------------
       #     Nitrogen stress; 8-Day moving average.
@@ -3328,6 +3335,9 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   assign("PCTMAT", PCTMAT, envir = env)
   assign("PODNO", PODNO, envir = env)
   assign("SDNO", SDNO, envir = env)
+  assign("POTCAR", POTCAR, envir = env)
+  assign("POTLIP", POTLIP, envir = env)
+  
   assign("SDVAR", SDVAR, envir = env)
   assign("SEEDNO", SEEDNO, envir = env)
   assign("SHELN", SHELN, envir = env)
@@ -3342,7 +3352,6 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   assign("FNINSH",FNINSH, envir = env)
   assign("REDSHL",REDSHL, envir = env)
   # Verificar assign PGAVLR,
-  assign("PGAVLR",PGAVLR, envir = env)
   assign("ACCAGE",ACCAGE  , envir = env)
   assign("AFLW",AFLW    , envir = env)
   assign("CNSTRES",CNSTRES , envir = env)
@@ -3362,6 +3371,14 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   assign("AVTEM",AVTEM, envir = env)
   
   assign("SDDES",SDDES, envir = env)
+  
+  assign("ANINSD",ANINSD, envir = env)
+  
+  assign("MNESPM",MNESPM, envir = env)
+  assign("LNGPEG",LNGPEG, envir = env)
+  assign("LAGSD",LAGSD, envir = env)
+  assign("SDVAR",SDVAR, envir = env)
+  assign("SHVAR",SHVAR, envir = env)
   
   return() #PODS
 }
@@ -3669,10 +3686,6 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
   SWFAC   <- 1 # water stress factor (verificar de onde vem no ECOSMOS)
   
-  #-----------------------------------------------------------------------
-  #    Call CANOPY for input
-  #-----------------------------------------------------------------------
-  CANOPY(DYNAMIC,DAS, PAR, TGRO)
   
   #***********************************************************************
   #***********************************************************************
@@ -3680,6 +3693,11 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
+    #-----------------------------------------------------------------------
+    #    Call CANOPY for input
+    #-----------------------------------------------------------------------
+    CANOPY(DYNAMIC,DAS, PAR, TGRO)
+    
     CADLF  = 0.0  
     CADST  = 0.0  
     CMINEA = 0.0  
@@ -3777,7 +3795,6 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #     Calculate New Growth Rate of Leaves, Stems, and Roots
     #-----------------------------------------------------------------------
     VGRDEM = PGAVL / AGRVG
-    # browser()
     WLDOTN = FRLF * VGRDEM
     WSDOTN = FRSTM * VGRDEM
     WRDOTN = FRRT * VGRDEM
@@ -4356,7 +4373,7 @@ SENES <- function (DYNAMIC,DAS,PAR) {
   } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     #Update value of RATTP.
-  
+    
     NSWAB  <- 5
     
     # ALTERADO: NSWAB, 2, -1 to seq(NSWAV, 2)
@@ -4887,7 +4904,7 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
   EFNFIX <- ifelse(EFNFIX <= 0.0, 1.0, EFNFIX) 
   
   PLTPOP <- 40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
- 
+  
   #TODO ver padrão ECOSMOS
   NLAYR <- nsoilay
   # DLAYR  <- rep(0, NL)
