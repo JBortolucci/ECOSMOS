@@ -64,6 +64,10 @@ simDataVars$CLDVAR   <- 0
 simDataVars$CLDVRR   <- 0
 simDataVars$CSDVRR   <- 0
 
+simDataVars$MNEMV1   <- 0
+simDataVars$MNFLLL   <- 0
+simDataVars$MNFLHM   <- 0
+
 
 
 
@@ -193,16 +197,6 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP     Sensitivity of phase I to phosphorus stress (not yet used) 
   
   
-  if (CROP != "FA") {
-    # Minimum days from emergence to Vegetative Growth Stage 1:
-    MNEMV1 = PHTHRS[2]
-    
-    # Minimum days from start of flowering to last leaf appearance:
-    MNFLLL = PHTHRS[13]
-    
-    # Number of days from flowering to harvest maturity
-    MNFLHM = PHTHRS[8] + PHTHRS[10] + PHTHRS[11]
-  }
   
   #***********************************************************************
   #***********************************************************************
@@ -211,6 +205,17 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   #   } else if (DYNAMIC == 'SEASINIT') {
   if (DYNAMIC == 'SEASINIT') {
     
+    #TODO: MOVEMOS PARA BAIXO, ESTAVA NO RUNINIT, PASSAMOS PARA SAESINIT
+    if (CROP != "FA") {
+      # Minimum days from emergence to Vegetative Growth Stage 1:
+      MNEMV1 = PHTHRS[2]
+      
+      # Minimum days from start of flowering to last leaf appearance:
+      MNFLLL = PHTHRS[13]
+      
+      # Number of days from flowering to harvest maturity
+      MNFLHM = PHTHRS[8] + PHTHRS[10] + PHTHRS[11]
+    }
     
     # TRIFOL<-TRIFL
     PHTHRS[5] = max(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
@@ -510,6 +515,11 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   assign("CLDVRR",CLDVRR , envir = env)
   assign("CSDVRR",CSDVRR , envir = env)
+  
+  assign("MNEMV1",MNEMV1, envir = env)
+  assign("MNFLLL",MNFLLL, envir = env)
+  assign("MNFLHM",MNFLHM, envir = env)
+  
   
   #-----------------------------------------------------------------------
   #     End Subroutine PHENOL
