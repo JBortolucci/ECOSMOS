@@ -78,11 +78,11 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     RO      <- VARAUX$RO[VARAUX$DAS==DAS]
     RP      <- VARAUX$RP[VARAUX$DAS==DAS]
     TRWUP   <- VARAUX$TRWUP[VARAUX$DAS==DAS]
-    TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]
-    SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]
+    # TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]
+    # SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]
     TAVG   <- VARAUX$TAVG[VARAUX$DAS==DAS]
     # PGAVL   <- VARAUX$PGAVL[VARAUX$DAS==DAS]
-    CMINEP   <- VARAUX$CMINEP[VARAUX$DAS==DAS]
+    # CMINEP   <- VARAUX$CMINEP[VARAUX$DAS==DAS]
     
     SW     <-  as.double(SW_T[DAS,][-1])
     ST     <-  as.double(ST_T[DAS,][-1])
@@ -295,21 +295,30 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #     DAILY RATE CALCULATIONS
       #***********************************************************************
       DYNAMIC = 'RATE'
-      if (YRDOY > YREMRG & YREMRG > 0 & ISWWAT == 'Y') {
-        #       Calculate daily water stess factors (from SWFACS)
-        #       EOP in mm/d
-        #       TRWUP and EP1 in cm/d
-        SWFAC  = 1.0
-        TURFAC = 1.0
-        # if (EOP > 0.001) {
-        #   EP1 = EOP * 0.1
-        #   if (TRWUP / EP1 < RWUEP1) {
-        #     TURFAC = (1./RWUEP1) * TRWUP / EP1
-        #   }
-        #   if (EP1 >= TRWUP) {
-        #     SWFAC = TRWUP / EP1
-        #   }
-        # }
+      if (YREMRG != -99){
+        # TODO: adaptação para funcao timdif 
+        yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
+        yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
+        
+        yremrg <- as.character(paste0(substr(YREMRG,1,4),'-01-01'))
+        yremrg <- as.Date(yremrg)+as.numeric(substr(YREMRG,5,7))-1
+        
+        if (yrdoy > yremrg & yremrg > 0 & ISWWAT == 'Y') {
+          #       Calculate daily water stess factors (from SWFACS)
+          #       EOP in mm/d
+          #       TRWUP and EP1 in cm/d
+          SWFAC  = 1.0
+          TURFAC = 1.0
+          if (EOP > 0.001) {
+            EP1 = EOP * 0.1
+            if (TRWUP / EP1 < RWUEP1) {
+              TURFAC = (1./RWUEP1) * TRWUP / EP1
+            }
+            if (EP1 >= TRWUP) {
+              SWFAC = TRWUP / EP1
+            }
+          }
+        }
       }
       
       #-----------------------------------------------------------------------
@@ -875,6 +884,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("CGRSD", CGRSD, envir = env)
   assign("CTONODR", CTONODR, envir = env)
   assign("CGRSH", CGRSH, envir = env)
+  assign("TURFAC", TURFAC, envir = env)
+  assign("SWFAC", SWFAC, envir = env)
 }
 
 

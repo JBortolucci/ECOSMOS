@@ -112,7 +112,6 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   #               S = On specified date
   
   
-  NSTRES   <- 1 #Nitrogen stress factor (1=no stress, 0=max stress) 
   PStres2  <- 1 
   
   
@@ -257,8 +256,8 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     TDUMX2 = 0.0
     TNTFAC = 0.0
     TNTFC2 = 0.0
-    SWFAC  = 1.0
-    TURFAC = 1.0
+    # SWFAC  = 1.0
+    # TURFAC = 1.0
     FNSTR <- rep(1,20)
     FPSTR <- rep(1,20)
     FSW   <- rep(1,20)
@@ -346,11 +345,12 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #         EOP = EO * (1.0-EXP(-LAI*KEP)) * TRATIO
     #        EOP = max(EOP,0.0)
     
-    SWFAC  = 1.0
-    TURFAC = 1.0
-    # if(stresstl<=0.9) TURFAC = (1./RWUEP1) * stresstl 
-    # if(stresstl<=0.9) SWFAC  = stresstl 
-    
+    # TODO: Lembrar dessas variaveis
+    # SWFAC  = 1.0
+    # TURFAC = 1.0
+    # if(stresstl<=0.9) TURFAC = (1./RWUEP1) * stresstl
+    # if(stresstl<=0.9) SWFAC  = stresstl
+
     #        if (EOP > 0.001) {
     #        EP1 = EOP * 0.1           # EOP mm and EP1 cm
     #        if ((TRWUP/EP1) < RWUEP1) {TURFAC = (1./RWUEP1) * TRWUP / EP1  }
@@ -372,7 +372,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       for (I in 1:TS) {
         
         # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
-        if (DAS < 112) TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+        TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
         
         FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
         FT[J] = FT[J] + FTHR/TS
@@ -851,7 +851,6 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     #     Check for first flower, stage 6, end of phase 5
     #-------------------------------------------------------------------------------
-    # if(DAS == 13) browser()
     if (DAS >= NVALPH[NPRIOR[5]] & NR1 >= NVALP0) {
       
       PROG[5] = FT[5] * FUDAY[5] * min(FSW[5],FNSTR[5],FPSTR[5]) * REM[NPRIOR[5]]

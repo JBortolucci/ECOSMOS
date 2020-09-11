@@ -2760,19 +2760,18 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   #NAGE <- 0
   #I
   #TIMDIF
-  NR1TIM <- 0
-  NR2TIM <- 0
+  # NR1TIM <- 0
+  # NR2TIM <- 0
   
   #TODO ver como está sendo usado no ECOSMOS, Santiago
   YRDOY  <- paste0(iyear,jday) 
   YRPLT  <- YRDOY #TODO ver como está sendo usado no ECOSMOS
   
-  TRIGGR <- 0
   
   # TODO: Verificar Stress
   PStres2 <- 1
   # NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
-  SWFAC   <- 1 # water stress factor (verificar de onde vem no ECOSMOS)
+  # SWFAC   <- 1 # water stress factor (verificar de onde vem no ECOSMOS)
   
   # DLAYR  <- rep(0, NL)
   DLAYR <-  c(10.0000000, 10.0000000, 10.0000000, 10.0000000, 10.0000000 ,      10.0000000 ,      30.0000000 ,      30.0000000 ,      30.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000 )
@@ -2905,407 +2904,441 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
     #***********************************************************************
     #     Seed growth section
     #-----------------------------------------------------------------------
-    if (YRDOY >= YRNR1 & YRNR1 > 0) {
-      
-      # TODO: adaptação para funcao timdif 
+    if (YRNR1 != -99){
       yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
       yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
       
       yrnr1 <- as.character(paste0(substr(YRNR1,1,4),'-01-01'))
       yrnr1 <- as.Date(yrnr1)+as.numeric(substr(YRNR1,5,7))-1
-      
-      NR1TIM <- max(as.numeric(yrdoy-yrnr1),0)
-      
-      # NR1TIM <- max(TIMDIF(YRNR1,YRDOY),0) #TODO tradução timdif 
-      #-----------------------------------------------------------------------
-      PGAVLR <- PGAVL * XFRT
-      assign("PGAVLR",PGAVLR, envir = env)
-      
-      #-----------------------------------------------------------------------
-      #     Nitrogen stress; 8-Day moving average.
-      #     Slow response to change in N stress.
-      #-----------------------------------------------------------------------
-      CNSTRES <- 0.875 * CNSTRES + 0.125 * NSTRES
-      CPSTRES <- 0.875 * CPSTRES + 0.125 * PStres2
-      #     chp added CPSTRES here, but not implemented -- need Ken's input
-      #     03/24/2004
-      #-----------------------------------------------------------------------
-      #     Calculate insect feeding and puncture damage
-      #-----------------------------------------------------------------------
-      REDPUN <- 1.0
-      if (PUNCSD > 0.0) {
-        REDPUN <- REDPUN - (PUNCTR/PUNCSD) * RPRPUN
-        REDPUN <- max(0.0,REDPUN)
-      } else {
-        REDPUN <- 1.0
-      }
-      if (YRDOY > YRNR2 & YRNR2 > 0) {
+      # if (YRDOY >= YRNR1 & YRNR1 > 0) {
+      if (yrdoy >= yrnr1 & yrnr1 > 0) {
+        
         # TODO: adaptação para funcao timdif 
-        yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
-        yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
         
-        yrnr2 <- as.character(paste0(substr(YRNR2,1,4),'-01-01'))
-        yrnr2 <- as.Date(yrnr2)+as.numeric(substr(YRNR2,5,7))-1
+        NR1TIM <- max(as.numeric(yrdoy-yrnr1),0)
         
-        NR2TIM <- max(as.numeric(yrdoy-yrnr2),0)
-        
-        # NR2TIM <- max(TIMDIF(YRNR2,YRDOY),0) #TODO tradução timedif 
+        # NR1TIM <- max(TIMDIF(YRNR1,YRDOY),0) #TODO tradução timdif 
         #-----------------------------------------------------------------------
-        #     Remember yesterdays mature shell weight, WTSHMY
-        #-----------------------------------------------------------------------
-        WTSHMY <- WTSHM
-        WTSHM <- 0.0
-        for (NPP in 1:NR2TIM) { 
-          if (NPP > NCOHORTS) {
-            # TODO: Escrever mensagem de aviso
-          }
-          #-----------------------------------------------------------------------
-          #     Compute physiological age of cohort
-          #-----------------------------------------------------------------------
-          PAGE <- PHTIM[NR2TIM + 1] - PHTIM[NPP]
-          #-----------------------------------------------------------------------
-          #     Prevent seeds from growing until they are older than LAGSD p-t-d
-          #-----------------------------------------------------------------------
-          #           if (PAGE < LAGSD) GO TO 800
-          if (PAGE >= LAGSD) {
-            #-----------------------------------------------------------------------
-            #     Prevent cohort from exceeding threshing limit, considering
-            #     damaged seed (SDDES) that were damaged without shell loss ***wdb??
-            #-----------------------------------------------------------------------
-            if (SDDES[NPP] > 0.0) {
-              REDSHL <- WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
-            } else {
-              REDSHL <- 0.
-            }
-            SDMAX <- (WTSHE[NPP]-REDSHL)*THRESH/(100.-THRESH)-WTSD[NPP]
-            SDMAX <- max(0.0,SDMAX)
-            #-----------------------------------------------------------------------
-            #     Compute shell wt of cohorts that are full
-            #-----------------------------------------------------------------------
-            if (SDMAX <= 0.0) WTSHM <- WTSHM + WTSHE[NPP]
-          }
-        }
-        #-----------------------------------------------------------------------
-        #     Compute cohorts of shell wt. that reach THRESH today
-        #-----------------------------------------------------------------------
-        WTSHMT <- WTSHM - WTSHMY
+        PGAVLR <- PGAVL * XFRT
+        assign("PGAVLR",PGAVLR, envir = env)
         
         #-----------------------------------------------------------------------
-        #     Modification of seed composition
+        #     Nitrogen stress; 8-Day moving average.
+        #     Slow response to change in N stress.
         #-----------------------------------------------------------------------
-        #       This section of code provides an alternative to calling PODCOMP
-        #       routine.  Currently, both are done.
+        CNSTRES <- 0.875 * CNSTRES + 0.125 * NSTRES
+        CPSTRES <- 0.875 * CPSTRES + 0.125 * PStres2
+        #     chp added CPSTRES here, but not implemented -- need Ken's input
+        #     03/24/2004
         #-----------------------------------------------------------------------
-        RSD = 1.0
-        if (GDMSD > 0.0001) {
-          CRSD <- min(PGAVLR / (GDMSD*AGRSD1), 1.0)
-          NREQ <- FNINSD * min(PGAVLR/AGRSD1, GDMSD)
-          if (NREQ > 0.0) {
-            NRSD <- NAVL / NREQ
-          } else {
-            NRSD <- 1.0
-          }
-          RSD <- min(CRSD, NRSD, 1.0)
+        #     Calculate insect feeding and puncture damage
+        #-----------------------------------------------------------------------
+        REDPUN <- 1.0
+        if (PUNCSD > 0.0) {
+          REDPUN <- REDPUN - (PUNCTR/PUNCSD) * RPRPUN
+          REDPUN <- max(0.0,REDPUN)
+        } else {
+          REDPUN <- 1.0
         }
         
-        AGRSD3 <- AGRSD1
-        ANINSD <- FNINSD
-        
-        #-----------------------------------------------------------------------
-        #     Detailed seed composition calculations
-        #-----------------------------------------------------------------------
-        
-        PODCOMP(DYNAMIC, NAVL)
-        
-        #-----------------------------------------------------------------------
-        #     Grow seed cohorts
-        #-----------------------------------------------------------------------
-        for (NPP in 1:NR2TIM) { 
-          PAGE <- PHTIM[NR2TIM + 1] - PHTIM[NPP]
-          #           if (PAGE < LAGSD) GO TO 1300
-          if (PAGE >= LAGSD) {
-            if (SDDES[NPP] > 0.0) {
-              REDSHL <- WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
-            } else {
-              REDSHL <- 0.
-            }
-            SDMAX <- (WTSHE[NPP]-REDSHL)*THRESH/(100.-THRESH)-WTSD[NPP]
-            SDMAX <- max(0.0,SDMAX) * (1. + TURADD)
-            WTSD[NPP] <- WTSD[NPP]+RSD*min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
-            #-----------------------------------------------------------------------
-            #     New Seed Tissue Growth, for updating crop seed mass
-            #         in GROW, N Required
-            #-----------------------------------------------------------------------
-            WSDDTN <- WSDDTN + RSD * min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
-            NGRSD <- NGRSD+ANINSD*RSD*min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
-          }
-        }
-        #-----------------------------------------------------------------------
-      }           #End of YRDOY>YRNR2 Seed growth section
-      
-      #***********************************************************************
-      #     Shell section
-      #-----------------------------------------------------------------------
-      PGLEFT <- max(0.0,(PGAVLR - WSDDTN*AGRSD3))
-      NLEFT  <- max(0.0,(NAVL - NGRSD))
-      PGNPOD <- PGLEFT
-      NAVPOD <- NLEFT
-      #-----------------------------------------------------------------------
-      #     Calculate function for modifying pod setting with temperature
-      #-----------------------------------------------------------------------
-      TEMPOD <- 0.
-      for (I in 1:TS) {
-        TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
-        # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
-        
-        TEMPOD <- TEMPOD + CURV(TYPPDT,FNPDT[1],FNPDT[2],FNPDT[3],FNPDT[4],TGRO[I])
-      }
-      
-      # ALTERADO: REAL(TS) é conversão para tipo REAL, não é necessário aqui.
-      TEMPOD <- TEMPOD / TS
-      # 24 changed to TS on 3Jul17 by Bruce Kimball
-      
-      #-----------------------------------------------------------------------
-      #     Avg soil water (SWBAR) over DSWBAR depth to affect flower,
-      #         pod addition
-      #-----------------------------------------------------------------------
-      if (ISWWAT == 'Y') {
-        ACTSW <- 0.0
-        POTSW <- 0.0
-        DSW <- 0.0
-        for (I in 1:NLAYR) {
-          DSW <- DSW + DLAYR[I]
-          FLAYR <- 1.0
-          if (DSW > DSWBAR) {
-            FLAYR <- (DSWBAR-(DSW-DLAYR[I]))/DLAYR[I]
-          }
-          ACTSW <- ACTSW + (SW[I] - LL[I]) * DLAYR[I] * FLAYR
-          POTSW <- POTSW + (DUL[I] - LL[I]) * DLAYR[I] * FLAYR
+        if (YRNR2 != -99){
+          # TODO: adaptação para funcao timdif 
+          yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
+          yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
           
-          # ALTERADO: GOTO era a forma do fortran parar o laço de repetição, no R usa-se break
-          if ( FLAYR < 1.0 ) break() # GO TO 401 #TODO
-          
-        }
-        
-        SWBAR <- ACTSW / POTSW
-        SWBAR <- min(SWBAR,1.0)
-        SWBAR <- max(SWBAR,0.0)
-        
-      } else {
-        SWBAR <- 1.0
-      }
-      #-----------------------------------------------------------------------
-      #     Soil water factor (SWADD1), and Water stress factor (SWADD2)
-      #-----------------------------------------------------------------------
-      SWADD1 <- TABEX (YSWBAR,XSWBAR,SWBAR,5)
-      SWADD2 <- TABEX (YSWFAC,XSWFAC,SWFAC,4)
-      #-----------------------------------------------------------------------
-      SHMAXG <- SHVAR
-      #-----------------------------------------------------------------------
-      #     This section calculates shell growth after first pod (NR2)
-      #-----------------------------------------------------------------------
-      if (YRDOY > YRNR2 & YRNR2 > 0) {
-        for (NPP in 1:NR2TIM) { 
-          NAGE <- NR2TIM + 1 - NPP
-          PAGE <- PHTIM[NR2TIM + 1] - PHTIM[NPP]
-          ADDSHL <- 0.0
-          SUPDAY <- 1.0
-          if (PAGE <= LNGSH) {
-            if (SHELN[NPP] >= 0.001 & GRRAT1 >= 0.001) {
-              if (PAGE >= LNGPEG) {
-                ADDSHL <- min(PGLEFT/AGRSH1,GRRAT1 * SHELN[NPP], NLEFT/(FNINSH*CNSTRES^0.5))
-                SUPDAY <- min((PGLEFT/AGRSH1)/(GRRAT1*SHELN[NPP]), (NLEFT/(FNINSH*CNSTRES^0.5))/(GRRAT1 * SHELN[NPP]), SWADD1)
-                if (SUPDAY >= 1.0) SUPDAY = 1.0
-              } else {
-                if (SHLAG < 0.001) SHLAG = 0.001
-                ADDSHL <- min(PGLEFT/AGRSH1 ,GRRAT1*SHELN[NPP]*SHLAG, NLEFT/(FNINSH*CNSTRES^0.5))
-                SUPDAY <- min((PGLEFT/AGRSH1)/(GRRAT1*SHELN[NPP]*SHLAG),
-                              (NLEFT/(FNINSH*CNSTRES^0.5))/(GRRAT1*SHELN[NPP]*SHLAG), SWADD1)
-                if (SUPDAY >= 1.0) SUPDAY = 1.0
+          yrnr2 <- as.character(paste0(substr(YRNR2,1,4),'-01-01'))
+          yrnr2 <- as.Date(yrnr2)+as.numeric(substr(YRNR2,5,7))-1
+          # if (YRDOY > YRNR2 & YRNR2 > 0) {
+          if (yrdoy > yrnr2 & yrnr2 > 0) {
+            
+            NR2TIM <- max(as.numeric(yrdoy-yrnr2),0)
+            
+            # NR2TIM <- max(TIMDIF(YRNR2,YRDOY),0) #TODO tradução timedif 
+            #-----------------------------------------------------------------------
+            #     Remember yesterdays mature shell weight, WTSHMY
+            #-----------------------------------------------------------------------
+            WTSHMY <- WTSHM
+            WTSHM <- 0.0
+            for (NPP in 1:NR2TIM) { 
+              if (NPP > NCOHORTS) {
+                # TODO: Escrever mensagem de aviso
               }
               #-----------------------------------------------------------------------
-              #     Compute running avg ratio supply to demand for shell grwoth
+              #     Compute physiological age of cohort
               #-----------------------------------------------------------------------
-            }
-            if (NAGE <= 1) {
-              SUPDE[NPP] <- SUPDAY
-              AVTEM[NPP] <- TEMPOD
-            } else {
-              SUPDE[NPP] <- (SUPDE[NPP] * (NAGE-1) + SUPDAY)/NAGE
-              AVTEM[NPP] <- (AVTEM[NPP] * (NAGE-1) + TEMPOD)/NAGE
-            }
-            #-----------------------------------------------------------------------
-            #     Compute overall growth of all shells, total N required
-            #     and the remaining C (PGLEFT) and N (LEFT)
-            #-----------------------------------------------------------------------
-            WSHDTN <- WSHDTN + ADDSHL
-            NGRSH <- NGRSH + ADDSHL * PROSHI * 0.16 * CNSTRES^0.5
-            if (PGLEFT < 1.0E-6) PGLEFT=0.0          #NBP
-            if (ADDSHL < 1.0E-6) ADDSHL=0.0          #NBP
-            PGLEFT <- max(0.0,(PGLEFT - ADDSHL * AGRSH1))
-            NLEFT  <- max(0.0,(NLEFT - ADDSHL * (FNINSH*CNSTRES^0.5)))
-          }
-          #-----------------------------------------------------------------------
-          #     Grow shells if greater than 1 day old
-          #-----------------------------------------------------------------------
-          SHMINE <- 0.0
-          if (SDDES[NPP] > 0.0) {
-            REDSHL <- WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
-          } else {
-            REDSHL <- 0.
-          }
-          SDMAXX <- (WTSHE[NPP]-REDSHL) * THRESH/(100. - THRESH)
-          if (SHELWT-WTSHM > 0.0 & SDMAXX >= WTSD[NPP]) {
-            SHMINE <- NRUSSH/0.16 * WTSHE[NPP]/(SHELWT - WTSHM)
-          }
-          WTSHE[NPP] <- WTSHE[NPP] + ADDSHL - max(SHMINE,0.0)
-        }
-        #-----------------------------------------------------------------------
-        #     Set seeds based on ratio of supply to demand for shells,
-        #     average temperature and night length effect
-        #     between (LAGSD) and (LAGSD+TDUMX) p-t-d age
-        #-----------------------------------------------------------------------
-        WTABRT <- 0.0
-        for (NPP in 1:NR2TIM) { 
-          PAGE <- PHTIM[NR2TIM + 1] - PHTIM[NPP]
-          if (PAGE >= LAGSD & PAGE < LAGSD + TDUMX & SDNO[NPP] <= 0.0) {
-            #-----------------------------------------------------------------------
-            #     Physiol age to set seeds
-            #-----------------------------------------------------------------------
-            if (SUPDE[NPP] >= SETMAX) {
-              SHRAT <- 1.0
-            } else {
-              SHRAT <- SUPDE[NPP]/SETMAX
-            }
-            SDNO[NPP] <- min(SHRAT, AVTEM[NPP]*(DRPP^1.0)) * SHELN[NPP]* SDPDVR + SDNO[NPP]
-            #-----------------------------------------------------------------------
-            #     Abort shells that do not form seed; abort (1-SHRAT) fraction
-            #-----------------------------------------------------------------------
-            WTABR <- 0.0
-            START <- SHELN[NPP]
-            SHELN[NPP] <- SHELN[NPP]*min(SHRAT, AVTEM[NPP]*(DRPP^1.0))
-            if (START > 0.) {
-              WTABR <- (START-SHELN[NPP])*WTSHE[NPP]/START
-            }
-            WTSHE[NPP] <- WTSHE[NPP] - WTABR
-            WTABRT <- WTABRT + WTABR
-          }
-        }
-        #-----------------------------------------------------------------------
-      }         #End of DAS>NR2 Shell growth section
-      #***********************************************************************
-      #     Add new pods and flowers
-      #     RFLWAB is relative rate of flower abortion per day because
-      #     daylength is not optimum.  The flowers that survive "NR2"
-      #     PHOTOTHERMAL days is equal to FLWRDY which can limit pod addition
-      #-----------------------------------------------------------------------
-      AFLW <- RFLWAB * (1.0 - TDUMX) * (1.0 - SWADD2)
-      FLWRDY <- 0.
-      #NR1TIM >= NPP, pois indice nao pode ser menor que 1 FLWN[NPP]
-      if (NR1TIM >= 1){
-        for (NPP in 1:NR1TIM) { 
-          if (FLWN[NPP] > 0.0001) {
-            PNAGE <- PNTIM[NR1TIM + 1] - PNTIM[NPP]
-            FLWN[NPP] <- FLWN[NPP] * (1.0 - AFLW)
-            if (PNAGE >= PHTHRS[6]) {
+              PAGE <- PHTIM[NR2TIM + 1] - PHTIM[NPP]
               #-----------------------------------------------------------------------
-              #     Allow flowers in each cohort to make pods over 2-3 days
+              #     Prevent seeds from growing until they are older than LAGSD p-t-d
               #-----------------------------------------------------------------------
-              FLWFRC <- 0.
-              if (TDUMX > 0.0001) FLWFRC <- (PNAGE-PHTHRS[6])/TDUMX
-              FLWFRC <- min(FLWFRC,1.0)
-              FLWFRC <- max(FLWFRC,0.0)
-              FLWRDY <- FLWFRC*FLWN[NPP] + FLWRDY
-              FLWN[NPP] <- (1.0-FLWFRC)*FLWN[NPP]
+              #           if (PAGE < LAGSD) GO TO 800
+              if (PAGE >= LAGSD) {
+                #-----------------------------------------------------------------------
+                #     Prevent cohort from exceeding threshing limit, considering
+                #     damaged seed (SDDES) that were damaged without shell loss ***wdb??
+                #-----------------------------------------------------------------------
+                if (SDDES[NPP] > 0.0) {
+                  REDSHL <- WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
+                } else {
+                  REDSHL <- 0.
+                }
+                SDMAX <- (WTSHE[NPP]-REDSHL)*THRESH/(100.-THRESH)-WTSD[NPP]
+                SDMAX <- max(0.0,SDMAX)
+                #-----------------------------------------------------------------------
+                #     Compute shell wt of cohorts that are full
+                #-----------------------------------------------------------------------
+                if (SDMAX <= 0.0) WTSHM <- WTSHM + WTSHE[NPP]
+              }
             }
+            #-----------------------------------------------------------------------
+            #     Compute cohorts of shell wt. that reach THRESH today
+            #-----------------------------------------------------------------------
+            WTSHMT <- WTSHM - WTSHMY
+            
+            #-----------------------------------------------------------------------
+            #     Modification of seed composition
+            #-----------------------------------------------------------------------
+            #       This section of code provides an alternative to calling PODCOMP
+            #       routine.  Currently, both are done.
+            #-----------------------------------------------------------------------
+            RSD = 1.0
+            if (GDMSD > 0.0001) {
+              CRSD <- min(PGAVLR / (GDMSD*AGRSD1), 1.0)
+              NREQ <- FNINSD * min(PGAVLR/AGRSD1, GDMSD)
+              if (NREQ > 0.0) {
+                NRSD <- NAVL / NREQ
+              } else {
+                NRSD <- 1.0
+              }
+              RSD <- min(CRSD, NRSD, 1.0)
+            }
+            
+            AGRSD3 <- AGRSD1
+            ANINSD <- FNINSD
+            
+            #-----------------------------------------------------------------------
+            #     Detailed seed composition calculations
+            #-----------------------------------------------------------------------
+            
+            PODCOMP(DYNAMIC, NAVL)
+            
+            #-----------------------------------------------------------------------
+            #     Grow seed cohorts
+            #-----------------------------------------------------------------------
+            for (NPP in 1:NR2TIM) { 
+              PAGE <- PHTIM[NR2TIM + 1] - PHTIM[NPP]
+              #           if (PAGE < LAGSD) GO TO 1300
+              if (PAGE >= LAGSD) {
+                if (SDDES[NPP] > 0.0) {
+                  REDSHL <- WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
+                } else {
+                  REDSHL <- 0.
+                }
+                SDMAX <- (WTSHE[NPP]-REDSHL)*THRESH/(100.-THRESH)-WTSD[NPP]
+                SDMAX <- max(0.0,SDMAX) * (1. + TURADD)
+                WTSD[NPP] <- WTSD[NPP]+RSD*min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
+                #-----------------------------------------------------------------------
+                #     New Seed Tissue Growth, for updating crop seed mass
+                #         in GROW, N Required
+                #-----------------------------------------------------------------------
+                WSDDTN <- WSDDTN + RSD * min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
+                NGRSD <- NGRSD+ANINSD*RSD*min(SDGR*SDNO[NPP]*REDPUN,SDMAX)
+              }
+            }
+            #-----------------------------------------------------------------------
           }
-        }
-      }
-      
-      PMAX <- PGAVLR/(SDVAR*AGRSD1*SDPDVR)*(1./PODUR)
-      
-      if (YRDOY >= YRNR2 & YRNR2 > 0) {
-        FLADD <- FLWRDY * TEMPOD *(DRPP^1.3)* min(SWADD1,SWADD2) *XFRT
-        if (DAS > NDSET & MNESPM > 0.) {
-          ACCAGE <- ACCAGE + TEMPOD * DRPP * SWFAC / MNESPM
-          ACCAGE <- min(1.0,ACCAGE)
-        }
+        }#End of YRDOY>YRNR2 Seed growth section
+        
+        #***********************************************************************
+        #     Shell section
         #-----------------------------------------------------------------------
-        #    Reduce pod addition from END POD SET to physiological maturity
-        #    DRPP**1.3 makes smaller and more sentitive to long days
-        #    Scale pod addition to RNITP, leaf N for photo purporses
+        PGLEFT <- max(0.0,(PGAVLR - WSDDTN*AGRSD3))
+        NLEFT  <- max(0.0,(NAVL - NGRSD))
+        PGNPOD <- PGLEFT
+        NAVPOD <- NLEFT
         #-----------------------------------------------------------------------
-        RNITPD <- (RNITP*0.01-PROLFF*0.16)/(FNINL-PROLFF*0.16)
-        RNITPD <- min(1.1,RNITPD)
-        RNITPD <- max(0.1,RNITPD)
-        PODADD <- PMAX * TEMPOD * (DRPP^1.3) * min(SWADD1,SWADD2,RNITPD) * max((1.0 - ACCAGE),0.0)
-        #    &       * max((1.0 - ACCAGE),0.0) * (1.0 + TURADD)
-        SHELN[NR2TIM + 1] = min(PODADD, PGNPOD/(SHMAXG*AGRSH1), FLADD, NAVPOD/(SHMAXG*(FNINSH*CNSTRES^0.5)))
+        #     Calculate function for modifying pod setting with temperature
         #-----------------------------------------------------------------------
-        #    KJB ADDED 1/27/96.  2 CONDITIONS: NDSET AND TRIGGER (CUMSIG >.98)
-        #    MUST BE MET TO STOP POD ADDITION.  THUS, IF WE ARE THRU THE WINDOW
-        #    AND FULL LOAD IS SET, { NO LATE PODS AND FLOWERS CAN BE ADDED
-        #    PRESENTLY NDSET WAS PLACED TO R7 IN SOYBEAN.  MOVE IT EARLIER
-        #    SO WE CAN PREVENT FUNNY LATE BUMPS (WMS-88, 84RF) OCCURRING AFTER
-        #    FULL LOAD IS APPARENTLY SET, BUT DROUGHT IS RELEASED.
-        #-----------------------------------------------------------------------
-        if (TRIGGR == 0 & CUMSIG < 0.98) {
-          TRIGGR <- 1
+        TEMPOD <- 0.
+        for (I in 1:TS) {
+          TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+          # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
+          
+          TEMPOD <- TEMPOD + CURV(TYPPDT,FNPDT[1],FNPDT[2],FNPDT[3],FNPDT[4],TGRO[I])
         }
         
+        # ALTERADO: REAL(TS) é conversão para tipo REAL, não é necessário aqui.
+        TEMPOD <- TEMPOD / TS
+        # 24 changed to TS on 3Jul17 by Bruce Kimball
+        
+        #-----------------------------------------------------------------------
+        #     Avg soil water (SWBAR) over DSWBAR depth to affect flower,
+        #         pod addition
+        #-----------------------------------------------------------------------
+        if (ISWWAT == 'Y') {
+          ACTSW <- 0.0
+          POTSW <- 0.0
+          DSW <- 0.0
+          for (I in 1:NLAYR) {
+            DSW <- DSW + DLAYR[I]
+            FLAYR <- 1.0
+            if (DSW > DSWBAR) {
+              FLAYR <- (DSWBAR-(DSW-DLAYR[I]))/DLAYR[I]
+            }
+            ACTSW <- ACTSW + (SW[I] - LL[I]) * DLAYR[I] * FLAYR
+            POTSW <- POTSW + (DUL[I] - LL[I]) * DLAYR[I] * FLAYR
+            
+            # ALTERADO: GOTO era a forma do fortran parar o laço de repetição, no R usa-se break
+            if ( FLAYR < 1.0 ) break() # GO TO 401 #TODO
+            
+          }
+          
+          SWBAR <- ACTSW / POTSW
+          SWBAR <- min(SWBAR,1.0)
+          SWBAR <- max(SWBAR,0.0)
+          
+        } else {
+          SWBAR <- 1.0
+        }
+        #-----------------------------------------------------------------------
+        #     Soil water factor (SWADD1), and Water stress factor (SWADD2)
+        #-----------------------------------------------------------------------
+        SWADD1 <- TABEX (YSWBAR,XSWBAR,SWBAR,5)
+        SWADD2 <- TABEX (YSWFAC,XSWFAC,SWFAC,4)
+        #-----------------------------------------------------------------------
+        SHMAXG <- SHVAR
+        #-----------------------------------------------------------------------
+        #     This section calculates shell growth after first pod (NR2)
+        #-----------------------------------------------------------------------
+        if (YRNR2 != -99){
+          # TODO: adaptação para funcao timdif 
+          yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
+          yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
+          
+          yrnr2 <- as.character(paste0(substr(YRNR2,1,4),'-01-01'))
+          yrnr2 <- as.Date(yrnr2)+as.numeric(substr(YRNR2,5,7))-1
+          
+        if (yrdoy > yrnr2 & yrnr2 > 0) {
+          for (NPP in 1:NR2TIM) { 
+            NAGE <- NR2TIM + 1 - NPP
+            PAGE <- PHTIM[NR2TIM + 1] - PHTIM[NPP]
+            ADDSHL <- 0.0
+            SUPDAY <- 1.0
+            if (PAGE <= LNGSH) {
+              if (SHELN[NPP] >= 0.001 & GRRAT1 >= 0.001) {
+                if (PAGE >= LNGPEG) {
+                  ADDSHL <- min(PGLEFT/AGRSH1,GRRAT1 * SHELN[NPP], NLEFT/(FNINSH*CNSTRES^0.5))
+                  SUPDAY <- min((PGLEFT/AGRSH1)/(GRRAT1*SHELN[NPP]), (NLEFT/(FNINSH*CNSTRES^0.5))/(GRRAT1 * SHELN[NPP]), SWADD1)
+                  if (SUPDAY >= 1.0) SUPDAY = 1.0
+                } else {
+                  if (SHLAG < 0.001) SHLAG = 0.001
+                  ADDSHL <- min(PGLEFT/AGRSH1 ,GRRAT1*SHELN[NPP]*SHLAG, NLEFT/(FNINSH*CNSTRES^0.5))
+                  SUPDAY <- min((PGLEFT/AGRSH1)/(GRRAT1*SHELN[NPP]*SHLAG),
+                                (NLEFT/(FNINSH*CNSTRES^0.5))/(GRRAT1*SHELN[NPP]*SHLAG), SWADD1)
+                  if (SUPDAY >= 1.0) SUPDAY = 1.0
+                }
+                #-----------------------------------------------------------------------
+                #     Compute running avg ratio supply to demand for shell grwoth
+                #-----------------------------------------------------------------------
+              }
+              if (NAGE <= 1) {
+                SUPDE[NPP] <- SUPDAY
+                AVTEM[NPP] <- TEMPOD
+              } else {
+                SUPDE[NPP] <- (SUPDE[NPP] * (NAGE-1) + SUPDAY)/NAGE
+                AVTEM[NPP] <- (AVTEM[NPP] * (NAGE-1) + TEMPOD)/NAGE
+              }
+              #-----------------------------------------------------------------------
+              #     Compute overall growth of all shells, total N required
+              #     and the remaining C (PGLEFT) and N (LEFT)
+              #-----------------------------------------------------------------------
+              WSHDTN <- WSHDTN + ADDSHL
+              NGRSH <- NGRSH + ADDSHL * PROSHI * 0.16 * CNSTRES^0.5
+              if (PGLEFT < 1.0E-6) PGLEFT=0.0          #NBP
+              if (ADDSHL < 1.0E-6) ADDSHL=0.0          #NBP
+              PGLEFT <- max(0.0,(PGLEFT - ADDSHL * AGRSH1))
+              NLEFT  <- max(0.0,(NLEFT - ADDSHL * (FNINSH*CNSTRES^0.5)))
+            }
+            #-----------------------------------------------------------------------
+            #     Grow shells if greater than 1 day old
+            #-----------------------------------------------------------------------
+            SHMINE <- 0.0
+            if (SDDES[NPP] > 0.0) {
+              REDSHL <- WTSHE[NPP]*SDDES[NPP]/(SDDES[NPP]+SDNO[NPP])
+            } else {
+              REDSHL <- 0.
+            }
+            SDMAXX <- (WTSHE[NPP]-REDSHL) * THRESH/(100. - THRESH)
+            if (SHELWT-WTSHM > 0.0 & SDMAXX >= WTSD[NPP]) {
+              SHMINE <- NRUSSH/0.16 * WTSHE[NPP]/(SHELWT - WTSHM)
+            }
+            WTSHE[NPP] <- WTSHE[NPP] + ADDSHL - max(SHMINE,0.0)
+          }
+          #-----------------------------------------------------------------------
+          #     Set seeds based on ratio of supply to demand for shells,
+          #     average temperature and night length effect
+          #     between (LAGSD) and (LAGSD+TDUMX) p-t-d age
+          #-----------------------------------------------------------------------
+          WTABRT <- 0.0
+          for (NPP in 1:NR2TIM) { 
+            PAGE <- PHTIM[NR2TIM + 1] - PHTIM[NPP]
+            if (PAGE >= LAGSD & PAGE < LAGSD + TDUMX & SDNO[NPP] <= 0.0) {
+              #-----------------------------------------------------------------------
+              #     Physiol age to set seeds
+              #-----------------------------------------------------------------------
+              if (SUPDE[NPP] >= SETMAX) {
+                SHRAT <- 1.0
+              } else {
+                SHRAT <- SUPDE[NPP]/SETMAX
+              }
+              SDNO[NPP] <- min(SHRAT, AVTEM[NPP]*(DRPP^1.0)) * SHELN[NPP]* SDPDVR + SDNO[NPP]
+              #-----------------------------------------------------------------------
+              #     Abort shells that do not form seed; abort (1-SHRAT) fraction
+              #-----------------------------------------------------------------------
+              WTABR <- 0.0
+              START <- SHELN[NPP]
+              SHELN[NPP] <- SHELN[NPP]*min(SHRAT, AVTEM[NPP]*(DRPP^1.0))
+              if (START > 0.) {
+                WTABR <- (START-SHELN[NPP])*WTSHE[NPP]/START
+              }
+              WTSHE[NPP] <- WTSHE[NPP] - WTABR
+              WTABRT <- WTABRT + WTABR
+            }
+          }
+          #-----------------------------------------------------------------------
+        }  
+        }#End of DAS>NR2 Shell growth section
+        #***********************************************************************
+        #     Add new pods and flowers
+        #     RFLWAB is relative rate of flower abortion per day because
+        #     daylength is not optimum.  The flowers that survive "NR2"
+        #     PHOTOTHERMAL days is equal to FLWRDY which can limit pod addition
+        #-----------------------------------------------------------------------
+        AFLW <- RFLWAB * (1.0 - TDUMX) * (1.0 - SWADD2)
+        FLWRDY <- 0.
+        #NR1TIM >= NPP, pois indice nao pode ser menor que 1 FLWN[NPP]
+        if (NR1TIM >= 1){
+          for (NPP in 1:NR1TIM) { 
+            if (FLWN[NPP] > 0.0001) {
+              PNAGE <- PNTIM[NR1TIM + 1] - PNTIM[NPP]
+              FLWN[NPP] <- FLWN[NPP] * (1.0 - AFLW)
+              if (PNAGE >= PHTHRS[6]) {
+                #-----------------------------------------------------------------------
+                #     Allow flowers in each cohort to make pods over 2-3 days
+                #-----------------------------------------------------------------------
+                FLWFRC <- 0.
+                if (TDUMX > 0.0001) FLWFRC <- (PNAGE-PHTHRS[6])/TDUMX
+                FLWFRC <- min(FLWFRC,1.0)
+                FLWFRC <- max(FLWFRC,0.0)
+                FLWRDY <- FLWFRC*FLWN[NPP] + FLWRDY
+                FLWN[NPP] <- (1.0-FLWFRC)*FLWN[NPP]
+              }
+            }
+          }
+        }
+        
+        PMAX <- PGAVLR/(SDVAR*AGRSD1*SDPDVR)*(1./PODUR)
+        
+        if (YRNR2 != -99){
+          # TODO: adaptação para funcao timdif 
+          yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
+          yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
+          
+          yrnr2 <- as.character(paste0(substr(YRNR2,1,4),'-01-01'))
+          yrnr2 <- as.Date(yrnr2)+as.numeric(substr(YRNR2,5,7))-1
+          
+        if (yrdoy >= yrnr2 & yrnr2 > 0) {
+          FLADD <- FLWRDY * TEMPOD *(DRPP^1.3)* min(SWADD1,SWADD2) *XFRT
+          if (DAS > NDSET & MNESPM > 0.) {
+            ACCAGE <- ACCAGE + TEMPOD * DRPP * SWFAC / MNESPM
+            ACCAGE <- min(1.0,ACCAGE)
+          }
+          #-----------------------------------------------------------------------
+          #    Reduce pod addition from END POD SET to physiological maturity
+          #    DRPP**1.3 makes smaller and more sentitive to long days
+          #    Scale pod addition to RNITP, leaf N for photo purporses
+          #-----------------------------------------------------------------------
+          RNITPD <- (RNITP*0.01-PROLFF*0.16)/(FNINL-PROLFF*0.16)
+          RNITPD <- min(1.1,RNITPD)
+          RNITPD <- max(0.1,RNITPD)
+          PODADD <- PMAX * TEMPOD * (DRPP^1.3) * min(SWADD1,SWADD2,RNITPD) * max((1.0 - ACCAGE),0.0)
+          #    &       * max((1.0 - ACCAGE),0.0) * (1.0 + TURADD)
+          SHELN[NR2TIM + 1] = min(PODADD, PGNPOD/(SHMAXG*AGRSH1), FLADD, NAVPOD/(SHMAXG*(FNINSH*CNSTRES^0.5)))
+          #-----------------------------------------------------------------------
+          #    KJB ADDED 1/27/96.  2 CONDITIONS: NDSET AND TRIGGER (CUMSIG >.98)
+          #    MUST BE MET TO STOP POD ADDITION.  THUS, IF WE ARE THRU THE WINDOW
+          #    AND FULL LOAD IS SET, { NO LATE PODS AND FLOWERS CAN BE ADDED
+          #    PRESENTLY NDSET WAS PLACED TO R7 IN SOYBEAN.  MOVE IT EARLIER
+          #    SO WE CAN PREVENT FUNNY LATE BUMPS (WMS-88, 84RF) OCCURRING AFTER
+          #    FULL LOAD IS APPARENTLY SET, BUT DROUGHT IS RELEASED.
+          #-----------------------------------------------------------------------
+          if (TRIGGR == 0 & CUMSIG < 0.98) {
+            TRIGGR <- 1
+          }
+          
+          if (DAS >= NDSET & TRIGGR == 1) {
+            SHELN[NR2TIM + 1] <- 0.0
+          }
+          #-----------------------------------------------------------------------
+        }  
+        }#End of DAS>NR2 Pod and flower growth section
+        #-----------------------------------------------------------------------
+        FLWADD <- 2. * PMAX * TEMPOD * (DRPP^1.3) * min(SWADD1,SWADD2,CNSTRES^0.5)
+        #    &     min(SWADD1,SWADD2,CNSTRES**0.5) * (1.0 + TURADD)
+        FLWN[NR1TIM + 1] <- min(FLWADD,PGNPOD/(SHMAXG*0.1*AGRSH1), NAVPOD/(SHMAXG*0.1*(FNINSH*CNSTRES^0.5)))
         if (DAS >= NDSET & TRIGGR == 1) {
-          SHELN[NR2TIM + 1] <- 0.0
+          FLWN[NR1TIM + 1] <- 0.
         }
         #-----------------------------------------------------------------------
-      }         #End of DAS>NR2 Pod and flower growth section
-      #-----------------------------------------------------------------------
-      FLWADD <- 2. * PMAX * TEMPOD * (DRPP^1.3) * min(SWADD1,SWADD2,CNSTRES^0.5)
-      #    &     min(SWADD1,SWADD2,CNSTRES**0.5) * (1.0 + TURADD)
-      FLWN[NR1TIM + 1] <- min(FLWADD,PGNPOD/(SHMAXG*0.1*AGRSH1), NAVPOD/(SHMAXG*0.1*(FNINSH*CNSTRES^0.5)))
-      if (DAS >= NDSET & TRIGGR == 1) {
-        FLWN[NR1TIM + 1] <- 0.
-      }
-      #-----------------------------------------------------------------------
-      #     Calculate number of pods, including those with and without seeds
-      #-----------------------------------------------------------------------
-      SEEDNO <- 0.0
-      PODNO <- 0.0
-      
-      #-----------------------------------------------------------------------
-      if (YRDOY >= YRNR2 & YRNR2 > 0) {
+        #     Calculate number of pods, including those with and without seeds
+        #-----------------------------------------------------------------------
+        SEEDNO <- 0.0
+        PODNO <- 0.0
         
-        #TODO VERIFICAR: aparentemente usado apenas para "snap bean"
-        #CALL FreshWt(INTEGR, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
+        #-----------------------------------------------------------------------
+        if (YRNR2 != -99){
+          # TODO: adaptação para funcao timdif 
+          yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
+          yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
+          
+          yrnr2 <- as.character(paste0(substr(YRNR2,1,4),'-01-01'))
+          yrnr2 <- as.Date(yrnr2)+as.numeric(substr(YRNR2,5,7))-1
         
-        for (NPP in 1:(NR2TIM + 1)) { 
-          #-----------------------------------------------------------------------
-          PAGE <- PHTIM[NR2TIM + 1] - PHTIM[NPP]
-          #-----------------------------------------------------------------------
-          if (PAGE > LNGPEG) {
-            PODNO <- PODNO + SHELN[NPP]
-            SEEDNO <- SEEDNO + SDNO[NPP]
-            if (PAGE >= LAGSD) {
-              if (SDDES[NPP] > 0.0) {
-                REDSHL <- WTSHE[NPP] * SDDES[NPP] / (SDDES[NPP] + SDNO[NPP])
-              } else {
-                REDSHL <- 0.
-              }
-              SDMAXX <- (WTSHE[NPP]-REDSHL) * THRESH/(100. - THRESH)
-              if ((WTSD[NPP] >= 0.95 * SDMAXX) & (WTSHE[NPP] > 0.001) | (PAGE > XMPAGE)) {
-                PODMAT <- PODMAT + SHELN[NPP]
+        if (yrdoy >= yrnr2 & yrnr2 > 0) {
+          
+          #TODO VERIFICAR: aparentemente usado apenas para "snap bean"
+          #CALL FreshWt(INTEGR, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
+          
+          for (NPP in 1:(NR2TIM + 1)) { 
+            #-----------------------------------------------------------------------
+            PAGE <- PHTIM[NR2TIM + 1] - PHTIM[NPP]
+            #-----------------------------------------------------------------------
+            if (PAGE > LNGPEG) {
+              PODNO <- PODNO + SHELN[NPP]
+              SEEDNO <- SEEDNO + SDNO[NPP]
+              if (PAGE >= LAGSD) {
+                if (SDDES[NPP] > 0.0) {
+                  REDSHL <- WTSHE[NPP] * SDDES[NPP] / (SDDES[NPP] + SDNO[NPP])
+                } else {
+                  REDSHL <- 0.
+                }
+                SDMAXX <- (WTSHE[NPP]-REDSHL) * THRESH/(100. - THRESH)
+                if ((WTSD[NPP] >= 0.95 * SDMAXX) & (WTSHE[NPP] > 0.001) | (PAGE > XMPAGE)) {
+                  PODMAT <- PODMAT + SHELN[NPP]
+                }
               }
             }
           }
         }
       }
-      
-      #-----------------------------------------------------------------------
-      if (PODMAT > 0. & PODNO > 0.) {
-        PCTMAT <- PODMAT*100./PODNO
-      }
-      
-      #-----------------------------------------------------------------------
-    }             #End of section for YRDOY>YRNR1
+        
+        #-----------------------------------------------------------------------
+        if (PODMAT > 0. & PODNO > 0.) {
+          PCTMAT <- PODMAT*100./PODNO
+        }
+        
+        #-----------------------------------------------------------------------
+      } 
+    }#End of section for YRDOY>YRNR1
     #-----------------------------------------------------------------------
     #    Leave PODS with : NGRSD  : New N Used for New Seed Growth
     #                      NGRSH  : New N Used for New Shell Growth
@@ -3687,8 +3720,8 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   
   # TODO: Verificar Stress
   PStres2 <- 1
-  NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
-  SWFAC   <- 1 # water stress factor (verificar de onde vem no ECOSMOS)
+  # NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
+  # SWFAC   <- 1 # water stress factor (verificar de onde vem no ECOSMOS)
   
   
   #***********************************************************************
@@ -4210,10 +4243,19 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
     SL10 = (TDLM[1] - TDLM[10])/ 10.0
     
     #---------------------------------------------------------------------
+    
+    
     if (YRNR2 >= 0) {
+      
+      yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
+      yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
+      
+      yrnr2 <- as.character(paste0(substr(YRNR1,1,4),'-01-01'))
+      yrnr2 <- as.Date(yrnr2)+as.numeric(substr(YRNR2,5,7))-1
+      
       #---------------------------------------------------------------------
       # ALTERADO: Sempre usar parenteses no for
-      for (NPP in 1:(YRDOY - YRNR2))  { 
+      for (NPP in 1:(yrdoy - yrnr2))  { 
         TPODM = TPODM + WTSHE[NPP] + WTSD[NPP]
       }
       
@@ -4221,7 +4263,7 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
       #-------------------------------------------------------------------
       #     Main loop that cycles through detachment model
       #--------------------------------------------------------------------
-      for (NPP in 1:(YRDOY - YRNR2)) { 
+      for (NPP in 1:(yrdoy - yrnr2)) { 
         #--------------------------------------------------------------------
         #     Determine maximum cohort shell mass and accumulate
         #     days without carbohydrate on a cohort basis
@@ -4260,7 +4302,7 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
       #--------------------------------------------------------------------
       #     Compute detachment for each cohort
       #--------------------------------------------------------------------
-      for (NPP in 1:(YRDOY - YRNR2)) { 
+      for (NPP in 1:(yrdoy - yrnr2)) { 
         #       curve based on Drew control, disease and Lowman tag pod cohort study
         if (DTC[NPP] > 0) {
           
@@ -4304,11 +4346,12 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
       
       SUMSD = 0.0
       SUMSH = 0.0
-      for (NPP in 1:(YRDOY - YRNR2))  { 
+      for (NPP in 1:(yrdoy - yrnr2))  { 
         SUMSD = SUMSD + WTSD[NPP]
         SUMSH = SUMSH + WTSHE[NPP]
       }
     }
+  
     
     #***********************************************************************
     #***********************************************************************
