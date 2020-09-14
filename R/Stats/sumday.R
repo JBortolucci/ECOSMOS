@@ -96,6 +96,7 @@ sumday <- function (istep, plens, iyear, jday) {
     # if(plantList[[i]]$type == CROPS)
     #     adnpp[i] <- ((ndtimes - 1) * adnpp[i] + tnpp[i] * rwork3) * rwork
     adnpp[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$type == CROPS, ((ndtimes - 1) * adnpp[i] + tnpp[i] * rwork3) * rwork, adnpp[i])
+    adgpp[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$type == CROPS, ((ndtimes - 1) * adgpp[i] + tgpp[i] * rwork3) * rwork, adgpp[i])
   }
   
   # ---------------------------------------------------------------------
@@ -379,6 +380,7 @@ sumday <- function (istep, plens, iyear, jday) {
   assign("tl_h", tl_h, envir = env)
   assign("tu_h", tu_h, envir = env)
   assign("ta_h", tu_h, envir = env)
+  assign("adgpp", adgpp, envir = env)
   
   # return to main program
   return()

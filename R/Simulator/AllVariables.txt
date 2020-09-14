@@ -986,6 +986,7 @@ amco2ratio 0
 amnmintot 0 
 amnpp vector npft 0
 adnpp vector npft 0
+adgpp vector npft 0
 ayprcp 0 
 ayaet 0 
 aytrans 0 

@@ -224,7 +224,9 @@ dynaveg <- function (isimfire) {
     
     fu <- (1 - exp( - wood)) / (1 - exp( - woodnorm))
     
-    fl <- totlail / 0.5
+    # TODO: Alterado somente para testes, voltar ao valor original   fl <- totlail / 0.5
+    # fl <- totlail / 0.5
+    fl <- 1
 #    fl <- totlail / 1
     
     # apply disturbances to fractional cover
