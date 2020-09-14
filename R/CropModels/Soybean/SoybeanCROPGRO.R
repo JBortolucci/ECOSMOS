@@ -70,8 +70,19 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     TS <- 24
     
-    PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
+    # PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
+    PAR     <- (0.46 * stinrad) * 4.59 #
+     
+    # TODO: Verificar PG
     PG      <- VARAUX$PG[VARAUX$DAS==DAS]
+    # PG       <- adgpp * 2.5 * 1000 # converter
+    # greenfrac[i]    <- 1
+    
+    # print(paste(PG," , ",PG2, " , ",plai[i]))
+    
+    # if(DAS == 50) browser()
+    plai[i]  <- XLAI
+    
     AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]
     MAINR   <- VARAUX$MAINR[VARAUX$DAS==DAS]
     EOP     <- VARAUX$EOP[VARAUX$DAS==DAS]
@@ -722,7 +733,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     # update vegetation's physical characteristics
     # plai[i] <- cbiol[i] * specla[i] 
-    plai[i] <- 0.01
+    # plai[i] <- 0.01
     
     peaklai[i]  <- max(peaklai[i]  ,plai[i] )
     
