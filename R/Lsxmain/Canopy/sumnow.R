@@ -296,6 +296,7 @@ sumnow <- function() {
   for(i in seq(1,npft)) {
     # if(!plantList[[i]]$active) next
     # tnpp[i] <- nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i]
+    tan[i] <- ifelse(plantList[[i]]$active, nppdummy[i] , tnpp[i])
     tnpp[i] <- ifelse(plantList[[i]]$active, nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i], tnpp[i])
   }
 
@@ -400,6 +401,7 @@ sumnow <- function() {
   assign("tgpp", tgpp, envir = env)
   assign("tgpptot", tgpptot, envir = env)
   assign("tnpp", tnpp, envir = env)
+  assign("tan", tan, envir = env)
   assign("rootr", rootr, envir = env)
   assign("tnpptot", tnpptot, envir = env)
   assign("tco2root", tco2root, envir = env)

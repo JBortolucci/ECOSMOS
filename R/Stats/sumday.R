@@ -9,6 +9,7 @@
 # adevap      # daily average evaporation (mm/day)
 # adnmintot   # daily accumulated net nitrogen mineralization (kg_N m-2 /day)
 # adnpp       # daily total npp for each plant type (kg-C/m**2/day) 
+# adan        # daily total an for each plant type (kg-C/m**2/day) 
 # adrain      # daily average rainfall rate (mm/day)
 # adrh        # daily average rh (percent)
 # adsnod      # daily average snow depth (m)
@@ -96,7 +97,7 @@ sumday <- function (istep, plens, iyear, jday) {
     # if(plantList[[i]]$type == CROPS)
     #     adnpp[i] <- ((ndtimes - 1) * adnpp[i] + tnpp[i] * rwork3) * rwork
     adnpp[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$type == CROPS, ((ndtimes - 1) * adnpp[i] + tnpp[i] * rwork3) * rwork, adnpp[i])
-    adgpp[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$type == CROPS, ((ndtimes - 1) * adgpp[i] + tgpp[i] * rwork3) * rwork, adgpp[i])
+    adan[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$type == CROPS, ((ndtimes - 1) * adan[i] + tan[i] * rwork3) * rwork, adan[i])
   }
   
   # ---------------------------------------------------------------------
@@ -380,7 +381,7 @@ sumday <- function (istep, plens, iyear, jday) {
   assign("tl_h", tl_h, envir = env)
   assign("tu_h", tu_h, envir = env)
   assign("ta_h", tu_h, envir = env)
-  assign("adgpp", adgpp, envir = env)
+  assign("adan", adan, envir = env)
   
   # return to main program
   return()

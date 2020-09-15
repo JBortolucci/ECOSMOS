@@ -876,6 +876,7 @@ frac vector npft 0
 plai vector npft 0
 plaimx vector npft 0
 tnpp vector npft 0
+tan vector npft 0
 tgpp vector npft 0
 nppdummy vector npft 0
 lai matrix 1 2 0
@@ -986,7 +987,7 @@ amco2ratio 0
 amnmintot 0 
 amnpp vector npft 0
 adnpp vector npft 0
-adgpp vector npft 0
+adan vector npft 0
 ayprcp 0 
 ayaet 0 
 aytrans 0 

@@ -34,6 +34,10 @@ simDataVars$CGRSD   <- 0
 simDataVars$CGRSH   <- 0
 simDataVars$CTONODR <- 0
 
+simDataVars$auxPG2 <- 0
+
+
+
 
 
 source("R/CropModels/Soybean/SoybeanPhenocrop.R")
@@ -74,14 +78,14 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     PAR     <- (0.46 * stinrad) * 4.59 #
      
     # TODO: Verificar PG
-    PG      <- VARAUX$PG[VARAUX$DAS==DAS]
-    # PG       <- adgpp * 2.5 * 1000 # converter
+    PG2      <- VARAUX$PG[VARAUX$DAS==DAS]
+    PG      <- adan * (30/12) * 1000 # converter kg C / m2.d para g CH2O / m2.d
+    auxPG2 <- PG
     # greenfrac[i]    <- 1
     
     # print(paste(PG," , ",PG2, " , ",plai[i]))
     
-    # if(DAS == 50) browser()
-    plai[i]  <- XLAI
+     # if(DAS == 50) browser()
     
     AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]
     MAINR   <- VARAUX$MAINR[VARAUX$DAS==DAS]
@@ -493,7 +497,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
           # NAVLCount <- NAVLCount + 1
         }
         
-        
         #-----------------------------------------------------------------------
         #    CALL Nitrogen mobilization subroutine
         #    to compute availability of N from other tissue (NMINEA)
@@ -727,6 +730,14 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     # cbios[i] <- cbios[i] + astem[i] * max (0.0, adnpp[i]) 
     # cbiop[i] <- cbiop[i] + arepr[i] * max (0.0, adnpp[i]) 
     
+    plai[i]  <- max(XLAI,0.1)
+    
+    cbiol[i] <- WTLF * 0.45 * (1/1000)
+    cbios[i] <- STMWT * 0.45 * (1/1000)
+    cbior[i] <- RTWT * 0.45 * (1/1000)
+    cbiog[i] <- SDWT * 0.45 * (1/1000)
+    cbiop[i] <- (PODWT - SDWT) * 0.45 * (1/1000)
+    
     
     #    !----------Check sink limitation based on yesterday's growth rates
     # ! and adapt partitioning of stem-storage organ accordingly
@@ -897,6 +908,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("CGRSH", CGRSH, envir = env)
   assign("TURFAC", TURFAC, envir = env)
   assign("SWFAC", SWFAC, envir = env)
+  assign("auxPG2", auxPG2, envir = env)
 }
 
 
