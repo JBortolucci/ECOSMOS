@@ -1981,9 +1981,9 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
   #______________________________________________________________        
   # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
   # !*VEGETATIVE PARTITIONING PARAMETERS
-  XLEAF   <- c( 0.0,  1.,   3.3,   5.0,  7.8,  10.5,  30.0,  40.0)
-  YLEAF   <- c(0.41, 0.4,  0.42,  0.41, 0.36,  0.32,  0.31,  0.31)
-  YSTEM   <- c(0.09, 0.1,  0.21,  0.29, 0.37,  0.49,  0.49,  0.49)
+  XLEAF   <- c( 0.0,  1.5,   3.3,   5.0,  7.8,  10.5,  30.0,  40.0)
+  YLEAF   <- c(0.41, 0.42,  0.42,  0.41, 0.36,  0.32,  0.31,  0.31)
+  YSTEM   <- c(0.09, 0.13,  0.21,  0.29, 0.37,  0.49,  0.49,  0.49)
   FRLFMX  <- 0.70
   FRLFF   <- 0.24
   FRSTMF  <- 0.55
@@ -3715,8 +3715,9 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   ATOP   <- 1.00
   #!*CARBON AND NITROGEN MINING PARAMETERS
   CADSTF <- 0.75
+  #TODO verificar
   #*NITROGEN STRESS PARAMETERS
-  NRATIO <- 1.00
+  # NRATIO <- 1.00
   
   # TODO: Verificar Stress
   PStres2 <- 1
@@ -3733,7 +3734,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #-----------------------------------------------------------------------
     #    Call CANOPY for input
     #-----------------------------------------------------------------------
-    CANOPY(DYNAMIC,DAS, PAR, TGRO)
+    # CANOPY(DYNAMIC,DAS, PAR, TGRO)
     
     CADLF  = 0.0  
     CADST  = 0.0  
