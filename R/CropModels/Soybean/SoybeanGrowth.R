@@ -385,6 +385,12 @@ simDataVars$SNH4     <- rep(0,20)
 #-------------------END NFIX VARS-----------------
 
 
+#------------------RESPIR VARS---------------------
+simDataVars$MAINR  <-  0 #output
+#-----------------END RESPIR VARS------------------
+
+
+
 #----------------GROW FUNCTION--------------------
 GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   
@@ -5164,3 +5170,53 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
   return()
 }
 #----------------END NFIX FUNCTION---------------
+
+
+
+
+RESPIR <- function (DAS, PG) {
+  
+  #*SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #*RESPIRATION PARAMETERS
+  RES30C <- 3.5E-04
+  R30C2  <- .0040
+  
+  TS = 24
+  TRSFAC = 0.0
+  
+  SCLTS = 24./TS
+  
+  for (H in 1:TS) {
+    
+      TGRO[H] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==H]
+      
+    #        TRSFAC = TRSFAC + 0.044+0.0019*TGRO(H)+0.001*TGRO(H)**2
+    TRSFAC = TRSFAC + (0.044+0.0019*TGRO[H]+0.001*TGRO[H]**2)*SCLTS
+    #         scaling factor of 24/TS added on 4July2017 by Bruce Kimball
+  }
+  # 24 changed to TS on 3 July 2017 by Bruce Kimball
+  # This equation look really suspicious because TRSFAC very 
+  # dependent on number of times through the loop!
+  
+  #-----------------------------------------------------------------------
+  #     Convert maintainence respiration to actual temperature. RES30C is
+  #     the g CH2O/g DW/hr used in maintenance respiration at 30 C.
+  #-----------------------------------------------------------------------
+  RO = RES30C * TRSFAC
+  RP = R30C2 * TRSFAC
+  
+  MAINR = RO*WTMAIN + RP*PG
+  
+  assign("MAINR", MAINR, envir = env)
+  return()
+  
+}
+
+
+
+
+
+
+
+
+

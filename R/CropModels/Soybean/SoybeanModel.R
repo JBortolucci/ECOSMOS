@@ -36,7 +36,11 @@ SoybeanModel <- function(year, month, day, index) {
   
   # new michel
   # beta1[index] <- min(0.982 + idpp[index] * 0.00002, 0.995)
-  beta1[index] <- min(0.995*(1-exp(-0.1*idpp[index])), 0.995) # funcao que altera vmax_pft do soybean em funcao do tempo
+  # beta1[index] <- min(0.995*(1-exp(-0.1*idpp[index])), 0.995) #
+  
+  # To do: Henrique, conversar com o Michel e parametrizar essa funacao do crescimento radicular
+  # To do: ou trazer o valores resolvido pelo CROPGRO para o froot
+  beta1[index] <- 0.992 
   assign("beta1", beta1[index], envir = env)
 
   totdepth <- 0

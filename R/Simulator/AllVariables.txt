@@ -1076,6 +1076,7 @@ temp vector npft 1
 rgrowthc vector npft 0
 mcbior vector npft 0 
 mcbiog vector npft 0
+mcbiop vector npft 0
 mcbiow vector npft 0 
 mcbios vector npft 0 
 mcbiocr vector npft 0

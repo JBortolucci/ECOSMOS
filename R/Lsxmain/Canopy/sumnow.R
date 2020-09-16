@@ -82,7 +82,7 @@ sumnow <- function() {
   #     rgrowthc <- 0.25  ! crop growth respiration from Amthor, 1984
   # rgrowthc <- 0.242  # crop growth respiration for sugarcane from Singles,2002
   # rgrowthc <- 0.17
-  rgrowth <- 0.30
+  rgrowth <- 0.30 # To do: Jair ou Leandro enviar para planilha plantparams
 
   # 10 - day time averaging factor
   zweight <- exp( - 1 / (10 * 86400 / dtime))
@@ -260,6 +260,7 @@ sumnow <- function() {
   #
   # finally, note that growth respiration is only applied to
   # positive carbon gains (i.e., when gpp - rmaint is positive)
+  
   rwood <- 0.0125 / (ndaypy * 86400) * (1000 / 12)
   rroot <- 2.50 / (ndaypy * 86400) * (1000 / 12)
 
@@ -275,6 +276,7 @@ sumnow <- function() {
 
     mcbior[i]  <- cbior[i]  * (funcb*rroot)
     mcbiog[i]  <- cbiog[i]  *  0.0
+    mcbiop[i]  <- cbiop[i]  *  0.0 # to do : Henrique, rever quanto sao esses valores de respiracao
     mcbiow[i]  <- cbiow[i]  * (sapfrac*rwood*funca)
     mcbios[i]  <- cbios[i]  * (rwood*funca) 
     mcbiob[i]  <- cbiob[i]  * (rwood*funca)
@@ -297,7 +299,8 @@ sumnow <- function() {
     # if(!plantList[[i]]$active) next
     # tnpp[i] <- nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i]
     tan[i] <- ifelse(plantList[[i]]$active, nppdummy[i] , tnpp[i])
-    tnpp[i] <- ifelse(plantList[[i]]$active, nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i], tnpp[i])
+    
+    tnpp[i] <- ifelse(plantList[[i]]$active, nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiop[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i], tnpp[i])
   }
 
   
@@ -392,6 +395,7 @@ sumnow <- function() {
   
   assign("mcbior", mcbior, envir = env)
   assign("mcbiog", mcbiog, envir = env)
+  assign("mcbiop", mcbiop, envir = env)
   assign("mcbiow", mcbiow, envir = env)
   assign("mcbios", mcbios, envir = env)
   assign("mcbiocr", mcbiocr, envir = env)

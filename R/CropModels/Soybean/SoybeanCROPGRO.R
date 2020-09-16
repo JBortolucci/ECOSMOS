@@ -7,6 +7,8 @@ simDataVars$ST_T   <-read.table(file = 'C:/DSSAT47/Soybean/ST.OUT',row.names = N
 simDataVars$SW_T   <-read.table(file = 'C:/DSSAT47/Soybean/SW.OUT',row.names = NULL)
 simDataVars$NO3_T   <-read.table(file = 'C:/DSSAT47/Soybean/NO3.OUT',row.names = NULL)
 simDataVars$NH4_T   <-read.table(file = 'C:/DSSAT47/Soybean/NH4.OUT',row.names = NULL)
+simDataVars$DSSATdb <- read.table(file = 'C:/DSSAT47/Soybean/INTEGRACAO_CONTROLE.OUT', header = F)
+
 simDataVars$PGAVLCount <- 1
 simDataVars$NAVLCount  <- 1
 
@@ -60,6 +62,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   environment(NUPTAK)       <- env
   environment(MOBIL)        <- env
   environment(NFIX)         <- env
+  environment(RESPIR)         <- env
   
   i <- index
   greenfrac[i]<-1.0
@@ -79,8 +82,12 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
      
     # TODO: Verificar PG
     PG2      <- VARAUX$PG[VARAUX$DAS==DAS]
-    PG      <- adan * (30/12) * 1000 # converter kg C / m2.d para g CH2O / m2.d
+    PG       <- adan * (30/12) * 1000 # converter kg C / m2.d para g CH2O / m2.d
     auxPG2 <- PG
+    
+    #XLAI  <- DSSATdb$V137[DSSATdb$V1==DAS]
+    #plai[i]  <- max(XLAI,0.1)
+    
     # greenfrac[i]    <- 1
     
     # print(paste(PG," , ",PG2, " , ",plai[i]))
@@ -88,10 +95,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
      # if(DAS == 50) browser()
     
     AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]
-    MAINR   <- VARAUX$MAINR[VARAUX$DAS==DAS]
+    # MAINR   <- VARAUX$MAINR[VARAUX$DAS==DAS]
     EOP     <- VARAUX$EOP[VARAUX$DAS==DAS]
-    RO      <- VARAUX$RO[VARAUX$DAS==DAS]
-    RP      <- VARAUX$RP[VARAUX$DAS==DAS]
     TRWUP   <- VARAUX$TRWUP[VARAUX$DAS==DAS]
     # TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]
     # SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]
@@ -238,10 +243,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         CNOD   = 0.0
         CNODMN = 0.0
         CTONOD = 0.0
-        # MAINR  = 0.0
         NAVL   = 0.0
-        # RO     = 0.0
-        # RP     = 0.0
         RPROAV = RFIXN
         
         # TURFAC = 1.0
@@ -432,12 +434,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #       Compute maintenance respiration and subtract from available CH2O
         #-----------------------------------------------------------------------
-        # TODO: Pegar RO, RP, MAINR do fortran
-        # TODO: Estamos trazendo RO, RP and MAINR do DSSAT/Fortran
-        # RESPIR(
-        #   PG, R30C2, RES30C, TGRO, WTMAIN,                #Input
-        #   RO, RP,                                         #Input/Output
-        #   MAINR)                                          #Output
+           RESPIR(DAS,PG) 
+
         if (MAINR > PGAVL) {
           PGAVL  = 0.0
         } else {
@@ -730,7 +728,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     # cbios[i] <- cbios[i] + astem[i] * max (0.0, adnpp[i]) 
     # cbiop[i] <- cbiop[i] + arepr[i] * max (0.0, adnpp[i]) 
     
-    plai[i]  <- max(XLAI,0.1)
+     plai[i]  <- max(XLAI,0.1)
     
     cbiol[i] <- WTLF * 0.45 * (1/1000)
     cbios[i] <- STMWT * 0.45 * (1/1000)
