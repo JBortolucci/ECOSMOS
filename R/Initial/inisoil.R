@@ -81,6 +81,7 @@ inisoil <- function() {
     0.2922,     # silty clay
     0.3163)
 
+    
   for(k in 1:nsoilay) {
 
     if(k <= 6) {

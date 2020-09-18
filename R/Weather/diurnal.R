@@ -195,6 +195,7 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   
   ta <- tmax * gamma + tmin * (1 - gamma)
   
+
   # ---------------------------------------------------------------------- 
   # *  *  * humidity calculations *  * *
   # ---------------------------------------------------------------------- 

@@ -82,7 +82,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     XLAI    <- DSSATdb$V137[DSSATdb$V1==DAS]
     PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
     AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]  # To do: Henrique, implementar e linkar com o ECOSMOS
-    # TRWUP   <- VARAUX$TRWUP[VARAUX$DAS==DAS] # To do: Henrique, implementar no ECOSMOS
+    TRWUP   <- VARAUX$TRWUP[VARAUX$DAS==DAS] # To do: Henrique, implementar no ECOSMOS
     TURFACIN  <- VARAUX$TURFAC[VARAUX$DAS==DAS]
     SWFACIN   <- VARAUX$SWFAC[VARAUX$DAS==DAS]  
     TAVG    <- VARAUX$TAVG[VARAUX$DAS==DAS]
@@ -92,20 +92,29 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     NH4     <-  as.double(NH4_T[DAS,][-1])
     
 #  Vars solved by ECOSMOS  
-    PG2      <- adan * (30/12) * 1000 # converter kg C / m2.d para g CH2O / m2.d
+    # PG2      <- adan * (30/12) * 1000 # converter kg C / m2.d para g CH2O / m2.d
     # plai[i]  <- max(XLAI,0.1)
     # PAR     <- adpar* (86400/1000000)* 4.59 # (86400/1000000) W/m2 para MJ/m2.d  and 4.59 # MJ/m2.d para mol/m2.d 
-    
-    
+    # AGEFAC <- ????
     RWUEP1 <- 1.50
-    
-    
-    # if(stresstl<=0.9) TURFACIN = (1./RWUEP1) * stresstl
+        # if(stresstl<=0.9) TURFACIN = (1./RWUEP1) * stresstl
     # if(stresstl<=0.9) SWFACIN  = stresstl
+    # if(stresstl<=0.9) { auxPG2 <- (1./RWUEP1) * stresstl} else {  auxPG2 = 1 }
+    # TAVG <- mean(ta_h)-273.16
+
     
-    if(stresstl<=0.9) { auxPG2 <- (1./RWUEP1) * stresstl} else {  auxPG2 = 1 }
+    NLAYR <- nsoilay
+    for (L in 1:NLAYR) {
+      # SW[L] <-   wsoi[L]*poros[L]
+      # ST[L] <- (tsoi[L]-273.16)
+      
+      NH4[L]  <- 0.1   
+      NO3[L]  <- 1.1
+    }
     
     
+    
+    auxPG2 <- ST[1]
     
     #_______________________________________________________________________________  
     # Vars calculada pelo CROPGRO, verificar novamente    
@@ -334,6 +343,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
           #       TRWUP and EP1 in cm/d
            TURFAC = TURFACIN  
            SWFAC  = SWFACIN   
+           assign("SWFAC",SWFAC , envir = env)  
+           assign("TURFAC",TURFAC, envir = env)  
           
  #         if (EOP > 0.001) {
  #           EP1 = EOP * 0.1

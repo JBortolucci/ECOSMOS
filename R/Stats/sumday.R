@@ -383,7 +383,7 @@ sumday <- function (istep, plens, iyear, jday) {
   assign("adnmintot", adnmintot, envir = env)
   assign("tl_h", tl_h, envir = env)
   assign("tu_h", tu_h, envir = env)
-  assign("ta_h", tu_h, envir = env)
+  assign("ta_h", ta_h, envir = env)
   assign("adan", adan, envir = env)
   assign("adpar", adpar, envir = env)
   

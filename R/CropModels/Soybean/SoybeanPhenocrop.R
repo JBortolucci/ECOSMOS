@@ -83,13 +83,11 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   #  TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
   DAYL   <- TGRO_T$V4[TGRO_T$V1==DAS & TGRO_T$V2==1]
-  # XPOD   <- TGRO_T$V5[TGRO_T$V1==DAS & TGRO_T$V2==1]
   SWFEM  <- TGRO_T$V6[TGRO_T$V1==DAS & TGRO_T$V2==1]
   TMING  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]
   TSDEP  <- TGRO_T$V8[TGRO_T$V1==DAS & TGRO_T$V2==1]
   
   #  DAYL   <- daylength/60. # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
-  # XPOD   <- ??? # TO Do depois de implementar GROW
   # SWFEM  <- modelo resolve abaixo com base na umiade do solo
   # TMING  <- tmin 
   # SWFEM  <- modelo resolve abaixo com base na temperatura do solo
@@ -256,8 +254,6 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     TDUMX2 = 0.0
     TNTFAC = 0.0
     TNTFC2 = 0.0
-    # SWFAC  = 1.0
-    # TURFAC = 1.0
     FNSTR <- rep(1,20)
     FPSTR <- rep(1,20)
     FSW   <- rep(1,20)
@@ -508,8 +504,6 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   assign("FRACDN",FRACDN, envir = env)  
   assign("TNTFAC",TNTFAC, envir = env)  
   assign("TNTFC2",TNTFC2, envir = env)  
-  assign("SWFAC",SWFAC , envir = env)  
-  assign("TURFAC",TURFAC, envir = env)  
   assign("FNSTR",FNSTR , envir = env)
   assign("CLDVAR",CLDVAR , envir = env)
   

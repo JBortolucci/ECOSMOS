@@ -1604,6 +1604,13 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) { #TODO Santiago
   # LL     <- rep(0, NL)
   LL    <-  c(0.140000001 ,    0.140000001  ,    0.140000001  ,    0.150000006  ,    0.150000006   ,   0.150000006  ,    0.150000006   ,   0.180000007   ,   0.180000007   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
   
+# todo: Henrique/Leandro, linkar o solo
+    # EXEMPLO  -> DUL<-print(sfield*poros)
+  # 1o verificar se todas as contas sao feitas ate NLAYR
+  # 2o porque NLAYR = 8 e nao 9 como especificado no perfil ???
+  # TO DO: Leandro, quando ler do arquivo de solos verificar o numero de camadas e redefinir o NLAYR! e a o hsoi, independente do valor definido no  3o
+
+  
   RLV_WS <- rep(0, NL)
   
   # SW     <- rep(0, NL)
