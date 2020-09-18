@@ -988,6 +988,7 @@ amnmintot 0
 amnpp vector npft 0
 adnpp vector npft 0
 adan vector npft 0
+adpar 0
 ayprcp 0 
 ayaet 0 
 aytrans 0 
