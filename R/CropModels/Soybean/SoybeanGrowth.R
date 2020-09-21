@@ -2187,7 +2187,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
       TMPFAC = 0
       TMPFCS = 0
       for (I in 1:TS) {
-        TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+        # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
         # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
         
         TMPFAC = CURV(TYPSDT,FNSDT[1], FNSDT[2], FNSDT[3], FNSDT[4], TGRO[I])
@@ -2315,7 +2315,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #-----------------------------------------------------------------------
     TEMXFR = 0.
     for (I in 1:TS) {
-      TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+      # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
       TEMXFR = TEMXFR + TABEX(YXFTEM,XXFTEM,TGRO[I],6)
@@ -2435,7 +2435,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #-----------------------------------------------------------------------
     TPHFAC = 0
     for (I in 1:TS){
-      TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+      # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
       TPHFAC = TPHFAC + TABEX (YSLATM,XSLATM,TGRO[I],5)
@@ -3073,7 +3073,7 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
         #-----------------------------------------------------------------------
         TEMPOD <- 0.
         for (I in 1:TS) {
-          TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+          # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
           # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
           
           TEMPOD <- TEMPOD + CURV(TYPPDT,FNPDT[1],FNPDT[2],FNPDT[3],FNPDT[4],TGRO[I])
@@ -4114,7 +4114,7 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
     #-----------------------------------------------------------------------
     HWTEM = 0.0
     for (I in 1:TS) {
-      TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+      # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
       HWTEM = HWTEM + TABEX(YHWTEM,XHWTEM,TGRO[I],5)
@@ -4229,7 +4229,7 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
     #--------------------------------------------------------------------
     FT = 0.0
     for (I in 1:TS) {
-      TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
+      # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
       FTHR = CURV('LIN',TB[3],TO1[3],TO2[3],TM[3],TGRO[I])
@@ -5195,7 +5195,7 @@ RESPIR <- function (DAS, PG) {
   
   for (H in 1:TS) {
     
-      TGRO[H] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==H]
+      # TGRO[H] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==H]
       
     #        TRSFAC = TRSFAC + 0.044+0.0019*TGRO(H)+0.001*TGRO(H)**2
     TRSFAC = TRSFAC + (0.044+0.0019*TGRO[H]+0.001*TGRO[H]**2)*SCLTS

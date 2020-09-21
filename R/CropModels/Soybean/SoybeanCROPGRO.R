@@ -9,6 +9,11 @@ simDataVars$NO3_T   <-read.table(file = 'C:/DSSAT47/Soybean/NO3.OUT',row.names =
 simDataVars$NH4_T   <-read.table(file = 'C:/DSSAT47/Soybean/NH4.OUT',row.names = NULL)
 simDataVars$DSSATdb <- read.table(file = 'C:/DSSAT47/Soybean/INTEGRACAO_CONTROLE.OUT', header = F)
 
+# T <- Dessat/fortran, F <- Ecosmos 
+                      # PG  DAYL PAR  TMIN TAVG TGRO TURFAC SWFAC  SW  ST  NO3  NH4
+simDataVars$integr <- c(T  ,T   ,T   ,T   ,T   ,T   ,T     ,T     ,T  ,T  ,T   ,T)
+                      # OK  OK   OK   OK   OK   !   OK      OK
+
 simDataVars$PGAVLCount <- 1
 simDataVars$NAVLCount  <- 1
 
@@ -37,6 +42,8 @@ simDataVars$CGRSH   <- 0
 simDataVars$CTONODR <- 0
 
 simDataVars$auxPG2 <- 0
+simDataVars$DAYL <- rep(0,24)
+
 
 
 
@@ -75,43 +82,67 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     YRDOY   <- paste0(iyear,jday)
     
+    NLAYR <- nsoilay
+    
+    RWUEP1 <- 1.50
 
 #_______________________________________________________________________________  
-# Vars solved by CROPGRO and ECOSMOS       
-    PG      <- VARAUX$PG[VARAUX$DAS==DAS]
-    XLAI    <- DSSATdb$V137[DSSATdb$V1==DAS]
-    PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
-    AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]  # To do: Henrique, implementar e linkar com o ECOSMOS
-    TRWUP   <- VARAUX$TRWUP[VARAUX$DAS==DAS] # To do: Henrique, implementar no ECOSMOS
-    TURFACIN  <- VARAUX$TURFAC[VARAUX$DAS==DAS]
-    SWFACIN   <- VARAUX$SWFAC[VARAUX$DAS==DAS]  
-    TAVG    <- VARAUX$TAVG[VARAUX$DAS==DAS]
-    SW     <-  as.double(SW_T[DAS,][-1])
-    ST     <-  as.double(ST_T[DAS,][-1])
-    NO3     <-  as.double(NO3_T[DAS,][-1])
-    NH4     <-  as.double(NH4_T[DAS,][-1])
+# Vars solved by CROPGRO and ECOSMOS  
+    
+    # XLAI    <- DSSATdb$V137[DSSATdb$V1==DAS]
+    
+    #                  VARS FROM DSSAT                                      |      VARS FROM CROPGRO
+    ifelse(integr[1],  PG <- VARAUX$PG[VARAUX$DAS==DAS]                     ,      PG <- adan * (30/12) * 1000 ) # converter kg C / m2.d para g CH2O / m2.d
+    ifelse(integr[2],  DAYL <- TGRO_T$V4[TGRO_T$V1==DAS & TGRO_T$V2==1]     ,      DAYL <- daylength/60. ) # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
+    ifelse(integr[3],  PAR <- VARAUX$PAR[VARAUX$DAS==DAS]                   ,      PAR <- adpar* (86400/1000000)* 4.59 ) # (86400/1000000) W/m2 para MJ/m2.d  and 4.59 # MJ/m2.d para mol/m2.d 
+    ifelse(integr[4],  TMIN  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]    ,      TMIN <- tmin - 273.16 )
+    ifelse(integr[5],  TAVG  <- VARAUX$TAVG[VARAUX$DAS==DAS]                ,      TAVG <- mean(ta_h) - 273.16 )
+    ifelse(integr[6],  TGRO  <- TGRO_T$V3[TGRO_T$V1==DAS]                   ,      TGRO <- ta_h - 273.16 )
+    if (integr[7]) {   TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]          }else{   if(stresstl<=0.9) TURFAC = (1./RWUEP1) * stresstl}
+    if (integr[8]) {   SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]           }else{   if(stresstl<=0.9) SWFAC  = stresstl}
+    if (integr[9]) {   SW <- as.double(SW_T[DAS,][-1])                    }else{   for (L in 1:NLAYR) {SW[L]  <- wsoi[L] * poros[L]}}
+    if (integr[10]){   ST <- as.double(ST_T[DAS,][-1])                    }else{   for (L in 1:NLAYR) {ST[L]  <- tsoi[L] - 273.16}}
+    if (integr[11]){   NO3 <- as.double(NO3_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NO3[L]  <- 1.1}}
+    if (integr[12]){   NH4 <- as.double(NH4_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NH4[L]  <- 0.1}}
+    
+    plai[i]  <- max(XLAI,0.1)
+    
+    assign("SW",SW, envir = env)
+    assign("ST",ST, envir = env)
+    assign("NO3",NO3, envir = env)
+    assign("NH4",NH4, envir = env)
+    assign("TGRO",TGRO, envir = env)
+    
+    
+    # PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
+    # AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]  # To do: Henrique, implementar e linkar com o ECOSMOS
+    # TRWUP   <- VARAUX$TRWUP[VARAUX$DAS==DAS] # To do: Henrique, implementar no ECOSMOS
+    # TURFACIN  <- VARAUX$TURFAC[VARAUX$DAS==DAS]
+    # SWFACIN   <- VARAUX$SWFAC[VARAUX$DAS==DAS]  
+    # TAVG    <- VARAUX$TAVG[VARAUX$DAS==DAS]
+    # SW     <-  as.double(SW_T[DAS,][-1])
+    # ST     <-  as.double(ST_T[DAS,][-1])
+    # NO3     <-  as.double(NO3_T[DAS,][-1])
+    # NH4     <-  as.double(NH4_T[DAS,][-1])
     
 #  Vars solved by ECOSMOS  
-    # PG2      <- adan * (30/12) * 1000 # converter kg C / m2.d para g CH2O / m2.d
-    # plai[i]  <- max(XLAI,0.1)
+    # PG      <- adan * (30/12) * 1000 # converter kg C / m2.d para g CH2O / m2.d
     # PAR     <- adpar* (86400/1000000)* 4.59 # (86400/1000000) W/m2 para MJ/m2.d  and 4.59 # MJ/m2.d para mol/m2.d 
     # AGEFAC <- ????
-    RWUEP1 <- 1.50
         # if(stresstl<=0.9) TURFACIN = (1./RWUEP1) * stresstl
     # if(stresstl<=0.9) SWFACIN  = stresstl
     # if(stresstl<=0.9) { auxPG2 <- (1./RWUEP1) * stresstl} else {  auxPG2 = 1 }
     # TAVG <- mean(ta_h)-273.16
 
     
-    NLAYR <- nsoilay
-    for (L in 1:NLAYR) {
-      # SW[L] <-   wsoi[L]*poros[L]
-      # ST[L] <- (tsoi[L]-273.16)
-      
-      NH4[L]  <- 0.1   
-      NO3[L]  <- 1.1
-    }
-    
+    # for (L in 1:NLAYR) {
+    #   # SW[L] <-   wsoi[L]*poros[L]
+    #   # ST[L] <- (tsoi[L]-273.16)
+    #   
+    #   NH4[L]  <- 0.1   
+    #   NO3[L]  <- 1.1
+    # }
+
     
     
     auxPG2 <- ST[1]
@@ -125,10 +156,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     
 
-    assign("SW",SW, envir = env)
-    assign("ST",ST, envir = env)
-    assign("NO3",NO3, envir = env)
-    assign("NH4",NH4, envir = env)
     
     # to do, comparar o valor PAR com o usado pelo CROPGRO
     # vamos ter que criar uma leitura trazendo as variaveis do fortran
@@ -141,13 +168,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     # TODO: Usando VARAUX , VERIFICAR
     # PG = max (0.0, adnpp[i]) *(1/0.45) * 10^3  ## adnpp       # daily total npp for each plant type (kg-C/m**2/day) 
     
-    # Variáveis que, além destas mencionadas acima, provavelmente precisaremos para integração
-    # (Henrique, 2020-08-25)
-    # TMIN (Clima)
-    TMIN <- tmin
-    # AGEFAC (PHOTO.for ou ETPHR.for[SPAM])
-    # MAINR (RESPI.for)
-    # EOP (TRANS.for[SPAM])
     
     ISWDIS<-'N'
     ISWWAT<-'Y'
@@ -341,10 +361,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
           #       Calculate daily water stess factors (from SWFACS)
           #       EOP in mm/d
           #       TRWUP and EP1 in cm/d
-           TURFAC = TURFACIN  
-           SWFAC  = SWFACIN   
-           assign("SWFAC",SWFAC , envir = env)  
-           assign("TURFAC",TURFAC, envir = env)  
+           # assign("SWFAC",SWFAC , envir = env)  
+           # assign("TURFAC",TURFAC, envir = env)  
           
  #         if (EOP > 0.001) {
  #           EP1 = EOP * 0.1
@@ -931,6 +949,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("TURFAC", TURFAC, envir = env)
   assign("SWFAC", SWFAC, envir = env)
   assign("auxPG2", auxPG2, envir = env)
+  assign("DAYL", DAYL, envir = env)
 }
 
 

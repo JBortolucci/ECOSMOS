@@ -82,15 +82,15 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   
   #  TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
-  DAYL   <- TGRO_T$V4[TGRO_T$V1==DAS & TGRO_T$V2==1]
+  # DAYL   <- TGRO_T$V4[TGRO_T$V1==DAS & TGRO_T$V2==1]
   SWFEM  <- TGRO_T$V6[TGRO_T$V1==DAS & TGRO_T$V2==1]
-  TMING  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]
+  TMIN  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]
   TSDEP  <- TGRO_T$V8[TGRO_T$V1==DAS & TGRO_T$V2==1]
   
   #  DAYL   <- daylength/60. # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
   # SWFEM  <- modelo resolve abaixo com base na umiade do solo
-  # TMING  <- tmin 
-  # SWFEM  <- modelo resolve abaixo com base na temperatura do solo
+  # TMIN  <- tmin 
+  # TSDEP  <- modelo resolve abaixo com base na temperatura do solo
   # Vars that are solverd by ECOSMOS  
   #____________________________________________________________________________      
   
@@ -368,12 +368,10 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       for (I in 1:TS) {
         
         # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
-        TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
-        
+        # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
         FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
         FT[J] = FT[J] + FTHR/TS
       }
-      
       
       if (DAS < NR1) {
         FUDAY[J] = CURV(DLTYP[J],1.0,CSDVAR,CLDVAR,THVAR,DAYL)
@@ -401,8 +399,8 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #-----------------------------------------------------------------------
     ZMODTE = 1.0
     
-    if (TMING < OPTBI) {
-      ZMODTE = 1. - (SLOBI * (OPTBI - TMING))
+    if (TMIN < OPTBI) {
+      ZMODTE = 1. - (SLOBI * (OPTBI - TMIN))
       ZMODTE = max(0.0, ZMODTE)
       ZMODTE = min(1.0, ZMODTE)
     }
@@ -986,7 +984,6 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     #     Check for stage NR8, stage 12, end of phase 11
     #-------------------------------------------------------------------------------
-    # if (DAS >= 111) browser()
     if (DAS >= NVALPH[NPRIOR[11]] & MDATE <= YRSIM) {
       
       PROG[11] = FT[11] * FUDAY[11]*min(FSW[11],FNSTR[11],FPSTR[11]) * REM[NPRIOR[11]]
