@@ -105,7 +105,7 @@ inisoil <- function() {
       # tab.DSSAT<- subset(tab.DSSAT, LAT == point$coord$lat & LON == point$coord$lon)
       
       tab.DSSAT <- layers #subset(tab.DSSAT, SID == soilType)
-
+      
       fclay      <- tab.DSSAT$SLCL[k]/100   # clay content
       fsilt      <- tab.DSSAT$SLSI[k]/100   # silt content
       fsand      <- 1- fclay - fsilt        # sand content
@@ -115,8 +115,10 @@ inisoil <- function() {
       hydraul[k] <- tab.DSSAT$SSKS[k] / (100 * 3600)    
       suction[k] <- swilt[k]*1.5
       bex[k]     <- tab.DSSAT$BEXP[k]
-      # SRGF[k] <- tab.DSSAT$SRGF[k]
-      # assign("SRGF", SRGF, envir = env)
+      SRGF[k] <- tab.DSSAT$SRGF[k]   # Root hospitality factor, used to compute root distribution
+      bulkd[k] <- tab.DSSAT$SBDM[k]  # Bulk density, soil layer L
+      assign("SRGF", SRGF, envir = env)
+      assign("bulkd", bulkd, envir = env)
       
       if(!is.na(tab.DSSAT$Bperm[k])) {
         bperm <-  tab.DSSAT$Bperm[1]
@@ -212,7 +214,7 @@ inisoil <- function() {
     sice[k]   <- 0
 
   }
-
+  
   #assign("hsoi", hsoi, envir = env)
   assign("wsoi",  wsoi, envir = env)
   assign("rhosoi",  rhosoi, envir = env)

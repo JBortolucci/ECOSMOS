@@ -683,6 +683,8 @@ csoln vector length(-nsoilay:nsoilay) 0
 tnuptake vector nsoilay 0
 anuptake vector nsoilay 0
 wflo vector nsoilay+1 0
+SRGF vector nsoilay 0
+bulkd vector nsoilay 0
 
 ##### comwork.h #####
 

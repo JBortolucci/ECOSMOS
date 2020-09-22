@@ -83,9 +83,9 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   #  TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
   # DAYL   <- TGRO_T$V4[TGRO_T$V1==DAS & TGRO_T$V2==1]
-  SWFEM  <- TGRO_T$V6[TGRO_T$V1==DAS & TGRO_T$V2==1]
-  TMIN  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]
-  TSDEP  <- TGRO_T$V8[TGRO_T$V1==DAS & TGRO_T$V2==1]
+  # SWFEM  <- TGRO_T$V6[TGRO_T$V1==DAS & TGRO_T$V2==1]
+  # TMIN  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]
+  # TSDEP  <- TGRO_T$V8[TGRO_T$V1==DAS & TGRO_T$V2==1]
   
   #  DAYL   <- daylength/60. # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
   # SWFEM  <- modelo resolve abaixo com base na umiade do solo
@@ -294,8 +294,8 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       #-----------------------------------------------------------------------
       
       XDEP  = 0.0
-      # SWFEM = 0.0
-      # TSDEP = 0.0
+      SWFEM = 0.0
+      TSDEP = 0.0
       
       
       for (k in 1:(nsoilay)){
@@ -305,21 +305,21 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
         
         
         if (wsoi[k] <= sfield[k]) {
-          #  SWFEM = SWFEM + DTRY * (max(wsoi[k] - swilt[k],0.0)) / (sfield[k] - swilt[k])
+           SWFEM = SWFEM + DTRY * (max(wsoi[k] - swilt[k],0.0)) / (sfield[k] - swilt[k])
         } else {
-          #  SWFEM = SWFEM + DTRY * (max(poros[k] - wsoi[k]*poros[k],0.0)) / (poros[k] - sfield[k]*poros[k])
+           SWFEM = SWFEM + DTRY * (max(poros[k] - wsoi[k]*poros[k],0.0)) / (poros[k] - sfield[k]*poros[k])
         }
-        # TSDEP = TSDEP + DTRY * (tsoi[k]-273.16)
+        TSDEP = TSDEP + DTRY * (tsoi[k]-273.16)
         if (XDEP >= 10.) { break}
       }
-      #  TSDEP = TSDEP / 10.
+       TSDEP = TSDEP / 10.
       
       #-----------------------------------------------------------------------
       #      Compute temperature and soil water effects for phase 1, emergence
       #-----------------------------------------------------------------------
       
       FT[1] = CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TSDEP) #todo: escrever função CURV () em algum outro script
-      # SWFEM = (SWFEM / 10.) * 100.0
+      SWFEM = (SWFEM / 10.) * 100.0
       FSW[1] = CURV("LIN",0.0,20.0,100.,1000.,SWFEM)
       
       FSW[1] = 1. + (1.-FSW[1])*WSENP[1]

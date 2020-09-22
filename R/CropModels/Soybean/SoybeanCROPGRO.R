@@ -11,8 +11,10 @@ simDataVars$DSSATdb <- read.table(file = 'C:/DSSAT47/Soybean/INTEGRACAO_CONTROLE
 
 # T <- Dessat/fortran, F <- Ecosmos 
                       # PG  DAYL PAR  TMIN TAVG TGRO TURFAC SWFAC  SW  ST  NO3  NH4
-simDataVars$integr <- c(T  ,T   ,T   ,T   ,T   ,T   ,T     ,T     ,T  ,T  ,T   ,T)
+simDataVars$integr <- c(T  ,T   ,T   ,T   ,T   ,T   ,T     ,F     ,T  ,T  ,T   ,T)
                       # OK  OK   OK   OK   OK   !   OK      OK
+
+
 
 simDataVars$PGAVLCount <- 1
 simDataVars$NAVLCount  <- 1
@@ -42,7 +44,18 @@ simDataVars$CGRSH   <- 0
 simDataVars$CTONODR <- 0
 
 simDataVars$auxPG2 <- 0
-simDataVars$DAYL <- rep(0,24)
+simDataVars$DAYL   <- 0
+
+
+simDataVars$TMIN     <- 0
+simDataVars$NLAYR    <- 9 #nsoilay
+simDataVars$DLAYR    <- rep(0, simDataVars$NLAYR)
+simDataVars$DS       <- rep(0, simDataVars$NLAYR)
+simDataVars$LL       <- rep(0, simDataVars$NLAYR)
+simDataVars$DUL      <- rep(0, simDataVars$NLAYR)
+simDataVars$SAT      <- rep(0, simDataVars$NLAYR)
+simDataVars$WR       <- rep(0, simDataVars$NLAYR)
+simDataVars$BD       <- rep(0, simDataVars$NLAYR)
 
 
 
@@ -69,10 +82,34 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   environment(NUPTAK)       <- env
   environment(MOBIL)        <- env
   environment(NFIX)         <- env
-  environment(RESPIR)         <- env
+  environment(RESPIR)       <- env
   
   i <- index
   greenfrac[i]<-1.0
+  
+  #_______________________________________________________________________________  
+  # ATRIBUTOS DO SOLO
+  depth <- array(0, NLAYR)
+  
+  for(k in 1:NLAYR) { 
+    if(k == 1) {
+      depth[k] <- hsoi[k]
+    } else {
+      depth[k] <- depth[k - 1] + hsoi[k]
+    }
+  }
+  
+  for (L in 1:NLAYR)
+  {
+    DLAYR[L] <- hsoi[L]    * 100
+    DS[L]    <- depth[L]   * 100
+    LL[L]    <- swilt[L]   * poros[L]
+    DUL[L]   <- sfield[L]  * poros[L]
+    SAT[L]   <- poros[L]
+    WR[L]    <- SRGF[L]
+    BD[L]    <- bulkd[L]
+  }
+  #_______________________________________________________________________________  
   
   if (croplive[i]==1) {
     
@@ -82,12 +119,10 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     YRDOY   <- paste0(iyear,jday)
     
-    NLAYR <- nsoilay
-    
     RWUEP1 <- 1.50
-
-#_______________________________________________________________________________  
-# Vars solved by CROPGRO and ECOSMOS  
+  
+    #_______________________________________________________________________________  
+    # Vars solved by CROPGRO and ECOSMOS  
     
     # XLAI    <- DSSATdb$V137[DSSATdb$V1==DAS]
     
@@ -107,12 +142,22 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     plai[i]  <- max(XLAI,0.1)
     
-    assign("SW",SW, envir = env)
-    assign("ST",ST, envir = env)
-    assign("NO3",NO3, envir = env)
-    assign("NH4",NH4, envir = env)
-    assign("TGRO",TGRO, envir = env)
+    assign("TMIN",  TMIN  , envir = env)
+    assign("NLAYR", NLAYR , envir = env)
+    assign("DLAYR", DLAYR , envir = env)
+    assign("DS",    DS    , envir = env)
+    assign("LL",    LL    , envir = env)
+    assign("DUL",   DUL   , envir = env)
+    assign("SAT",   SAT   , envir = env)
+    assign("WR",    WR    , envir = env)
+    assign("BD",    BD    , envir = env)
+    assign("SW",    SW    , envir = env)
+    assign("ST",    ST    , envir = env)
+    assign("NO3",   NO3   , envir = env)
+    assign("NH4",   NH4   , envir = env)
+    assign("TGRO",  TGRO  , envir = env)
     
+    auxPG2 <- TURFAC
     
     # PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
     # AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]  # To do: Henrique, implementar e linkar com o ECOSMOS
@@ -125,15 +170,15 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     # NO3     <-  as.double(NO3_T[DAS,][-1])
     # NH4     <-  as.double(NH4_T[DAS,][-1])
     
-#  Vars solved by ECOSMOS  
+    #  Vars solved by ECOSMOS  
     # PG      <- adan * (30/12) * 1000 # converter kg C / m2.d para g CH2O / m2.d
     # PAR     <- adpar* (86400/1000000)* 4.59 # (86400/1000000) W/m2 para MJ/m2.d  and 4.59 # MJ/m2.d para mol/m2.d 
     # AGEFAC <- ????
-        # if(stresstl<=0.9) TURFACIN = (1./RWUEP1) * stresstl
+    # if(stresstl<=0.9) TURFACIN = (1./RWUEP1) * stresstl
     # if(stresstl<=0.9) SWFACIN  = stresstl
     # if(stresstl<=0.9) { auxPG2 <- (1./RWUEP1) * stresstl} else {  auxPG2 = 1 }
     # TAVG <- mean(ta_h)-273.16
-
+    
     
     # for (L in 1:NLAYR) {
     #   # SW[L] <-   wsoi[L]*poros[L]
@@ -142,20 +187,19 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #   NH4[L]  <- 0.1   
     #   NO3[L]  <- 1.1
     # }
-
     
     
-    auxPG2 <- ST[1]
+    
     
     #_______________________________________________________________________________  
     # Vars calculada pelo CROPGRO, verificar novamente    
     # MAINR   <- VARAUX$MAINR[VARAUX$DAS==DAS]
-  
+    
     # PGAVL   <- VARAUX$PGAVL[VARAUX$DAS==DAS]
     # CMINEP   <- VARAUX$CMINEP[VARAUX$DAS==DAS]
     
     
-
+    
     
     # to do, comparar o valor PAR com o usado pelo CROPGRO
     # vamos ter que criar uma leitura trazendo as variaveis do fortran
@@ -361,18 +405,18 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
           #       Calculate daily water stess factors (from SWFACS)
           #       EOP in mm/d
           #       TRWUP and EP1 in cm/d
-           # assign("SWFAC",SWFAC , envir = env)  
-           # assign("TURFAC",TURFAC, envir = env)  
+          # assign("SWFAC",SWFAC , envir = env)  
+          # assign("TURFAC",TURFAC, envir = env)  
           
- #         if (EOP > 0.001) {
- #           EP1 = EOP * 0.1
- #           if (TRWUP / EP1 < RWUEP1) {
- #             TURFAC = (1./RWUEP1) * TRWUP / EP1
- #           }
- #           if (EP1 >= TRWUP) {
- #             SWFAC = TRWUP / EP1
- #           }
- #         }
+          #         if (EOP > 0.001) {
+          #           EP1 = EOP * 0.1
+          #           if (TRWUP / EP1 < RWUEP1) {
+          #             TURFAC = (1./RWUEP1) * TRWUP / EP1
+          #           }
+          #           if (EP1 >= TRWUP) {
+          #             SWFAC = TRWUP / EP1
+          #           }
+          #         }
           
           
           
@@ -475,8 +519,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #       Compute maintenance respiration and subtract from available CH2O
         #-----------------------------------------------------------------------
-           RESPIR(DAS,PG) 
-
+        RESPIR(DAS,PG) 
+        
         if (MAINR > PGAVL) {
           PGAVL  = 0.0
         } else {
@@ -783,12 +827,12 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     # update vegetation's physical characteristics
     # plai[i] <- cbiol[i] * specla[i] 
     # plai[i]  <- max(XLAI,0.1)
-     greenfrac[i] <- 1.0   
-
+    greenfrac[i] <- 1.0   
+    
     
     peaklai[i]  <- max(peaklai[i]  ,plai[i] )
     
-
+    
     
     
     biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbiop[i]
