@@ -136,9 +136,6 @@ simDataVars$SDPDOT  <- 0
 simDataVars$PUNDOT  <- 0
 simDataVars$NLPEST  <- 0
 
-simDataVars$outputGrow <-  file(paste0("C:/DSSAT47/Soybean/Grow_controle_R.OUT"), "w")
-
-
 #----------------END GROW VARS-------------------
 
 #-----------------ROOTS VARS---------------------
@@ -1514,26 +1511,6 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   assign("PUNDOT",PUNDOT , envir = env)
   assign("NLPEST",NLPEST , envir = env)
   assign("ROWSPC",ROWSPC , envir = env)
-  
-  writeLines(paste0(SWIDOT,",", WLFDOT,",", WSHIDT,",", WTNFX,",", 
-                    XHLAI,",", AREALF,",", BETN,",", CANNAA,",", CANWAA,",", 
-                    CLW,",", CSW,",", DWNOD,",", DWNODA,",", GROWTH,",", GRWRES,",",
-                    LAIMX,",", PCCSD,",", PCLSD,",", PCNL,",", PCNRT,",", PCNSD,",", 
-                    PCNSH,",", PCNST,",", PLTPOP,",", PLIGLF,",", PLIGNO,",", 
-                    PLIGRT,",", PLIGSD,",", PLIGSH,",", PLIGST,",", PODWT,",", 
-                    PUNCSD,",", PUNCTR,",", RHOL,",", RHOS,",", RNITP,",", 
-                    ROWSPC,",", RTWT,",", SDNPL,",", SDRATE,",", SDWT,",", 
-                    SEEDNI,",", SEEDNO,",", SHELWT,",", SLA,",",
-                    SLAAD,",", STMWT,",", TOPWT,",", TOTWT,",", WCRLF,",", 
-                    WCRRT,",", WCRSH,",", WCRST,",", WNRLF,",", WNRRT,",", 
-                    WNRSH,",", WNRST,",", WTCO,",", WTLF,",", WTLO,",", 
-                    WTMAIN,",", WTNCAN,",", WTNEW,",", WTNLA,",", WTNLF,",", 
-                    WTNLO,",", WTNNA,",", WTNNAG,",", WTNNO,",", WTNNOD,",", 
-                    WTNOO,",", WTNRA,",", WTNRO,",", WTNRT,",", WTNSA,",", 
-                    WTNSD,",", WTNSDA,",", WTNSDO,",", WTNSH,",", WTNSHA,",", 
-                    WTNSHO,",", WTNSO,",", WTNST,",", WTNUP,",", WTRO,",", 
-                    WTSDO,",", WTSHO,",", WTSO,",", XLAI,",", XPOD,",", 
-                    ShutMob,",", RootMob,",", ShelMob) , outputGrow)
   
   return()
 }   

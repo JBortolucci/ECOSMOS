@@ -11,7 +11,7 @@ simDataVars$DSSATdb <- read.table(file = 'C:/DSSAT47/Soybean/INTEGRACAO_CONTROLE
 
 # T <- Dessat/fortran, F <- Ecosmos 
                       # PG  DAYL PAR  TMIN TAVG TGRO TURFAC SWFAC  SW  ST  NO3  NH4
-simDataVars$integr <- c(T  ,T   ,T   ,T   ,T   ,T   ,T     ,F     ,T  ,T  ,T   ,T)
+simDataVars$integr <- c(F  ,F   ,F   ,F   ,F   ,F   ,F     ,F     ,F  ,F  ,F   ,F)
                       # OK  OK   OK   OK   OK   !   OK      OK
 
 
@@ -157,7 +157,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign("NH4",   NH4   , envir = env)
     assign("TGRO",  TGRO  , envir = env)
     
-    auxPG2 <- TURFAC
+    auxPG2 <- PG
+    
     
     # PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
     # AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]  # To do: Henrique, implementar e linkar com o ECOSMOS
