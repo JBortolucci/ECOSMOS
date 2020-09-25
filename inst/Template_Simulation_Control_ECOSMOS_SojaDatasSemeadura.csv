@@ -1,0 +1,6 @@
+ID,LAT,LON,startYear,endYear,SOILID,StationID,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,cycle length,cycles,params
+August,-15.75,-47.75,2017,2018,BRZL000001,,0,1,0,0,soybean,227,2017,150,1,soybean1
+September,-15.75,-47.75,2017,2018,BRZL000001,,0,1,0,0,soybean,258,2017,150,1,soybean1
+October,-15.75,-47.75,2017,2018,BRZL000001,,0,1,0,0,soybean,288,2017,150,1,soybean1
+November,-15.75,-47.75,2017,2018,BRZL000001,,0,1,0,0,soybean,319,2017,150,1,soybean1
+December,-15.75,-47.75,2017,2018,BRZL000001,,0,1,0,0,soybean,349,2017,150,1,soybean1

@@ -23,6 +23,12 @@ CROP <-'SB'
 {
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #!*PHOTOSYNTHESIS PARAMETERS
+  KCAN     <-  0.67 
+  KC_SLOPE <-  0.10  
+  TYPPGN <- "QDR"
+  FNPGN  <- c(1.90,  5.50,  20.0,  20.0)
+  LNREF  <- 4.90
   #!*CARBON AND NITROGEN MINING PARAMETERS
   CADPR1  <- 0.260   
   CMOBMX  <- 0.024 
@@ -36,9 +42,6 @@ CROP <-'SB'
   #!*LEAF SENESCENCE FACTORS
   FREEZ1  <- -2.22    
   FREEZ2  <- -5.00 
-  #!*PHOTOSYNTHESIS PARAMETERS
-  KCAN     <-  0.67 
-  KC_SLOPE <-  0.10     
   #!*PLANT COMPOSITION VALUES
   PCARSH <- 0.380
   PLIPSH <- 0.020
@@ -407,7 +410,7 @@ PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP
   ATOP   <- 1.00
   #!*CARBON AND NITROGEN MINING PARAMETERS
   CADSTF <- 0.75
-  #*NITROGEN STRESS PARAMETERS
+  #!*NITROGEN STRESS PARAMETERS
   NRATIO <- 1.00 
 }
 
