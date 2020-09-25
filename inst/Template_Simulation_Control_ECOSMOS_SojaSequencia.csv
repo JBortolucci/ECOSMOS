@@ -1,0 +1,2 @@
+ID,LAT,LON,startYear,endYear,SOILID,StationID,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,cycle length,cycles,params,P1,plating day,start year,cycle length,cycles,params
+SojaSequenciaTeste,-15.75,-47.75,2013,2015,BRZL000001,,0,1,0,0,soybeanI,320,2013,133,1,soybean1,soybeanII,305,2014,133,1,soybean1

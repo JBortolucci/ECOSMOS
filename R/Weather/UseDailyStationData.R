@@ -28,7 +28,7 @@ UseDailyStationData <- function(day, month, year) {
   
   #### Retrieve variable value for current time from file ####
   
-  useYear <- ifelse(year >= 1980 && year <= 2015, year, 2015)
+  useYear <- ifelse(year >= 1980 && year <= 2018, year, 2015) # Henrique: alterado de 2015 p/ 2018  para ler os dados medidos nas estações dos exp da soja (25/9/2020)
   
   
   TN <- intmin[which(intmin$day == useDay &  intmin$month == month & intmin$year == useYear),]

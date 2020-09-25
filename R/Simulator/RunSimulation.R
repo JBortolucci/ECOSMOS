@@ -179,7 +179,7 @@ GeneralModel <- function(simVars = NULL) {
     simVars$overveg    <- simVars$COMPETE_CLIM_CONSTRAINTS  
     
     simVars$ffact      <- 1.0       
-    simVars$isoilay    <- 8        
+    simVars$isoilay    <- simVars$nsoilay # Henrique: trava qdo é > nsoilay (25/09/2020)        
     simVars$co2init    <- 0.000380 
     simVars$o2init     <- 0.209000 
     
