@@ -323,12 +323,12 @@ ReadPlantParamsFromFile <- function(path = "") {
       # funcao mandar em parametro nome da variavel em nome da coluna
       
       # environment(readSoybeanParams) <- simInstances
-      # source("D:/Embrapa/2020/ECOSMOS/ECOSMOS/R/CropModels/Soybean/readSoybeanParams.R")
-      
-      # if(!is.na(as.character(data[n,column])) && (!grepl("^[0-9]*$", as.character(data[n,column]), perl = T))){
-      #   readSoybeanParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances, simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
-      #   n <- n + 1
-      # }
+      source("D:/Embrapa/2020/ECOSMOS/ECOSMOS/R/CropModels/Soybean/readSoybeanParams.R")
+
+      if(!is.na(as.character(data[n,column])) && (!grepl("^[0-9]*$", as.character(data[n,column]), perl = T))){
+        readSoybeanParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances, simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
+        n <- n + 1
+      }
       while(!is.na(as.character(data[n,1]))) {
         if(!is.na(as.numeric(data[n,column]))) { 
           simInstances[[simId]]$plantList[[i]]$params[[as.character(data[n,1])]] <- as.numeric(data[n,column])

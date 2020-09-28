@@ -10,18 +10,26 @@ readSoybeanParams <-function(pathExcel = "a",filePath = "SBGRO047", simInstances
   
   n <-1
   
-  while(!(is.na(as.character(data[n,"Parameter"])) && is.na(as.character(data[n,"value"])))){
-    # if(!(startsWith(as.character(data[n,"Parameter"]), '!'))){
-      if(is.na(as.character(data[n+1,"Parameter"])) && !is.na(as.character(data[n+1,"value"]))){
+  while(!(is.na(as.character(data[n,"parameter"])) && is.na(as.character(data[n,"value"])))){
+    # if(!(startsWith(as.character(data[n,"parameter"]), '!'))){
+      if(is.na(as.character(data[n+1,"parameter"])) && !is.na(as.character(data[n+1,"value"]))){
         vector <- c()
-        vectorName <- as.character(data[n,"Parameter"])
+        vectorName <- as.character(data[n,"parameter"])
         #atribui ao vetor - primeiro valor
-        vector <- c(vector, as.numeric(data[n,"value"]))
-        n <- n + 1
-        while(is.na(as.character(data[n,"Parameter"])) && !is.na(as.character(data[n,"value"]))){
-          #atribui ao vetor - proximos valores
+        if (grepl("^[0-9.E-]*$", as.character(data[n,"value"]), perl = T)){
           vector <- c(vector, as.numeric(data[n,"value"]))
-          if(is.na(as.character(data[n+1,"Parameter"]))) {
+        }else{
+          vector <- c(vector, as.character(data[n,"value"]))
+        }
+        n <- n + 1
+        while(is.na(as.character(data[n,"parameter"])) && !is.na(as.character(data[n,"value"]))){
+          #atribui ao vetor - proximos valores
+          if (grepl("^[0-9.E-]*$", as.character(data[n,"value"]), perl = T)){
+            vector <- c(vector, as.numeric(data[n,"value"]))
+          }else{
+            vector <- c(vector, as.character(data[n,"value"]))
+          }
+          if(is.na(as.character(data[n+1,"parameter"]))) {
             n <- n + 1
           }else{
             simInstances[[simId]]$plantList[[i]]$params[[vectorName]] <- vector
@@ -30,10 +38,10 @@ readSoybeanParams <-function(pathExcel = "a",filePath = "SBGRO047", simInstances
         }
       }else{
         #Variavel normal
-        if (grepl("^[0-9]*$", as.character(data[n,"value"]), perl = T)){
-          simInstances[[simId]]$plantList[[i]]$params[[as.character(data[n,"Parameter"])]] <- as.numeric(data[n,"value"])
+        if (grepl("^[0-9.E-]*$", as.character(data[n,"value"]), perl = T)){
+          simInstances[[simId]]$plantList[[i]]$params[[as.character(data[n,"parameter"])]] <- as.numeric(data[n,"value"])
         }else{
-          simInstances[[simId]]$plantList[[i]]$params[[as.character(data[n,"Parameter"])]] <- as.character(data[n,"value"])
+          simInstances[[simId]]$plantList[[i]]$params[[as.character(data[n,"parameter"])]] <- as.character(data[n,"value"])
         }
       }
     # }
@@ -67,7 +75,7 @@ readSoybeanParams <-function(pathExcel = "a",filePath = "SBGRO047", simInstances
 
   simInstances[[simId]]$plantList[[i]]$params[["ECONAME"]] <- as.character(data[which(data$`VAR#` %in% varSolo)[1],22])
   simInstances[[simId]]$plantList[[i]]$params[["MG"]] 	   <- as.numeric(data[which(data$`VAR#` %in% varSolo)[1],23])
-  simInstances[[simId]]$plantList[[i]]$params[["TM"]] 	   <- as.numeric(data[which(data$`VAR#` %in% varSolo)[1],24])
+  simInstances[[simId]]$plantList[[i]]$params[["TM2"]] 	   <- as.numeric(data[which(data$`VAR#` %in% varSolo)[1],24])
   simInstances[[simId]]$plantList[[i]]$params[["THVAR"]]   <- as.numeric(data[which(data$`VAR#` %in% varSolo)[1],25])
   simInstances[[simId]]$plantList[[i]]$params[["PL_EM"]]   <- as.numeric(data[which(data$`VAR#` %in% varSolo)[1],26])
   simInstances[[simId]]$plantList[[i]]$params[["EM_V1"]]   <- as.numeric(data[which(data$`VAR#` %in% varSolo)[1],27])

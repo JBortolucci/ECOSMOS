@@ -43,7 +43,7 @@ simDataVars$CGRSD   <- 0
 simDataVars$CGRSH   <- 0
 simDataVars$CTONODR <- 0
 
-simDataVars$auxPG2 <- 0
+simDataVars$auxPG2 <- rep(0,20)
 simDataVars$DAYL   <- 0
 
 
@@ -87,9 +87,10 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   i <- index
   greenfrac[i]<-1.0
   
+  params <- plantList$soybean$params
   #_______________________________________________________________________________  
   # ATRIBUTOS DO SOLO
-  depth <- array(0, NLAYR)
+  depth <- numeric(nsoilay)
   
   for(k in 1:NLAYR) { 
     if(k == 1) {
@@ -157,7 +158,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign("NH4",   NH4   , envir = env)
     assign("TGRO",  TGRO  , envir = env)
     
-    auxPG2 <- PG
+    auxPG2 <- SW
     
     
     # PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
@@ -263,54 +264,54 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       # CONTROL VARS (.SBX) 
       
       #!*CARBON AND NITROGEN MINING PARAMETERS
-      CADPR1  <- 0.260   
-      CMOBMX  <- 0.024 
+      CADPR1  <-  params$CADPR1 # 0.260   
+      CMOBMX  <- params$CMOBMX  #0.024 
       #!*EVAPOTRANSPIRATION    
-      EORATIO <- 1.1
-      KEP     <- 0.68
+      EORATIO <- params$EORATIO  #1.1
+      KEP     <- params$KEP  #0.68
       # To do, remover completamente, pois fizemos as leituras
       KTRANS = KEP
-      KSEVAP = -99.   #Defaults to old method of light
+      # KSEVAP = params$KSEVAP  #-99.   #Defaults to old method of light
       #!*VEGETATIVE PARTITIONING PARAMETERS
-      FRCNOD  <- 0.05
+      FRCNOD  <- params$FRCNOD  #0.05
       #!*LEAF SENESCENCE FACTORS
-      FREEZ1  <- -2.22    
-      FREEZ2  <- -5.00 
+      FREEZ1  <- params$FREEZ1  #-2.22    
+      FREEZ2  <- params$FREEZ2  #-5.00 
       #!*PHOTOSYNTHESIS PARAMETERS
-      KCAN     <-  0.67 
-      KC_SLOPE <-  0.10     
+      KCAN     <-  params$KCAN  #0.67 
+      KC_SLOPE <-  params$KC_SLOPE  #0.10     
       #!*PLANT COMPOSITION VALUES
-      PCARSH <- 0.380
-      PLIPSH <- 0.020
-      PLIGSD <- 0.020  
-      PLIGSH <- 0.280
-      PMINSD <- 0.025
-      PMINSH <- 0.030
-      POASD  <- 0.040 
-      POASH  <- 0.040
-      PROLFI <- 0.356
-      PRORTI <- 0.092
-      PROSHI <- 0.250
-      PROSTI <- 0.150
+      PCARSH <- params$PCARSH  #0.380
+      PLIPSH <- params$PLIPSH  #0.020
+      PLIGSD <- params$PLIGSD  #0.020  
+      PLIGSH <- params$PLIGSH  #0.280
+      PMINSD <- params$PMINSD  #0.025
+      PMINSH <- params$PMINSH  #0.030
+      POASD  <- params$POASD   #0.040 
+      POASH  <- params$POASH   #0.040
+      PROLFI <- params$PROLFI  #0.356
+      PRORTI <- params$PRORTI  #0.092
+      PROSHI <- params$PROSHI  #0.250
+      PROSTI <- params$PROSTI  #0.150
       #!*RESPIRATION PARAMETERS
-      PCH2O  <- 1.13
-      R30C2  <- 0.0040 
-      RCH2O  <- 1.242
-      RES30C <- 3.5E-04
-      RFIXN  <- 2.830
-      RLIG   <- 2.174
-      RLIP   <- 3.106
-      RMIN   <- 0.05
-      RNH4C  <- 2.556
-      RNO3C  <- 2.556
-      ROA    <- 0.929
-      RPRO   <- 0.360
+      PCH2O  <- params$PCH2O  #1.13
+      R30C2  <- params$R30C2  #0.0040 
+      RCH2O  <- params$RCH20  #1.242
+      RES30C <- params$RES30C  #3.5E-04
+      RFIXN  <- params$RFIXN  #2.830
+      RLIG   <- params$RLIG  #2.174
+      RLIP   <- params$RLIP  #3.106
+      RMIN   <- params$RMIN  #0.05
+      RNH4C  <- params$RNH4C  #2.556
+      RNO3C  <- params$RNO3C  #2.556
+      ROA    <- params$ROA  #0.929
+      RPRO   <- params$RPRO  #0.360
       #!*ROOT PARAMETERS
-      PORMIN <- 0.02
-      RWUEP1 <- 1.50
-      RWUMX  <- 0.04
+      PORMIN <- params$PORMIN  #0.02
+      RWUEP1 <- params$RWUEP1  #1.50
+      RWUMX  <- params$RWUMX  #0.04
       #!*NITROGEN FIXATION PARAMETERS
-      TTFIX  <- 0
+      TTFIX  <- params$TTFIX  #0
       # Não usados
       # ECONO (ecotype id)  
       # NOUTDO     Logical unit for OVERVIEW.OUT file 

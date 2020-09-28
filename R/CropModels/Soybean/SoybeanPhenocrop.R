@@ -76,6 +76,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   environment(VSTAGES)             <- env
   environment(RSTAGES)             <- env
+  params <- plantList$soybean$params
   
   #_______________________________________________________________________________  
   # Vars that are solverd by ECOSMOS  
@@ -96,8 +97,8 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   
   #    
-  YRDOY   = paste0(iyear,jday)
-  YRSIM   = paste0(iyear0,1)
+  YRDOY   = paste0(iyear,sprintf("%03d", jday))
+  YRSIM   = paste0(iyear0,sprintf("%03d", 1))
   
   NPHS = 13
   TS   = 24
@@ -142,56 +143,56 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
-  CSDL       <- 12.58 
-  CSDVAR     <- CSDL  #code uses CSDVAR
-  PPSEN      <- 0.311
-  PH2T5      <- 23.1  # EM-FL - Time between plant emergence and flower appearance (R1) (photothermal days)
-  PHTHRS[6]  <- 7.0   # FL-SH - Time between first flower and first pod (R3) (photothermal days)
-  PHTHRS[8]  <- 16.0  # FL-SD -  Time between first flower and first seed (R5) (photothermal days)
-  PHTHRS[10] <- 27.00 # SD-PM - Time between first seed (R5) and physiological maturity (R7) (photothermal days)
-  PHTHRS[13] <- 18.00 # FL-LF - Time between first flower (R1) and end of leaf expansion (photothermal days)
+  CSDL       <- params$CSDL  #12.58 
+  CSDVAR     <- CSDL  #CSDL  #code uses CSDVAR
+  PPSEN      <- params$PPSEN  #0.311
+  PH2T5      <- params$EM_FL  #23.1  # EM-FL - Time between plant emergence and flower appearance (R1) (photothermal days)
+  PHTHRS[6]  <- params$FL_SH  #7.0   # FL-SH - Time between first flower and first pod (R3) (photothermal days)
+  PHTHRS[8]  <- params$FL_SD  #16.0  # FL-SD -  Time between first flower and first seed (R5) (photothermal days)
+  PHTHRS[10] <- params$SD_PM  #27.00 # SD-PM - Time between first seed (R5) and physiological maturity (R7) (photothermal days)
+  PHTHRS[13] <- params$FL_LF  #18.00 # FL-LF - Time between first flower (R1) and end of leaf expansion (photothermal days)
   
   #______________________________________________________________        
   # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
-  THVAR      <- 0.0      # THVAR   Minimum rate of reproductive development under long days and optimal temperature
+  THVAR      <- params$THVAR  #0.0      # THVAR   Minimum rate of reproductive development under long days and optimal temperature
   #PHTHRS [5,7,9] 
-  PHTHRS[1]  <-  3.6     # PL-EM  - Time between planting and emergence (V0) (thermal days)           
-  PHTHRS[2]  <-  6.0     # EM-V1  - Time required from emergence to first true leaf (V1), thermal days           
-  PHTHRS[3]  <-  0.0     # V1-JU  - Time required from first true leaf to end of juvenile phase, thermal days          
-  PHTHRS[4]  <-  5.0     # JU-R0  - Time required for floral induction, equal to the minimum number of days for 
+  PHTHRS[1]  <-  params$PL_EM  #3.6     # PL-EM  - Time between planting and emergence (V0) (thermal days)           
+  PHTHRS[2]  <-  params$EM_V1  #6.0     # EM-V1  - Time required from emergence to first true leaf (V1), thermal days           
+  PHTHRS[3]  <-  params$V1_JU  #0.0     # V1-JU  - Time required from first true leaf to end of juvenile phase, thermal days          
+  PHTHRS[4]  <-  params$JU_R0  #5.0     # JU-R0  - Time required for floral induction, equal to the minimum number of days for 
   #          floral induction under optimal temperature and daylengths, photothermal days 
-  PM06       <- 0.0      # Proportion of time between first flower and first pod for first peg (peanut only)
-  PM09       <- 0.35     # Proportion of time between first seed and physiological maturity that the last seed can be formed
-  PHTHRS[11] <- 12.0     # R7-R8  - Time between physiological (R7) and harvest maturity (R8) (days)           
-  PHTHRS[12] <- 12.00    # FL-VS  - Time from first flower to last leaf on main stem (photothermal days)          
-  TRIFL      <- 0.32     # TRIFL   Rate of appearance of leaves on the mainstem (leaves per thermal day)
-  TRIFOL     <- TRIFL
-  R1PPO      <- 0.459    # Increase in daylength sensitivity after R1 (CSDVAR and CLDVAR both decrease with the same amount) (h)
-  OPTBI      <- 20.0     # Minimum daily temperature above which there is no effect on slowing normal development toward flowering (oC)
-  SLOBI      <- 0.035    # Slope of relationship reducing progress toward flowering if tmin for the day is less than OPTBI
+  PM06       <- params$PM06  #0.0      # Proportion of time between first flower and first pod for first peg (peanut only)
+  PM09       <- params$PM09  #0.35     # Proportion of time between first seed and physiological maturity that the last seed can be formed
+  PHTHRS[11] <- params$R7_R8  #12.0     # R7-R8  - Time between physiological (R7) and harvest maturity (R8) (days)           
+  PHTHRS[12] <- params$FL_VS  #12.00    # FL-VS  - Time from first flower to last leaf on main stem (photothermal days)          
+  TRIFL      <- params$TRIFL  #0.32     # TRIFL   Rate of appearance of leaves on the mainstem (leaves per thermal day)
+  TRIFOL     <- TRIFL  #TRIFL
+  R1PPO      <- params$R1PPO  #0.459    # Increase in daylength sensitivity after R1 (CSDVAR and CLDVAR both decrease with the same amount) (h)
+  OPTBI      <- params$OPTBI  #20.0     # Minimum daily temperature above which there is no effect on slowing normal development toward flowering (oC)
+  SLOBI      <- params$SLOBI  #0.035    # Slope of relationship reducing progress toward flowering if tmin for the day is less than OPTBI
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
   
   # LEAF GROWTH PARAMETERS
-  EVMODC <-0.0           # Modifier of rate of vegetative node appearance for the first few nodes, primarily used for peanut 
+  EVMODC <- params$EVMODC #0.0           # Modifier of rate of vegetative node appearance for the first few nodes, primarily used for peanut 
   # ROOT PARAMETERS
-  RWUEP1<-1.50
+  RWUEP1 <- params$RWUEP1  #1.50
   # PHENOLOGY PARAMETERS   
-  TB	<- c( 7,  6, -15, 0, 0)
-  TO1	<- c(28, 26,  26, 0, 0)
-  TO2	<- c(35, 30,  34, 0, 0)
-  TM	<- c(45, 45,  45, 0, 0)
+  TB	<- params$TB  #c( 7,  6, -15, 0, 0)
+  TO1	<- params$TO1  #c(28, 26,  26, 0, 0)
+  TO2	<- params$TO2  #c(35, 30,  34, 0, 0)
+  TM	<- params$TM  #c(45, 45,  45, 0, 0)
   
   # FOLLOWING LINE: STAGE; REF STAGE; PHOTOPERIOD FUNCTION; TEMPERATURE FUNCT;
   # POINTER TO VEGD(1) OR REPDA(2) OR REPDB(3) TEMP SENS; SENS TO WATER;N; AND P     
-  NPRIOR <- c(1,2,2,4,5,6,6,6,9,9,11,6,6)                                 # The phase of growth at which phase I accumulator can start
-  DLTYP  <- c('NON','NON','NON','INL','INL','INL','INL','INL','INL','INL','NON','INL','INL')  # Type of curve used for daylength function for phase I:  NON=no  photoperiod sensitivity, INL=inverse linear      
-  CTMP   <- c('LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','NON','LIN','LIN')  # Type of curve used for temp. function for phase I: LIN=linear,  QDR=quadratic, SIN=sine function
-  TSELC  <- c(1,1,1,2,2,2,2,2,3,3,1,2,2)                                   # Number of temperature curve to be used for phase I development rate: 1=veg, 2=early rep, 3=late rep 
-  WSENP  <- c(-0.2,-0.2,-0.4,-0.4,-0.4,-0.4,-0.4,-0.4,0.7,0.7,0,-0.6,-0.9) # Sensitivity of phase I to water stress, varying from -1 (slows dev) to 1 (hastens dev) 
-  NSENP  <- c(0,0,0,0,0,0,0,0,0.4,0.4,0,0,0)                               # Sensitivity of phase I to Nitrogen stress. Varies from -1 (slows dev) to +1 (hastens dev)
-  PSENP  <- c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP     Sensitivity of phase I to phosphorus stress (not yet used) 
+  NPRIOR <- params$NPRIOR  #c(1,2,2,4,5,6,6,6,9,9,11,6,6)                                 # The phase of growth at which phase I accumulator can start
+  DLTYP  <- params$DLTYP  #c('NON','NON','NON','INL','INL','INL','INL','INL','INL','INL','NON','INL','INL')  # Type of curve used for daylength function for phase I:  NON=no  photoperiod sensitivity, INL=inverse linear      
+  CTMP   <- params$CTMP  #c('LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','LIN','NON','LIN','LIN')  # Type of curve used for temp. function for phase I: LIN=linear,  QDR=quadratic, SIN=sine function
+  TSELC  <- params$TSELC  #c(1,1,1,2,2,2,2,2,3,3,1,2,2)                                   # Number of temperature curve to be used for phase I development rate: 1=veg, 2=early rep, 3=late rep 
+  WSENP  <- params$WSENP  #c(-0.2,-0.2,-0.4,-0.4,-0.4,-0.4,-0.4,-0.4,0.7,0.7,0,-0.6,-0.9) # Sensitivity of phase I to water stress, varying from -1 (slows dev) to 1 (hastens dev) 
+  NSENP  <- params$NSENP  #c(0,0,0,0,0,0,0,0,0.4,0.4,0,0,0)                               # Sensitivity of phase I to Nitrogen stress. Varies from -1 (slows dev) to +1 (hastens dev)
+  PSENP  <- params$PSENP  #c(0,0,0,0,0,0,0,0,0.0,0.0,0,0,0)                               # PSENP     Sensitivity of phase I to phosphorus stress (not yet used) 
   
   
   
@@ -707,6 +708,7 @@ RSTAGES <- function (DAS,DYNAMIC,
     #***********************************************************************
     #     Daily Integration
     #***********************************************************************
+    
   } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
     REM <- rep(1.0,20)
@@ -988,7 +990,6 @@ RSTAGES <- function (DAS,DYNAMIC,
       
       PROG[11] = FT[11] * FUDAY[11]*min(FSW[11],FNSTR[11],FPSTR[11]) * REM[NPRIOR[11]]
       PHZACC[11] = PHZACC[11] + PROG[11]
-      
       if(PHZACC[11] - PHTHRS[11] > 1.E-6) {
         #-------------------------------------------------------------------------------
         #       Stage NR8, harvest maturity, occurs on day DAS
