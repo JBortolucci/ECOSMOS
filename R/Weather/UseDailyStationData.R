@@ -22,7 +22,7 @@
 UseDailyStationData <- function(day, month, year) {
   
   useDay <- day
-  if((year < 1980 || year > 2015) && month == 2 && day == 29) {
+  if((year < 1980 || year > 2018) && month == 2 && day == 29) {
     useDay <- 28
   }
   

@@ -324,9 +324,9 @@ ReadPlantParamsFromFile <- function(path = "") {
       
       # environment(readSoybeanParams) <- simInstances
       source("D:/Embrapa/2020/ECOSMOS/ECOSMOS/R/CropModels/Soybean/readSoybeanParams.R")
-
+      
       if(!is.na(as.character(data[n,column])) && (!grepl("^[0-9]*$", as.character(data[n,column]), perl = T))){
-        readSoybeanParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances, simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
+        readSoybeanParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances,column = column , simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
         n <- n + 1
       }
       while(!is.na(as.character(data[n,1]))) {

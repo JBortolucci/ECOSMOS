@@ -1,5 +1,6 @@
 
 simDataVars$TGRO_T   <-read.table(file = 'C:/DSSAT47/Soybean/TGRO.OUT')
+simDataVars$PROG_T   <-read.table(file = 'C:/DSSAT47/Soybean/PROG.OUT')
 simDataVars$VARAUX  <- read.table(file = 'C:/DSSAT47/Soybean/VARAUX.OUT', header = T)
 simDataVars$PGAVLAUX   <-read.table(file = 'C:/DSSAT47/Soybean/PGAVL.OUT',header = T)
 simDataVars$NAVLAUX   <-read.table(file = 'C:/DSSAT47/Soybean/NAVL.OUT',header = T)
@@ -48,7 +49,7 @@ simDataVars$DAYL   <- 0
 
 
 simDataVars$TMIN     <- 0
-simDataVars$NLAYR    <- 9 #nsoilay
+simDataVars$NLAYR    <- 0
 simDataVars$DLAYR    <- rep(0, simDataVars$NLAYR)
 simDataVars$DS       <- rep(0, simDataVars$NLAYR)
 simDataVars$LL       <- rep(0, simDataVars$NLAYR)
@@ -87,6 +88,9 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   i <- index
   greenfrac[i]<-1.0
   
+  NLAYR <- nsoilay
+  assign("NLAYR",NLAYR, envir = env)
+  
   params <- plantList$soybean$params
   #_______________________________________________________________________________  
   # ATRIBUTOS DO SOLO
@@ -118,7 +122,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     DAS     <- idpp[i]
     
-    YRDOY   <- paste0(iyear,jday)
+    YRDOY   <- paste0(iyear,sprintf("%03d", jday))
     
     RWUEP1 <- 1.50
   
@@ -158,7 +162,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign("NH4",   NH4   , envir = env)
     assign("TGRO",  TGRO  , envir = env)
     
-    auxPG2 <- SW
+    auxPG2 <- PROG[10]
     
     
     # PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
@@ -321,6 +325,12 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       # Estava antes das declaracoes de variaveis 
       if(DAS==1){
+        
+        for (L in 1:NLAYR)
+        {
+          wsoi[L]    <- 1
+        }
+        assign("wsoi",  wsoi  , envir = env)
         
         CMINEP = 0.0
         CNOD   = 0.0
