@@ -1,6 +1,6 @@
 
 simDataVars$TGRO_T   <-read.table(file = 'C:/DSSAT47/Soybean/TGRO.OUT')
-simDataVars$PROG_T   <-read.table(file = 'C:/DSSAT47/Soybean/PROG.OUT')
+#simDataVars$PROG_T   <-read.table(file = 'C:/DSSAT47/Soybean/PROG.OUT')
 simDataVars$VARAUX  <- read.table(file = 'C:/DSSAT47/Soybean/VARAUX.OUT', header = T)
 simDataVars$PGAVLAUX   <-read.table(file = 'C:/DSSAT47/Soybean/PGAVL.OUT',header = T)
 simDataVars$NAVLAUX   <-read.table(file = 'C:/DSSAT47/Soybean/NAVL.OUT',header = T)
@@ -10,7 +10,7 @@ simDataVars$NO3_T   <-read.table(file = 'C:/DSSAT47/Soybean/NO3.OUT',row.names =
 simDataVars$NH4_T   <-read.table(file = 'C:/DSSAT47/Soybean/NH4.OUT',row.names = NULL)
 simDataVars$DSSATdb <- read.table(file = 'C:/DSSAT47/Soybean/INTEGRACAO_CONTROLE.OUT', header = F)
 
-# T <- Dessat/fortran, F <- Ecosmos 
+# T <- Dssat/fortran, F <- Ecosmos 
                       # PG  DAYL PAR  TMIN TAVG TGRO TURFAC SWFAC  SW  ST  NO3  NH4
 simDataVars$integr <- c(F  ,F   ,F   ,F   ,F   ,F   ,F     ,F     ,F  ,F  ,F   ,F)
                       # OK  OK   OK   OK   OK   !   OK      OK
@@ -162,7 +162,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign("NH4",   NH4   , envir = env)
     assign("TGRO",  TGRO  , envir = env)
     
-    auxPG2 <- PROG[10]
+    auxPG2 <- PG[10]
     
     
     # PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
