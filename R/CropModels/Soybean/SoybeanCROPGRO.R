@@ -1,4 +1,4 @@
-
+# Dados de suporte da integração do DSSAT/CROPGRO para o ECOSMOS
 simDataVars$TGRO_T   <-read.table(file = 'C:/DSSAT47/Soybean/TGRO.OUT')
 #simDataVars$PROG_T   <-read.table(file = 'C:/DSSAT47/Soybean/PROG.OUT')
 simDataVars$VARAUX  <- read.table(file = 'C:/DSSAT47/Soybean/VARAUX.OUT', header = T)
@@ -10,15 +10,14 @@ simDataVars$NO3_T   <-read.table(file = 'C:/DSSAT47/Soybean/NO3.OUT',row.names =
 simDataVars$NH4_T   <-read.table(file = 'C:/DSSAT47/Soybean/NH4.OUT',row.names = NULL)
 simDataVars$DSSATdb <- read.table(file = 'C:/DSSAT47/Soybean/INTEGRACAO_CONTROLE.OUT', header = F)
 
-# T <- Dssat/fortran, F <- Ecosmos 
+# simDataVars$PGAVLCount <- 1
+# simDataVars$NAVLCount  <- 1
+
+# Ligando/Desligando a conexão com o DSSAT/CROPGRO
+# T <- DSSAT/fortran, F <- Ecosmos 
                       # PG  DAYL PAR  TMIN TAVG TGRO TURFAC SWFAC  SW  ST  NO3  NH4
 simDataVars$integr <- c(F  ,F   ,F   ,F   ,F   ,F   ,F     ,F     ,F  ,F  ,F   ,F)
                       # OK  OK   OK   OK   OK   !   OK      OK
-
-
-
-simDataVars$PGAVLCount <- 1
-simDataVars$NAVLCount  <- 1
 
 NL <- 20
 simDataVars$SW  <- rep(0, NL)
@@ -26,8 +25,8 @@ simDataVars$ST  <- rep(0, NL)
 simDataVars$NO3 <- rep(0, NL)
 simDataVars$NH4 <- rep(0, NL)
 
-# Mudar 
-simDataVars$CROP    <-'SB'
+# Mudar em caso de uso de outras culturas da família CROPGRO 
+simDataVars$CROP   <- 'SB'
 
 simDataVars$CMINEP <- 0
 simDataVars$CNODMN <- 0
@@ -44,9 +43,8 @@ simDataVars$CGRSD   <- 0
 simDataVars$CGRSH   <- 0
 simDataVars$CTONODR <- 0
 
-simDataVars$auxPG2 <- rep(0,20)
+simDataVars$plotVARAUX <- 0
 simDataVars$DAYL   <- 0
-
 
 simDataVars$TMIN     <- 0
 simDataVars$NLAYR    <- 0
@@ -58,17 +56,12 @@ simDataVars$SAT      <- rep(0, simDataVars$NLAYR)
 simDataVars$WR       <- rep(0, simDataVars$NLAYR)
 simDataVars$BD       <- rep(0, simDataVars$NLAYR)
 
-
-
-
-
-
+# Carregando subrotinas necessárias
 source("R/CropModels/Soybean/SoybeanPhenocrop.R")
 source("R/CropModels/Soybean/SoybeanGrowth.R")
 source("R/CropModels/Soybean/UTILS.R")
 
 SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
-  
   
   environment(PHENOL)       <- env
   environment(SENES)        <- env
@@ -86,12 +79,14 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   environment(RESPIR)       <- env
   
   i <- index
-  greenfrac[i]<-1.0
+  greenfrac[i] <- 1.0 
   
   NLAYR <- nsoilay
   assign("NLAYR",NLAYR, envir = env)
   
+  # Carregando os parâmetros genéticos da cultura (Cultivar, Ecótipo & Espécie) + aqueles oriundos do Ecosmos
   params <- plantList$soybean$params
+  
   #_______________________________________________________________________________  
   # ATRIBUTOS DO SOLO
   depth <- numeric(nsoilay)
@@ -127,11 +122,9 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     RWUEP1 <- 1.50
   
     #_______________________________________________________________________________  
-    # Vars solved by CROPGRO and ECOSMOS  
+    # Vars solved by DSSAT/CROPGRO and ECOSMOS  
     
-    # XLAI    <- DSSATdb$V137[DSSATdb$V1==DAS]
-    
-    #                  VARS FROM DSSAT                                      |      VARS FROM CROPGRO
+    #                  VARS FROM DSSAT/CROGRO                               |      VARS FROM ECOSMOS
     ifelse(integr[1],  PG <- VARAUX$PG[VARAUX$DAS==DAS]                     ,      PG <- adan * (30/12) * 1000 ) # converter kg C / m2.d para g CH2O / m2.d
     ifelse(integr[2],  DAYL <- TGRO_T$V4[TGRO_T$V1==DAS & TGRO_T$V2==1]     ,      DAYL <- daylength/60. ) # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
     ifelse(integr[3],  PAR <- VARAUX$PAR[VARAUX$DAS==DAS]                   ,      PAR <- adpar* (86400/1000000)* 4.59 ) # (86400/1000000) W/m2 para MJ/m2.d  and 4.59 # MJ/m2.d para mol/m2.d 
@@ -144,8 +137,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     if (integr[10]){   ST <- as.double(ST_T[DAS,][-1])                    }else{   for (L in 1:NLAYR) {ST[L]  <- tsoi[L] - 273.16}}
     if (integr[11]){   NO3 <- as.double(NO3_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NO3[L]  <- 1.1}}
     if (integr[12]){   NH4 <- as.double(NH4_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NH4[L]  <- 0.1}}
-    
-    plai[i]  <- max(XLAI,0.1)
     
     assign("TMIN",  TMIN  , envir = env)
     assign("NLAYR", NLAYR , envir = env)
@@ -162,8 +153,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign("NH4",   NH4   , envir = env)
     assign("TGRO",  TGRO  , envir = env)
     
-    auxPG2 <- PG[10]
-    
+    plotVARAUX <- PG
     
     # PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
     # AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]  # To do: Henrique, implementar e linkar com o ECOSMOS
@@ -430,8 +420,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
           #           }
           #         }
           
-          
-          
         }
       }
       
@@ -443,7 +431,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       }
       
       #----------------------------------------------------------------------
-      
       
       if (CROP != 'FA' & DAS > NVEG0) {
         #TODO usar PHOTO.R ou trazer AGEFAC and PG do DSSAT/Fortran
@@ -481,6 +468,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #     On day of emergence, initialize:
         #-----------------------------------------------------------------------
         GROW("EMERG",iyear,jday, ISWNIT,ISWSYM)
+        plai[i]  <- max(XLAI,0.1) # Henrique: atribui IAF inicial para ECOSMOS (2020-10-1)
         
         #-----------------------------------------------------------------------
         #     Call to root growth and rooting depth routine
@@ -779,7 +767,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #     Call routine to integrate growth and damage
         #-----------------------------------------------------------------------
         GROW(DYNAMIC,iyear,jday, ISWNIT,ISWSYM)
-        
+        plai[i]  <- max(XLAI,0.1) #TODO Henrique: verificar se aqui seria o lugar ideal dessa atribuição
         
         if ((WTLF+STMWT)> 0.0001) {
           PCNVEG = (WTNLF+WTNST)/(WTLF+STMWT)*100.
@@ -922,13 +910,10 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     if(cropy == 1) {
       
-      if ( RSTAGE == 8 ) { # maximum harvest date
-        # print(paste('Harvest RICE ',ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai[i],cbiog[i],sep = " ; "    ))
-        
-        # fileout=paste("RICE_SEASON.csv")
-        # write(paste(ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai,cbiog[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
-        
-        
+      if ( RSTAGE == 8 | frost ) {
+        # frost is when TMIN < FREEZE2 (Temperature below which plant growth stops completely)
+        # R8 is the physiological maturity, usually when growers should harvest the crop
+        # TODO 3rd option to be implemented: user chooses the harvesting date
         
         croplive[i]   <- 0.0
         cropy         <- 0.0
@@ -938,9 +923,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         plai[i]       <- 0.01 # simulates remaining stubble/mulch
         peaklai[i]    <- 0.0
         endCycle      <- T
-        
-        
-        
+    
       }
     } else {
       print('Soybean has only one cycle - Stop')
@@ -991,8 +974,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("RSPNH4",RSPNH4, envir = env)
   assign("KSTRES",KSTRES, envir = env)
   assign("PGAVL",PGAVL, envir = env)
-  assign("PGAVLCount",PGAVLCount, envir = env)
-  assign("NAVLCount",NAVLCount, envir = env)
+  # assign("PGAVLCount",PGAVLCount, envir = env)
+  # assign("NAVLCount",NAVLCount, envir = env)
   assign("NAVL",NAVL, envir = env)
   assign("SDNPL", SDNPL, envir = env)
   assign("AGRSH2", AGRSH2, envir = env)
@@ -1004,7 +987,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("CGRSH", CGRSH, envir = env)
   assign("TURFAC", TURFAC, envir = env)
   assign("SWFAC", SWFAC, envir = env)
-  assign("auxPG2", auxPG2, envir = env)
+  assign("plotVARAUX", plotVARAUX, envir = env)
   assign("DAYL", DAYL, envir = env)
 }
 
