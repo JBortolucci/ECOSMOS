@@ -19,26 +19,27 @@ ReadConfigFromCSV <- function(filePath) {
   
   atualData <- data[curData,]
   aux <- 10
-  
   repeat {
     
     sim <- list()
-    sim$id          <- atualData[[1]]
-    sim$coord       <- list(lat = lat  <- atualData[[2]], 
-                            lon = lon  <- atualData[[3]])
+    sim$id                  <- atualData[[1]]
+    sim$coord               <- list(lat = lat  <- atualData[[2]], 
+                                    lon = lon  <- atualData[[3]])
     
-    sim$startYear   <- atualData[[4]]
-    sim$endYear     <- atualData[[5]]
+    sim$startYear           <- atualData[[4]]
+    sim$startOfSimulation   <- atualData[[5]]
+    sim$endYear             <- atualData[[6]]
+    sim$endOfSimulation     <- atualData[[7]]
+            
+    sim$soilId              <- atualData[[8]]
+    sim$stationID           <- atualData[[9]]
+    sim$soilcspin           <- atualData[[10]]
+    sim$isimveg             <- atualData[[11]]
+    sim$isimfire            <- atualData[[12]]
+    sim$irrigate            <- atualData[[13]]
+    sim$npft                <- 0
     
-    sim$soilId      <- atualData[[6]]
-    sim$stationID   <- atualData[[7]]
-    sim$soilcspin   <- atualData[[8]]
-    sim$isimveg     <- atualData[[9]]
-    sim$isimfire    <- atualData[[10]]
-    sim$irrigate    <- atualData[[11]]
-    sim$npft        <- 0
-    
-    for (i in seq(from = 12, to = length(atualData), by = 6)) {
+    for (i in seq(from = 14, to = length(atualData), by = 6)) {
       if(!is.na(atualData[[i]]) && !atualData[[i]] == "") {
         plant <- list()
         plant$name         <- atualData[[i]]

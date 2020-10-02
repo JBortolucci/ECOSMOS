@@ -72,7 +72,7 @@ VariablesInicialization()
 
 RunSimulation <- function(parallel = F, compiled = F, OnEndDailyStep = NULL, OnEndHourlyStep = NULL) {
   
-    setDefaultFunctions()
+  setDefaultFunctions()
   if(compiled){ SetCompiledFunctions() } 
   
   if(parallel) {
@@ -337,15 +337,38 @@ GeneralModel <- function(simVars = NULL) {
     # reset julian date
     simVars$jday <- 0
     
+    simVars$startOfSimulation <- config$startOfSimulation
+    simVars$endOfSimulation <- config$endOfSimulation
+    
     leapYearOut       <- LeapYear(year)
     simVars$ndaypm[2] <- leapYearOut$ndaypm
     simVars$ndaypy    <- leapYearOut$ndaypy
     
+    if (!is.na(simVars$endOfSimulation)){
+      simVars$simulationEndMonth <- as.numeric(format(as.Date(simVars$endOfSimulation-1, origin = as.Date(paste0(simVars$iy2,"-01-01"))), "%m"))
+      simVars$simulationEndDay   <- as.numeric(format(as.Date(simVars$endOfSimulation-1, origin = as.Date(paste0(simVars$iy2,"-01-01"))), "%d"))
+    }
     
-    for(month in seq(1, 12)) {
+    if (simVars$year == simVars$iy1 && !is.na(simVars$startOfSimulation)){
+      simVars$simulationStartMonth <- as.numeric(format(as.Date(simVars$startOfSimulation-1, origin = as.Date(paste0(simVars$year,"-01-01"))), "%m"))
+      simVars$simulationStartDay   <- as.numeric(format(as.Date(simVars$startOfSimulation-1, origin = as.Date(paste0(simVars$year,"-01-01"))), "%d"))
+      simVars$jday <- simVars$startOfSimulation-1
+    }else{
+      simVars$simulationStartMonth <- 1 
+      simVars$simulationStartDay   <- 1
+    }
+    
+    for(month in seq(simVars$simulationStartMonth, 12)) {
       
-      for(day in seq(1, daypm(month, year))) {
+      simVars$month <- month
+      
+      if (!is.na(simVars$startOfSimulation) && year == simVars$iy1 && (month == (simVars$simulationStartMonth + 1) || month == 1)){
+        simVars$simulationStartDay <- 1
+      }
+      
+      for(day in seq(simVars$simulationStartDay, daypm(month, year))) {
         
+        simVars$day <- day
         
         # to do: Santiago ou Jair, achar lugar apropriado para levar ayanpp          
         if(day == 1  && month == 1) { 
@@ -368,7 +391,6 @@ GeneralModel <- function(simVars = NULL) {
         
         simVars$cdays <- simVars$cdays + 1
         
-         
         UseDailyStationData(day, month, year)
         
         
@@ -418,12 +440,10 @@ GeneralModel <- function(simVars = NULL) {
               # if exist a plant to simulate next, increase the currentPlant by one.
               simVars$currentPlant <- simVars$currentPlant + 1
               
-              
             }
-            
           }
         }
-      
+        
         
         # call soil biogeochemistry model
         SoilbgcModel(year, month, day)
@@ -475,8 +495,8 @@ GeneralModel <- function(simVars = NULL) {
           } else {
             
             diurnal(simVars, time, simVars$jday, plens, startp, endp, simVars$irrigate, ilens, starti, endi)
-
-                      }
+            
+          }
           
           
           # JAIR: Não estão sendo utilizadas
@@ -529,9 +549,17 @@ GeneralModel <- function(simVars = NULL) {
         if(!is.null(simVars$OnEndDailyStep)) 
           simVars$OnEndDailyStep(simVars)
         
+        
+        if(year == simVars$iy2 && month == simVars$simulationEndMonth && day == simVars$simulationEndDay){
+          simVars$simulationEnd <- T 
+          break()
+        }
+        
       } # FIM DO LOOP DIÁRIO
       
-      
+      if (simVars$simulationEnd) {
+        break()
+      }
     } # FIM DO LOOP MENSAL
     
     
@@ -542,7 +570,9 @@ GeneralModel <- function(simVars = NULL) {
     simVars$iyrlast <- simVars$iyrlast + 1
     
     # dataFrameGenerator(simVars)
-    
+    if (simVars$simulationEnd){
+      break()
+    } 
   } # FIM DO LOOP ANUAL
   
   

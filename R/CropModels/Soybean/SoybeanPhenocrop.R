@@ -117,7 +117,8 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   #   if (DYNAMIC == 'RUNINIT') {
   
-  YRPLT   = paste0(iyear,jday)
+  YRPLT   = paste0(iyear,sprintf("%03d", jday))
+    
   
   
   #***************************************************************************
