@@ -329,6 +329,7 @@ simDataVars$SWFCAB <- rep(0,5)
 #-------------------FREEZE VARS-------------------
 # simDataVars$MDATE  <- 0  #VERIFICAR INPUT/OUTPUT não se encaixa aqui
 # simDataVars$WLFDOT  <-  0
+simDataVars$frost  <-  F
 #-----------------END FREEZE VARS-----------------
 
 #-------------------INCOMP VARS-------------------
@@ -1538,7 +1539,7 @@ STRESS <- function(AGEFAC, iyear,jday) {
     MDATE = YRDOY
   }
   
-  DAP = idpp[i] #TODO VERIFICAR
+  #DAP = idpp
   #tem uma mensagem de erro aqui: 'Plant died due to extreme stress at 'xx' days after planting.')
   
   assign("MDATE", MDATE, envir = env)
@@ -4464,10 +4465,11 @@ FREEZE <- function(TMIN, iyear, jday) {
   
   #-----------------------------------------------------------------------
   #DAP   = max(0,TIMDIF(YRPLT,YRDOY)) #TODO tradução timdif 
-  DAP = idpp[i] #TODO VERIFICAR
+  #DAP = idpp
   WLFDOT = WTLF - SLDOT - NRUSLF/0.16
   
   if (TMIN < FREEZ2) {
+    frost = T #Henrique: criei para encerrar o ciclo devido à geada severa (2020-10-1)
     if (MDATE < 0) {
       MDATE = YRDOY
     }
@@ -4482,10 +4484,12 @@ FREEZE <- function(TMIN, iyear, jday) {
   #    if (IDETO == 'Y')  {
   #      WRITE (NOUTDO,'(/,5X,A78,/,5X,A78)') MESSAGE(1), MESSAGE(2)
   #    }
+  print(paste0('Freeze occurred at ',idpp,' days after planting.'))
   
   #-----------------------------------------------------------------------
   assign("MDATE", MDATE, envir = env)
   assign("WLFDOT", WLFDOT, envir = env)
+  assign("frost", frost, envir = env)
   
   return()
 }
