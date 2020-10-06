@@ -31,7 +31,7 @@ simDataVars$PUNCTR  <-  0
 simDataVars$RHOL  <-  0
 simDataVars$RHOS  <-  0
 simDataVars$RNITP  <-  0
-simDataVars$ROWSPC  <-  50 #TODO: Mudar para parametro fixo
+# simDataVars$ROWSPC  <-  50 #TODO: Mudar para parametro fixo
 simDataVars$RTWT  <-  0
 simDataVars$SDNPL  <-  0
 simDataVars$SDRATE  <-  0
@@ -394,7 +394,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   
   environment(STRESS) <- env
   params <- plantList$soybean$params
-
+  
     # TODO: Nitrogen
   N = 1
   
@@ -402,8 +402,12 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   
   PLME   <- 'S' # equivalente ao [.SBX] *PLANTING DETAILS: PLME  
   IHARI  <- 'M' # TODO VERIFICAR (provável que pertença ao '[.SBX] *HARVEST DETAILS')
-  PLTPOP <- 40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
-  # ROWSPC <- 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
+  PLTPOP <- config$plant1$plantPop  #40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
+  
+  # TODO: ROWSPC - precisa dividir por 100?
+  ROWSPC <- config$plant1$rowSpacing / 100 # 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
+  
+  
   SDWTPL <- -99 # equivalente ao [.SBX] *PLANTING DETAILS: PLDS
   
   #______________________________________________________________        
@@ -463,6 +467,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   #!*ROOT PARAMETERS
   RMIN   <- params$RMIN  #0.05
   
+  
   #     Surface and soil residue due to daily senescence of plant matter
   NL       = 20  #!Maximum number of soil layers
   
@@ -499,7 +504,10 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       #-----------------------------------------------------------------------
       #       Copied from IPIBS
       #-----------------------------------------------------------------------
-      ROWSPC = ROWSPC / 100.
+      # TODO: ROWSPC - precisa dividir por 100?
+      # Removi o assign()
+      # ROWSPC = ROWSPC / 100.
+      
       if (ROWSPC * PLTPOP > 1.E-4) {
         BETN = 1 / (ROWSPC*PLTPOP)
       } else {
@@ -1512,7 +1520,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   assign("SDPDOT",SDPDOT , envir = env)
   assign("PUNDOT",PUNDOT , envir = env)
   assign("NLPEST",NLPEST , envir = env)
-  assign("ROWSPC",ROWSPC , envir = env)
+  # assign("ROWSPC",ROWSPC , envir = env)
   
   return()
 }   
@@ -3617,7 +3625,8 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   
   #TODO: AVISO verificar com Santiago padrão ECOSMOS -> YREMRG, NR1
   
-  # ROWSPC <- 0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
+  # TODO: ROWSPC - precisa dividir por 100?
+  ROWSPC <- config$plant1$rowSpacing / 100 #0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -3972,7 +3981,8 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
   params <- plantList$soybean$params
   
   #-----------------------------------------------------------------------
-  # ROWSPC <- 0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
+  # TODO: ROWSPC - precisa dividir por 100?
+  ROWSPC <- config$plant1$rowSpacing / 100 #0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
   
   TS <- 24
   #______________________________________________________________        

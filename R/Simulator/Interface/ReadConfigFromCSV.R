@@ -39,15 +39,18 @@ ReadConfigFromCSV <- function(filePath) {
     sim$irrigate            <- atualData[[13]]
     sim$npft                <- 0
     
-    for (i in seq(from = 14, to = length(atualData), by = 6)) {
+    for (i in seq(from = 14, to = length(atualData), by = 9)) {
       if(!is.na(atualData[[i]]) && !atualData[[i]] == "") {
         plant <- list()
-        plant$name         <- atualData[[i]]
-        plant$plantJday    <- atualData[[i+1]]
-        plant$startYear    <- atualData[[i+2]]
-        plant$cycleLength  <- atualData[[i+3]]
-        plant$ncycles      <- atualData[[i+4]]
-        plant$params       <- atualData[[i+5]]
+        plant$name          <- atualData[[i]]
+        plant$plantJday     <- atualData[[i+1]]
+        plant$startYear     <- atualData[[i+2]]
+        plant$plantPop      <- atualData[[i+3]]
+        plant$rowSpacing    <- atualData[[i+4]]
+        plant$plantingDepht <- atualData[[i+5]]
+        plant$cycleLength   <- atualData[[i+6]]
+        plant$ncycles       <- atualData[[i+7]]
+        plant$params        <- atualData[[i+8]]
         sim[paste("plant", (sim$npft+1), sep = "")] <- list(plant)
         sim$npft <- sim$npft + 1 
       }

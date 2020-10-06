@@ -136,8 +136,8 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   CROP <-'SB'        
   
   # Find and Read Planting Details Section 
-  PLME <- 'S'        
-  SDEPTH <- 2.5  # PLPD from .SBX
+  PLME <- 'S'  
+  SDEPTH <- config$plant1$plantingDepht #2.5  # PLPD from .SBX
   SDAGE <-  -99.0  # ! SDAGE     Transplant age (days)
   ATEMP <-  -99.0 
   
