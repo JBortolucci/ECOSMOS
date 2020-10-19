@@ -3,34 +3,32 @@ C  PHENOL, Subroutine, J. W. Jones
 C  Calculates phenological development.
 C-----------------------------------------------------------------------
 C  REVISION HISTORY
-C  01/01/1993 J.W. Jones, K.J. Boote, G. Hoogenboom
-C  04/24/1994 NBP Replaced TAIRHR, TAVG with TGRO, TGROAV.
-C  01/08/1997 GH  Add transplant effect
-C  07/09/1997 CHP modified for CROPGRO restructuring
+C  01/01/93 J.W. Jones, K.J. Boote, G. Hoogenboom
+C  04/24/94 NBP Replaced TAIRHR, TAVG with TGRO, TGROAV.
+C  01/08/97 GH  Add transplant effect
+C  07/09/97 CHP modified for CROPGRO restructuring
 C             Added DYNAMIC variable for model control
-!  07/13/2006 CHP Added P model
-!  06/11/2007 CHP PStres2 affects growth
 C-----------------------------------------------------------------------
 !     Called from:    Main program
-!     Calls:          IPPHENOL
-!                     RSTAGES
-!                     VSTAGES
+!     Calls:          FOR_IPPHENOL
+!                     FOR_RSTAGES
+!                     FOR_VSTAGES
 !                     CURV
 C=======================================================================
 
-      SUBROUTINE PHENOL(CONTROL, ISWITCH, 
-     &    DAYL, NSTRES, PStres2, SOILPROP, ST,            !Input
-     &    SW, SWFAC, TGRO, TMIN, TURFAC, XPOD, YRPLT,     !Input
+      SUBROUTINE FOR_PHENOL(CONTROL, ISWITCH, 
+     &    DAYL, NSTRES, SOILPROP, ST, SW, SWFAC, TGRO,    !Input
+     &    TGROAV, TMIN, TURFAC, XPOD, YRPLT,              !Input
      &    DRPP, DTX, DXR57, FRACDN, MDATE, NDLEAF,        !Output
      &    NDSET, NR1, NR2, NR5, NR7, NVEG0, PHTHRS,       !Output
-     &    RSTAGE, RVSTGE, STGDOY, SeedFrac, TDUMX,        !Output
-     &    TDUMX2, VegFrac, VSTAGE, YREMRG, YRNR1,         !Output
-     &    YRNR2, YRNR3, YRNR5, YRNR7)                     !Output
+     &    PHZACC, RSTAGE, RVSTGE, STGDOY, TDUMX, TDUMX2,  !Output
+     &    VSTAGE,vstagp,YREMRG, YRNR1, YRNR2, YRNR3, YRNR5,     !Output
+     &  YRNR7)                                            !Output
 
 !----------------------------------------------------------------------------
       USE ModuleDefs     !Definitions of constructed variable types, 
-                         ! which contain control information, soil
-                         ! parameters, hourly weather data.
+        ! which contain control information, soil
+        ! parameters, hourly weather data.
       IMPLICIT NONE
       SAVE
 !----------------------------------------------------------------------------
@@ -50,34 +48,39 @@ C=======================================================================
       INTEGER STGDOY(20)
       INTEGER NPRIOR(20), NVALPH(20), TSELC(20)
 
-      REAL DAYL, NSTRES, SWFAC, TMIN, TURFAC, XPOD    !, TGROAV
+      REAL DAYL, NSTRES, SWFAC, TGROAV, TMIN, TURFAC, XPOD
       REAL DRPP, DTX, DXR57, FRACDN, RVSTGE, TDUMX, TDUMX2, VSTAGE
       REAL ATEMP, CLDVAR, CLDVRR, CSDVAR, CSDVRR, EVMODC
       REAL MNEMV1, MNFLLL, MNFLHM, OPTBI
       REAL SDEPTH, SDAGE, SLOBI, THVAR, TRIFOL
       REAL DTRY, FTHR, SWFEM, TNTFAC, TNTFC2
       REAL TSDEP, XDEP, XDEPL, ZMODTE
+      real vstagp
 
       REAL TB(5), TO1(5), TO2(5), TM(5)
       REAL PHTHRS(20)
       REAL LL(NL), DUL(NL), SAT(NL), DLAYR(NL)
-      REAL WSENP(20), NSENP(20), PSENP(20), PHZACC(20)
+      REAL WSENP(20), NSENP(20), PHZACC(20)
       REAL SW(NL), ST(NL)
       REAL FNSTR(20), FPSTR(20), FSW(20), FT(20), FUDAY(20)
-      REAL TGRO(TS)
+      REAL TGRO(24)
 
       REAL  CURV  !Function subroutine
 
-!     P Module
-      REAL PStres2
-      REAL SeedFrac, VegFrac
-
 !-----------------------------------------------------------------------
+!     Define constructed variable types based on definitions in
+!     ModuleDefs.for.
+
+!     The variable "CONTROL" is of type "ControlType".
       TYPE (ControlType) CONTROL
+
+!     The variable "SOILPROP" is of type "SoilType".
       TYPE (SoilType) SOILPROP
+
+!     The variable "ISWITCH" is of type "SwitchType".
       TYPE (SwitchType) ISWITCH
 
- !     Transfer values from constructed data types into local variables.
+!     Transfer values from constructed data types into local variables.
       DAS     = CONTROL % DAS
       DYNAMIC = CONTROL % DYNAMIC
       YRDOY   = CONTROL % YRDOY
@@ -90,8 +93,6 @@ C=======================================================================
       SAT    = SOILPROP % SAT
 
       ISWWAT = ISWITCH % ISWWAT
-      ISIMI  = ISWITCH % ISIMI
-
 
 !***********************************************************************
 !***********************************************************************
@@ -100,13 +101,13 @@ C=======================================================================
       IF (DYNAMIC .EQ. RUNINIT) THEN
 
 !-----------------------------------------------------------------------
-!     Subroutine IPPHENOL reads required phenology variables from input
+!     Subroutine FOR_IPPHENOL reads required phenology variables from input
 !     files.  
 !-----------------------------------------------------------------------
-      CALL IPPHENOL(CONTROL,
+      CALL FOR_IPPHENOL(CONTROL,
      &    ATEMP, CLDVAR, CLDVRR, CSDVAR, CSDVRR, CROP,    !Output
-     &    CTMP, DLTYP, EVMODC, NPRIOR, NSENP, OPTBI,      !Output
-     &    PHTHRS, PLME, PSENP, SDAGE, SDEPTH, SLOBI,      !Output
+     &    CTMP, DLTYP, EVMODC, ISIMI, NPRIOR, NSENP,      !Output
+     &    OPTBI, PHTHRS, PLME, SDAGE, SDEPTH, SLOBI,      !Output
      &    THVAR, TRIFOL, TSELC, TB, TO1, TO2, TM, WSENP)  !Output
 
 C-----------------------------------------------------------------------
@@ -148,25 +149,21 @@ C       Number of days from flowering to harvest maturity
         FUDAY(J) = 0.
       ENDDO
 
-      CALL RSTAGES(CONTROL,
+      CALL FOR_RSTAGES(CONTROL,
      &    FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    !Input
      &    PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM,      !Input
-     &    JPEND, MDATE, NDLEAF, NDSET, NDVST, NVALPH,     !Output
-     &    NVEG0, NVEG1, NR1, NR2, NR5, NR7, PHZACC,       !Output
-     &    RSTAGE, STGDOY, SeedFrac, VegFrac, YREMRG,      !Output
-     &    YRNR1, YRNR2, YRNR3, YRNR5, YRNR7)              !Output
+     &    JPEND, NDLEAF, NDSET, NDVST, NVALPH, NVEG0,     !Output
+     &    NVEG1, NR1, NR2, NR5, NR7, PHZACC, RSTAGE,      !Output
+     &    STGDOY, YREMRG, YRNR1, YRNR2, YRNR3,            !Output
+     &    YRNR5, YRNR7, MDATE)                            !Output
 
-      CALL VSTAGES(
+      CALL FOR_VSTAGES(
      &    DAS, DTX, EVMODC, MNEMV1, NDVST,                !Input
      &    NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             !Input
      &    TURFAC, XPOD, YRDOY, YRPLT,                     !Input
-     &    RVSTGE, VSTAGE,                                 !Output
+     &    RVSTGE, VSTAGE,vstagp,                          !Output
      &    SEASINIT)                                       !Control
 
-!       print *, DAS, DTX, EVMODC, MNEMV1, NDVST,                !Input
-!      &    NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             !Input
-!      &    TURFAC, XPOD, YRDOY, YRPLT,                     !Input
-!      &    RVSTGE, VSTAGE                                !Output
 C***********************************************************************
 C***********************************************************************
 C     Daily Rate calculations
@@ -183,7 +180,7 @@ C-----------------------------------------------------------------------
         FPSTR(1) = 1.
         K = TSELC(1)
 
-        !IF(ISWWAT .EQ. 'Y') THEN
+        IF(ISWWAT .EQ. 'Y') THEN
 C-----------------------------------------------------------------------
 C      Compute average soil temp, water in top 10 cm for emergence phase
 C         SWFEM = Average soil water content of top 10 cm
@@ -194,70 +191,74 @@ C-----------------------------------------------------------------------
         TSDEP = 0.0
 
         DO I = 1, NLAYR
-          XDEPL = XDEP
-          XDEP = XDEP + DLAYR(I)
-          DTRY = MIN(DLAYR(I),10. - XDEPL)
+        XDEPL = XDEP
+        XDEP = XDEP + DLAYR(I)
+        DTRY = MIN(DLAYR(I),10. - XDEPL)
+        IF(SW(I) .LE. DUL(I))THEN
+        SWFEM = SWFEM + DTRY *
+     &    (MAX(SW(I) - LL(I),0.0)) / (DUL(I) - LL(I))
+        ELSE
+        SWFEM = SWFEM + DTRY *
+     &    (MAX(SAT(I) - SW(I),0.0)) / (SAT(I) - DUL(I))
+        ENDIF
 
-          IF (ISWWAT .EQ. 'Y') THEN
-            IF(SW(I) .LE. DUL(I))THEN
-              SWFEM = SWFEM + DTRY *
-     &            (MAX(SW(I) - LL(I),0.0)) / (DUL(I) - LL(I))
-            ELSE
-              SWFEM = SWFEM + DTRY *
-     &            (MAX(SAT(I) - SW(I),0.0)) / (SAT(I) - DUL(I))
-            ENDIF
-          ENDIF
-
-          TSDEP = TSDEP + DTRY * ST(I)
-          IF (XDEP .GE. 10.) GO TO 230
+        TSDEP = TSDEP + DTRY * ST(I)
+        IF (XDEP .GE. 10.) GO TO 230
         ENDDO
 
-  230   TSDEP = TSDEP / 10.
-        
+230     SWFEM = (SWFEM / 10.) * 100.0
+        TSDEP = TSDEP / 10.
+
 C-----------------------------------------------------------------------
 C      Compute temperature and soil water effects for phase 1, emergence
 C-----------------------------------------------------------------------
         FT(1) = CURV(CTMP(1),TB(K),TO1(K),TO2(K),TM(K),TSDEP)
-
-        IF (ISWWAT .EQ. 'Y') THEN
-          SWFEM = (SWFEM / 10.) * 100.0
-          FSW(1) = CURV('LIN',0.0,20.0,100.,1000.,SWFEM)
+        FSW(1) = CURV('LIN',0.0,20.0,100.,1000.,SWFEM)
         ELSE
-          FSW(1) = 1.
-          !FT(1) = CURV(CTMP(1),TB(K),TO1(K),TO2(K),TM(K),TGROAV)
+        FSW(1) = 1.
+        FT(1) = CURV(CTMP(1),TB(K),TO1(K),TO2(K),TM(K),TGROAV)
         ENDIF
+
         FSW(1) = 1. + (1.-FSW(1))*WSENP(1)
       ENDIF
-C-----------------------------------------------------------------------
-C     Compute dev rates for all other phases, using hourly air temp
-C-----------------------------------------------------------------------
-      DO J = 2,NPHS
-        K = TSELC(J)
-        FT(J) = 0.0
-        DO I = 1,TS
-          FTHR = CURV(CTMP(J),TB(K),TO1(K),TO2(K),TM(K),TGRO(I))
-          FT(J) = FT(J) + FTHR/REAL(TS)
-        ENDDO
-C 24 changed to TS by Bruce Kimball on 3Jul17
 
-        IF (DAS .LT. NR1) THEN
-          FUDAY(J) = CURV(DLTYP(J),1.0,CSDVAR,CLDVAR,THVAR,DAYL)
-        ELSE
-          FUDAY(J) = CURV(DLTYP(J),1.0,CSDVRR,CLDVRR,THVAR,DAYL)
-        ENDIF
-
-        FSW(J)   = 1. + (1. - SWFAC)  * WSENP(J)
-        FNSTR(J) = 1. + (1. - NSTRES) * NSENP(J)
-        FPSTR(J) = 1. + (1. - PStres2) * PSENP(J)
-      ENDDO
 C-----------------------------------------------------------------------
-C     Transplants
+C      Transplants
+C     SJR 5/26/04 moved statement to this location - must appear before 
+C      calculation of today's FT(2).  Otherwise sets DTX using ATEMP 
+C      instead of TGRO(I) on emergence day - results in inaccurate 
+C      estimate of today's increase in VSTAGE
 C-----------------------------------------------------------------------
       IF (PLME .EQ. 'T' .AND. YRPLT .EQ. YRDOY) THEN
         K = TSELC(2)
         FT(2) = CURV(CTMP(2),TB(K),TO1(K),TO2(K),TM(K),ATEMP)
         PHZACC(2) = FT(2) * SDAGE
       ENDIF
+
+C-----------------------------------------------------------------------
+C     Compute dev rates for all other phases, using hourly air temp
+C-----------------------------------------------------------------------
+      DO J = 2,NPHS
+        K = TSELC(J)
+        FT(J) = 0.0
+        DO I = 1,24
+        FTHR = CURV(CTMP(J),TB(K),TO1(K),TO2(K),TM(K),TGRO(I))
+        FT(J) = FT(J) + FTHR/24.
+        ENDDO
+
+        IF (DAS .LT. NR1) THEN
+        FUDAY(J) = CURV(DLTYP(J),1.0,CSDVAR,CLDVAR,THVAR,DAYL)
+        ELSE
+        FUDAY(J) = CURV(DLTYP(J),1.0,CSDVRR,CLDVRR,THVAR,DAYL)
+        ENDIF
+
+        FSW(J)   = 1. + (1. - SWFAC)  * WSENP(J)
+        FNSTR(J) = 1. + (1. - NSTRES) * NSENP(J)
+        FPSTR(J) = 1.
+C-----------------------------------------------------------------------
+C     Add FPSTR(J) later for phosphorus effects on development
+C-----------------------------------------------------------------------
+      ENDDO
 
 C-----------------------------------------------------------------------
 C     The effect of Tmin on rate of development from emergence to
@@ -294,11 +295,11 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C    Calculate rate of V-stage change for height and width determination
 C-----------------------------------------------------------------------
-      CALL VSTAGES(
+      CALL FOR_VSTAGES(
      &    DAS, DTX, EVMODC, MNEMV1, NDVST,                !Input
      &    NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             !Input
      &    TURFAC, XPOD, YRDOY, YRPLT,                     !Input
-     &    RVSTGE, VSTAGE,                                 !Output
+     &    RVSTGE, VSTAGE,vstagp,                                 !Output
      &    RATE)                                           !Control
 
 C**********************************************************************
@@ -308,22 +309,15 @@ C**********************************************************************
       ELSE IF (DYNAMIC .EQ. INTEGR) THEN
 
 C----------------------------------------------------------------------
-C     Check to see if stages occur today, if so set them in RSTAGES
+C     Check to see if stages occur today, if so set them in FOR_RSTAGES
 C----------------------------------------------------------------------
-      CALL RSTAGES(CONTROL,
+      CALL FOR_RSTAGES(CONTROL,
      &    FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    !Input
      &    PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM,      !Input
-     &    JPEND, MDATE, NDLEAF, NDSET, NDVST, NVALPH,     !Output
-     &    NVEG0, NVEG1, NR1, NR2, NR5, NR7, PHZACC,       !Output
-     &    RSTAGE, STGDOY, SeedFrac, VegFrac, YREMRG,      !Output
-     &    YRNR1, YRNR2, YRNR3, YRNR5, YRNR7)              !Output
-
-
-            DO I = 1,TS
-        
-      write(583,*)DAS,I,TGRO(I),DAYL,XPOD,SWFEM,TMIN,TSDEP,YRDOY,VSTAGE,RSTAGE
-        ENDDO
-
+     &    JPEND, NDLEAF, NDSET, NDVST, NVALPH, NVEG0,     !Output
+     &    NVEG1, NR1, NR2, NR5, NR7, PHZACC, RSTAGE,      !Output
+     &    STGDOY, YREMRG, YRNR1, YRNR2, YRNR3,            !Output
+     &    YRNR5, YRNR7, MDATE)                            !Output
 C-----------------------------------------------------------------------
 C     Special accumulators used in other parts of the model
 C-----------------------------------------------------------------------
@@ -339,7 +333,7 @@ C-----------------------------------------------------------------------
 C     DXR57-rel time from R5 to R7, modifies N mobilization
 C-----------------------------------------------------------------------
       IF (DAS .GT. NR5) THEN
-       DXR57 = PHZACC(10)/PHTHRS(10)
+        DXR57 = PHZACC(10)/PHTHRS(10)
         DXR57 = MIN(DXR57,1.0)
       ELSE
         DXR57 = 0.0
@@ -348,11 +342,11 @@ C-----------------------------------------------------------------------
 !-----------------------------------------------------------------------
 !     Calculate V-stages
 !-----------------------------------------------------------------------
-      CALL VSTAGES(
+      CALL FOR_VSTAGES(
      &    DAS, DTX, EVMODC, MNEMV1, NDVST,                !Input
      &    NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             !Input
      &    TURFAC, XPOD, YRDOY, YRPLT,                     !Input
-     &    RVSTGE, VSTAGE,                                 !Output
+     &    RVSTGE, VSTAGE,vstagp,                          !Output
      &    INTEGR)                                         !Control
 
 C***********************************************************************
@@ -370,7 +364,7 @@ C-----------------------------------------------------------------------
 
 
 C=======================================================================
-C  VSTAGES, Subroutine
+C  FOR_VSTAGES, Subroutine
 C  Calculates V-stages
 C-----------------------------------------------------------------------
 C  REVISION HISTORY
@@ -380,17 +374,17 @@ C-----------------------------------------------------------------------
 !     Calls:          None
 C=======================================================================
 
-      SUBROUTINE VSTAGES(
+      SUBROUTINE FOR_VSTAGES(
      &    DAS, DTX, EVMODC, MNEMV1, NDVST,                !Input
      &    NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             !Input
      &    TURFAC, XPOD, YRDOY, YRPLT,                     !Input
-     &    RVSTGE, VSTAGE,                                 !Output
+     &    RVSTGE, VSTAGE,vstagp,                          !input/Output
      &    DYNAMIC)                                        !Control
 
 !-----------------------------------------------------------------------
       USE ModuleDefs     !Definitions of constructed variable types, 
-                         ! which contain control information, soil
-                         ! parameters, hourly weather data.
+        ! which contain control information, soil
+        ! parameters, hourly weather data.
       IMPLICIT NONE
       SAVE
 
@@ -427,9 +421,9 @@ C     Daily Rate Calculations
 
       IF (DAS .GE. NVEG0 .AND. DAS .LE. NDVST + ANINT(VSTGED)) THEN
         IF (DAS .GT. NDVST .AND. VSTGED .GT. 0.001) THEN
-          RVSTGE = 1. / VSTGED
+        RVSTGE = 1. / VSTGED
         ELSE
-          RVSTGE = VSTAGE - VSTAGP
+        RVSTGE = VSTAGE - VSTAGP
         ENDIF
       ENDIF
 
@@ -446,7 +440,7 @@ C     V-STAGE after V-1 is determined by the leaf appearance rate
 C     (TRIFOL), a water stress factor (TURFAC) and physiological units
 C     for today (DTX).
 C-----------------------------------------------------------------------
-      IF (RVSTGE .GT. 1.E-6) THEN
+      IF (RVSTGE .GT. 0.) THEN
         VSTGED = 1. / RVSTGE
       ELSE
         VSTGED = 0.0
@@ -454,6 +448,11 @@ C-----------------------------------------------------------------------
       VSTAGP = VSTAGE
 !-----------------------------------------------------------------------
 !     V-Stage for transplants
+!      SJR - note - Will end day with initial VSTAGE calculated here plus
+!      increase for the emergence day.  If don't want any increase in 
+!      VSTAGE on emergence day  - move this statement to end of  
+!      subroutine to re-calculate VSTAGE to this value and ignore any 
+!      new leaves.
 !-----------------------------------------------------------------------
       IF (PLME .EQ. 'T' .AND. YRPLT .EQ. YRDOY) THEN
         VSTAGE = 1. + (PHZACC(2) - MNEMV1) * TRIFOL
@@ -462,17 +461,17 @@ C-----------------------------------------------------------------------
 !-----------------------------------------------------------------------
       IF (DAS .GE. NVEG0 .AND. DAS .LE. NDVST) THEN
         IF (DAS .LT. NVEG1) THEN
-          VSTAGE  = PHZACC(2)/MNEMV1
+        VSTAGE  = PHZACC(2)/MNEMV1 
         ELSE
-          IF (VSTAGE .LT. ABS(EVMODC) .AND. 
-     &        ABS(EVMODC) .GT. 0.0001) THEN
-            EVMOD = 1.0 + (ABS(EVMODC)- VSTAGE) / EVMODC
-            EVMOD = AMIN1(2.0,EVMOD)
-            EVMOD = AMAX1(0.0,EVMOD)
-          ELSE
-            EVMOD = 1.0
-          ENDIF
-          VSTAGE = VSTAGE + DTX * TRIFOL * EVMOD*TURFAC*(1.0-XPOD)
+        IF (VSTAGE .LT. ABS(EVMODC) .AND. 
+     &    ABS(EVMODC) .GT. 0.0001) THEN
+        EVMOD = 1.0 + (ABS(EVMODC)- VSTAGE) / EVMODC
+        EVMOD = AMIN1(2.0,EVMOD)
+        EVMOD = AMAX1(0.0,EVMOD)
+        ELSE
+        EVMOD = 1.0
+        ENDIF
+        VSTAGE = VSTAGE + DTX * TRIFOL * EVMOD*TURFAC*(1.0-XPOD)
         ENDIF
       ENDIF
 
@@ -483,12 +482,12 @@ C-----------------------------------------------------------------------
       END IF
 !***********************************************************************
       RETURN
-      END   !SUBROUTINE VSTAGES
+      END   !SUBROUTINE FOR_VSTAGES
 
 !-----------------------------------------------------------------------
 !     PHENOLOGY VARIABLES LIST
 !-----------------------------------------------------------------------
-! ATEMP     Temperature of transplant environment (ï¿½C)
+! ATEMP     Temperature of transplant environment (°C)
 ! CLDVAR    Critical daylength above which development rate remains at min 
 !             value (prior to flowering) (hours)
 ! CLDVRR    Critical daylength above which development rate remains at min 
@@ -503,7 +502,7 @@ C-----------------------------------------------------------------------
 ! CURV      Function subroutine 
 ! DAS       Days after start of simulation (days)
 ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
-! DLAYR(L)  Soil thickness in layer L (cm)
+! DLAYR(L)  Soil Depth in layer L (cm)
 ! DLTYP(I)  Type of curve used for daylength function for phase I:  NON=no 
 !             photoperiod sensitivity, INL=inverse linear 
 ! DRPP      Photoperiod days which occur in a real day
@@ -515,6 +514,8 @@ C-----------------------------------------------------------------------
 !             layer L (cm3 [H2O] /cm3 [soil])
 ! DXR57     Relative time between first seed (NR5) and physiological 
 !             maturity (NR7) 
+! DYNAMIC   Module control variable; =RUNINIT, SEASINIT, RATE, EMERG, 
+!             INTEGR, OUTPUT, or SEASEND 
 ! EVMOD     Modifies rate of development - see EVMODC 
 ! EVMODC    Modifier of rate of vegetative node appearance for the first 
 !             few nodes, primarily used for peanut 
@@ -524,7 +525,7 @@ C-----------------------------------------------------------------------
 !             (NDLEAF) 
 ! FSW(I)    Water stress function (0.0 to 1.0) for phase I 
 ! FT(I)     Temperature function (0-1) for phase I 
-! FTHR      Used to calculate hourly air temperature (ï¿½C)
+! FTHR      Used to calculate hourly air temperature (°C)
 ! FUDAY(I)  Effect of daylength on development progress (0-1) for phase I 
 ! ISIMI      Start of simulation code
 !               E = On reported emergence day
@@ -561,7 +562,7 @@ C-----------------------------------------------------------------------
 ! NVEG1     1st day with 50% of plants w/ completely unrolled leaf at 
 !             unifoliate node (days)
 ! OPTBI     Temperature below which growth rate is slowed from emergence to 
-!             flowering (ï¿½C)
+!             flowering (°C)
 ! PHTHRS      Time that must accumulate (by phase) for the next
 !                 stage to occur (thermal or photo-thermal days)
 !                 under optimal temp. and daylength
@@ -590,7 +591,7 @@ C-----------------------------------------------------------------------
 ! SDEPTH    Planting depth (cm)
 ! SLOBI     Sensitivity of growth rate to minimum temperatures from 
 !             emergence to flowering 
-! ST(L)     Soil temperature in soil layer L (ï¿½C)
+! ST(L)     Soil temperature in soil layer L (°C)
 ! STGDOY(I) Day when stage I occurred (YYDDD)
 ! STNAME    Output headings for specified crops 
 ! SW(L)     Volumetric soil water content in layer L
@@ -606,13 +607,13 @@ C-----------------------------------------------------------------------
 ! TDUMX2    Photo-thermal time that occurs in a real day based on late 
 !             reproductive development temperature function
 !             (photo-thermal days / day)
-! TGRO(I)   Hourly air temperature (ï¿½C)
-! TGROAV    Average daily canopy temperature (ï¿½C)
+! TGRO(I)   Hourly air temperature (°C)
+! TGROAV    Average daily air temperature (°C)
 ! THVAR     Minimum relative rate of reproductive development under long 
 !             days and optimal temperature 
 ! TIMDIF    Integer function which calculates the number of days between 
 !             two Julian dates (da)
-! TMIN      Minimum daily temperature (ï¿½C)
+! TMIN      Minimum daily temperature (°C)
 ! TNTFAC    Thermal time that occurs in a single real day based on early 
 !             reproductive development temperature function
 !             (thermal days / day)
@@ -622,7 +623,7 @@ C-----------------------------------------------------------------------
 ! TRIFOL    Rate of appearance on leaves on mainstem. Maximum rate of 
 !             V-stage formation (leaves per thermal day)
 ! TSDEP     Average temperature in top 10 cm of soil. Used to modify 
-!             emergence rate of development. (ï¿½C)
+!             emergence rate of development. (°C)
 ! TSELC      Number of temperature curve (by phase)
 !                 1 = vegetative
 !                 2 = early reproductive

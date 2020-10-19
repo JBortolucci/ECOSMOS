@@ -1,5 +1,5 @@
 C=======================================================================
-C  ROOTS, Subroutine, G. Hoogenboom, J.W. Jones
+C  FOR_ROOTS, Subroutine, G. Hoogenboom, J.W. Jones
 C-----------------------------------------------------------------------
 C
 C  Calculates root growth, extension, respiration, and senescence
@@ -15,35 +15,30 @@ C  09/13/1998 CHP Modified for modular format
 C  09/14/1998 CHP Changed TROOT to TRLV to match same variable in ROOTDM
 C                 Changed SWDF1 to SWFAC to match variable name in WATBAL
 C  05/11/1999 GH  Incorporated in CROPGRO
-!  02/21/2005 SJR Moved ISWWAT condition here to allow computation of 
-!                 root senescence even when water not simulated.
-!  10/04/2005 SJR Include senescence due to water stress in total 
-!                 daily senescence.
-!  10/20/2005 CHP Added optional minimum root mass for senescence, 
-!                 RTWTMIN, to species file
-!  01/19/2006 CHP Fixed discrepancies between plant root senescence  
-!                 calculated and that sent to soil routines for addition
-!                 to organic matter.  
 !-----------------------------------------------------------------------
 !  Called by  :  PLANT
-!  Calls      :  IPROOT, INROOT
+!  Calls      :  FOR_IPROOT, FOR_INROOT
 !=======================================================================
 
-      SUBROUTINE ROOTS(DYNAMIC,
-     &    AGRRT, CROP, DLAYR, DS, DTX, DUL, FILECC, FRRT, !Input
-     &    ISWWAT, LL, NLAYR, PG, PLTPOP, RO, RP, RTWT,    !Input
-     &    SAT, SW, SWFAC, VSTAGE, WR, WRDOTN, WTNEW,      !Input
-     &    RLV, RTDEP, SATFAC, SENRT, SRDOT)               !Output
+      SUBROUTINE FOR_ROOTS(DYNAMIC,
+     &    AGRRT, CADRT, CROP, DLAYR, DS, DTX, DUL, FILECC,!Input
+     &    FILEIO, FRRT, ISWWAT, LL, NADRT, NLAYR, PG,        !Input
+     &    RLSEN, RO, RP, RTWT, SAT, SRMDOT, SW,                   !Input
+     &  SWFAC, VSTAGE, WR, WRDOTN, WTNEW,                        !Input
+     &    CUMDEP, RLV, RTDEP, SATFAC, SENRT, SRDOT,             !Output
+     &  SRNDOT, SRCADDOT, SRNADDOT)                                    !Output
 
 C-----------------------------------------------------------------------
       USE ModuleDefs     !Definitions of constructed variable types, 
-                         ! which contain control information, soil
-                         ! parameters, hourly weather data.
+        ! which contain control information, soil
+        ! parameters, hourly weather data.
       IMPLICIT NONE
       SAVE
 
+      CHARACTER*1 PLME
       CHARACTER*1 ISWWAT
       CHARACTER*2 CROP
+      CHARACTER*30 FILEIO
       CHARACTER*92 FILECC
 
       INTEGER L, L1, NLAYR
@@ -54,25 +49,21 @@ C-----------------------------------------------------------------------
      &  PG, RFAC1, RFAC2, RFAC3,
      &  RLDSM, RLNEW, RO, RP,
      &  RTDEP, RTSDF, RTSEN, RTWT, SRDOT, SWDF, SWFAC,
-     &  TRLDF, TRLV, WRDOTN   !, TRTDY
-      REAL CGRRT, AGRRT
+     &  TRLDF, TRLV, TRTDY, WRDOTN
+        REAL CGRRT, AGRRT
+      REAL CADRT, NADRT, SRCADDOT, SRNADDOT
       REAL SWEXF, PORMIN, RTEXF, RTSURV
       REAL RTDEPI, SUMEX, SUMRL, SATFAC
       REAL PLTPOP, WTNEW, VSTAGE
-      REAL TABEX              !Function subroutine located in UTILS.for
+      REAL TABEX              !Function subroutine located in UTILS.FOR
       REAL XRTFAC(4), YRTFAC(4)
       REAL DLAYR(NL), DS(NL), DUL(NL), ESW(NL), LL(NL), RLDF(NL)
-      REAL RLGRW(NL), RLSEN(NL), RLV(NL), RLV_WS(NL), RRLF(NL)
+      REAL RLGRW(NL), RLSEN(NL), RLV(NL), RRLF(NL)
       REAL SW(NL), SAT(NL), WR(NL)
       REAL GRESPR(NL), MRESPR(NL), RESPS(NL)
-      REAL SENRT(NL)
-
-!     Added 10/20/2005 for minimum RLV calculations
-!     RTWTMIN = minimum root mass per layer; used to limit senescence
-!                 (g/m2) (species file parameter)
-!     TRLV_MIN  = conversion of RTWTMIN to RLV units per layer
-      REAL TRLV_MIN, RLSENTOT, FACTOR, RTWTMIN
-      REAL TotRootMass, CumRootMass
+!       REAL YNRLT(NL), YNRL(5,NL)
+      REAL RNDOT(NL), RLNSEN(NL), TRLNSEN, TRLSEN, TRLGRW, SENRT(NL)
+      REAL SRMDOT, SRNDOT
 
 !***********************************************************************
 !***********************************************************************
@@ -80,9 +71,10 @@ C-----------------------------------------------------------------------
 !***********************************************************************
       IF (DYNAMIC .EQ. RUNINIT) THEN
 !-----------------------------------------------------------------------
-      CALL IPROOT(FILECC,                                 !Input
-     &  PORMIN, RFAC1, RLDSM, RTDEPI, RTEXF,              !Output
-     &  RTSEN, RTSDF, RTWTMIN, XRTFAC, YRTFAC)            !Output
+      CALL FOR_IPROOT(
+     &  FILECC, FILEIO,                                   !Input
+     &  PLME, PLTPOP, PORMIN, RFAC1, RLDSM, RTDEPI,       !Output
+     &  RTEXF, RTSEN, RTSDF, XRTFAC, YRTFAC)              !Output
 
       DEPMAX = DS(NLAYR)
 
@@ -92,25 +84,22 @@ C-----------------------------------------------------------------------
 !***********************************************************************
       ELSEIF (DYNAMIC .EQ. SEASINIT) THEN
 !-----------------------------------------------------------------------
-      SRDOT = 0.0       
+      SRDOT = 0.0    
+      SRNDOT = 0.0   
       RLV   = 0.0
       RTDEP = 0.0       
       SENRT = 0.0
       SUMEX = 0.0
       SUMRL = 0.0
+      SRCADDOT = 0.0
+      SRNADDOT = 0.0
       SATFAC = 0.0
-
 !-----------------------------------------------------------------------
 C     ROOT DEPTH INCREASE RATE WITH TIME, cm/physiological day
 C-----------------------------------------------------------------------
-!      IF (CROP .NE. 'FA' .AND. ISWWAT .NE. 'N') THEN
-      IF (CROP .NE. 'FA') THEN
-        
-            RFAC2 = TABEX(YRTFAC,XRTFAC,0.0,4)
-      
+      IF (CROP .NE. 'FA' .AND. ISWWAT .NE. 'N') THEN
+        RFAC2 = TABEX(YRTFAC,XRTFAC,0.0,4)
       ENDIF
-      
-      CumRootMass = 0.0
 
 !***********************************************************************
 !***********************************************************************
@@ -119,25 +108,14 @@ C-----------------------------------------------------------------------
 !***********************************************************************
       ELSEIF (DYNAMIC .EQ. EMERG) THEN
 !-----------------------------------------------------------------------
-!       Call INROOT for initialization of root variables on
+!       Call FOR_INROOT for initialization of root variables on
 !       day of emergence.  (GROW emergence initialization
-!       must preceed call to INROOT.)
+!       must preceed call to FOR_INROOT.)
 !-----------------------------------------------------------------------
-      CALL INROOT(
-     &  DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW, !Input
-     &  RLV, RTDEP)                                       !Output
-
-      RFAC3 = RFAC1
-
-      TRLV = 0.0
-      DO L = 1,NLAYR
-        TRLV = TRLV + RLV(L) * DLAYR(L) ! cm[root] / cm2[ground]
-      ENDDO
-
-      CumRootMass = WTNEW * FRRT * PLTPOP * 10. 
-!        kg[root]  g[tissue] g[root]    plants   kg/ha
-!        -------- = ----- * --------- * ------ * ----- 
-!           ha      plant   g[tissue]     m2      g/m2
+      CALL FOR_INROOT(
+     &  DLAYR, FRRT, NLAYR, PLME, PLTPOP, RFAC1,                 !Input
+     &  RLDSM, RTDEPI, RTWT, WTNEW,                               !Input
+     &  RLV, RTDEP)                                              !Output
 
 !***********************************************************************
 !***********************************************************************
@@ -155,46 +133,40 @@ C-----------------------------------------------------------------------
 C     Calculate root length per cm2 soil and initiate growth,
 C     respiration and senescence by layer
 C-----------------------------------------------------------------------
-!      TRTDY = 0.0
-!     1/19/2006 Remove TRTDY and replace with TRLV -- RLV is only updated
-!     once, so yesterday's value is stored in TRLV here.
+      TRTDY = 0.0
       DO L = 1,NLAYR
-!       TRTDY = TRTDY + RLV(L) * DLAYR(L) ! cm[root] / cm2[ground]
+        TRTDY = TRTDY + RLV(L) * DLAYR(L)
         RRLF(L)   = 0.0
-        RLSEN(L)  = 0.0
+!        RLSEN(L)  = 0.0
         RLGRW(L)  = 0.0
         MRESPR(L) = 0.0
         GRESPR(L) = 0.0
         RESPS(L)  = 0.0
+!        RNDOT(L) = 0.0
+!        RLNSEN(L) = 0.0
+
       ENDDO
 
-!     Update RFAC3 based on yesterday's RTWT and TRLV
-      IF (RTWT - WRDOTN .GE. 0.0001 .AND. TRLV .GE. 0.00001) THEN
+C-----------------------------------------------------------------------
+C     Move calculation of "yesterday's" RFAC here so have RFAC3 to use 
+C in calculating SENWT(L) - had been using RFAC1.
+C-----------------------------------------------------------------------
+
+      IF (RTWT - WRDOTN .GE. 0.0001) THEN
 !       RFAC3 = TRTDY * 10000.0 / (RTWT - WRDOTN)
 !       RTWT has not yet been updated today, so use yesterday's
 !       value and don't subtract out today's growth - chp 11/13/00
-        RFAC3 = TRLV * 10000.0 / RTWT
+        RFAC3 = TRTDY * 10000.0 / RTWT
       ELSE
-        RFAC3 = RFAC1
+      RFAC3 = RFAC1
       ENDIF
 
-!     10/20/2005 Limit RLV decrease due to senscence to 
-!       a minimum resulting root weight
-      IF (RTWTMIN > 0.0) THEN
-        TRLV_MIN = RTWTMIN * RFAC3 / 1.E4   !same units as TRLV
-!        cm/cm2  =  (g/m2) *(cm/g) / (cm2/m2)
-      ELSE
-!       Set TRLV_MIN to zero -- no minimum root mass
-        TRLV_MIN = 0.0
-      ENDIF
-      
 !-----------------------------------------------------------------------
+      SRNDOT = 0.0
       TRLDF  = 0.0
       CUMDEP = 0.0
-      SUMEX  = 0.0
-      SUMRL  = 0.0
-      RLV_WS = 0.0
-      RLSEN  = 0.0
+      SUMEX = 0.0
+      SUMRL = 0.0
 
       DO L = 1,NLAYR
         L1 = L
@@ -202,52 +174,67 @@ C-----------------------------------------------------------------------
         SWDF = 1.0
         SWEXF = 1.0
 
-C-----------------------------------------------------------------------
-C     2/21/05 - SJR - move conditional call for water stress from CROPGRO 
-C     to ROOTS.  Allows root senescence when Water dynamics option is 
-C     turned off.  Water stress options set to no stress levels.  This 
-C     also allows output of root growth dynamics without limimiting 
-C     water or N uptake. 
-C-----------------------------------------------------------------------
-        IF (ISWWAT .EQ. 'Y') THEN
-          IF (SAT(L)-SW(L) .LT. PORMIN) THEN
-            SWEXF = (SAT(L) - SW(L)) / PORMIN
-            SWEXF = MIN(SWEXF, 1.0)
-          ENDIF
 
-          SUMEX = SUMEX + DLAYR(L) * RLV(L) * (1.0 - SWEXF)
-          SUMRL = SUMRL + DLAYR(L) * RLV(L)
 
-          ESW(L) = DUL(L) - LL(L)
-          IF (SW(L) - LL(L) .LT. 0.25*ESW(L)) THEN
-            SWDF = (SW(L) - LL(L)) / (0.25*ESW(L))
-            SWDF = MAX(SWDF, 0.0)
-          ENDIF
+C-----------------------------------------------------------------------
+C      2/21/05 - SJR - move conditional call for water stress from CROPGRO 
+C      to FOR_ROOTS.  Allows root senescence when Water dynamics option is 
+C      turned off.  Water stress options set to no stress levels.  This 
+C      also allows output of root growth dynamics without limimiting 
+C      water or N uptake. Moved calculation of SUMEX and SUMRL after 
+C      calculation of SWDF so that both excess soil water stress (SWEXF) 
+C      and water deficit stress (SWDF) could be included in a single 
+C      conditional clause.
+C-----------------------------------------------------------------------
+      
+      IF (ISWWAT .EQ. 'Y') THEN
+
+        IF (SAT(L)-SW(L) .LT. PORMIN) THEN
+        SWEXF = (SAT(L) - SW(L)) / PORMIN
+        SWEXF = MIN(SWEXF, 1.0)
         ENDIF
+
+!        SUMEX  = SUMEX + DLAYR(L)*RLV(L)*(1.0 - SWEXF)
+        SUMEX  = SUMEX + DLAYR(L)*(RLV(L) - RLSEN(L))*(1.0 - SWEXF)
+!        SUMRL  = SUMRL + DLAYR(L)*RLV(L)
+        SUMRL  = SUMRL + DLAYR(L)*(RLV(L) - RLSEN(L))
+
+!     Need to calculate ESW where used. CHP 10/15/01
+        ESW(L) = DUL(L) - LL(L)
+        IF (SW(L) - LL(L) .LT. 0.25*ESW(L)) THEN
+        SWDF = (SW(L) - LL(L)) / (0.25*ESW(L))
+        SWDF = MAX(SWDF, 0.0)
+        ENDIF
+      ENDIF
+
 C-----------------------------------------------------------------------
 
         RTSURV = MIN(1.0,(1.-RTSDF*(1.-SWDF)),(1.-RTEXF*(1.-SWEXF)))
-        IF (RLV(L) .GT. RLDSM .AND. TRLV + RLNEW > TRLV_MIN) THEN
-!         1/14/2005 CHP Don't subtract water stress senescence 
-!           yet - combine with natural senescence and check to see if 
-!           enough RLV for senescence to occur (TRLV > TRLV_MIN)
-          !RLV(L) = RLV(L) * RTSURV
-          RLV_WS(L) = RLV(L) * (1.0 - RTSURV)
-        ELSE
-          RLV_WS(L) = 0.0
-        ENDIF
-
 C-----------------------------------------------------------------------
+C      10/3/05 SJR
+C      Calculate losses to water-stress senescence but do not update RLV.
+C      Instead update at end of routine after calculating natural 
+C      senescence and maintenance respiration.
+C      6/21/06 SJR Moved water-stress senescence to SENMOB along with 
+C      all other types of senescence
+C-----------------------------------------------------------------------
+!        IF (RLV(L) .GT. RLDSM) THEN
+!        IF ((RLV(L) - RLSEN(L)) .GT. RLDSM) THEN
+!            RNDOT(L) = RLV(L) * (1 - RTSURV)
+!            RNDOT(L) = (RLV(L) - RLSEN(L)) * (1 - RTSURV)
+!          RLV(L) = RLV(L) * RTSURV
+!        ENDIF
+
         RLDF(L) = WR(L) * DLAYR(L) * MIN(SWDF,SWEXF)
         IF (CUMDEP .LT. RTDEP) THEN
-          TRLDF = TRLDF + RLDF(L)
+        TRLDF = TRLDF + RLDF(L)
         ELSE
-          IF (WR(L) .GT. 0.0 .AND. RLNEW .GT. 0.0) THEN
-            IF (L .EQ. 1) THEN
-              RTDEP = RTDEP + DTX * RFAC2
-            ELSE
-              RTDEP = RTDEP + DTX * RFAC2 * MIN(SWDF,SWEXF) *
-     &                (1. + 0.25 * (1. - MAX(SWFAC,0.40)))
+        IF (WR(L) .GT. 0.0 .AND. RLNEW .GT. 0.0) THEN
+        IF (L .EQ. 1) THEN
+        RTDEP = RTDEP + DTX * RFAC2
+        ELSE
+        RTDEP = RTDEP + DTX * RFAC2 * MIN(SWDF,SWEXF) *
+     &    (1. + 0.25 * (1. - MAX(SWFAC,0.40)))
 C-----------------------------------------------------------------------
 C-KJB  DO NOT WANT TO DECREASE ROOT DEPTH WITH STRESS.  IF PG TO ROOTS
 C IS LOW BECAUSE OF SEED GROWTH OR IF WATER DEFICIT CAUSES LOW PG TO ROOTS
@@ -260,14 +247,14 @@ C EXCEPT 1985-RAINFED WHERE DELETING INCREASED YIELD 2764 TO 2770 KG/HA.
 C NOW ACCELERATING ROOT GROWTH BY ABOUT 12-13% AT SWFAC=0.50.  THIS
 C HELPS IOWA 88 AND VEG STRESS TRTS IN 1981 AND 1985. INCR SEED AND BIO.
 C-----------------------------------------------------------------------
-            ENDIF
-            IF (RTDEP .GT. DEPMAX) THEN
-               RTDEP = DEPMAX
-            ENDIF
-          ENDIF
-          RLDF(L) = RLDF(L) * (1. - (CUMDEP - RTDEP) / DLAYR(L))
-          TRLDF = TRLDF + RLDF(L)
-          GO TO 2900
+        ENDIF
+        IF (RTDEP .GT. DEPMAX) THEN
+        RTDEP = DEPMAX
+        ENDIF
+        ENDIF
+        RLDF(L) = RLDF(L) * (1. - (CUMDEP - RTDEP) / DLAYR(L))
+        TRLDF = TRLDF + RLDF(L)
+        GO TO 2900
         ENDIF
       ENDDO
 C-----------------------------------------------------------------------
@@ -277,95 +264,71 @@ C     respiration, and update root length density for each layer.
  2900 CONTINUE
 
       IF (SUMRL .GT. 0.0) THEN
-         SATFAC = SUMEX/SUMRL
+        SATFAC = SUMEX/SUMRL
       ELSE
-         SATFAC = 0.0
+        SATFAC = 0.0
       ENDIF
 
-      SRDOT = 0.0
-      RLSENTOT = 0.0
+      TRLV = 0.0
+      TRLSEN = 0.0
+      TRLNSEN = 0.0
+      TRLGRW = 0.0
 
       DO L = 1,L1
         IF (TRLDF .LT. 0.00001) THEN
-          RRLF(L) = 1.0
+        RRLF(L) = 1.0
         ELSE
-          RRLF(L) = RLDF(L)/TRLDF
+        RRLF(L) = RLDF(L)/TRLDF
         ENDIF
 !-----------------------------------------------------------------------
 !       MRESPR, GRESPR, and RESPS are not used anywhere
 !                       chp 9/22/98
 !-----------------------------------------------------------------------
-        MRESPR(L) = (RLV(L)/RFAC1*RO*DLAYR(L)*100.0
+!        MRESPR(L) = (RLV(L)/RFAC1*RO*DLAYR(L)*100.0
+        MRESPR(L) = ((RLV(L) - RLSEN(L))/RFAC1*RO*DLAYR(L)*100.0
      &    +RRLF(L)*FRRT*PG*RP) * 44.0 / 30.0
         GRESPR(L) = RRLF(L) * (CGRRT-WRDOTN) * 44.0 /30.0
         RESPS(L) = MRESPR(L) + GRESPR(L)
 !-----------------------------------------------------------------------
-        RLGRW(L) = RRLF(L) * RLNEW / DLAYR(L) !cm[root]/cm3[ground]
+        RLGRW(L) = RRLF(L) * RLNEW / DLAYR(L)
+C-----------------------------------------------------------------------
+C      10/3/05 SJR Track water-stress senescence (RLNSEN, TRLNSEN, SRNDOT)
+C       separately from natural senescence so each can be lost at
+C        proper N concentration.
+C      10/4/05 SJR moved calculation of RFAC 3 to top of integration step
+C      and replaced RFAC1 in calculation of SENRT with RFAC3.
+C-----------------------------------------------------------------------
 
-        IF (TRLV + RLNEW > TRLV_MIN) THEN
-          RLSEN(L) = RLV(L) * RTSEN * DTX
-        ELSE
-          RLSEN(L) = 0.0
-        ENDIF
+!        RLNSEN(L) = RLV(L) * RNDOT(L)
+!        RLNSEN(L) = RNDOT(L)
+!        RLSEN(L) = RLV(L) * RTSEN * DTX
+        SENRT(L) = RLSEN(L) * DLAYR(L) / RFAC3 * 10000. * 10. +
+     &    RLNSEN(L) * DLAYR(L) / RFAC3 * 10000. * 10. !kg/ha
+        RLV(L) = RLV(L) - RLNSEN(L) - RLSEN(L) + RLGRW(L)
 
-!       Limit total senescence in each layer to existing RLV
-        IF (RLV(L) - RLSEN(L) - RLV_WS(L) + RLGRW(L) < 0.0) THEN
-          RLSEN(L) = RLV(L) + RLGRW(L) - RLV_WS(L)
-        ENDIF 
-
-!       RLSENTOT is profile senescence, water stress and natural cm/cm2
-        RLSENTOT = RLSENTOT + (RLSEN(L) + RLV_WS(L)) * DLAYR(L)
-      ENDDO
-
-!     If senescence too high (results in TRLV < TRLV_MIN) then
-!       reduce senescence in each layer by factor.
-      IF (RLSENTOT > 1.E-6 .AND. TRLV + RLNEW - RLSENTOT < TRLV_MIN)THEN
-        FACTOR = (TRLV + RLNEW - TRLV_MIN) / RLSENTOT
-        FACTOR = MAX(0.0, MIN(1.0, FACTOR))
-        RLSEN  = RLSEN  * FACTOR
-        RLV_WS = RLV_WS * FACTOR
-      ENDIF
-
-!     Update RLV and TRLV based on today's growth and senescence
-      TRLV = 0.0
-      DO L = 1, NLAYR
-        RLV(L) = RLV(L) + RLGRW(L) - RLSEN(L) - RLV_WS(L)
+        TRLGRW = TRLGRW + RLGRW(L) * DLAYR(L)
+        TRLNSEN = TRLNSEN + RLNSEN(L) * DLAYR(L)
+        TRLSEN = TRLSEN + RLSEN(L) * DLAYR(L)
         TRLV = TRLV + RLV(L) * DLAYR(L)
-
-!       Keep senescence in each layer for adding C and N to soil
-        !SENRT(L) = RLSEN(L) * DLAYR(L) / RFAC1 * 10000. * 10. !kg/ha
-!       1/14/2005 CHP - water stress senesence needs to be inlcuded.
-        SENRT(L) = (RLSEN(L) + RLV_WS(L)) * DLAYR(L) / RFAC3 * 1.E5 
-!                   cm[root]              g[root]   1000 cm2   10(kg/ha)
-!         kg/ha  =  -------- * cm[soil] * ------- * -------- * ---------
-!                  cm3[soil]             cm[root]     m2         (g/m2)
-
-        SENRT(L) = AMAX1(SENRT(L), 0.0)
-
-        SRDOT = SRDOT + SENRT(L)/10.        !g/m2
-
-!       Not used:
-        !TRLGRW = TRLGRW + RLGRW(L) * DLAYR(L)
-        !TRLSEN = TRLSEN + RLSEN(L) * DLAYR(L)
       ENDDO
 
-!     11/13/2000 CHP Sum RLSEN for total root senescence today.  
-!     SRDOT = TRLSEN / RFAC3 * 10000.     !g/m2
 
-!     Total root senescence = water stress + natural senescence
-!     10/3/2005 SJR
-!      SRDOT = (TRTDY + RLNEW - TRLV) * 10000.0 / RFAC3    !g/m2
-      SRDOT = AMAX1(SRDOT, 0.0)
-
-      TotRootMass = TRLV / RFAC3 * 1.E5
-!                   cm[root]   g[root]   10000 cm2   10(kg/ha)
-!          kg/ha  = -------- * ------- * -------- * ---------
-!                  cm2[soil]   cm[root]     m2         (g/m2)
-
-      CumRootMass = CumRootMass + WRDOTN * 10. - SRDOT * 10. 
-
+!     SRDOT = (TRTDY + RLNEW - TRLV) * 10000.0 / RFAC3
+!     Sum RLSEN for total root senescence today. chp 11/13/00  
+!      SRNDOT = TRLNSEN / RFAC3 * 10000. !g/m2
+!      SRDOT = SRMDOT + SRNDOT     
+C-----------------------------------------------------------------------
+C     7/27/05 SJR Calculate today's NADRT lost to senescence.
+C     8/2/05 SJR SRDOT is lost at minimum composition/concentration
+C                        so all CADRT and NADRT are left in the N & CH2O pools
+C      10/04/05 SJR - Required  only for N and C lost with roots senesced
+C                        due to water stress. 
+C      6/21/06 SJR No longer required after moving senescence to SENMOB
+C-----------------------------------------------------------------------
+!      SRCADDOT = CADRT * MIN(1.0,(SRNDOT) / (RTWT - SRMDOT))
+!      SRNADDOT = NADRT * MIN(1.0,(SRNDOT) / (RTWT - SRMDOT))
+!      SRDOT = SRDOT + SRNADDOT / 0.16 + SRCADDOT
       
-           
 !***********************************************************************
 !***********************************************************************
 !     END OF DYNAMIC IF CONSTRUCT
@@ -373,50 +336,67 @@ C     respiration, and update root length density for each layer.
       ENDIF
 !***********************************************************************
       RETURN
-      END SUBROUTINE ROOTS
+      END !SUBROUTINE FOR_ROOTS
 !=======================================================================
 
 
 !=======================================================================
-!  IPROOT Subroutine
+!  FOR_IPROOT Subroutine
 !  Reads root parameters from input files.
 !----------------------------------------------------------------------
 !  REVISION HISTORY
-!  09/13/1998 CHP Written
-C  08/12/2003 CHP Added I/O error checking
+!  09/13/98 CHP wrote
 !-----------------------------------------------------------------------
-!  Called : ROOTS
+!  Called : FOR_ROOTS
 !  Calls  : FIND, ERROR, IGNORE
 C=======================================================================
-      SUBROUTINE IPROOT(
-     &  FILECC,                                           !Input
-     &  PORMIN, RFAC1, RLDSM, RTDEPI, RTEXF,              !Output
-     &  RTSEN, RTSDF, RTWTMIN, XRTFAC, YRTFAC)            !Output
+      SUBROUTINE FOR_IPROOT(
+     &  FILECC, FILEIO,                                   !Input
+     &  PLME, PLTPOP, PORMIN, RFAC1, RLDSM, RTDEPI,       !Output
+     &  RTEXF, RTSEN, RTSDF, XRTFAC, YRTFAC)              !Output
 
 !     ------------------------------------------------------------------
       USE ModuleDefs     !Definitions of constructed variable types, 
-                         ! which contain control information, soil
-                         ! parameters, hourly weather data.
+        ! which contain control information, soil
+        ! parameters, hourly weather data.
 !     NL defined in ModuleDefs.for
 
       IMPLICIT NONE
 
+      CHARACTER*1 PLME
       CHARACTER*6 ERRKEY
       PARAMETER (ERRKEY = 'ROOTS')
 
       CHARACTER*6 SECTION
       CHARACTER*80 CHAR
+      CHARACTER*30 FILEIO
       CHARACTER*92 FILECC
 
-      INTEGER LUNCRP, ERR, LNUM, ISECT, FOUND, II
+      INTEGER LUNCRP, LUNIO, ERR, LNUM, ISECT, FOUND, II
 
-      REAL RTDEPI, RLDSM, PORMIN
+      REAL PLTPOP, RTDEPI, RLDSM, PORMIN
       REAL RFAC1, RTSEN, RTSDF, RTEXF
       REAL XRTFAC(4), YRTFAC(4)
 
-!     Added 10/20/2005 for minimum root mass for senescence
-      CHARACTER (len=7) RWMTXT
-      REAL RTWTMIN
+
+!-----------------------------------------------------------------------
+      CALL GETLUN('FILEIO', LUNIO)
+      OPEN (LUNIO, FILE = FILEIO,STATUS = 'OLD',IOSTAT=ERR)
+      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,0)
+
+!-----------------------------------------------------------------------
+!    Read Planting Details Section
+!-----------------------------------------------------------------------
+        SECTION = '*PLANT'
+        CALL FIND(LUNIO, SECTION, LNUM, FOUND)
+        IF (FOUND .EQ. 0) THEN
+        CALL ERROR(ERRKEY, 1, FILEIO, LNUM)
+        ELSE
+        READ(LUNIO,'(24X,F6.1,5X,A1)')
+     &    PLTPOP, PLME
+        ENDIF
+  
+      CLOSE (LUNIO)
 
 !-----------------------------------------------------------------------
 !     ***** READ ROOT GROWTH PARAMETERS *****************
@@ -431,13 +411,14 @@ C=======================================================================
 !-----------------------------------------------------------------------
 !    Find and Read Photosynthesis Section
 !-----------------------------------------------------------------------
+      LNUM = 1
       SECTION = '!*ROOT'
       CALL FIND(LUNCRP, SECTION, LNUM, FOUND)
       IF (FOUND .EQ. 0) THEN
-        CALL ERROR(SECTION, 42, FILECC, LNUM)
+        CALL ERROR(ERRKEY, 1, FILECC, LNUM)
       ELSE
         CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        READ(CHAR,'(5F6.0)',IOSTAT=ERR) RTDEPI,RFAC1,RTSEN,RLDSM,RTSDF
+        READ(CHAR,'(5F6.0)') RTDEPI, RFAC1, RTSEN, RLDSM, RTSDF
         IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
 
         CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
@@ -447,23 +428,17 @@ C=======================================================================
         CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
         READ(CHAR,'(12X,2F6.0)',IOSTAT=ERR) PORMIN, RTEXF
         IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-
-        CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        READ(CHAR,'(F6.0,T45,A7)',IOSTAT=ERR) RTWTMIN, RWMTXT
-        IF (ERR .NE. 0 .OR. RWMTXT .NE. 'RTWTMIN') THEN
-          RTWTMIN = 0.0
-        ENDIF
       ENDIF
 
       CLOSE (LUNCRP)
 
 !***********************************************************************
       RETURN
-      END SUBROUTINE IPROOT
+      END !SUBROUTINE FOR_IPROOT
 !=======================================================================
 
 C=======================================================================
-C  INROOT Subroutine
+C  FOR_INROOT Subroutine
 C  Initializes root variables at emergence.
 C----------------------------------------------------------------------
 C  REVISION HISTORY
@@ -474,74 +449,111 @@ C-----------------------------------------------------------------------
 C  Called : CROPGRO
 C  Calls  : None
 C=======================================================================
-      SUBROUTINE INROOT(
-     &  DLAYR, FRRT, NLAYR, PLTPOP, RFAC1, RTDEPI, WTNEW, !Input
-     &  RLV, RTDEP)                                       !Output
+      SUBROUTINE FOR_INROOT(
+     &  DLAYR, FRRT, NLAYR, PLME, PLTPOP, RFAC1,                 !Input
+     &  RLDSM, RTDEPI, RTWT, WTNEW,                              !Input
+     &  RLV, RTDEP)                                              !Output
 
 !     ------------------------------------------------------------------
       USE ModuleDefs     !Definitions of constructed variable types, 
-                         ! which contain control information, soil
-                         ! parameters, hourly weather data.
+        ! which contain control information, soil
+        ! parameters, hourly weather data.
 !     NL defined in ModuleDefs.for
 
       IMPLICIT NONE
 
+      CHARACTER*1 PLME
       INTEGER L, NLAYR
 
       REAL DEP,RLINIT
       REAL RTDEP,RTDEPI,CUMDEP
-      REAL RFAC1
+        REAL RFAC1
       REAL WTNEW, FRRT, PLTPOP
-      REAL RLV(NL), DLAYR(NL)
+        REAL RLV(NL), DLAYR(NL), RLCAP(NL)
+      REAL RLDSM, RLRATIO, RTWT, TRLCAP
 
 !***********************************************************************
 C     INITIALIZE ROOT DEPTH AT EMERGENCE
 C-----------------------------------------------------------------------
+      CUMDEP = 0.
+      TRLCAP = 0.0
+
+      DO L = 1,NLAYR
+        RLV(L) = 0.0
+        RLCAP(L) = 0.0
+      ENDDO
+
+      
+      IF (PLME .EQ. 'T') THEN
+
+      RLINIT = RTWT / 10000 * RFAC1
+
+        DO L=1, NLAYR
+        CUMDEP = CUMDEP + DLAYR(L)
+        RLCAP(L) = RLDSM * DLAYR(L)
+        TRLCAP = TRLCAP + RLCAP(L)
+        ENDDO
+
+        IF (RLINIT .LE. TRLCAP) THEN
+        RLRATIO = 1.0
+        RTDEP = RLINIT / RLDSM
+        ELSE
+        RLRATIO = RLINIT / TRLCAP
+        RTDEP = CUMDEP
+        ENDIF
+
+        DO L=1,NLAYR
+        IF (RLINIT .GE. RLCAP(L)) THEN
+        RLV(L) = RLCAP(L) * RLRATIO /DLAYR(L)
+        RLINIT = RLINIT - (RLCAP(L) * RLRATIO)
+        ELSE
+        RLV(L) = RLINIT / DLAYR(L)
+        RLINIT = 0.0
+        ENDIF
+        ENDDO
+      ELSE
+
+
       RTDEP = RTDEPI
 C-----------------------------------------------------------------------
 C     DISTRIBUTE ROOT LENGTH EVENLY IN ALL LAYERS TO A DEPTH OF
 C     RTDEPTI (ROOT DEPTH AT EMERGENCE)
 C-----------------------------------------------------------------------
-      CUMDEP = 0.
 
       DO L = 1,NLAYR
-        RLV(L) = 0.0
+        DEP = MIN(RTDEP - CUMDEP, DLAYR(L))
+        RLINIT = WTNEW * FRRT * PLTPOP * RFAC1 * DEP / ( RTDEP *
+     &    10000 )
+        CUMDEP = CUMDEP + DEP
+        RLV(L) = RLINIT / DLAYR(L)
+        IF (CUMDEP .GE. RTDEP) GO TO 300
       ENDDO
 
-      DO L = 1,NLAYR
-           DEP = MIN(RTDEP - CUMDEP, DLAYR(L))
-           RLINIT = WTNEW * FRRT * PLTPOP * RFAC1 * DEP / ( RTDEP *
-     &          10000 )
-!        cm[root]   g[root]    plants  cm[root]   m2
-!        -------- = -------- * ------ * ------- * ---
-!      cm2[ground]   plant       m2     g[root]   cm2
-
-           CUMDEP = CUMDEP + DEP
-           RLV(L) = RLINIT / DLAYR(L)
-           IF (CUMDEP .GE. RTDEP) GO TO 300
-      ENDDO
-
-  300 CONTINUE
+300   CONTINUE
+      ENDIF
 !***********************************************************************
       RETURN
-      END SUBROUTINE INROOT
+      END !SUBROUTINE FOR_INROOT
 !=======================================================================
 
 !-----------------------------------------------------------------------
 !       Variable definitions
 !-----------------------------------------------------------------------
 ! AGRRT     Mass of CH2O required for new root growth (g[CH2O] / g[root])
+! CADRT        CH2O added to root CH2O reserves (g[CH2O] / m2 / d)
 ! CGRRT     Carbon demand for new root growth (g[CH2O] / m2 / d)
 ! CROP      Crop identification code 
 ! CUMDEP    Cumulative depth of soil profile (cm)
 ! DEP       Cumulative soil depth (cm)
 ! DEPMAX    Maximum depth of reported soil layers (cm)
-! DLAYR(L)  Soil thickness in layer L (cm)
+! DLAYR(L)  Soil Depth in layer L (cm)
 ! DS(L)     Cumulative depth in soil layer L (cm)
 ! DTX       Thermal time that occurs in a real day based on vegetative 
 !             development temperature function (thermal days / day)
 ! DUL(L)    Volumetric soil water content at Drained Upper Limit in soil 
 !             layer L (cm3 [H2O] /cm3 [soil])
+! DYNAMIC   Module control variable; =RUNINIT, SEASINIT, RATE, EMERG, 
+!             INTEGR, OUTPUT, or SEASEND 
 ! ESW(L)    Plant extractable soil water by layer (= DUL - LL) (cm3/cm3)
 ! FILECC    Path plus filename for species file (*.spe) 
 ! FRRT      Fraction of vegetative tissue growth that goes to roots on a 
@@ -552,6 +564,7 @@ C-----------------------------------------------------------------------
 ! LUNCRP    Logical unit number for FILEC (*.spe file) 
 ! LUNIO     Logical unit number for FILEIO 
 ! MRESPR(L) Maintenance respiration for new root growth in layer L 
+! NADRT        N added to root N reserves (g[N] / m2 / d)
 ! NL        Maximum number of soil layers = 20 
 ! NLAYR     Number of soil layers 
 ! PG        Daily gross photosynthesis (g[CH2O] / m2 / d)
@@ -562,6 +575,7 @@ C-----------------------------------------------------------------------
 ! RFAC1     Root length per unit  root weight. (cm/g)
 ! RFAC2     Root depth increase rate with time (cm / physiol. day)
 ! RFAC3     Ratio of root length to root weight at the current time (cm/g)
+! RLCAP(L)  Root Length capacity of soil layer L (cm [root] / cm2[soil])
 ! RLDF(L)   Combined weighting factor to determine root growth distribution
 ! RLDSM     Minimum root length density in a given layer, below which 
 !             drought-induced senescence is not allowed.
@@ -570,8 +584,12 @@ C-----------------------------------------------------------------------
 !             (cm[root] / cm3[soil])
 ! RLINIT    Initial root density (cm[root]/cm2[ground])
 ! RLNEW     New root growth added (cm[root]/cm2[ground]/d)
+! RLRATIO   For transplants - ratio of initial root length (at RFAC1) to total 
+!                  soil profile root length capacity
 ! RLSEN(L)  Root length density senesced today (cm[root]/ cm3[soil])
+! RLNSEN(L) Root length density senesced today due to water-stress (cm[root]/ cm3[soil])
 ! RLV(L)    Root length density for soil layer L (cm[root] / cm3[soil])
+! RNDOT(L)  Proportion of RLV lost in layer L to water-stress (cm[root]/ cm3[soil])
 ! RO        Respiration coefficient that depends on total plant mass
 !             (g[CH2O] / g[tissue])
 ! RP        proportion of the day's photosynthesis which is respired in the 
@@ -591,7 +609,12 @@ C-----------------------------------------------------------------------
 !             (g[root] / m2[ground])
 ! SAT(L)    Volumetric soil water content in layer L at saturation
 !             (cm3 [water] / cm3 [soil])
+! SRCADDOT  Today's CADRT lost with senescing root tissue (g [CH2O]/m2/d)
 ! SRDOT     Daily root senescence (g / m2 / d)
+! SRMDOT    Daily root senescence due to natural senescence that is lost at PRORTF, 
+!              hence, some fraction of the N content is subject to mobilization (g/m2/day)
+! SRNADDOT  Today's NADRT lost with senescing root tissue (g [N]/m2/d)
+! SRNDOT    Daily root senescence that is lost to water -stress (lost at current N%) 
 ! SW(L)     Volumetric soil water content in layer L
 !             (cm3 [water] / cm3 [soil])
 ! SWDF      Soil water deficit factor for layer with deepest roots (0-1) 
@@ -599,16 +622,18 @@ C-----------------------------------------------------------------------
 ! SWFAC     Effect of soil-water stress on photosynthesis, 1.0=no stress, 
 !             0.0=max stress 
 ! TABEX     Function subroutine - Lookup utility 
+! TRLCAP        Root Length capacity of entire soil profile to CUMDEP (cm [root] / cm2[soil])
 ! TRLDF     Total root length density factor for root depth (cm)
 ! TRLGRW    Total new root length density in soil layer L
 !             (cm[root] / cm2[soil])
 ! TRLSEN    Total root length density senesced today (cm[root]/ cm2[soil])
+! TRLNSEN   Total root length density senesced today due to water-stress (cm[root]/ cm2[soil])
 ! TRLV      Total root length per square cm soil today 
 !             (cm[root]/cm2[soil])
 ! TRTDY     Total root length per square cm soil yesterday 
 !             (cm[root]/cm2[soil])
 ! VSTAGE    Number of nodes on main stem of plant 
-! WR(L)     Root hospitality factor, used to compute root growth 
+! WR(L)     Root hospitality factor, used to computer root water uptake 
 ! WRDOTN    Dry weight growth rate of new root tissue including N but not C 
 !             reserves (g[root] / m2[ground]-d)
 ! WTNEW     Initial mass of seedling or seed (g / plant)
@@ -617,5 +642,5 @@ C-----------------------------------------------------------------------
 ! YRTFAC(I) Rate of increase in root depth per degree day at V-stage 
 !             XRTFAC(I). (cm / (physiol. day))
 !***********************************************************************
-!      END SUBROUTINES ROOTS, IPROOT, and INROOT
+!      END SUBROUTINES FOR_ROOTS, FOR_IPROOT, and FOR_INROOT
 !=======================================================================

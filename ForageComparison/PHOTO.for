@@ -12,25 +12,20 @@ C                 models
 C  11/11/1999 CHP Modified for modular format
 C  01/13/2000 NBP Added SWFAC effect on PG
 C  06/11/2002 GH  Modified for Y2K
-C  08/12/2003 CHP Added I/O error checking
-C  03/24/2004 CHP Added P stress based on Bostick model
-C  07/30/2004 CHP Added KC_SLOPE to SPE file and KC_ECO to ECO file.
-!  06/11/2007 CHP PStres1 affects photosynthesis
 !-----------------------------------------------------------------------
-!  Called from:   Main
+!  Called from:   CROPGRO
 !  Calls:         PHOTIP
 C=======================================================================
 
-      SUBROUTINE PHOTO(CONTROL, 
-     &    BETN, CO2, DXR57, EXCESS, KCAN, KC_SLOPE,       !Input
-     &    NR5, PAR, PStres1, SLPF, RNITP, SLAAD,          !Input
-     &    SWFAC, TDAY, XHLAI, XPOD,                       !Input
+      SUBROUTINE FOR_PHOTO(CONTROL, 
+     &  BETN, CO2, DXR57, EXCESS, NR5, PAR, SLPF,         !Input
+     &  RNITP, SLAAD, SWFAC, TDAY, XHLAI, XPOD,           !Input
      &  AGEFAC, PG)                                       !Output
 
 !-----------------------------------------------------------------------
       USE ModuleDefs     !Definitions of constructed variable types, 
-                         ! which contain control information, soil
-                         ! parameters, hourly weather data.
+        ! which contain control information, soil
+        ! parameters, hourly weather data.
       IMPLICIT NONE
       SAVE
 
@@ -38,21 +33,19 @@ C=======================================================================
       CHARACTER*30 FILEIO
 
       INTEGER DYNAMIC
+      INTEGER YRDOY, YRSIM
       INTEGER DAS, NR5
 
       REAL AGEFAC, AGEFCC, AGEREF, A0, BETN, CCEFF, CCK, CCMAX, 
      &  CCMP, CO2, COLDSTR, CUMSTR, CURV, DXR57, EXCESS,
-     &  KCAN, KCANR, KC_SLOPE, LMXSTD, LNREF, PAR, PARMAX, PG, PGFAC, 
+     &  KCAN, KCANR, LMXSTD, LNREF, PAR, PARMAX, PG, PGFAC, 
      &  SLPF, PGLFMX, PGREF, PGSLW, PHTHRS10, PHTMAX, PRATIO, 
      &  PTSMAX, RNITP, ROWSPC, SLAAD, SLW, SPACNG, SWFAC, 
      &  TABEX, TDAY, TPGFAC, XHLAI, XPOD
-      REAL E_FAC
 
       REAL FNPGN(4), FNPGT(4) 
       REAL XPGSLW(15), YPGSLW(15) 
 
-!     Added with P module
-      REAL PStres1
 
 !-----------------------------------------------------------------------
 !     Define constructed variable types based on definitions in
@@ -65,6 +58,8 @@ C=======================================================================
       DAS     = CONTROL % DAS
       DYNAMIC = CONTROL % DYNAMIC
       FILEIO  = CONTROL % FILEIO
+      YRDOY   = CONTROL % YRDOY
+      YRSIM   = CONTROL % YRSIM
 
 C***********************************************************************
 C***********************************************************************
@@ -72,9 +67,11 @@ C     Run Initialization - Called once per simulation
 C***********************************************************************
       IF (DYNAMIC .EQ. RUNINIT) THEN
 C-----------------------------------------------------------------------
-      CALL PHOTIP(FILEIO,  
-     &  CCEFF, CCMAX, CCMP, FNPGN, FNPGT, LMXSTD, LNREF, PARMAX,   
-     &  PGREF, PHTHRS10, PHTMAX, ROWSPC, TYPPGN, TYPPGT, XPGSLW, YPGSLW)
+      CALL FOR_PHOTIP(
+     &  FILEIO,  
+     &  CCEFF, CCMAX, CCMP, FNPGN, FNPGT, KCAN,  
+     &  LMXSTD, LNREF, PARMAX, PGREF, PHTHRS10, 
+     &  PHTMAX, ROWSPC, TYPPGN, TYPPGT, XPGSLW, YPGSLW)
 
 C-----------------------------------------------------------------------
 C     Adjust canopy photosynthesis for GENETIC input value of
@@ -116,8 +113,7 @@ C-----------------------------------------------------------------------
       ELSE
         SPACNG = ROWSPC / BETN
       ENDIF
-!chp per CDM:      KCANR = KCAN - (1. - SPACNG) * 0.1
-      KCANR = KCAN - (1. - SPACNG) * KC_SLOPE
+      KCANR = KCAN - (1. - SPACNG) * 0.1
       PGFAC = 1. - EXP(-KCANR * XHLAI)
 
 C-----------------------------------------------------------------------
@@ -172,30 +168,12 @@ C     about 13 hours where the function is 1.00.  Actually
 C     normalized to a bit higher between 13 and 14 hours.
 C
 C     DLFAC = 1.0 + 0.6128 - 0.01786*DAYL + 0.006875*DAYL*DAYL
-C    &        - 0.000247*DAYL*DAYL*DAYL
+C    &    - 0.000247*DAYL*DAYL*DAYL
 C
 C     Compute daily gross photosynthesis (g CH2O/m2/d)
 C-----------------------------------------------------------------------
-!      PG =  PTSMAX * SLPF * PGFAC * TPGFAC * AGEFCC * PGSLW
-
-!      PG =  PTSMAX * SLPF * PGFAC * TPGFAC * MIN(AGEFCC, PSTRES2) * 
-!     &            PGSLW * PRATIO * PGLFMX * SWFAC
-
-!     CHP 05/07/2004 
-!     AGEFCC can be > 1.0, so don't want to use minimum of 
-!     PStres1 and AGEFCC.  (PStres1 is always 1.0 or below).
-      IF (AGEFCC .GE. 1.0) THEN
-        E_FAC = AGEFCC * PStres1
-      ELSE
-        E_FAC = MIN(AGEFCC, PStres1)
-      ENDIF
-
-      PG =  PTSMAX * SLPF * PGFAC * TPGFAC * E_FAC * 
-     &            PGSLW * PRATIO * PGLFMX * SWFAC
-
-!From WDB (chp 10/21/03):
-!        PG = PG * MIN(SWFAC ,2*(1-SATFAC) )
-!        PGN = PGN * MIN(SWFAC,2*(1-SATFAC) )
+      PG =  PTSMAX * SLPF * PGFAC * TPGFAC * AGEFCC * PGSLW
+     &  * PRATIO * PGLFMX * SWFAC
 
 C-----------------------------------------------------------------------
 C     9/27/95 KJB added cumulative water stress effect on PG after R5.
@@ -239,7 +217,7 @@ C-----------------------------------------------------------------------
       END !SUBROUTINE PHOTO
 
 C=======================================================================
-C  PHOTIP, Subroutine, N.B. Pickering
+C  FOR_PHOTIP, Subroutine, N.B. Pickering
 C  Read input parameters for daily photosynthesis.
 C-----------------------------------------------------------------------
 C  REVISION HISTORY
@@ -252,9 +230,11 @@ C  Local :
 !  Calls : None
 C=======================================================================
 
-      SUBROUTINE PHOTIP(FILEIO,  
-     &  CCEFF, CCMAX, CCMP, FNPGN, FNPGT, LMXSTD, LNREF, PARMAX,   
-     &  PGREF, PHTHRS10, PHTMAX, ROWSPC, TYPPGN, TYPPGT, XPGSLW, YPGSLW)
+      SUBROUTINE FOR_PHOTIP(
+     &  FILEIO,  
+     &  CCEFF, CCMAX, CCMP, FNPGN, FNPGT, KCAN,  
+     &  LMXSTD, LNREF, PARMAX, PGREF, PHTHRS10, 
+     &  PHTMAX, ROWSPC, TYPPGN, TYPPGT, XPGSLW, YPGSLW)
 
 !-----------------------------------------------------------------------
       IMPLICIT NONE
@@ -267,10 +247,10 @@ C=======================================================================
       CHARACTER*80 PATHCR,CHAR
       CHARACTER*92 FILECC
 
-      INTEGER LUNIO, LINC, LNUM, FOUND
-      INTEGER II, PATHL, LUNCRP, ERR, ISECT
+      INTEGER LUNIO, LNUM, FOUND
+      INTEGER II, PATHL, LUNCRP, ERR, LINC, ISECT
 
-      REAL CCEFF, CCMAX, CCMP, LMXSTD, LNREF, 
+      REAL CCEFF, CCMAX, CCMP, KCAN, LMXSTD, LNREF, 
      &  PARMAX, PGREF, PHTHRS10, PHTMAX, ROWSPC, XPGSLW(15)
 
       REAL FNPGN(4),FNPGT(4)
@@ -287,43 +267,50 @@ C=======================================================================
       IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,0)
 
 !-----------------------------------------------------------------------
-      READ(LUNIO,50,IOSTAT=ERR) FILEC, PATHCR; LNUM = 7
+      READ(LUNIO,50) FILEC, PATHCR
    50 FORMAT(//////,15X,A12,1X,A80)
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
 
 !-----------------------------------------------------------------------
 C    Read Planting Details Section
 !-----------------------------------------------------------------------
       SECTION = '*PLANT'
-      CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+      CALL FIND(LUNIO, SECTION, LNUM, FOUND)
       IF (FOUND .EQ. 0) THEN
-        CALL ERROR(SECTION, 42, FILEIO, LNUM)
+        CALL ERROR(ERRKEY, 1, FILEIO, LINC)
       ELSE
-        READ(LUNIO,'(42X,F6.0)',IOSTAT=ERR) ROWSPC ; LNUM = LNUM + 1
-        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+        READ(LUNIO,'(42X,F6.0)') ROWSPC
       ENDIF
 
 C     CROPGRO uses ROWSPC as m
       ROWSPC = ROWSPC / 100.
 
+C-----------------------------------------------------------------------
+C    Read Soil Profile Section
+C-----------------------------------------------------------------------
+!      SECTION = '*SOIL '
+!      CALL FIND(LUNIO, SECTION, LNUM, FOUND)
+!      IF (FOUND .EQ. 0) THEN
+!        CALL ERROR(ERRKEY, 1, FILEIO, LINC)
+!      ELSE
+!        READ(LUNIO,'(//,36X,F6.0)') SLPF  
+!      ENDIF
+
 !-----------------------------------------------------------------------
 C    Read Cultivars Section
 !-----------------------------------------------------------------------
       SECTION = '*CULTI'
-      CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+      CALL FIND(LUNIO, SECTION, LNUM, FOUND)
       IF (FOUND .EQ. 0) THEN
-        CALL ERROR(SECTION, 42, FILEIO, LNUM)
+        CALL ERROR(ERRKEY, 1, FILEIO, LINC)
       ELSE
-        READ(LUNIO,'(60X,F6.0,6X,F6.0)',IOSTAT=ERR) PHTHRS10, LMXSTD
-        LNUM = LNUM + 1
-        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+        READ(LUNIO,'(60X,F6.0,6X,F6.0)') PHTHRS10, LMXSTD
       ENDIF
 
 C-----------------------------------------------------------------------
       CLOSE (LUNIO)
 
 C-----------------------------------------------------------------------
-      LNUM = 0
+      LINC = 0
       PATHL  = INDEX(PATHCR,BLANK)
       IF (PATHL .LE. 1) THEN
         FILECC = FILEC
@@ -338,39 +325,39 @@ C-----------------------------------------------------------------------
 C READ PHOTOSYNTHESIS PARAMETERS *******************
 C-----------------------------------------------------------------------
     5 CONTINUE
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-      IF (ISECT .EQ. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+      CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+      IF (ISECT .EQ. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
       IF (ISECT .EQ. 2) GO TO 5
-      READ(CHAR,'(5F6.2)',IOSTAT=ERR) PARMAX, PHTMAX
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+      READ(CHAR,'(5F6.2)',IOSTAT=ERR) PARMAX, PHTMAX, KCAN
+      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
 
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+      CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
       READ(CHAR,'(3F6.1)',IOSTAT=ERR) CCMP, CCMAX, CCEFF
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
 
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+      CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
       READ(CHAR,'(4F6.0,3X,A3)',IOSTAT=ERR) (FNPGN(II),II=1,4), TYPPGN
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
 
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+      CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
       READ(CHAR,'(4F6.0,3X,A3)',IOSTAT=ERR) (FNPGT(II),II=1,4), TYPPGT
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
 
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+      CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+      CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+      CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+      CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+      CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
       READ(CHAR,'(18X,2F6.0)',IOSTAT=ERR) LNREF, PGREF
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
 
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+      CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
       READ(CHAR,'(10F6.0)',IOSTAT=ERR) (XPGSLW(II),II = 1,10)
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
 
-      CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
+      CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
       READ(CHAR,'(10F6.0)',IOSTAT=ERR) (YPGSLW(II),II = 1,10)
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
 
 C-----------------------------------------------------------------------
       CLOSE (LUNCRP)
@@ -394,7 +381,7 @@ C-----------------------------------------------------------------------
 !            at a CO2 concentration of 330 vpm 
 ! CCMP     Canopy CO2 compensation point (CO2 at which daily PG is 0.0) 
 ! CHAR     Contains the contents of last record read 
-! CO2      Atmospheric carbon dioxide concentration (ï¿½mol[CO2] / mol[air])
+! CO2      Atmospheric carbon dioxide concentration (µmol[CO2] / mol[air])
 ! COLDSTR  Cold weather stress factor for photosynthesis (not currently 
 !            used) 
 ! CUMSTR   Cumulative stress factor for photosynthesis after start of seed 
@@ -403,6 +390,8 @@ C-----------------------------------------------------------------------
 ! DAS      Days after start of simulation (d)
 ! DXR57    Relative time between first seed (NR5) and physiological 
 !            maturity (NR7) 
+! DYNAMIC  Module control variable; =RUNINIT, SEASINIT, RATE, EMERG, 
+!            INTEGR, OUTPUT, or SEASEND 
 ! ERR      Error code for file operation 
 ! ERRKEY   Subroutine name for error file 
 ! EXCESS   Factor based on excess PG used to affect tomorrow's PG 
@@ -425,6 +414,7 @@ C-----------------------------------------------------------------------
 !            row spacing are not equal 
 ! KCANR    Canopy light extinction coefficient, reduced for incomplete 
 !            canopy 
+! LINC     Line number of input file 
 ! LMXSTD   Maximum leaf photosyntheses for standard cultivar 
 ! LNREF    Value of leaf N above which canopy PG is maximum (for standard 
 !            cultivar) 
@@ -446,7 +436,7 @@ C-----------------------------------------------------------------------
 ! PGLFMX   Multiplier for daily canopy photosynthesis to account for 
 !            cultivar differences in leaf photosynthesis capabilities 
 ! PGREF    Reference value for leaf level photosynthesis used in canopy 
-!            light response curve (ï¿½mol[CO2] / m2-s)
+!            light response curve (µmol[CO2] / m2-s)
 ! PGSLW    Relative effect of leaf thickness (SLW) on daily canopy PG 
 ! PHTHRS10 Threshold time that must accumulate in phase 10 for the next 
 !            stage to occur.  Equivalent to PHTHRS(10) in Subroutine 
@@ -473,7 +463,7 @@ C-----------------------------------------------------------------------
 ! SWFAC    Effect of soil-water stress on photosynthesis, 1.0=no stress, 
 !            0.0=max stress 
 ! TABEX    Function subroutine - Lookup utility 
-! TDAY     Average temperature during daylight hours (ï¿½C)
+! TDAY     Average temperature during daylight hours (°C)
 ! TIMDIF   Integer function which calculates the number of days between two 
 !            Julian dates (da)
 ! TPGFAC   Reduction in specific leaf area due to daytime temperature being 
@@ -489,6 +479,8 @@ C-----------------------------------------------------------------------
 !            (fraction)
 ! YPGSLW(I) Array of PG values corresponding to SLW values in array XPGSLW
 !            (g[CH2O] / m2 / d)
+! YRDOY    Current day of simulation (YYDDD)
+! YRSIM    Start of simulation date (YYDDD)
 !=======================================================================
 ! END SUBROUTINE PHOTO
 !=======================================================================

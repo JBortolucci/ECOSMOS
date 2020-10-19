@@ -1,23 +1,24 @@
 C=======================================================================
-C  SDCOMP, Subroutine, Ernie Piper, K.J. Boote, G. Hoogenboom
+C  FOR_SDCOMP, Subroutine, Ernie Piper, K.J. Boote, G. Hoogenboom
 C-----------------------------------------------------------------------
 C  Calculates seed composition for oil and protein
 C-----------------------------------------------------------------------
 C  REVISION HISTORY
-C  09/01/1994 EP  Written.
-C  08/22/1995 GH  Included in CROPGRO.
-C  09/15/1998 CHP Modified for modular format
-C  05/10/1999 GH  Incorporated in CROPGRO
+C  09/01/94 EP  Written.
+C  08/22/95 GH  Included in CROPGRO.
+C  09/15/98 CHP Modified for modular format
+C  05/10/99 GH  Incorporated in CROPGRO
 C-----------------------------------------------------------------------
 C  Called by:  DEMAND
 C  Calls:      None
 C=======================================================================
 
-      SUBROUTINE SDCOMP(
-     &  CARMIN, LIPOPT, LIPTB, PLIGSD, PMINSD, POASD,     !Input
-     &  RCH2O, RLIG, RLIP, RMIN, RNO3C, ROA, SDLIP,       !Input
-     &  SDPRO, SLOSUM, TAVG,                              !Input
-     &  AGRSD1, AGRSD2, FNINSD, POTCAR, POTLIP)           !Output
+      SUBROUTINE FOR_SDCOMP(
+     &  CARMIN, LIPOPT, LIPTB, PLIGSD,                      !Input
+     &  PMINSD, POASD, RCH2O, RLIG, RLIP,                   !Input
+     &  RMIN, RNO3C, ROA, SDLIP, SLOSUM,                    !Input
+     &  SDPRO, TAVG,                                        !Input
+     &  AGRSD1, AGRSD2, FNINSD, POTCAR, POTLIP)             !Output
 !-----------------------------------------------------------------------
       IMPLICIT NONE
       SAVE
@@ -35,11 +36,11 @@ C=======================================================================
 C     The quadratic plateau for predicting percentage lipids
 C-----------------------------------------------------------------------
       IF (TAVG .GE. LIPOPT) THEN
-         LIPTEM= 1.0
+        LIPTEM= 1.0
       ELSEIF ((TAVG .LT. LIPOPT) .AND. (TAVG .GT. LIPTB)) THEN
-         LIPTEM = 1.0 - ((LIPOPT - TAVG) / (LIPOPT - LIPTB))**2
+        LIPTEM = 1.0 - ((LIPOPT - TAVG) / (LIPOPT - LIPTB))**2
       ELSE
-         LIPTEM= 0.0
+        LIPTEM= 0.0
       ENDIF
       POTLIP = SDLIP * LIPTEM
 
@@ -63,14 +64,14 @@ C-----------------------------------------------------------------------
       TOTAL  = POTLIP + POTPRO + POTCAR
 !      IF (TOTAL .NE. 1.0) THEN
       IF (ABS(TOTAL) - 1.0 .GT. 0.0005) THEN
-         POTPRO = POTPRO / TOTAL
-         POTLIP = POTLIP / TOTAL
-         POTCAR = POTCAR / TOTAL
+        POTPRO = POTPRO / TOTAL
+        POTLIP = POTLIP / TOTAL
+        POTCAR = POTCAR / TOTAL
 !        Note:  POTCAR will fall below CARMIN again, if adusted.
 !        Should only POTPRO and POTLIP be adusted here? -chp
 !        Check logic - GH
 !        Check PODDETACH - GH
-         TOTAL  = POTLIP + POTPRO + POTCAR
+        TOTAL  = POTLIP + POTPRO + POTCAR
       ENDIF
 
       POTCAR = POTCAR - PMINSD - POASD - PLIGSD
@@ -82,7 +83,7 @@ C-----------------------------------------------------------------------
 !***********************************************************************
       RETURN
 !-----------------------------------------------------------------------
-      END !SUBROUTINE SDCOMP
+      END !SUBROUTINE FOR_SDCOMP
 !-----------------------------------------------------------------------
 ! AGRSD1 CH2O requirement for seed growth, excluding cost for protein 
 !          content (g[CH2O] / g[seed])
@@ -92,8 +93,8 @@ C-----------------------------------------------------------------------
 ! FNINSD Maximum fraction of N for growing seed tissue based on temperature
 !          (g[N] / g[seed])
 ! GENSUM Protein plus lipid composition (%)
-! LIPOPT Temperature above which lipid composition is at a maximum (ï¿½C)
-! LIPTB  Temperature below which lipid composition is zero (ï¿½C)
+! LIPOPT Temperature above which lipid composition is at a maximum (°C)
+! LIPTB  Temperature below which lipid composition is zero (°C)
 ! LIPTEM Factor to reduce lipid composition based on temperature (0-1). 
 !          Normalized quadratic plateau function. 
 ! PLIGSD Proportion of seed tissue that is lignin (fraction)
@@ -123,9 +124,9 @@ C-----------------------------------------------------------------------
 ! SLOSUM Slope of temperature vs. SUMTEM line (1/oC)
 ! SUMTEM Factor which affects protein composition based on average 
 !          temperature. 
-! TAVG   Average daily temperature (ï¿½C)
+! TAVG   Average daily temperature (°C)
 ! TOTAL  Check for total composition equal to one. 
 !-----------------------------------------------------------------------
-!     END SUBROUTINE SDCOMP
+!     END SUBROUTINE FOR_SDCOMP
 !-----------------------------------------------------------------------
 

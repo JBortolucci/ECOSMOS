@@ -10,49 +10,48 @@ C  05/10/1999 GH  Incoporated in CROPGRO
 C  03/16/2000 GH  Further adaptation for modular system
 C  09/21/2001 CHP Read KCAN, PORMIN, RWUEP1 and RWUMX here for export
 C                   to WATBAL.
-C  08/12/2003 CHP Added I/O error checking
-C  06/30/2006 CHP/CDM Added KC_SLOPE to SPE file and KC_ECO to ECO file.
-C                 Added warning for use of default ecotype.
-!  09/11/2008 KJB, CHP Added 5 species parameters affecting N stress
-C  01/18/2018 KRT Added functionality for ASCE dual Kc ET routines
+C  06/30/2003 SJR Added READ statements for storage organs
+C  07/05/2003 SJR Added READ statements for freeze parameters for storage
 C-----------------------------------------------------------------------
-!  Called:      PLANT
+!  Called:      CROPGRO
 !  Calls:       FIND, ERROR, IGNORE
 C=======================================================================
-      SUBROUTINE IPPLNT(CONTROL, ISWITCH, 
-     &  CADPR1, CMOBMX, CROP, DETACH, ECONO,              !Output
-     &  EORATIO, FILECC, FILEGC, FRCNOD, FREEZ1, FREEZ2,  !Output
-     &  KCAN, KC_SLOPE, KEP, NOUTDO, PCARSH, PCH2O,       !Output
-     &  PLIPSH, PLIGSD, PLIGSH, PMINSD, PMINSH, POASD,    !Output
-     &  POASH, PORMIN, PROLFI, PRORTI, PROSHI, PROSTI,    !Output
-     &  R30C2, RCH2O, RES30C, RFIXN, RLIG, RLIP, RMIN,    !Output
-     &  RNH4C, RNO3C, ROA, RPRO, RWUEP1, RWUMX, TTFIX)    !Output
-!     &  NSTR_FAC, NSTR_EXP, NRAT_FAC, EXCS_FAC, EXCS_EXP) !Output
-
+      SUBROUTINE FOR_IPPLNT(CONTROL, 
+     &  CADPR1, CMOBMX, CROP, DETACH, ECONO, EORATIO,     !Output
+     &  FILECC, FILEGC, FRCNOD, FREEZ1, FREEZ2, KCAN, KEP,!Output
+     &  NOUTDO, PCARSH, PCH2O, PLIPSH, PLIGSD, PLIGSH,    !Output
+     &  PMINSD, PMINSH, POASD, POASH, PORMIN, PROLFI,     !Output
+     &  PRORTI, PROSHI, PROSTI, R30C2, RCH2O, RES30C,     !Output
+     &  RFIXN, RLIG, RLIP, RMIN, RNH4C, RNO3C, ROA,       !Output
+     &  RPRO, RWUEP1, RWUMX, TTFIX,                       !Output
+     &  CADPV, PROSRI, STRSRFL, STRLYR1,                              !Output
+     &  LFMRC, mft, MRSWITCH, RTMRC, SDMRC,SHELMRC,            !Output
+     &  STMMRC, STRMRC, TRST, TRSTYP, TRSWITCH)                  !Output
 C-----------------------------------------------------------------------
 
-      USE ModuleDefs
-      USE ModuleData
+      USE ModuleDefs     !Definitions of constructed variable types, 
+        ! which contain control information, soil
+        ! parameters, hourly weather data.
       IMPLICIT NONE
+      SAVE
 
 !-----------------------------------------------------------------------
-      CHARACTER*1  BLANK, UPCASE, DETACH, MEEVP
+      CHARACTER*1  BLANK, UPCASE, DETACH
       PARAMETER (BLANK  = ' ')
 
       CHARACTER*2 CROP
-      CHARACTER*6 SECTION, ECONO, ECOTYP
+
+      CHARACTER*6 SECTION, ECONO
       CHARACTER*6  ERRKEY
       PARAMETER (ERRKEY = 'IPPLNT')
 
       CHARACTER*12 FILEC, FILEE
       CHARACTER*30 FILEIO
-      CHARACTER*78 MSG(6)
       CHARACTER*80 PATHCR, CHAR, PATHEC
       CHARACTER*92 FILECC, FILEGC
-      CHARACTER*255 C255
 
-      INTEGER LUNCRP, LUNECO, NOUTDO, LUNIO
-      INTEGER PATHL, FOUND, ERR, LINC, LNUM, ISECT
+      INTEGER LUNCRP, LUNIO, NOUTDO
+      INTEGER PATHL, FOUND, ERR, LINC, ISECT, II
 
       REAL
      &  CADPR1, CMOBMX, FRCNOD, FREEZ1, FREEZ2,
@@ -61,23 +60,24 @@ C-----------------------------------------------------------------------
      &  PROLFI, PRORTI, PROSHI, PROSTI, R30C2,
      &  RCH2O, RES30C, RFIXN, RLIG, RLIP, RMIN,
      &  RNH4C, RNO3C, ROA, RPRO, TTFIX
+       
+      REAL PROSRI, STRSRFL, STRLYR1
+
+      CHARACTER*1 MRSWITCH, TRSWITCH
+      CHARACTER*3 TRSTYP
+      REAL LFMRC, mft, RTMRC, SDMRC, SHELMRC, STMMRC,
+     &   STRMRC, TRST(4)
+      REAL CADPV
 
 !     Species-dependant variables exported to SPAM or WATBAL:
       REAL EORATIO, KCAN, KEP, PORMIN, RWUMX, RWUEP1
-      REAL KCAN_ECO, KC_SLOPE
-!     REAL SKC, KCBMIN, KCBMAX
-
-!     Species parameters for N stress  9/11/2008
-!     REAL NSTR_FAC, NSTR_EXP, NRAT_FAC, EXCS_FAC, EXCS_EXP
 
 !     The variable "CONTROL" is of constructed type "ControlType" as 
 !     defined in ModuleDefs.for, and contains the following variables.
 !     The components are copied into local variables for use here.
       TYPE (ControlType) CONTROL
-      TYPE (SwitchType) ISWITCH
       FILEIO = CONTROL % FILEIO
       LUNIO  = CONTROL % LUNIO
-      MEEVP = ISWITCH % MEEVP
 
 !-----------------------------------------------------------------------
 !       Read data from FILEIO for use in PLANT module
@@ -85,24 +85,18 @@ C-----------------------------------------------------------------------
       OPEN (LUNIO, FILE = FILEIO, STATUS = 'OLD', IOSTAT=ERR)
       IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,0)
 !-----------------------------------------------------------------------
-      READ(LUNIO,50,IOSTAT=ERR) FILEC, PATHCR ; LNUM = 7
-   50 FORMAT(6(/),15X,A12,1X,A80)
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-
-      READ(LUNIO,51,IOSTAT=ERR) FILEE, PATHEC; LNUM = LNUM + 1
-   51 FORMAT(15X,A12,1X,A80)
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+      READ(LUNIO,50) FILEC, PATHCR, FILEE, PATHEC
+   50 FORMAT(/////,2(/,15X,A12,1X,A80))
 
 !-----------------------------------------------------------------------
 !    Read Experiment Details, Treatments, and Cultivars Sections
 !-----------------------------------------------------------------------
       SECTION = '*EXP.D'
-      CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+      CALL FIND(LUNIO, SECTION, LINC, FOUND)
       IF (FOUND .EQ. 0) THEN
-        CALL ERROR(SECTION, 42, FILEIO, LNUM)
+        CALL ERROR(ERRKEY, 1, FILEIO, LINC)
       ELSE
-        READ(LUNIO,'(////,3X,A2)',IOSTAT=ERR) CROP; LNUM = LNUM + 5
-        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+        READ(LUNIO,'(////,3X,A2)') CROP
       ENDIF
 
 !-----------------------------------------------------------------------
@@ -111,12 +105,11 @@ C-----------------------------------------------------------------------
 !    Read Cultivar Section
 !-----------------------------------------------------------------------
         SECTION = '*CULTI'
-        CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        CALL FIND(LUNIO, SECTION, LINC, FOUND)
         IF (FOUND .EQ. 0) THEN
-          CALL ERROR(SECTION, 42, FILEIO, LNUM)
+        CALL ERROR(ERRKEY, 1, FILEIO, LINC)
         ELSE
-          READ(LUNIO,'(24X,A6)',IOSTAT=ERR) ECONO ; LNUM = LNUM + 1
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+        READ(LUNIO,'(24X,A6)') ECONO
         ENDIF
 
       ENDIF
@@ -126,122 +119,165 @@ C-----------------------------------------------------------------------
 !-----------------------------------------------------------------------
       IF (CROP .NE. 'FA') THEN
 !-----------------------------------------------------------------------
+!    Set file plus pathname for ecotype parameter file
+!-----------------------------------------------------------------------
+        PATHL  = INDEX(PATHEC,BLANK)
+        IF (PATHL .LE. 1) THEN
+        FILEGC = FILEE
+        ELSE
+        FILEGC = PATHEC(1:(PATHL-1)) // FILEE
+        ENDIF
+
+!-----------------------------------------------------------------------
 ! READ CROP PARAMETERS FROM FILEC
 !-----------------------------------------------------------------------
-        LNUM = 0
+        LINC = 0
         PATHL  = INDEX(PATHCR,BLANK)
         IF (PATHL .LE. 1) THEN
-          FILECC = FILEC
+        FILECC = FILEC
         ELSE
-          FILECC = PATHCR(1:(PATHL-1)) // FILEC
+        FILECC = PATHCR(1:(PATHL-1)) // FILEC
         ENDIF
         CALL GETLUN('FILEC', LUNCRP)
         OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
         IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,0)
-        LNUM = 0
+
 C-----------------------------------------------------------------------
 C READ PHOTOSYNTHESIS PARAMETERS *******************
 C-----------------------------------------------------------------------
+        LINC = 1
         SECTION = '!*PHOT'
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        CALL FIND(LUNCRP, SECTION, LINC, FOUND)
         IF (FOUND .EQ. 0) THEN
-          CALL ERROR(SECTION, 42, FILECC, LNUM)
+        CALL ERROR(ERRKEY, 1, FILECC, LINC)
         ELSE
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          IF (ISECT .EQ. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-          READ(CHAR,'(12X,F6.0)',IOSTAT=ERR) KCAN
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-          !KC_SLOPE optional, default value 0.1
-          READ(CHAR,'(18X,F6.0)',IOSTAT=ERR) KC_SLOPE
-          IF (ERR .NE. 0 .OR. KC_SLOPE .LT. 1.E-6) KC_SLOPE = 0.1
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        IF (ISECT .EQ. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
+        READ(CHAR,'(12X,F6.2)',IOSTAT=ERR) KCAN
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
         ENDIF
 
 C-----------------------------------------------------------------------
 C READ RESPIRATION PARAMETERS **********************
 C-----------------------------------------------------------------------
         SECTION = '!*RESP'
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        CALL FIND(LUNCRP, SECTION, LINC, FOUND)
         IF (FOUND .EQ. 0) THEN
-          CALL ERROR(SECTION, 42, FILECC, LNUM)
+        CALL ERROR(ERRKEY, 1, FILECC, LINC)
         ELSE
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(G12.0,F6.1)',IOSTAT=ERR) RES30C, R30C2
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(G12.0,F6.1)',IOSTAT=ERR) RES30C, R30C2
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
   
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(4F6.0)',IOSTAT=ERR) RNO3C, RNH4C, RPRO, RFIXN
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(4F6.0)',IOSTAT=ERR) RNO3C, RNH4C, RPRO, RFIXN
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
   
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(6F6.0)',IOSTAT=ERR)
-     &            RCH2O, RLIP, RLIG, ROA, RMIN, PCH2O
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(6F6.0)',IOSTAT=ERR) 
+     &    RCH2O, RLIP, RLIG, ROA, RMIN, PCH2O
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
+
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(2(5X,A1))',IOSTAT=ERR) MRSWITCH, TRSWITCH
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
+
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(3G12.0)',IOSTAT=ERR)
+     &    LFMRC, STMMRC, RTMRC 
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
+
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(3G12.0)',IOSTAT=ERR)
+     &    STRMRC, SHELMRC, SDMRC
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
+
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(4F6.0,3X,A3,F6.0)',IOSTAT=ERR)
+     &    TRST(1), TRST(2), TRST(3), TRST(4), TRSTYP, mft
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
+
         ENDIF
   
 C-----------------------------------------------------------------------
 C READ PLANT COMPOSITION PARAMETERS
 C-----------------------------------------------------------------------
         SECTION = '!*PLAN'
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        CALL FIND(LUNCRP, SECTION, LINC, FOUND)
         IF (FOUND .EQ. 0) THEN
-          CALL ERROR(SECTION, 42, FILECC, LNUM)
+        CALL ERROR(ERRKEY, 1, FILECC, LINC)
         ELSE
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(F6.0,12X,F6.0)',IOSTAT=ERR) PROLFI, PROSTI
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(F6.0,12X,F6.0)',IOSTAT=ERR) PROLFI, PROSTI
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
   
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(F6.0,12X,F6.0)',IOSTAT=ERR) PRORTI, PROSHI
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(F6.0,12X,F6.0)',IOSTAT=ERR) PRORTI, PROSHI
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
 
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(18X,F6.0)',IOSTAT=ERR) PCARSH
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(18X,F6.0)',IOSTAT=ERR) PCARSH
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
   
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(18X,F6.0)',IOSTAT=ERR) PLIPSH
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(18X,F6.0)',IOSTAT=ERR) PLIPSH
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
   
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(18X,2F6.0)',IOSTAT=ERR) PLIGSH, PLIGSD
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(18X,2F6.0)',IOSTAT=ERR) PLIGSH, PLIGSD
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
 
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(18X,2F6.0)',IOSTAT=ERR) POASH, POASD
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(18X,2F6.0)',IOSTAT=ERR) POASH, POASD
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
   
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(18X,2F6.0)',IOSTAT=ERR) PMINSH, PMINSD
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(18X,2F6.0)',IOSTAT=ERR) PMINSH, PMINSD
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
+
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(F6.0)',IOSTAT=ERR) PROSRI
+
+
         ENDIF
 
 C-----------------------------------------------------------------------
 C READ CARBON AND NITROGEN MINING PARAMETERS
 C-----------------------------------------------------------------------
         SECTION = '!*CARB'
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        CALL FIND(LUNCRP, SECTION, LINC, FOUND)
         IF (FOUND .EQ. 0) THEN
-          CALL ERROR(SECTION, 42, FILECC, LNUM)
+        CALL ERROR(ERRKEY, 1, FILECC, LINC)
         ELSE
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(F6.0,6X,F6.0)',IOSTAT=ERR) CMOBMX, CADPR1
-  
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(F6.0,6X,F6.0)',IOSTAT=ERR) CMOBMX, CADPR1
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
+ !       ENDIF
 
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+
+
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(30X,F6.0)',IOSTAT=ERR) CADPV
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
         ENDIF
+
+
 
 C-----------------------------------------------------------------------
 C READ NITROGEN FIXATION PARAMATERS
 C-----------------------------------------------------------------------
         SECTION = '!*NITR'
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        CALL FIND(LUNCRP, SECTION, LINC, FOUND)
         IF (FOUND .EQ. 0) THEN
-          CALL ERROR(SECTION, 42, FILECC, LNUM)
+        CALL ERROR(ERRKEY, 1, FILECC, LINC)
         ELSE
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(18X,F6.0)',IOSTAT=ERR) TTFIX
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(18X,F6.0)',IOSTAT=ERR) TTFIX
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
         ENDIF
   
 C-----------------------------------------------------------------------
@@ -250,16 +286,16 @@ C     ***** READ PARTITIONING PARAMETERS *****************
 C
 C-----------------------------------------------------------------------
         SECTION = '!*VEGE'
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        CALL FIND(LUNCRP, SECTION, LINC, FOUND)
         IF (FOUND .EQ. 0) THEN
-          CALL ERROR(SECTION, 42, FILECC, LNUM)
+        CALL ERROR(ERRKEY, 1, FILECC, LINC)
         ELSE
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(30X,F6.0)',IOSTAT=ERR) FRCNOD
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(30X,F6.0)',IOSTAT=ERR) FRCNOD
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
         ENDIF
 
 C-----------------------------------------------------------------------
@@ -268,38 +304,38 @@ C     ***** READ SENESCENCE PARAMETERS ******************
 C       This is found in the second heading that begins with '!*LEAF'
 C-----------------------------------------------------------------------
         SECTION = '!*LEAF'
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        CALL FIND(LUNCRP, SECTION, LINC, FOUND)
         IF (FOUND .EQ. 0) THEN
-          CALL ERROR(SECTION, 42, FILECC, LNUM)
+        CALL ERROR(ERRKEY, 1, FILECC, LINC)
         ENDIF
   
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        CALL FIND(LUNCRP, SECTION, LINC, FOUND)
         IF (FOUND .EQ. 0) THEN
-          CALL ERROR(SECTION, 42, FILECC, LNUM)
+        CALL ERROR(ERRKEY, 1, FILECC, LINC)
         ELSE
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(18X,2F6.0)',IOSTAT=ERR) FREEZ1, FREEZ2
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(18X,2F6.0)',IOSTAT=ERR) FREEZ1, FREEZ2
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
         ENDIF
 
 !-----------------------------------------------------------------------
 C         Read ROOT parameters
 !-----------------------------------------------------------------------
         SECTION = '!*ROOT'
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        CALL FIND(LUNCRP, SECTION, LINC, FOUND)
         IF (FOUND .EQ. 0) THEN
-            CALL ERROR(SECTION, 42, FILECC, LNUM)
+        CALL ERROR(ERRKEY, 1, FILECC, LINC)
         ELSE
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-            IF (ISECT .EQ. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-            READ(CHAR,'(30X,2F6.0)',IOSTAT=ERR) RWUEP1, RWUMX
-            IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        IF (ISECT .EQ. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
+        READ(CHAR,'(30X,2F6.0)',IOSTAT=ERR) RWUEP1, RWUMX
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
   
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-            IF (ISECT .EQ. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-            READ(CHAR,'(12X,F6.0)',IOSTAT=ERR) PORMIN
-            IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        IF (ISECT .EQ. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
+        READ(CHAR,'(12X,F6.0)',IOSTAT=ERR) PORMIN
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
         ENDIF
 
 C-----------------------------------------------------------------------
@@ -308,144 +344,57 @@ C     ***** READ POD DETACHMENT PARAMETERS *****
 C
 C-----------------------------------------------------------------------
         SECTION = '!*POD '
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        CALL FIND(LUNCRP, SECTION, LINC, FOUND)
         IF (FOUND .EQ. 0) THEN
-          CALL ERROR(SECTION, 42, FILECC, LNUM)
+        CALL ERROR(ERRKEY, 1, FILECC, LINC)
         ELSE
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-          READ(CHAR,'(5X,A1)',IOSTAT=ERR) DETACH
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-          DETACH = UPCASE(DETACH)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(5X,A1)',IOSTAT=ERR) DETACH
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
+        DETACH = UPCASE(DETACH)
         ENDIF
- 
+  
 C-----------------------------------------------------------------------
 C
 C     ***** READ EVAPOTRANSPIRATION PARAMETERS *****
 C
 C-----------------------------------------------------------------------
         SECTION = '!*EVAP'
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
+        CALL FIND(LUNCRP, SECTION, LINC, FOUND)
         IF (FOUND .EQ. 0) THEN
-          CALL ERROR(SECTION, 42, FILECC, LNUM)
+        CALL ERROR(ERRKEY, 1, FILECC, LINC)
         ELSE
-          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-!          IF (MEEVP .EQ. 'A' .OR. MEEVP .EQ. 'G') THEN !ASCE dual Kc ET
-!            READ(CHAR,'(5F6.0)',IOSTAT=ERR)KEP,EORATIO,SKC,KCBMIN,KCBMAX
-!            SKC    = MAX(0.50,MIN(1.0,SKC))
-!            KCBMIN = MAX(0.00,MIN(1.1,KCBMIN))
-!            KCBMAX = MAX(0.25,MIN(1.5,KCBMAX))
-!            CALL PUT('SPAM', 'SKC', SKC)
-!            CALL PUT('SPAM', 'KCBMIN', KCBMIN)
-!            CALL PUT('SPAM', 'KCBMAX', KCBMAX)
-!          ELSE
-            READ(CHAR,'(2F6.0)',IOSTAT=ERR) KEP, EORATIO
-!          ENDIF
-          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(2F6.0)',IOSTAT=ERR) KEP, EORATIO
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
         ENDIF
 
 C-----------------------------------------------------------------------
 C
-C     ***** READ NITROGEN STRESS PARAMETERS *****
+C     ***** READ STORAGE ORGAN PARTITIONING PARAMETERS *****
 C
 C-----------------------------------------------------------------------
-!        REWIND (LUNCRP)
-!        CALL FIND2(LUNCRP, '*NITROGEN STRESS', LNUM, FOUND)
-!        IF (FOUND .EQ. 0) THEN
-!!         Use default values
-!          NSTR_FAC = 0.70
-!          NSTR_EXP = 1.00
-!          NRAT_FAC = 1.00
-!          EXCS_FAC = 0.20
-!          EXCS_EXP = 0.50
-!          MSG(1) = "Default nitrogen stress values will be used."
-!        ELSE
-!          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-!          READ(CHAR,'(2F6.0)',IOSTAT=ERR) NSTR_FAC, NSTR_EXP
-!          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-!          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-!          READ(CHAR,'(F6.0)',IOSTAT=ERR) NRAT_FAC
-!          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-!          CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-!          READ(CHAR,'(2F6.0)',IOSTAT=ERR) EXCS_FAC, EXCS_EXP
-!          IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
-!          MSG(1) = "Nitrogen stress values read from species file."
-!        ENDIF
-!
-!        WRITE(MSG(2),'(A,F6.2)') "NSTRES factor   = ", NSTR_FAC
-!        WRITE(MSG(3),'(A,F6.2)') "NSTRES exponent = ", NSTR_EXP
-!        WRITE(MSG(4),'(A,F6.2)') "NRATIO factor   = ", NRAT_FAC
-!        WRITE(MSG(5),'(A,F6.2)') "EXCESS factor   = ", EXCS_FAC
-!        WRITE(MSG(6),'(A,F6.2)') "EXCESS exponent = ", EXCS_EXP
-!        CALL INFO(6,ERRKEY,MSG)
 
+
+        SECTION = '!*STOR'
+        CALL FIND(LUNCRP, SECTION, LINC, FOUND)
+        IF (FOUND .EQ. 0) THEN
+        CALL ERROR(ERRKEY, 1, FILECC, LINC)
+        ELSE
+        CALL IGNORE(LUNCRP,LINC,ISECT,CHAR)
+        READ(CHAR,'(2F6.0)',IOSTAT=ERR) STRSRFL, STRLYR1
+        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LINC)
+        ENDIF
+ 
         CLOSE (LUNCRP)
-
-C-----------------------------------------------------------------------
-C    Read Ecotype Parameter File
-C-----------------------------------------------------------------------
-!    Set file plus pathname for ecotype parameter file
-!-----------------------------------------------------------------------
-        PATHL  = INDEX(PATHEC,BLANK)
-        IF (PATHL .LE. 1) THEN
-          FILEGC = FILEE
-        ELSE
-          FILEGC = PATHEC(1:(PATHL-1)) // FILEE
-        ENDIF
-
-!       Get ecotype Kcan, if present.  
-!       If not here, use value read from species file.
-        LUNECO = LUNCRP
-        OPEN (LUNECO,FILE = FILEGC,STATUS = 'OLD',IOSTAT=ERR)
-        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEGC,0)
-        ECOTYP = '      '
-        LNUM = 0
-        DO WHILE (ECOTYP .NE. ECONO)
-          CALL IGNORE(LUNECO, LNUM, ISECT, C255)
-          IF ((ISECT .EQ. 1) .AND. (C255(1:1) .NE. ' ') .AND.
-     &          (C255(1:1) .NE. '*')) THEN
-            READ (C255,'(A6,139X,F6.0)',IOSTAT=ERR) ECOTYP, KCAN_ECO
-            IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEGC,LNUM)
-            IF (ECOTYP .EQ. ECONO) EXIT
-
-          ELSE IF (ISECT .EQ. 0) THEN
-            IF (ECONO .EQ. 'DFAULT') THEN
-              MSG(1)='No default ecotype found in file: '
-              WRITE(MSG(2),'(2X,A)') FILEGC(1:76)
-              MSG(3)='Program will halt.'
-              CALL WARNING(3, ERRKEY, MSG)
-              CALL ERROR(ERRKEY,35,FILEGC,LNUM)
-            ENDIF
-
-!           Write message to WARNING.OUT file that default ecotype 
-!             will be used.
-            WRITE(MSG(1),5000) ECONO
-            WRITE(MSG(2),'(2X,A)') FILEGC(1:76)
-            WRITE(MSG(3),5001) 
- 5000       FORMAT('Ecotype ',A6,' not found in file: ')
- 5001       FORMAT('Default ecotype parameters will be used.')
-            CALL WARNING(3, ERRKEY, MSG)
-
-            ECONO = 'DFAULT'
-            REWIND(LUNECO)
-            LNUM = 0
-          ENDIF
-        ENDDO
-
-        CLOSE (LUNECO)
-
-        IF (KCAN_ECO .GT. 1.E-6) THEN
-          KCAN = KCAN_ECO
-        ENDIF
-
 !-----------------------------------------------------------------------
       ENDIF
 !-----------------------------------------------------------------------
 !     Assign unit number for overview.out file
       CALL GETLUN('OUTO', NOUTDO)
 
-
       RETURN
-      END SUBROUTINE IPPLNT
+      END ! SUBROUTINE IPPLNT
 !=======================================================================
 
 !-----------------------------------------------------------------------
@@ -454,6 +403,9 @@ C-----------------------------------------------------------------------
 ! CADPR1   Maximum fraction of stem growth after flowering that can be 
 !            allocated to carbohydrate storage just before a full seed load 
 !            is set. ( fraction)
+! CADPV    Maximum fraction of PGAVL for vegetative growth that can be 
+!            allocated to mobile carbohydrate storage under non-stress   
+!            conditions during vegetative growth stages. ( fraction)
 ! CMOBMX   Maximum C pool mobilization rate (g[CH2O] / m2 / d)
 ! CROP     Crop identification code 
 ! DETACH   Switch to determine if pod detachment will be simulated (Y or N)
@@ -471,16 +423,22 @@ C-----------------------------------------------------------------------
 ! FRCNOD   Fraction of new root dry matter allocation that is diverted to 
 !            nodule growth 
 ! FREEZ1   Temperature below which plant loses all leaves, but development 
-!            continues (ï¿½C)
-! FREEZ2   Temperature below which plant growth stops completely. (ï¿½C)
+!            continues (°C)
+! FREEZ2   Temperature below which plant growth stops completely. (°C)
 ! ISECT    Data record code (0 - End of file encountered, 1 - Found a good 
 !            line to read, 2 - End of Section in file encountered, denoted 
 !            by * in column 1
 ! ISWDIS   Pest damage simulation switch (Y or N) 
-! KCBMAX   Maximum basal crop coefficient for ASCE dual Kc ET method
-! KCBMIN   Minimum basal crop coefficient for ASCE dual Kc ET method
+! ISWWAT   Water simulation control switch (Y or N) 
+! LFMRC   Maintenance respiration cost for leaves (g[CH2O] / g leaf protein / hr)
 ! LUNCRP   Logical unit number for FILEC (*.spe file) 
+! mft             Multiplier for maintenance respiration temperature factor
 ! MODEL    Name of CROPGRO executable file 
+! MRSWITCH Parameter to select the method of calculating portion of 
+!            Maintenance Respiration (MR) associated with plant mass.
+!            If MRSWITCH="P" then calculate MR based on prgan protein content 
+!            If MRSWITCH="M"or otherwise, calculate the mass associated portion  
+!            of MR based on plant mass (original CROPGRO approach).
 ! NL       maximum number of soil layers = 20 
 ! PATHCR   Pathname for SPE file or FILEE. 
 ! PATHEC   Pathname for FILEC 
@@ -502,6 +460,7 @@ C-----------------------------------------------------------------------
 !            luxurious supply of N (g[protein] / g[root])
 ! PROSHI   Maximum protein composition in shells during growth with 
 !            luxurious supply of N ( g[protein] / g[shell tissue])
+! PROSRI   Maximum protein composition in storage during growth with 
 ! PROSTI   Maximum protein composition in stems during growth with 
 !            luxurious supply of N (g[protein] / g[stem])
 ! R30C2    Respiration coefficient that depends on total plant mass, value 
@@ -525,7 +484,22 @@ C-----------------------------------------------------------------------
 !            (g[CH2O] / g[product])
 ! RPRO     Respiration required for re-synthesizing protein from mobilized 
 !            N (g[CH2O] / g[protein])
-! SKC      Shaping coefficient for ASCE dual Kc ET approach
+! RTMRC   Maintenance respiration cost for roots (g[CH2O] / g root protein / hr)
+! SDMRC   Maintenance respiration cost for the portion of seed subject to 
+!            maintenance respiration (g[CH2O] / g seed protein / hr)
+! SHELMRC Maintenance respiration cost for shell (g[CH2O] / g shell protein / hr)
+! STMMRC  Maintenance respiration cost for stem (g[CH2O] / g stem protein / hr)
+! STRLYR1  Initial proportion of storage organ dry mass in soil layer 1
+! STRMRC  Maintenance respiration cost for storage 
+!            (g[CH2O] / g storage protein / hr)
+! STRSRFL  Initial proportion of storage organ dry mass on soil surface
+! TRST(4)       Maintenance respiration temperature response parameters define
+!             the shape of maintenance respiration temperature response
+! TRSTYP       Type of CURV function to describe maintenance respiration 
+!             temperature response
+! TRSWITCH Type of maintenance respiration temperature response to use
+!             "M" uses McCree 1974 equation from CROPGRO, any other value
+!             invokes the CURV function for a custom response
 ! TTFIX    Physiological days delay in nodule initiation
 !            (photo-thermal days / day)
 !-----------------------------------------------------------------------

@@ -11,18 +11,15 @@ C  08/01/1997 CHP Modified to modularize Phenology sections
 C  07/30/1998 CHP Changed name to IPPHENOL - input section of PHENOL module
 C  01/12/1999 GH  Incorporated into CROPGRO
 C  06/11/2002 GH  Modified for Y2K
-C  08/12/2003 CHP Added I/O error checking
-C  03/24/2004 CHP Export PSENP 
-!  11/26/2007 CHP THRESH, SDPRO, SDLIP moved from eco to cul file
 C-----------------------------------------------------------------------
 C  Called by: PHENOL
 C  Calls    : ERROR, FIND, IGNORE
 C=======================================================================
 
-      SUBROUTINE IPPHENOL(CONTROL,
+      SUBROUTINE FOR_IPPHENOL(CONTROL,
      &    ATEMP, CLDVAR, CLDVRR, CSDVAR, CSDVRR, CROP,    !Output
-     &    CTMP, DLTYP, EVMODC, NPRIOR, NSENP, OPTBI,      !Output
-     &    PHTHRS, PLME, PSENP, SDAGE, SDEPTH, SLOBI,      !Output
+     &    CTMP, DLTYP, EVMODC, ISIMI, NPRIOR, NSENP,      !Output
+     &    OPTBI, PHTHRS, PLME, SDAGE, SDEPTH, SLOBI,      !Output
      &    THVAR, TRIFOL, TSELC, TB, TO1, TO2, TM, WSENP)  !Output
 
 !-----------------------------------------------------------------------
@@ -30,8 +27,9 @@ C=======================================================================
                          ! which contain control information, soil
                          ! parameters, hourly weather data.
       IMPLICIT NONE
+      SAVE
 !-----------------------------------------------------------------------
-      CHARACTER*1   PLME, BLANK
+      CHARACTER*1   ISIMI, PLME, BLANK
       CHARACTER*2   CROP
       CHARACTER*3   CTMP(20), DLTYP(20)
       CHARACTER*6   SECTION, ECOTYP, ECONO, ERRKEY
@@ -43,9 +41,9 @@ C=======================================================================
       CHARACTER*255 C255
 
       INTEGER LUNIO, NPHS
-      INTEGER LUNCRP, LUNECO, ISECT, PATHL
+      INTEGER LUNCRP, LUNECO, ISECT, ERRNUM, PATHL
       INTEGER I, J, K
-      INTEGER IVRGRP, IVRTEM, ERR, LINC, LNUM, FOUND
+      INTEGER IVRGRP, IVRTEM, ERR, LNUM, FOUND
       INTEGER NPRIOR(20), TSELC(20)
 
       PARAMETER (BLANK = ' ')
@@ -75,36 +73,32 @@ C=======================================================================
 !     Read in values from temporary file, which were previously input
 !       in Subroutine IPIBS.
 !-----------------------------------------------------------------------
-      OPEN (LUNIO, FILE = FILEIO, STATUS = 'OLD', IOSTAT=ERR)
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,0)
+      OPEN (LUNIO, FILE = FILEIO, STATUS = 'OLD', IOSTAT=ERRNUM)
+      IF (ERRNUM .NE. 0) CALL ERROR(ERRKEY,ERRNUM,FILEIO,0)
 
-      READ (LUNIO,100,IOSTAT=ERR) FILEC, PATHCR; LNUM = 7
+      READ (LUNIO,100) FILEC, PATHCR
   100 FORMAT(//////,15X,A12,1X,A80)
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
 
-      READ (LUNIO,105,IOSTAT=ERR) FILEE, PATHEC; LNUM = LNUM + 1
+      READ (LUNIO,105) FILEE, PATHEC
   105 FORMAT(15X,A12,1X,A80)
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-
-!!-----------------------------------------------------------------------
-!!     Subroutine FIND finds appropriate SECTION in a file by
-!!     searching for the specified 6-character string at beginning
-!!     of each line.
-!!-----------------------------------------------------------------------
-!      SECTION = '*SIMUL'
-!      CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-!      IF (FOUND .EQ. 0) CALL ERROR (SECTION, 42, FILEIO,LNUM)
-!      READ(LUNIO,'(31X,A1)',IOSTAT=ERR) ISIMI; LNUM = LNUM + 1
-!      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+!-----------------------------------------------------------------------
+!     Subroutine FIND finds appropriate SECTION in a file by
+!     searching for the specified 6-character string at beginning
+!     of each line.
+!-----------------------------------------------------------------------
+      SECTION = '*SIMUL'
+      CALL FIND(LUNIO, SECTION, LNUM, FOUND)
+      IF (FOUND .EQ. 0) CALL ERROR (ERRKEY,1,FILEIO,LNUM)
+      READ(LUNIO,'(31X,A1)') ISIMI
 
 !-----------------------------------------------------------------------
 !     Find and read Cultivar Section
 !-----------------------------------------------------------------------
       SECTION = '*CULTI'
-      CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-      IF (FOUND .EQ. 0) CALL ERROR (SECTION, 42, FILEIO,LNUM)
-      READ(LUNIO,'(3X,A2)',IOSTAT=ERR) CROP; LNUM = LNUM + 1
-      IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
+      CALL FIND(LUNIO, SECTION, LNUM, FOUND)
+      IF (FOUND .EQ. 0) CALL ERROR (ERRKEY,2,FILEIO,LNUM)
+      READ(LUNIO,120) CROP
+  120 FORMAT(3X,A2)
 
 !-----------------------------------------------------------------------
       IF (CROP .NE. 'FA') THEN
@@ -112,25 +106,44 @@ C=======================================================================
 !     Find and Read Planting Details Section
 !-----------------------------------------------------------------------
         SECTION = '*PLANT'
-        CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-        IF (FOUND .EQ. 0) CALL ERROR (SECTION, 42, FILEIO,LNUM)
-        READ(LUNIO,140,IOSTAT=ERR) PLME, SDEPTH, SDAGE, ATEMP
+        CALL FIND(LUNIO, SECTION, LNUM, FOUND)
+        IF (FOUND .EQ. 0) CALL ERROR (ERRKEY,3,FILEIO,LNUM)
+        READ(LUNIO,140) PLME, SDEPTH, SDAGE, ATEMP
   140   FORMAT(35X,A1,19X,F5.1,6X,2(1X,F5.0))
-        LNUM = LNUM + 1
-        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
-
+!!-----------------------------------------------------------------------
+!!     Find and read Soil Section
+!!-----------------------------------------------------------------------
+!        SECTION = '*SOIL '
+!        CALL FIND(LUNIO, SECTION, LNUM, FOUND)
+!        IF (FOUND .EQ. 0) CALL ERROR (ERRKEY,4,FILEIO,LNUM)
+!        NLAYR = 1
+!        READ(LUNIO,145) DS(1), LL(1), DUL(1), SAT(1)
+!  145   FORMAT(///,1X,F5.0,6X,3(1X,F5.3))
+!        DO I = 2, NL
+!          READ(LUNIO,150) DS(I), LL(I), DUL(I), SAT(I)
+!  150     FORMAT(1X,F5.0,6X,3(1X,F5.3))
+!          IF (DS(I) .LT. DS(I-1)) GO TO 160
+!          NLAYR = NLAYR + 1
+!        ENDDO
+!  160   CONTINUE
+!!-----------------------------------------------------------------------
+!!     Soil Parameter Initialization
+!!-----------------------------------------------------------------------
+!        DLAYR(1) = DS(1)
+!        IF (NLAYR .GT. 1) THEN
+!           DO I = 2, NLAYR
+!             DLAYR(I) = DS(I) - DS(I-1)
+!           ENDDO
+!        ENDIF
 !-----------------------------------------------------------------------
 !     Find and read Cultivar Section
 !-----------------------------------------------------------------------
         SECTION = '*CULTI'
-        CALL FIND(LUNIO, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-        IF (FOUND .EQ. 0) CALL ERROR (SECTION, 42, FILEIO,LNUM)
-        READ(LUNIO,165,IOSTAT=ERR) ECONO, CSDVAR, PPSEN, PH2T5, 
-     &              PHTHRS(6), PHTHRS(8), PHTHRS(10), PHTHRS(13)
-        
+        CALL FIND(LUNIO, SECTION, LNUM, FOUND)
+        IF (FOUND .EQ. 0) CALL ERROR (ERRKEY,2,FILEIO,LNUM)
+        READ(LUNIO,165) ECONO, CSDVAR, PPSEN, PH2T5, PHTHRS(6),
+     &                  PHTHRS(8), PHTHRS(10), PHTHRS(13)
   165   FORMAT(24X,A6,7F6.0)
-        LNUM = LNUM + 1
-        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEIO,LNUM)
       ENDIF
 
       CLOSE (LUNIO)
@@ -149,22 +162,22 @@ C=======================================================================
         CALL GETLUN('FILEC', LUNCRP)
         OPEN (LUNCRP,FILE = FILECC, STATUS = 'OLD',IOSTAT=ERR)
         IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,0)
-        LNUM = 0
+  
 !-----------------------------------------------------------------------
 !     Find Leaf Growth Parameters from FILEC and read EVMODC value
 !-----------------------------------------------------------------------
+        LNUM = 1
         SECTION = '!*LEAF'
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-        IF (FOUND .EQ. 0) CALL ERROR (SECTION, 42, FILECC,LNUM)
+        CALL FIND(LUNCRP, SECTION, LNUM, FOUND)
+        IF (FOUND .EQ. 0) CALL ERROR (ERRKEY,5,FILECC,LNUM)
         CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
-        READ(CHAR,'(24X,F6.1)',IOSTAT=ERR) EVMODC
-        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
+        READ(CHAR,'(24X,F6.1)') EVMODC
 !-----------------------------------------------------------------------
 !     Find Phenology Section in FILEC and read
 !-----------------------------------------------------------------------
         SECTION = '!*PHEN'
-        CALL FIND(LUNCRP, SECTION, LINC, FOUND) ; LNUM = LNUM + LINC
-        IF (FOUND .EQ. 0) CALL ERROR (SECTION, 42, FILECC,LNUM)
+        CALL FIND(LUNCRP, SECTION, LNUM, FOUND)
+        IF (FOUND .EQ. 0) CALL ERROR (ERRKEY,6,FILECC,LNUM)
         CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
         READ(CHAR,250,IOSTAT=ERR) TB(1), TO1(1), TO2(1), TM(1)
   250   FORMAT(13F6.1)
@@ -172,16 +185,14 @@ C=======================================================================
 
         CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
         READ(CHAR,250,IOSTAT=ERR) TB(2), TO1(2), TO2(2), TM(2)
-        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
   
         CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
         READ(CHAR,250,IOSTAT=ERR) TB(3), TO1(3), TO2(3), TM(3)
-        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
   
         DO I = 1,NPHS
           CALL IGNORE(LUNCRP,LNUM,ISECT,CHAR)
           READ(CHAR,270,IOSTAT=ERR) J, NPRIOR(J), DLTYP(J), CTMP(J),
-     &        TSELC(J), WSENP(J), NSENP(J), PSENP(J)  
+     &        TSELC(J), WSENP(J), NSENP(J), PSENP(J)  !PSENP not used
   270     FORMAT(I3,I3,2(2X,A3),1X,I2,3(1X,F5.2))
           IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILECC,LNUM)
         ENDDO
@@ -203,35 +214,26 @@ C-----------------------------------------------------------------------
 C    Read Ecotype Parameter File
 C-----------------------------------------------------------------------
         CALL GETLUN('FILEE', LUNECO)
-        OPEN (LUNECO,FILE = FILEGC,STATUS = 'OLD',IOSTAT=ERR)
-        IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEGC,0)
+        OPEN (LUNECO,FILE = FILEGC,STATUS = 'OLD',IOSTAT=ERRNUM)
+        IF (ERRNUM .NE. 0) CALL ERROR(ERRKEY,ERRNUM,FILEE,0)
         ECOTYP = '      '
-        LNUM = 0
-  
         DO WHILE (ECOTYP .NE. ECONO)
+  
           CALL IGNORE(LUNECO, LNUM, ISECT, C255)
           IF (ISECT .EQ. 1 .AND. C255(1:1) .NE. ' ' .AND.
      &          C255(1:1) .NE. '*') THEN
-            READ (C255,3100,IOSTAT=ERR) ECOTYP, ECONAM, IVRGRP, 
+            READ (C255,3100,IOSTAT=ERRNUM) ECOTYP, ECONAM, IVRGRP, 
      &          IVRTEM, THVAR, (PHTHRS(K), K=1,4), PM06, PM09,
      &          (PHTHRS(K),K=11,12), TRIFOL, R1PPO, OPTBI, SLOBI
  3100       FORMAT (A6, 1X, A16, 1X, 2(1X,I2), 7(1X,F5.0), 6X, 
-     &          3(1X,F5.0), 2(6X), 3(1X,F5.0))
-            IF (ERR .NE. 0) CALL ERROR(ERRKEY,ERR,FILEGC,LNUM)
-            IF (ECOTYP .EQ. ECONO) THEN
-              EXIT
-            ENDIF
-
-          ELSE IF (ISECT .EQ. 0) THEN
-            IF (ECONO .EQ. 'DFAULT') CALL ERROR(ERRKEY,35,FILEGC,LNUM)
-            ECONO = 'DFAULT'
-            REWIND(LUNECO)
-            LNUM = 0
+     &          3(1X,F5.0), 5(6X), 3(1X,F5.0))
+            IF (ERRNUM .NE. 0) CALL ERROR(ERRKEY,ERRNUM,FILEE,LNUM)
+          ELSEIF (ISECT .EQ. 0) THEN
+            CALL ERROR(ERRKEY,7,FILEE,LNUM)
           ENDIF
         ENDDO
 
         CLOSE (LUNECO)
-
         PHTHRS(5) = MAX(0.,PH2T5 - PHTHRS(3) - PHTHRS(4))
         PHTHRS(7) = PHTHRS(6) + MAX(0.,(PHTHRS(8) - PHTHRS(6))* PM06)
         PHTHRS(9) = MAX(0.,PHTHRS(10) * PM09)
@@ -248,12 +250,12 @@ C-----------------------------------------------------------------------
       ENDIF
 
       RETURN
-      END  SUBROUTINE IPPHENOL
+      END    !SUBROUTINE FOR_IPPHENOL
 
 !-----------------------------------------------------------------------
 !     IPPHENOL LOCAL VARIABLES:  (Other variables defined in PHENOL)
 !-----------------------------------------------------------------------
-! ATEMP     Temperature of transplant environment (ï¿½C)
+! ATEMP     Temperature of transplant environment (°C)
 ! CHAR      Contains the contents of last record read 
 ! CLDVAR    Critical daylength above which development rate remains at min 
 !             value (prior to flowering) (hours)
@@ -273,6 +275,7 @@ C-----------------------------------------------------------------------
 ! ECOTYP    Ecotype code for this simulation 
 ! ERR       Error code for file operation 
 ! ERRKEY    Subroutine name for error file 
+! ERRNUM    Error number for input 
 ! EVMODC    Modifier of rate of vegetative node appearance for the first 
 !             few nodes, primarily used for peanut 
 ! FILEC     Filename for SPE file (e.g., SBGRO980.SPE) 
@@ -302,7 +305,7 @@ C-----------------------------------------------------------------------
 ! NSENP(I)  Sensitivity of phase I to Nitrogen stress. Varies from -1 
 !             (slows dev) to +1 (hastens dev) 
 ! OPTBI     Temperature below which growth rate is slowed from emergence to 
-!             flowering (ï¿½C)
+!             flowering (°C)
 ! PATHCR    Pathname for SPE file or FILEE. 
 ! PATHEC    Pathname for FILEC 
 ! PATHL     Number of characters in path name (path plus filename for 

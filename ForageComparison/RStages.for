@@ -1,30 +1,29 @@
 C=======================================================================
-!  RSTAGES Subroutine Modified from
+!  FOR_RSTAGES Subroutine Modified from
 C      STAGES, Subroutine, J. W. Jones
 C  Calculates phenological stages and individual phase durations.
 C-----------------------------------------------------------------------
 C  REVISION HISTORY
-C  01/01/1993 Written J.W. Jones, K.J. Boote, G. Hoogenboom
-!  08/../1997 CHP modified for CROPGRO restructuring
-C  03/24/2004 CHP Calculate SeedFrac for P partitioning (Bostick model)
-!  07/13/2006 CHP Added P model
+C  01/01/93 J.W. Jones, K.J. Boote, G. Hoogenboom
+!  08/../97 CHP modified for CROPGRO restructuring
 C-----------------------------------------------------------------------
 !     Called from: PHENOL
 !     Calls:       None
 C=======================================================================
 
-      SUBROUTINE RSTAGES(CONTROL,
+      SUBROUTINE FOR_RSTAGES(CONTROL,
      &    FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    !Input
      &    PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM,      !Input
-     &    JPEND, MDATE, NDLEAF, NDSET, NDVST, NVALPH,     !Output
-     &    NVEG0, NVEG1, NR1, NR2, NR5, NR7, PHZACC,       !Output
-     &    RSTAGE, STGDOY, SeedFrac, VegFrac, YREMRG,      !Output
-     &    YRNR1, YRNR2, YRNR3, YRNR5, YRNR7)              !Output
+     &    JPEND, NDLEAF, NDSET, NDVST, NVALPH, NVEG0,     !Output
+     &    NVEG1, NR1, NR2, NR5, NR7, PHZACC, RSTAGE,      !Output
+     &    STGDOY, YREMRG, YRNR1, YRNR2, YRNR3,            !Output
+     &    YRNR5, YRNR7, MDATE)                            !Output
+!     &    DYNAMIC)                                        !Control
 
 !-----------------------------------------------------------------------
       USE ModuleDefs     !Definitions of constructed variable types, 
-                         ! which contain control information, soil
-                         ! parameters, hourly weather data.
+        ! which contain control information, soil
+        ! parameters, hourly weather data.
       IMPLICIT NONE
       SAVE
 
@@ -32,35 +31,21 @@ C=======================================================================
 
       INTEGER DYNAMIC
       INTEGER I, J, NVALP0, DAS, YRDOY, YRPLT, YRSIM
-      INTEGER NDLEAF,  NDSET, NDVST, JPEND  !, TIMDIF
-      INTEGER RSTAGE,  NVEG0, NVEG1, NR0, NR1, NR2, NR3, NR5, NR7
+      INTEGER NDLEAF, NDSET, NDVST, JPEND, TIMDIF
+      INTEGER RSTAGE, NVEG0, NVEG1, NR0, NR1, NR2, NR3, NR5, NR7
       INTEGER YRNR1, YRNR2, YRNR3, YRNR5, YRNR7, MDATE, YREMRG
       INTEGER NPRIOR(20), STGDOY(20), NVALPH(20)
 
       REAL PHTEM, SDEPTH
       REAL FT(20), FUDAY(20), FSW(20), FNSTR(20), FPSTR(20), PHTHRS(20)
       REAL PHZACC(20), PROG(20), REM(20)
-      REAL SeedFrac, VegFrac, VegTime
 
-!     Note: Writing RSTAGES.OUT eliminates the debug vs. release problem
-!       for chickpea.  Will have to investigate why!!! chp 05/13/2004
-!     Follow-up -- 01/24/2007 CHP revised statements that compared real #'s
-!       OLD --> IF (PHZACC(3) .GE. PHTHRS(3)) THEN
-!       NEW --> IF (PHZACC(3) - PHTHRS(3) > -1.E-6) THEN
-!     This seems to have eliminated the debug-release problem in chickpea
-!       and possibly other crops.
+      TYPE(ControlType) CONTROL
 
-!     For output file:
-!      CHARACTER*11 OUTRSTG
-!      CHARACTER*30 FILEIO
-!      INTEGER DAP, DOY, ERRNUM, LUN, RUN, YEAR
-!      LOGICAL FEXIST, FOPEN
+!      SAVE NVALP0
 
-      TYPE (ControlType) CONTROL
-      DYNAMIC = CONTROL % DYNAMIC
       DAS     = CONTROL % DAS
-!      FILEIO  = CONTROL % FILEIO
-!      RUN     = CONTROL % RUN
+      DYNAMIC = CONTROL % DYNAMIC
 
 !***********************************************************************
 !***********************************************************************
@@ -74,7 +59,7 @@ C=======================================================================
       DO I = 1,20
         PHZACC(I) = 0.0
         NVALPH(I) = NVALP0
-        STGDOY(I) = 9999999
+        STGDOY(I) = 999999
         PROG(I) = 0.
       ENDDO
 
@@ -103,44 +88,6 @@ C=======================================================================
       MDATE  = -99
       YREMRG = -99
 
-      PHTEM = 0.0
-      PROG  = 0.0
-
-!     For P module:
-      SeedFrac = 0.0
-      VegFrac  = 0.0
-      VegTime = PHTHRS(3) + PHTHRS(4) + PHTHRS(5) + PHTHRS(8)
-
-!     Output file:
-!      OUTRSTG = 'Rstages.OUT'
-!      CALL GETLUN('OUTRSTG', LUN)
-!
-!      INQUIRE (FILE = OUTRSTG, EXIST = FEXIST)
-!      INQUIRE (FILE = OUTRSTG, OPENED = FOPEN)
-!      IF (FEXIST) THEN
-!        IF (.NOT. FOPEN) THEN
-!          OPEN (UNIT = LUN, FILE = OUTRSTG, STATUS = 'OLD',
-!     &      IOSTAT = ERRNUM, POSITION = 'APPEND')
-!        ELSE
-!          INQUIRE (FILE = OUTRSTG, NUMBER = LUN)
-!        ENDIF
-!      ELSE
-!        OPEN (UNIT = LUN, FILE = OUTRSTG, STATUS = 'NEW',
-!     &    IOSTAT = ERRNUM)
-!        WRITE(LUN,'("*RSTAGES OUTPUT FILE")')
-!      ENDIF
-!
-!      !For sequenced run, use replicate
-!      ! number instead of run number in header.
-!      CALL HEADER(SEASINIT, LUN, RUN)
-!
-!      WRITE (LUN,120)
-!  120 FORMAT('@YEAR DOY   DAS   DAP  RSTG  PHTEM',
-!     &      '   PHAC1   PHAC2   PHAC3   PHAC4   PHAC5',
-!     &      '   PHAC6   PHAC7   PHAC8   PHAC9  PHAC10',
-!     &      '  PHAC11  PHAC12  PHAC13  PHAC14  PHAC15',
-!     &      '  PHAC16  PHAC17  PHAC18  PHAC19  PHAC20')
-
 C***********************************************************************
 C***********************************************************************
 C     Daily Integration 
@@ -148,7 +95,7 @@ C***********************************************************************
       ELSE IF (DYNAMIC .EQ. INTEGR) THEN
 
 !-----------------------------------------------------------------------
-!     DAS   = MAX(0,TIMDIF(YRSIM,YRDOY))
+!      DAS   = MAX(0,TIMDIF(YRSIM,YRDOY))
       DO  J = 1,20
         REM(J) = 1.0
       ENDDO
@@ -164,32 +111,28 @@ C-----------------------------------------------------------------------
         NVEG0 = DAS
         NVALPH(2) = NVEG0
         YREMRG    = YRDOY
-!        IF (PHZACC(2) .GE. PHTHRS(2)) THEN
-        IF (PHZACC(2) - PHTHRS(2) > -1.E-6) THEN
-          NVEG1 = DAS
-          NVALPH(3) = NVEG1
-          PHZACC(3) = PHZACC(2) - PHTHRS(2)
-!          IF (PHZACC(3) .GE. PHTHRS(3)) THEN
-          IF (PHZACC(3) - PHTHRS(3) > -1.E-6) THEN
-            JPEND = DAS
-            NVALPH(4) = JPEND
-            PHZACC(4) = PHZACC(3) - PHTHRS(3)
-!            IF (PHZACC(4) .GE. PHTHRS(4)) THEN
-            IF (PHZACC(4) - PHTHRS(4) > -1.E-6) THEN
-              NR0 = DAS
-              NVALPH(5) = NR0
-              RSTAGE    = 0
-              PHZACC(5) = PHZACC(4) - PHTHRS(4)
-!              IF (PHZACC(5) .GE. PHTHRS(5)) THEN
-              IF (PHZACC(5) - PHTHRS(5) > -1.E-6) THEN
-                NR1 = DAS
-                NVALPH(6) = NR1
-                YRNR1     = YRDOY
-                RSTAGE    = 1
-                PHZACC(6) = PHZACC(5) - PHTHRS(5)
-              ENDIF
-            ENDIF
-          ENDIF
+        IF (PHZACC(2) .GE. PHTHRS(2)) THEN
+        NVEG1 = DAS
+        NVALPH(3) = NVEG1
+        PHZACC(3) = PHZACC(2) - PHTHRS(2)
+        IF (PHZACC(3) .GE. PHTHRS(3)) THEN
+        JPEND = DAS
+        NVALPH(4) = JPEND
+        PHZACC(4) = PHZACC(3) - PHTHRS(3)
+        IF (PHZACC(4) .GE. PHTHRS(4)) THEN
+        NR0 = DAS
+        NVALPH(5) = NR0
+        RSTAGE    = 0
+        PHZACC(5) = PHZACC(4) - PHTHRS(4)
+        IF (PHZACC(5) .GE. PHTHRS(5)) THEN
+        NR1 = DAS
+        NVALPH(6) = NR1
+        YRNR1     = YRDOY
+        RSTAGE    = 1
+        PHZACC(6) = PHZACC(5) - PHTHRS(5)
+        ENDIF
+        ENDIF
+        ENDIF
         ENDIF
       ENDIF
 
@@ -202,22 +145,26 @@ C-----------------------------------------------------------------------
         PROG(1) = FT(1) * FUDAY(1) * MIN(FSW(1),FNSTR(1),FPSTR(1))
         PHZACC(1) = PHZACC(1) + PROG(1)
 
-!        IF ((PHZACC(1) .GE. PHTEM) .OR. (ISIMI .EQ. 'E')) THEN
-        IF ((PHZACC(1) - PHTEM) > -1.E-6 .OR. (ISIMI .EQ. 'E')) THEN
+!       OPEN(150,FILE='TRANS.OUT',STATUS='UNKNOWN',ACCESS='APPEND')
+!       WRITE(150,'(I5,3F8.3)') DAS, PHTEM, PROG(1), PHZACC(1)
+!       WRITE(150,'(I5)') DAS
+!       CLOSE(150)
+        
+        IF ((PHZACC(1) .GE. PHTEM) .OR. (ISIMI .EQ. 'E')) THEN
 
 C-----------------------------------------------------------------------
 C       Emergence, next stage, occurs on day DAS
 C-----------------------------------------------------------------------
-          NVEG0 = DAS
-          NVALPH(2) = NVEG0
-          YREMRG    = YRDOY
-          STGDOY(1) = YRDOY
+        NVEG0 = DAS
+        NVALPH(2) = NVEG0
+        YREMRG    = YRDOY
+        STGDOY(1) = YRDOY
 C-----------------------------------------------------------------------
 C       Account for the part of today that contributes to the next phase(s)
 C-------------------------------------------------------------------------------
-          IF (ISIMI .NE. 'E') THEN
-            REM(2) = (PHZACC(1) - PHTEM)/(PROG(1) + 0.00001)
-          ENDIF
+        IF (ISIMI .NE. 'E') THEN
+        REM(2) = (PHZACC(1) - PHTEM)/(PROG(1) + 0.00001)
+        ENDIF
         ENDIF
       ENDIF
 
@@ -233,17 +180,16 @@ C-------------------------------------------------------------------------------
 C     Skip section if stage 3 has already occurred
 C-------------------------------------------------------------------------------
         PROG(2) = FT(2) * FUDAY(2) * MIN(FSW(2),FNSTR(2),FPSTR(2))
-     &      * REM(NPRIOR(2))
+     &  * REM(NPRIOR(2))
         PHZACC(2) = PHZACC(2) + PROG(2)
-!        IF (PHZACC(2) .GE. PHTHRS(2)) THEN
-        IF (PHZACC(2) - PHTHRS(2) > -1.E-6) THEN
+        IF (PHZACC(2) .GE. PHTHRS(2)) THEN
 C-------------------------------------------------------------------------------
 C       V1 occurs on day DAS
 C-------------------------------------------------------------------------------
-          NVEG1 = DAS
-          NVALPH(3) = NVEG1
-          STGDOY(2) = YRDOY
-          REM(3) = (PHZACC(2) - PHTHRS(2)) / (PROG(2) + 0.00001)
+        NVEG1 = DAS
+        NVALPH(3) = NVEG1
+        STGDOY(2) = YRDOY
+        REM(3) = (PHZACC(2) - PHTHRS(2)) / (PROG(2) + 0.00001)
         ENDIF
       ENDIF
 
@@ -252,24 +198,16 @@ C     Check for end of juvenile phase
 C-------------------------------------------------------------------------------
       IF ((DAS .GE. NVALPH(NPRIOR(3))) .AND. (JPEND .GE. NVALP0)) THEN
         PROG(3) = FT(3) * FUDAY(3) * MIN(FSW(3),FNSTR(3),FPSTR(3))
-     &      * REM(NPRIOR(3))
+     &  * REM(NPRIOR(3))
         PHZACC(3) = PHZACC(3) + PROG(3)
-
-        !CHP added for Plant P - 9/20/2004
-        IF (VegTime > 0) THEN
-          VegFrac = PHZACC(3) / VegTime
-        ELSE
-          VegFrac = 0.0
-        ENDIF
-!        IF(PHZACC(3) .GE. PHTHRS(3)) THEN
-        IF(PHZACC(3) - PHTHRS(3) > -1.E-6) THEN
+        IF(PHZACC(3) .GE. PHTHRS(3)) THEN
 C-------------------------------------------------------------------------------
 C       End of juvenile phase occurs on day DAS
 C-------------------------------------------------------------------------------
-          JPEND = DAS
-          NVALPH(4) = JPEND
-          STGDOY(3) = YRDOY
-          REM(4) = (PHZACC(3) - PHTHRS(3))/(PROG(3) + 0.00001)
+        JPEND = DAS
+        NVALPH(4) = JPEND
+        STGDOY(3) = YRDOY
+        REM(4) = (PHZACC(3) - PHTHRS(3))/(PROG(3) + 0.00001)
         ENDIF
       ENDIF
 C-------------------------------------------------------------------------------
@@ -277,19 +215,17 @@ C     Check for floral induction, end of induction phase
 C-------------------------------------------------------------------------------
       IF ((DAS .GE. NVALPH(NPRIOR(4))) .AND. (NR0 .GE. NVALP0)) THEN
         PROG(4) = FT(4) * FUDAY(4) * MIN(FSW(4),FNSTR(4),FPSTR(4))
-     &      *REM(NPRIOR(4))
+     &  *REM(NPRIOR(4))
         PHZACC(4) = PHZACC(4) + PROG(4)
-        VegFrac = (PHTHRS(3) + PHZACC(4)) / VegTime
-!        IF(PHZACC(4) .GE. PHTHRS(4)) THEN
-        IF(PHZACC(4) - PHTHRS(4) > 1.E-6) THEN
+        IF(PHZACC(4) .GE. PHTHRS(4)) THEN
 C-------------------------------------------------------------------------------
 C       Floral induction occurs on day DAS, end of phase 4
 C-------------------------------------------------------------------------------
-          NR0 = DAS
-          NVALPH(5) = NR0
-          RSTAGE    = 0
-          STGDOY(4) = YRDOY
-          REM(5) = (PHZACC(4) - PHTHRS(4))/(PROG(4) + 0.00001)
+        NR0 = DAS
+        NVALPH(5) = NR0
+        RSTAGE    = 0
+        STGDOY(4) = YRDOY
+        REM(5) = (PHZACC(4) - PHTHRS(4))/(PROG(4) + 0.00001)
         ENDIF
       ENDIF
 
@@ -298,45 +234,40 @@ C     Check for first flower, stage 6, end of phase 5
 C-------------------------------------------------------------------------------
       IF ((DAS .GE. NVALPH(NPRIOR(5))) .AND. (NR1 .GE. NVALP0)) THEN
         PROG(5) = FT(5) * FUDAY(5) * MIN(FSW(5),FNSTR(5),FPSTR(5))
-     &      * REM(NPRIOR(5))
+     &  * REM(NPRIOR(5))
         PHZACC(5) = PHZACC(5) + PROG(5)
-        VegFrac = (PHTHRS(3) + PHTHRS(4) + PHZACC(5)) / VegTime
-!        IF(PHZACC(5) .GE. PHTHRS(5)) THEN
-        IF(PHZACC(5) - PHTHRS(5) > -1.E-6) THEN
+        IF(PHZACC(5) .GE. PHTHRS(5)) THEN
 C-------------------------------------------------------------------------------
 C       First flower occurs on day DAS
 C-------------------------------------------------------------------------------
-          NR1 = DAS
-          STGDOY(5) = YRDOY
-          NVALPH(6) = NR1
-          YRNR1     = YRDOY
-          RSTAGE    = 1
-          REM(6) = (PHZACC(5) - PHTHRS(5))/(PROG(5) + 0.00001)
+        NR1 = DAS
+        STGDOY(5) = YRDOY
+        NVALPH(6) = NR1
+        YRNR1     = YRDOY
+        RSTAGE    = 1
+        REM(6) = (PHZACC(5) - PHTHRS(5))/(PROG(5) + 0.00001)
         ENDIF
       ENDIF
-
-
 C-------------------------------------------------------------------------------
 C     Check for beginning ovule (peg), stage 7, end of phase 6
 C-------------------------------------------------------------------------------
       IF ((DAS .GE. NVALPH(NPRIOR(6))) .AND. (NR2 .GE. NVALP0)) THEN
         PROG(6) = FT(6) * FUDAY(6) * MIN(FSW(6),FNSTR(6),FPSTR(6))
-     &      * REM(NPRIOR(6))
+     &  * REM(NPRIOR(6))
         PHZACC(6) = PHZACC(6) + PROG(6)
-!        IF(PHZACC(6) .GE. PHTHRS(6)) THEN
-        IF(PHZACC(6) - PHTHRS(6) > -1.E-6) THEN
+        IF(PHZACC(6) .GE. PHTHRS(6)) THEN
 C-------------------------------------------------------------------------------
 C       First peg occurs on day DAS
 C-------------------------------------------------------------------------------
-          NR2 = DAS
-          STGDOY(6) = YRDOY
-          NVALPH(7) = NR2
-          YRNR2     = YRDOY
-          RSTAGE    = 2
+        NR2 = DAS
+        STGDOY(6) = YRDOY
+        NVALPH(7) = NR2
+        YRNR2     = YRDOY
+        RSTAGE    = 2
 C-------------------------------------------------------------------------------
 C       Account for the part of today that contributes to the next phase(s)
 C-------------------------------------------------------------------------------
-          REM(7) = (PHZACC(6) - PHTHRS(6))/(PROG(6) + 0.00001)
+        REM(7) = (PHZACC(6) - PHTHRS(6))/(PROG(6) + 0.00001)
         ENDIF
       ENDIF
 
@@ -345,23 +276,22 @@ C     Check for stage beginning shell, stage 8, end of phase 7
 C-------------------------------------------------------------------------------
       IF ((DAS .GE. NVALPH(NPRIOR(7))) .AND. (NR3 .GE. NVALP0)) THEN
         PROG(7) = FT(7) * FUDAY(7) * MIN(FSW(7),FNSTR(7),FPSTR(7))
-     &      * REM(NPRIOR(7))
+     &  * REM(NPRIOR(7))
         PHZACC(7) = PHZACC(7) + PROG(7)
-!        IF(PHZACC(7) .GE. PHTHRS(7)) THEN
-        IF(PHZACC(7) - PHTHRS(7) > -1.E-6) THEN
+        IF(PHZACC(7) .GE. PHTHRS(7)) THEN
 C-------------------------------------------------------------------------------
 C       Stage R3 occurs on day DAS
 C-------------------------------------------------------------------------------
-          NR3 = DAS
-          STGDOY(7) = YRDOY
-          IF (STGDOY(7) .EQ. STGDOY(6)) STGDOY(7) = 9999999
-          NVALPH(8) = NR3
-          YRNR3     = YRDOY
-          RSTAGE    = 3
+        NR3 = DAS
+        STGDOY(7) = YRDOY
+        IF (STGDOY(7) .EQ. STGDOY(6)) STGDOY(7) = 999999
+        NVALPH(8) = NR3
+        YRNR3     = YRDOY
+        RSTAGE    = 3
 C-------------------------------------------------------------------------------
 C       Account for the part of today that contributes to the next phase(s)
 C-------------------------------------------------------------------------------
-          REM(8) = (PHZACC(7) - PHTHRS(7))/(PROG(7) + 0.00001)
+        REM(8) = (PHZACC(7) - PHTHRS(7))/(PROG(7) + 0.00001)
         ENDIF
       ENDIF
 
@@ -370,24 +300,21 @@ C     Check for stage beginning seed (R5), stage 9, end of phase 8
 C-------------------------------------------------------------------------------
       IF ((DAS .GE. NVALPH(NPRIOR(8))) .AND. (NR5 .GE. NVALP0)) THEN
         PROG(8) = FT(8) * FUDAY(8) * MIN(FSW(8),FNSTR(8),FPSTR(8))
-     &      * REM(NPRIOR(8))
+     &  * REM(NPRIOR(8))
         PHZACC(8) = PHZACC(8) + PROG(8)
-        !STGRATIO8 = PHZACC(8) / PHTHRS(8)
-        VegFrac =(PHTHRS(3) + PHTHRS(4) + PHTHRS(5) + PHZACC(8))/VegTime
-!        IF(PHZACC(8) .GE. PHTHRS(8)) THEN
-        IF(PHZACC(8) - PHTHRS(8) > -1.E-6) THEN
+        IF(PHZACC(8) .GE. PHTHRS(8)) THEN
 C-------------------------------------------------------------------------------
 C       Stage R5 occurs on day DAS
 C-------------------------------------------------------------------------------
-          NR5 = DAS
-          STGDOY(8) = YRDOY
-          NVALPH(9) = NR5
-          YRNR5     = YRDOY
-          RSTAGE    = 5
+        NR5 = DAS
+        STGDOY(8) = YRDOY
+        NVALPH(9) = NR5
+        YRNR5     = YRDOY
+        RSTAGE    = 5
 C-------------------------------------------------------------------------------
 C       Account for the part of today that contributes to the next phase(s)
 C-------------------------------------------------------------------------------
-          REM(9) = (PHZACC(8) - PHTHRS(8))/(PROG(8) + 0.00001)
+        REM(9) = (PHZACC(8) - PHTHRS(8))/(PROG(8) + 0.00001)
         ENDIF
       ENDIF
 
@@ -396,20 +323,19 @@ C     Check for stage NDSET, stage 10, end of phase 9
 C-------------------------------------------------------------------------------
       IF ((DAS .GE. NVALPH(NPRIOR(9))) .AND. (NDSET .GE. NVALP0)) THEN
         PROG(9) = FT(9) * FUDAY(9) * MAX(FSW(9),FNSTR(9),FPSTR(9))
-     &      * REM(NPRIOR(9))
+     &  * REM(NPRIOR(9))
         PHZACC(9) = PHZACC(9) + PROG(9)
-!        IF(PHZACC(9) .GE. PHTHRS(9)) THEN
-        IF(PHZACC(9) - PHTHRS(9) > -1.E-6) THEN
+        IF(PHZACC(9) .GE. PHTHRS(9)) THEN
 C-------------------------------------------------------------------------------
 C       Stage NDSET occurs on day DAS
 C-------------------------------------------------------------------------------
-          NDSET = DAS
-          STGDOY(9) = YRDOY
-          NVALPH(10) = NDSET
+        NDSET = DAS
+        STGDOY(9) = YRDOY
+        NVALPH(10) = NDSET
 C-------------------------------------------------------------------------------
 C       Account for the part of today that contributes to the next phase(s)
 C-------------------------------------------------------------------------------
-          REM(10) = (PHZACC(9) - PHTHRS(9))/(PROG(9) + 0.00001)
+        REM(10) = (PHZACC(9) - PHTHRS(9))/(PROG(9) + 0.00001)
         ENDIF
       ENDIF
 
@@ -417,27 +343,22 @@ C-------------------------------------------------------------------------------
 C     Check for stage NR7, stage 11, end of phase 10
 C-------------------------------------------------------------------------------
       IF ((DAS .GE. NVALPH(NPRIOR(10))) .AND. (NR7 .GE. NVALP0)) THEN
-        print *,DAS, PROG(10), FT(10),FUDAY(10),FSW(10),FNSTR(10),FPSTR(10),REM(NPRIOR(10))
-
         PROG(10) = FT(10) * FUDAY(10)*MAX(FSW(10),FNSTR(10),FPSTR(10))
-     &      * REM(NPRIOR(10))
+     &  * REM(NPRIOR(10))
         PHZACC(10) = PHZACC(10) + PROG(10)
-        SeedFrac = PHZACC(10) / PHTHRS(10)
-!        IF(PHZACC(10) .GE. PHTHRS(10)) THEN
-        ! if(DAS .EQ. 120) print *, PHZACC(10),FT(10),FUDAY(10),FSW(10),FNSTR(10),FPSTR(10),NPRIOR(10)
-        IF(PHZACC(10) - PHTHRS(10) > -1.E-6) THEN
+        IF(PHZACC(10) .GE. PHTHRS(10)) THEN
 C-------------------------------------------------------------------------------
 C       Stage NR7, physiological maturity, occurs on day DAS
 C-------------------------------------------------------------------------------
-          NR7 = DAS
-          STGDOY(10) = YRDOY
-          NVALPH(11) = NR7
-          YRNR7      = YRDOY
-          RSTAGE    = 7
+        NR7 = DAS
+        STGDOY(10) = YRDOY
+        NVALPH(11) = NR7
+        YRNR7      = YRDOY
+        RSTAGE    = 7
 C-------------------------------------------------------------------------------
 C       Account for the part of today that contributes to the next phase(s)
 C-------------------------------------------------------------------------------
-          REM(11) = (PHZACC(10) - PHTHRS(10))/(PROG(10) + 0.00001)
+        REM(11) = (PHZACC(10) - PHTHRS(10))/(PROG(10) + 0.00001)
         ENDIF
       ENDIF
 
@@ -446,23 +367,22 @@ C     Check for stage NR8, stage 12, end of phase 11
 C-------------------------------------------------------------------------------
       IF ((DAS .GE. NVALPH(NPRIOR(11))) .AND. (MDATE .LE. YRSIM)) THEN
         PROG(11) = FT(11) * FUDAY(11)*MIN(FSW(11),FNSTR(11),FPSTR(11))
-     &      * REM(NPRIOR(11))
+     &  * REM(NPRIOR(11))
         PHZACC(11) = PHZACC(11) + PROG(11)
-!        IF(PHZACC(11) .GE. PHTHRS(11)) THEN
-        IF(PHZACC(11) - PHTHRS(11) > 1.E-6) THEN
+        IF(PHZACC(11) .GE. PHTHRS(11)) THEN
 C-------------------------------------------------------------------------------
 C       Stage NR8, harvest maturity, occurs on day DAS
 C-------------------------------------------------------------------------------
 !          NR8 = DAS
-          STGDOY(11) = YRDOY
+        STGDOY(11) = YRDOY
 !          NVALPH(12) = NR8
-          NVALPH(12) = DAS
-          MDATE      = YRDOY
-          RSTAGE    = 8
+        NVALPH(12) = DAS
+        MDATE      = YRDOY
+        RSTAGE    = 8
 C-------------------------------------------------------------------------------
 C       Account for the part of today that contributes to the next phase(s)
 C-------------------------------------------------------------------------------
-          REM(12) = (PHZACC(11) - PHTHRS(11))/(PROG(11) + 0.00001)
+        REM(12) = (PHZACC(11) - PHTHRS(11))/(PROG(11) + 0.00001)
         ENDIF
       ENDIF
 
@@ -471,20 +391,19 @@ C     Check for stage NDVST, end of V-stage addition, stage 13, end of phase 12
 C-------------------------------------------------------------------------------
       IF ((DAS .GE. NVALPH(NPRIOR(12))) .AND. (NDVST .GE. NVALP0)) THEN
         PROG(12) = FT(12) * FUDAY(12)*MIN(FSW(12),FNSTR(12),FPSTR(12))
-     &      * REM(NPRIOR(12))
+     &  * REM(NPRIOR(12))
         PHZACC(12) = PHZACC(12) + PROG(12)
-!        IF(PHZACC(12) .GE. PHTHRS(12)) THEN
-        IF(PHZACC(12) - PHTHRS(12) > 1.E-6) THEN
+        IF(PHZACC(12) .GE. PHTHRS(12)) THEN
 C-------------------------------------------------------------------------------
 C       Stage NDVST, end of V-stage addition, occurs on day DAS
 C-------------------------------------------------------------------------------
-          NDVST = DAS
-          STGDOY(12) = YRDOY
-          NVALPH(13) = NDVST
+        NDVST = DAS
+        STGDOY(12) = YRDOY
+        NVALPH(13) = NDVST
 C-------------------------------------------------------------------------------
 C       Account for the part of today that contributes to the next phase(s)
 C-------------------------------------------------------------------------------
-          REM(13) = (PHZACC(12) - PHTHRS(12))/(PROG(12) + 0.00001)
+        REM(13) = (PHZACC(12) - PHTHRS(12))/(PROG(12) + 0.00001)
         ENDIF
       ENDIF
 
@@ -493,56 +412,37 @@ C     Check for stage NDLEAF, end of leaf growth, stage 14, end of phase 13
 C-------------------------------------------------------------------------------
       IF ((DAS .GE. NVALPH(NPRIOR(13))) .AND. (NDLEAF .GE. NVALP0)) THEN
         PROG(13) = FT(13) * FUDAY(13)*MIN(FSW(13),FNSTR(13),FPSTR(13))
-     &      * REM(NPRIOR(13))
+     &  * REM(NPRIOR(13))
         PHZACC(13) = PHZACC(13) + PROG(13)
-!        IF(PHZACC(13) .GE. PHTHRS(13)) THEN
-        IF(PHZACC(13) - PHTHRS(13) > -1.E-6) THEN
+        IF(PHZACC(13) .GE. PHTHRS(13)) THEN
 C-------------------------------------------------------------------------------
 C       Stage NDLEAF, end of leaf growth, occurs on day DAS
 C-------------------------------------------------------------------------------
-          NDLEAF = DAS
-          STGDOY(13) = YRDOY
-          NVALPH(14) = NDLEAF
+        NDLEAF = DAS
+        STGDOY(13) = YRDOY
+        NVALPH(14) = NDLEAF
 C-------------------------------------------------------------------------------
 C       Account for the part of today that contributes to the next phase(s)
 C-------------------------------------------------------------------------------
-          REM(14) = (PHZACC(13) - PHTHRS(13))/(PROG(13) + 0.00001)
+        REM(14) = (PHZACC(13) - PHTHRS(13))/(PROG(13) + 0.00001)
         ENDIF
       ENDIF
 
-!      !Daily printout
-!      !Note: just print PHTEM will get rid of debug vs. release problems
-!      DAP   = MAX(0,TIMDIF(YRPLT,YRDOY))
-!      CALL YR_DOY(YRDOY, YEAR, DOY) 
-!
-!      WRITE (LUN,300) YEAR, DOY, DAS, DAP, RSTAGE, PHTEM, 
-!     &                        (PHZACC(I),I=1,20)
-!  300 FORMAT(1X,I4,1X,I3.3,2(1X,I5),1X,I5,1X,F6.2,20(1X,F7.3)) 
-   
 !************************************************************************
 !************************************************************************
 !     End of DYNAMIC IF construct
 !************************************************************************
       END IF
-
-      write(595,*)DAS , PROG
-      write(596,*)DAS , FT
-      write(597,*)DAS , FUDAY
-      write(598,*)DAS , FSW
-      write(599,*)DAS , FNSTR
-      write(600,*)DAS , FPSTR
-      write(601,*)DAS , REM
-
-
-
 !************************************************************************
       RETURN
-      END SUBROUTINE RSTAGES
+      END   !SUBROUTINE RSTAGES
 
 !------------------------------------------------------------------------
 !     RSTAGES Variables:
 !------------------------------------------------------------------------
 ! DAS       Days after start of simulation (days)
+! DYNAMIC   Module control variable; =RUNINIT, SEASINIT, RATE, EMERG, 
+!             INTEGR, OUTPUT, or SEASEND 
 ! FNSTR(I)  Nitrogen stress function (0 to 1) for phase I 
 ! FPSTR(I)  Phosphorus stress function (0 to 1) for phase I 
 ! FSW(I)    Water stress function (0.0 to 1.0) for phase I 

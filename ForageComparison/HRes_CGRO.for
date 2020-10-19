@@ -13,9 +13,8 @@ C                   fractions.
 !  07/13/2006 CHP Added P model
 C=======================================================================
 
-      SUBROUTINE HRes_CGRO(CONTROL,
-     &    CROP, DLAYR, DWNOD, HARVFRAC, NLAYR, PConc_Shut,!Input
-     &    PConc_Root, PConc_Shel, PConc_Seed, PLIGLF,     !Input
+      SUBROUTINE FOR_HRES_CGRO(CONTROL,
+     &    CROP, DLAYR, DWNOD, HARVFRAC, NLAYR,PLIGLF,     !Input
      &    PLIGNO, PLIGRT, PLIGSD, PLIGSH, PLIGST, RLV,    !Input
      &    RTWT, SDWT, SENESCE, SHELWT, STMWT, WTLF,       !Input
      &    WTNLF,WTNNOD, WTNRT, WTNSD, WTNSH, WTNST,       !Input
@@ -36,7 +35,6 @@ C=======================================================================
       REAL LFRES, STMRES, SDRES, SHLRES
       REAL HARVFRAC(2)
       REAL, DIMENSION(NL) :: DLAYR, RLV
-      REAL PConc_Shut, PConc_Root, PConc_Shel, PConc_Seed
 
 !     Output variables
       Type (ResidueType) HARVRES
@@ -87,13 +85,14 @@ C=======================================================================
 
 !       N in residue 
         HResE(SRFC,N) = (WTNLF + WTNST) * 10. * (1. - HARVFRAC(2)) 
-     &                + WTNSD * 10. * (1.- HARVFRAC(1))
-     &                + WTNSH * 10.
+     &    + WTNSD * 10. * (1.- HARVFRAC(1))
+     &    + WTNSH * 10.
         IF (N_ELEMS > 1) THEN
 !         P in residue 
-          HResE(SRFC,P) = PConc_Shut * (LFRES + STMRES)
-     &                + PConc_Seed * SDRES
-     &                + PConc_Shel * SHLRES
+        HResE(SRFC,P) = -99.
+!        HResE(SRFC,P) = PConc_Shut * (LFRES + STMRES)
+!     &    + PConc_Seed * SDRES
+!     &    + PConc_Shel * SHLRES
         ENDIF
 
 !       Senescence has been added daily (subroutine SENESADD), so no need
@@ -106,8 +105,8 @@ C=======================================================================
 !         shell. So separate those here. Correct VEGRES for non-harvested
 !         seeds and shells, and add those separately with their own lignin
 !         concentration.
-          HResLig(SRFC) = (LFRES * PLIGLF + STMRES * PLIGST +
-     &      SDRES * PLIGSD + SHLRES * PLIGSH) / HResWt(SRFC)
+        HResLig(SRFC) = (LFRES * PLIGLF + STMRES * PLIGST +
+     &  SDRES * PLIGSD + SHLRES * PLIGSH) / HResWt(SRFC)
         ENDIF 
 
 !-------------------------------------------------------------------------
@@ -117,7 +116,7 @@ C=======================================================================
 !       by layer).
         TRLV = 0.
         DO L = 1, NLAYR
-          TRLV = TRLV + RLV(L) * DLAYR(L)
+        TRLV = TRLV + RLV(L) * DLAYR(L)
         END DO
 
 !       Root + nodule residues.
@@ -128,26 +127,27 @@ C=======================================================================
 
 !       N in root residues is N in roots plus N in nodules.
         TRTRESE(N) = WTNRT + WTNNOD
-        TRTRESE(P) = PConc_Root * RTWT
+         TRTRESE(P) = -99.
+!        TRTRESE(P) = PConc_Root * RTWT
 
 !       Senescence has been added daily (subroutine SENESADD), so no need
 !       to add it here as WTRO and WTNOO, as in the CERES-based module.
         IF (TRLV > 1.E-6 .AND. TRTRES > 1.E-6) THEN
-          DO L = 1, NLAYR
-            HResWt(L)  = 10. * TRTRES * RLV(L) * DLAYR(L) / TRLV
-            HResLig(L) = (RTWT * PLIGRT + DWNOD * PLIGNO) / TRTRES 
-     &                            * RLV(L) * DLAYR(L) / TRLV
-            DO IEL = 1, N_ELEMS
-              HResE(L,IEL) = 10. * TRTRESE(IEL) * RLV(L) * DLAYR(L)/TRLV
-            ENDDO
-          END DO   !End of soil layer loop.
+        DO L = 1, NLAYR
+        HResWt(L)  = 10. * TRTRES * RLV(L) * DLAYR(L) / TRLV
+        HResLig(L) = (RTWT * PLIGRT + DWNOD * PLIGNO) / TRTRES 
+     &    * RLV(L) * DLAYR(L) / TRLV
+        DO IEL = 1, N_ELEMS
+        HResE(L,IEL) = 10. * TRTRESE(IEL) * RLV(L) * DLAYR(L)/TRLV
+        ENDDO
+        END DO   !End of soil layer loop.
         ELSE
-          DO L = 1, NLAYR
-            HResWt(L)  = 0.
-            HResLig(L) = 0.
-            HResE(L,N) = 0.
-            HResE(L,P) = 0.
-          ENDDO
+        DO L = 1, NLAYR
+        HResWt(L)  = 0.
+        HResLig(L) = 0.
+        HResE(L,N) = 0.
+        HResE(L,P) = 0.
+        ENDDO
         ENDIF
 
 C-------------------------------------------------------------------------
@@ -159,10 +159,10 @@ C-------------------------------------------------------------------------
         HResE(SRFC,P) = HResE(SRFC,P) + SENESCE % ResE(SRFC,P)
 
         DO L = 1, NLAYR
-          HResWt(L)  = HResWt(L)  + SENESCE % ResWt(L)
-          HResLig(L) = HResLig(L) + SENESCE % ResLig(L)
-          HResE(L,N) = HResE(L,N) + SENESCE % ResE(L,N)
-          HResE(L,P) = HResE(L,P) + SENESCE % ResE(L,P)
+        HResWt(L)  = HResWt(L)  + SENESCE % ResWt(L)
+        HResLig(L) = HResLig(L) + SENESCE % ResLig(L)
+        HResE(L,N) = HResE(L,N) + SENESCE % ResE(L,N)
+        HResE(L,P) = HResE(L,P) + SENESCE % ResE(L,P)
         ENDDO
 
       ENDIF   !Crop .NE. 'FA'
@@ -173,7 +173,7 @@ C-----------------------------------------------------------------------
       HARVRES % ResE   = HResE
 
       RETURN
-      END SUBROUTINE HRes_CGRO
+      END SUBROUTINE FOR_HRES_CGRO
 
 C-----------------------------------------------------------------------
 ! Variable Definitions (11 March 2004)
