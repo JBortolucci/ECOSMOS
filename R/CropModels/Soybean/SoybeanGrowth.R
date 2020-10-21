@@ -31,7 +31,6 @@ simDataVars$PUNCTR  <-  0
 simDataVars$RHOL  <-  0
 simDataVars$RHOS  <-  0
 simDataVars$RNITP  <-  0
-# simDataVars$ROWSPC  <-  50 #TODO: Mudar para parametro fixo
 simDataVars$RTWT  <-  0
 simDataVars$SDNPL  <-  0
 simDataVars$SDRATE  <-  0
@@ -46,6 +45,7 @@ simDataVars$SENESCE_ResLig  <-  rep(0,20)
 simDataVars$SENESCE_ResE    <-  matrix(0,20,3)
 simDataVars$SENESCE_CumResWt  <-  0
 simDataVars$SENESCE_CumResE   <-  c()
+#TODO: sera usado no cropResidue
 # HARVRES
 simDataVars$HARVRES_ResWt   <-  rep(0,20)
 simDataVars$HARVRES_ResLig  <-  rep(0,20)
@@ -143,7 +143,7 @@ simDataVars$SATFAC <-  0
 simDataVars$SENRT  <- rep(0, 20) # rep(0, NL)
 simDataVars$SRDOT  <-  0
 
-# TODO: NL = 20
+# NL = 20
 simDataVars$RLV    <- rep(0, 20) # rep(0, NL)
 simDataVars$RTDEP  <-  0
 
@@ -271,26 +271,26 @@ simDataVars$SHVAR   <- 0
 #-----------------END PODS VARS-------------------
 
 #-------------------VEGGR VARS--------------------
-simDataVars$AGRVG  <-  0 #TODO: VERIFICAR I/O
-simDataVars$FRLF  <-  0  #TODO: VERIFICAR I/O
-simDataVars$FRRT  <-  0  #TODO: VERIFICAR I/O
-simDataVars$FRSTM  <-  0 #TODO: VERIFICAR I/O
-simDataVars$CADLF  <-  0
-simDataVars$CADST  <-  0
-simDataVars$CANHT  <-  0
-simDataVars$CANWH  <-  0
+simDataVars$AGRVG   <-  0 
+simDataVars$FRLF    <-  0  
+simDataVars$FRRT    <-  0  
+simDataVars$FRSTM   <-  0 
+simDataVars$CADLF   <-  0
+simDataVars$CADST   <-  0
+simDataVars$CANHT   <-  0
+simDataVars$CANWH   <-  0
 simDataVars$CMINEA  <-  0
 simDataVars$CRUSLF  <-  0
 simDataVars$CRUSRT  <-  0
 simDataVars$CRUSSH  <-  0
 simDataVars$CRUSST  <-  0
 simDataVars$EXCESS  <-  0
-simDataVars$NADLF  <-  0
-simDataVars$NADRT  <-  0
-simDataVars$NADST  <-  0
-simDataVars$NGRLF  <-  0
-simDataVars$NGRRT  <-  0
-simDataVars$NGRST  <-  0
+simDataVars$NADLF   <-  0
+simDataVars$NADRT   <-  0
+simDataVars$NADST   <-  0
+simDataVars$NGRLF   <-  0
+simDataVars$NGRRT   <-  0
+simDataVars$NGRST   <-  0
 simDataVars$NSTRES  <-  1
 simDataVars$TNLEAK  <-  0
 simDataVars$WLDOTN  <-  0
@@ -395,7 +395,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   environment(STRESS) <- env
   params <- plantList$soybean$params
   
-    # TODO: Nitrogen
+    #  Nitrogen
   N = 1
   
   YRDOY <- paste0(iyear,sprintf("%03d", jday))
@@ -404,7 +404,6 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   IHARI  <- 'M' # TODO VERIFICAR (provável que pertença ao '[.SBX] *HARVEST DETAILS')
   PLTPOP <- config$plant1$plantPop  #40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
   
-  # TODO: ROWSPC - precisa dividir por 100?
   ROWSPC <- config$plant1$rowSpacing / 100 # 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
   
   
@@ -504,8 +503,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       #-----------------------------------------------------------------------
       #       Copied from IPIBS
       #-----------------------------------------------------------------------
-      # TODO: ROWSPC - precisa dividir por 100?
-      # Removi o assign()
+      
       # ROWSPC = ROWSPC / 100.
       
       if (ROWSPC * PLTPOP > 1.E-4) {
@@ -567,11 +565,11 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     SenLig <-  rep(0,20)
     SenE <- matrix(0,NL,NELEM)
     
-    #TODO: VERIFICAR
+    #TODO: sera usado no cropResidue  
     simDataVars$SENESCE_ResWt   <-  rep(0,20)
     simDataVars$SENESCE_ResLig  <-  rep(0,20)
     simDataVars$SENESCE_ResE    <-  matrix(0,20,3)
-    simDataVars$SENESCE_CumResE   <-  c()
+    simDataVars$SENESCE_CumResE <-  c()
     
     SHELWT = 0.0
     SLAAD  = 0.0
@@ -853,8 +851,8 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       } else if (XPODF == 'SD') {
         XPOD = 0.17 * (WSDDTN)/GROWTH + 0.83 * XPOD
       } else {
-        # TODO (?): CALL ERROR(ERRKEY,1,'      ',0)
-        # Mostrar mensagem de erro 
+        #TODO: Mostrar mensagem de erro 
+        print(paste("Erro"))
       }
     }
     #-----------------------------------------------------------------------
@@ -1303,7 +1301,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     for (L in 1:NLAYR) {
       SenWt[L]  = SENRT[L] + SENNOD[L]            #kg[dry matter]/ha
       SenLig[L] = SENRT[L] * PLIGRT + SENNOD[L] * PLIGNO   #kg[lig]/ha\
-      # TODO: Verificar se comeca do 1 ou 2 
+      
       #SenE(L,1) = (SENRT[L]* PRORTF + SENNOD[L] * PRONOD) * 0.16 
       #       01/19/2006 CHP Root senescence at current N% (per KJB and JWJ)
       SenE[L,1] = SENRT[L] * PCNRT / 100. + SENNOD[L] * PRONOD * 0.16 
@@ -1384,7 +1382,6 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     
     # VERIFICAR: Começa indice començando com 0 e expressão a esquerda. No R o indexamento começa sempre do 1.
     for (L in 1:NLAYR) {
-      #TODO verificar sintaxe e conexao com demais subrotinas
       simDataVars$SENESCE_ResE[L,N]    <-  SenE[L,N]
       
       #        SENESCE % ResE(L,P)  = SenE(L,P)
@@ -1400,6 +1397,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   assign("SWIDOT", SWIDOT, envir = env)
   assign("WLFDOT", WLFDOT, envir = env)
   assign("WSHIDT", WSHIDT, envir = env)
+  assign("WTNFX", WTNFX, envir = env)
   assign("WTNFX", WTNFX, envir = env)
   assign("XHLAI", XHLAI, envir = env)
   assign("AREALF", AREALF, envir = env)
@@ -1557,7 +1555,7 @@ STRESS <- function(AGEFAC, iyear,jday) {
 #--------------END GROW FUNCTION-----------------
 
 #---------------ROOTS FUNCTION-------------------
-ROOTS <- function(DYNAMIC,CROP,  ISWWAT) { #TODO Santiago
+ROOTS <- function(DYNAMIC,CROP,  ISWWAT) { 
   
   environment(INROOT) <- env
   params <- plantList$soybean$params
@@ -1622,7 +1620,7 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) { #TODO Santiago
     RFAC3 = RFAC1
     
     TRLV = 0.0
-    # TODO: verificar o indice 1 ou 2
+    
     for (L in 1:NLAYR) {
       TRLV = TRLV + RLV[L] * DLAYR[L] # cm[root] / cm2[ground]
     }
@@ -1695,7 +1693,7 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) { #TODO Santiago
     ESW    <- rep(0, NL)
     RLDF   <- rep(0, NL)
     
-    # TODO: verificar o indice 1 ou 2
+    
     for (L in 1:NLAYR) {
       
       L1 = L
@@ -1787,7 +1785,7 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) { #TODO Santiago
     SRDOT = 0.0
     RLSENTOT = 0.0
     
-    # TODO: verificar o indice 1 ou 2
+    
     for (L in 1:L1) {
       if (TRLDF < 0.00001) {
         RRLF[L] = 1.0
@@ -2545,7 +2543,6 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
   assign("TURADD", TURADD, envir = env)
   assign("XFRT", XFRT, envir = env)
   # assign("YREND", YREND, envir = env)
-  # TODO: Verificar assign REDSHL e TMPFAC, CDMSD, SLAMN
   assign("REDSHL", REDSHL, envir = env)
   assign("TMPFAC", TMPFAC, envir = env)
   assign("CDMSD", CDMSD, envir = env)
@@ -2695,7 +2692,6 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   SETMAX  <- params$SETMAX  #0.60
   RFLWAB  <- params$RFLWAB  #0.0
   XMPAGE  <- params$XMPAGE  #100.0
-  #TODO verificar esses vetores
   FNPDT   <- params$FNPDT    #c(14.0,21.0,26.5,40.0) # + QDR no .SPE
   TYPPDT  <- params$TYPPDT   #"QDR"
   XSWBAR  <- params$XSWBAR   #c(0.00,  0.01,  0.25,  1.00,  1.00) 
@@ -2708,12 +2704,10 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   PROSHF  <- params$PROSHF  #0.050
   
   
-  #TODO ver como está sendo usado no ECOSMOS, Santiago
   YRDOY  <- paste0(iyear,sprintf("%03d", jday))
-  YRPLT  <- YRDOY #TODO ver como está sendo usado no ECOSMOS
+  YRPLT  <- YRDOY 
   
   
-  # TODO: Verificar Stress
   PStres2 <- 1
   # NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
   # SWFAC   <- 1 # water stress factor (verificar de onde vem no ECOSMOS)
@@ -2769,7 +2763,6 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
     WTSD   <- rep(0, 300)
     WTSHE  <- rep(0, 300)
     
-    
     # TODO: Verificar atribuições de vetores!!!!!
     RPRPUN <- 1.0 
     PGAVLR <- 0.0
@@ -2778,7 +2771,6 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
     SHELN  <- rep(0, 300)
     FLWN   <- rep(0, 300)
     
-    #TODO VERIFICAR: aparentemente usado apenas para "snap bean"
     #CALL FreshWt(SEASINIT, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
     
     #***********************************************************************
@@ -2842,11 +2834,9 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
       # if (YRDOY >= YRNR1 & YRNR1 > 0) {
       if (yrdoy >= yrnr1 & yrnr1 > 0) {
         
-        # TODO: adaptação para funcao timdif 
-        
         NR1TIM <- max(as.numeric(yrdoy-yrnr1),0)
         
-        # NR1TIM <- max(TIMDIF(YRNR1,YRDOY),0) #TODO tradução timdif 
+        # NR1TIM <- max(TIMDIF(YRNR1,YRDOY),0) 
         #-----------------------------------------------------------------------
         PGAVLR <- PGAVL * XFRT
         assign("PGAVLR",PGAVLR, envir = env)
@@ -2871,7 +2861,6 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
         }
         
         if (YRNR2 != -99){
-          # TODO: adaptação para funcao timdif 
           yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
           yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
           
@@ -2882,7 +2871,7 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
             
             NR2TIM <- max(as.numeric(yrdoy-yrnr2),0)
             
-            # NR2TIM <- max(TIMDIF(YRNR2,YRDOY),0) #TODO tradução timedif 
+            # NR2TIM <- max(TIMDIF(YRNR2,YRDOY),0)
             #-----------------------------------------------------------------------
             #     Remember yesterdays mature shell weight, WTSHMY
             #-----------------------------------------------------------------------
@@ -2891,6 +2880,7 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
             for (NPP in 1:NR2TIM) { 
               if (NPP > NCOHORTS) {
                 # TODO: Escrever mensagem de aviso
+                print(paste("Warning"))
               }
               #-----------------------------------------------------------------------
               #     Compute physiological age of cohort
@@ -3016,8 +3006,7 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
             ACTSW <- ACTSW + (SW[I] - LL[I]) * DLAYR[I] * FLAYR
             POTSW <- POTSW + (DUL[I] - LL[I]) * DLAYR[I] * FLAYR
             
-            # ALTERADO: GOTO era a forma do fortran parar o laço de repetição, no R usa-se break
-            if ( FLAYR < 1.0 ) break() # GO TO 401 #TODO
+            if ( FLAYR < 1.0 ) break() 
             
           }
           
@@ -3039,7 +3028,6 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
         #     This section calculates shell growth after first pod (NR2)
         #-----------------------------------------------------------------------
         if (YRNR2 != -99){
-          # TODO: adaptação para funcao timdif 
           yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
           yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
           
@@ -3168,7 +3156,6 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
         PMAX <- PGAVLR/(SDVAR*AGRSD1*SDPDVR)*(1./PODUR)
         
         if (YRNR2 != -99){
-          # TODO: adaptação para funcao timdif 
           yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
           yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
           
@@ -3225,7 +3212,6 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
         
         #-----------------------------------------------------------------------
         if (YRNR2 != -99){
-          # TODO: adaptação para funcao timdif 
           yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
           yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
           
@@ -3234,7 +3220,6 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
         
         if (yrdoy >= yrnr2 & yrnr2 > 0) {
           
-          #TODO VERIFICAR: aparentemente usado apenas para "snap bean"
           #CALL FreshWt(INTEGR, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
           
           for (NPP in 1:(NR2TIM + 1)) { 
@@ -3283,7 +3268,6 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
     
     #-----------------------------------------------------------------------
     #if (YRDOY >= YRNR2 & YRNR2 > 0) {
-    #  #TODO VERIFICAR: aparentemente usado apenas para "snap bean"
     #  CALL FreshWt(DYNAMIC, ISWFWT, NR2TIM, PHTIM, SDNO, SHELN, WTSD, WTSHE, YRPLT)
     #}
     
@@ -3623,10 +3607,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   
   YRDOY   = paste0(iyear,sprintf("%03d", jday))
   
-  #TODO: AVISO verificar com Santiago padrão ECOSMOS -> YREMRG, NR1
-  
-  # TODO: ROWSPC - precisa dividir por 100?
-  ROWSPC <- config$plant1$rowSpacing / 100 #0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
+  ROWSPC <- config$plant1$rowSpacing / 100 #0.50 
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -3647,11 +3628,9 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   ATOP   <- params$ATOP  #1.00
   #!*CARBON AND NITROGEN MINING PARAMETERS
   CADSTF <- params$CADSTF  #0.75
-  #TODO verificar
   #*NITROGEN STRESS PARAMETERS
   # NRATIO <- 1.00
   
-  # TODO: Verificar Stress
   PStres2 <- 1
   # NSTRES  <- 1 # N stress factor (1=no stress, 0=max stress) [verificar de onde vem no ECOSMOS se formos usar]
   # SWFAC   <- 1 # water stress factor (verificar de onde vem no ECOSMOS)
@@ -3725,7 +3704,6 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #      if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0.) {
     
     
-    # TODO: deixar NSTRES = 1, ajustar SUPPN
     if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0. & YRDOY != YREMRG) {
       NSTRES = min(1.0,SUPPN/(NDMNEW * 0.70))
     } else {
@@ -3981,8 +3959,7 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
   params <- plantList$soybean$params
   
   #-----------------------------------------------------------------------
-  # TODO: ROWSPC - precisa dividir por 100?
-  ROWSPC <- config$plant1$rowSpacing / 100 #0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
+  ROWSPC <- config$plant1$rowSpacing / 100 #0.50 
   
   TS <- 24
   #______________________________________________________________        
@@ -3996,7 +3973,6 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
   #!*PHOTOSYNTHESIS PARAMETERS
   KCAN   <- params$KCAN   #0.67
   #!*CANOPY HEIGHT AND WIDTH GROWTH PARAMETERS
-  # TODO verificar se são 5, 8 (.SPE) ou 10 (.for) posições no vetor 
   XHWPAR  <- params$XHWPAR    #c(0.00,  5.00,  7.50, 10.00, 15.00, 20.00, 30.00, 80.00)
   YHWPAR  <- params$YHWPAR    #c(4.00,  2.00,  1.50,  1.25,  1.05,  1.00,  1.00,  1.00)
   XHWTEM  <- params$XHWTEM    #c(-50.0,  00.0,  15.0,  26.0,  60.0)
@@ -4115,7 +4091,7 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
   
   TDLM <- rep(0,20)
   NCOHORTS <- 300 #from line 51 in ModuleDefs.for NCOHORTS = 300, !Maximum number of cohorts
-  # TODO: Verificar essas variaveis
+
   WPODY  <- rep(0, NCOHORTS)
   PDET   <- rep(0, NCOHORTS)
   DAYS   <- rep(0, NCOHORTS)
@@ -4167,8 +4143,7 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
     # -------------------------------------------------------------------
     #      Compute 10 day running average of leaf mass and PGAVL
     # -------------------------------------------------------------------
-    # TODO VERIFICAR: 10,2,-1 deve ser de 10 até 2 no passo -1 (10, 9, 8, 7...)
-    for (I in seq(10, 2)) { #TODO: checar numero e sintate
+    for (I in seq(10, 2)) { 
       TDLM[I]= TDLM[I-1]
     }
     TDLM[1] = WTLF
@@ -4359,7 +4334,6 @@ SENES <- function (DYNAMIC,DAS,PAR) {
     NSWAB  <- 5
     
     # ALTERADO: NSWAB, 2, -1 to seq(NSWAV, 2)
-    # TODO VERIFICAR: Se I começa em 1, pois no indice abaixo ele subtrai. Se começar em 1 o indice vai ficar 0.
     for (I in seq(NSWAB,2)) { 
       SWFCAB[I] = SWFCAB[I-1]
     }
@@ -4474,7 +4448,7 @@ FREEZE <- function(TMIN, iyear, jday) {
   YRPLT   = paste0(iyear,sprintf("%03d", jday))
   
   #-----------------------------------------------------------------------
-  #DAP   = max(0,TIMDIF(YRPLT,YRDOY)) #TODO tradução timdif 
+  #DAP   = max(0,TIMDIF(YRPLT,YRDOY)) 
   #DAP = idpp
   WLFDOT = WTLF - SLDOT - NRUSLF/0.16
   
@@ -4613,7 +4587,6 @@ INCOMP <- function(DYNAMIC) {
 #--------------END INCOMP FUNCTION-------------
 
 #---------------NUPTAK FUNCTION----------------
-#TODO Santiago
 NUPTAK <- function (DYNAMIC) {
   params <- plantList$soybean$params
   #______________________________________________________________        
@@ -4631,7 +4604,7 @@ NUPTAK <- function (DYNAMIC) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
-    # TODO: Verificar o uso do -99.000000
+    # TODO: Verificar o uso do -99.000000, levar SNO3 SNH4 SH2O para o arquivo de solo, verificar essas vari[aveis 
     SNO3   <- rep(0, NL)    #vem do INSOIL.for
     SNH4   <- rep(0, NL)    #vem do INSOIL.for
     INO3   <-c(1.10000002,1.10000002,1.10000002,1.10000002,1.10000002,1.10000002,1.10000002,1.10000002,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000)
@@ -4839,7 +4812,7 @@ MOBIL <- function(DYNAMIC) {
 #----------------END MOBIL FUNCTION------------
 
 #----------------NFIX FUNCTION-----------------
-NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, DLAYR, NLAYR,SAT, ST, SW 
+NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
   params <- plantList$soybean$params
   #______________________________________________________________
   # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -4871,19 +4844,9 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
   EFINOC <- ifelse(EFINOC <= 0.0, 1.0, EFINOC) 
   EFNFIX <- ifelse(EFNFIX <= 0.0, 1.0, EFNFIX) 
   
-  PLTPOP <- 40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
+  PLTPOP <- config$plant1$plantPop #40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
   
-  #TODO ver padrão ECOSMOS
   NLAYR <- nsoilay
-  # DLAYR  <- rep(0, NL)
-  # DLAYR <-  c(10.0000000, 10.0000000, 10.0000000, 10.0000000, 10.0000000 ,      10.0000000 ,      30.0000000 ,      30.0000000 ,      30.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000    ,  -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000 )
-  # SAT    <- rep(0, NL)
-  # SAT   <-  c(0.360000014 ,   0.340000004 ,     0.330000013    ,   0.330000013   ,   0.319999993  ,    0.319999993  ,    0.319999993    ,  0.319999993  ,    0.319999993   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000   ,   -99.0000000  ,    -99.0000000  ,    -99.0000000  ,    -99.0000000 ,     -99.0000000)
-  # SW     <- rep(0, NL)
-  # SW    <-  c(0.219999999 ,    0.219999999  ,    0.213000000  ,    0.207000002  ,    0.200000003  ,    0.180000007   ,   0.180000007  ,    0.180000007    ,   0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000   ,    0.00000000  ,     0.00000000  ,     0.00000000  ,     0.00000000 ,      0.00000000)
-  # NL = 20
-  #TODO: linkar com ECOSMOS
-  # ST<- rep(25,20)
   
   #***********************************************************************
   #***********************************************************************
@@ -4942,8 +4905,8 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
     #-----------------------------------------------------------------------
     #   Calculate soil water and temperature factors for each layer to DNOD
     #-----------------------------------------------------------------------
-    # TODO: NL <- 20, LAYERFRAC <- rep(0,NL)
-    LAYERFRAC <- rep(0,20)
+    NL <- 20
+    LAYERFRAC <- rep(0,NL)
     DSWP = 0.0
     DNOD = 50.0
     for (I in 1:NLAYR) {
@@ -4983,7 +4946,6 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
     #-----------------------------------------------------------------------
     # DETERMINE MEMORY OF PREVIOUS EIGHT DAYS OF SOIL WATER DEFICITS
     #-----------------------------------------------------------------------
-    # TODO VERIFICAR: 10,2,-1 deve ser de 10 até 2 no passo -1 (10, 9, 8, 7...) [from PODDET.for]
     for (J in seq(8, 2)) {  
       SWMEM[J] = SWMEM[J-1]
     }
