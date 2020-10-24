@@ -62,11 +62,16 @@ inisoil <- function() {
   cpwf     <- matrix(0, nrow = 1, ncol = nsoilay)
   swater   <- matrix(0, nrow = 1, ncol = nsoilay)
   sice     <- matrix(0, nrow = 1, ncol = nsoilay)
-
+  soilbase <- matrix(0, nrow = 1, ncol = nsoilay)
+  
 
   fclay    <- 0
   fsilt    <- 0
   fsand    <- 0
+  
+  depth    <- 0
+  carfrac  <- 0
+  texfact  <- 0
 
   cpwfdat <- c(
     0.0495,     # sand
@@ -80,7 +85,7 @@ inisoil <- function() {
     0.2390,     # sandy clay
     0.2922,     # silty clay
     0.3163)
-
+  
   for(k in 1:nsoilay) {
 
     if(k <= 6) {
@@ -114,6 +119,8 @@ inisoil <- function() {
       hydraul[k] <- tab.DSSAT$SSKS[k] / (100 * 3600)    
       suction[k] <- swilt[k]*1.5
       bex[k]     <- tab.DSSAT$BEXP[k]
+      soilbase[k]<- tab.DSSAT$SLB[k]
+      
       # SRGF[k] <- tab.DSSAT$SRGF[k]
       # assign("SRGF", SRGF, envir = env)
       
@@ -219,9 +226,27 @@ inisoil <- function() {
     swater[k] <- 0.000001
     sice[k]   <- 0
 
-  }
 
-  #assign("hsoi", hsoi, envir = env)
+    # ------------------------------------------------------------------------
+    ### Michel: 24/out/2020
+    ### Calculation the soil texture for top soil, which can be set in global params (nslaym)
+    prof     <- 30
+
+    if(tab.DSSAT$SLB[k] <= prof){
+      
+      texfact <- texfact + tab.DSSAT$SLCL[k]/100 * (hsoi[k]*100) / prof
+      carfrac <- carfrac + (100 - tab.DSSAT$SLCL[k] - tab.DSSAT$SLSI[k])/100 * (hsoi[k]*100) / prof
+      
+    } else if (tab.DSSAT$SLB[k] > prof && tab.DSSAT$SLB[k-1] <= prof) {
+
+      texfact <- texfact + tab.DSSAT$SLCL[k]/100 * (prof - tab.DSSAT$SLB[k-1]) / prof
+      carfrac <- carfrac + (100 - tab.DSSAT$SLCL[k] - tab.DSSAT$SLSI[k])/100 * (prof - tab.DSSAT$SLB[k-1]) / prof
+
+    }
+  }
+  # print(paste(texfact,tab.DSSAT$SLCL[k],"teste", sep="/"))
+ 
+  # assign("hsoi", hsoi, envir = env)
   assign("wsoi",  wsoi, envir = env)
   assign("rhosoi",  rhosoi, envir = env)
   assign("csoi",  csoi, envir = env)
@@ -244,6 +269,9 @@ inisoil <- function() {
   assign("albsav",  fracsand[ ,1] * 0.120 + fracsilt[,1] * 0.085 + fracclay[,1] * 0.050, envir = env)
   assign("albsan",  2.0 * albsav, envir = env)
   
+  assign("soilbase",  soilbase, envir = env)
+  assign("texfact",  texfact, envir = env)
+  assign("carfrac",  carfrac, envir = env)
 
 }
 

@@ -12,7 +12,7 @@ EucaliptoCropresidue <- function (year, year0, jday, index) {
   
   if(croplive[j] == 1) {
     falll <- falll + (Deadleaves) * deltay/kg_C_M2_to_T_ha
-    fallr <- fallr + (Deadcoroots + Deadfineroots) * deltay/kg_C_M2_to_T_ha  
+    fallr <- fallr + (Deadcoroots + Deadfineroots) * deltay/kg_C_M2_to_T_ha  * sumfroot[1,2] # Michel: 23-Out
     fallw <- fallw + (Deadwood) * deltay/kg_C_M2_to_T_ha + DBranch_decay
   }
   
@@ -145,9 +145,9 @@ EucaliptoCropresidue <- function (year, year0, jday, index) {
     # carbon returned as residue
     falll <- falll +  cbiol[j] 
     
-    fallr <- fallr + cbior[j] + cbiocr[j] * 0.6 # A estrutura da raiz grossa é similar ap tronco, portanto, parte desse componente (40%) foi adicionado ao fallw para decomposicao no soilbgc
+    fallr <- fallr + cbior[j] + cbiocr[j] * 0.6 * sumfroot[1,2] # Michel: 23-Out # A estrutura da raiz grossa é similar ap tronco, portanto, parte desse componente (40%) foi adicionado ao fallw para decomposicao no soilbgc
     
-    fallw <- fallw + cbiow[j] * (1 -fyield[j]) + cbiocr[j] * 0.4 + cbiob[j] + DBranch_attached
+    fallw <- fallw + cbiow[j] * (1 -fyield[j]) + cbiocr[j] * 0.4 * sumfroot[1,2] + cbiob[j] + DBranch_attached
     
     
     

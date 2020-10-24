@@ -129,8 +129,33 @@ EucaliptoModel <- function(year, month, day, index) {
     }
     froot[k,1] <- froot[k,1] / frootnorm1
   }
+  
+  
+  ###----------------------------------------------------
+  ### Michel: Fraction of root in the first 30 cm from top soil
+  sumfroot <- matrix(nrow = 1, ncol = 2)
+  
+  for(k in 1: nsoilay) {
+    
+    if(soilbase[k] <= 30){
+      
+      sumfroot[1, 1] <- sum(froot[1:k, 1])
+      sumfroot[1, 2] <- sum(froot[1:k, 2])
+      
+    } else if (soilbase[k] > 30 && soilbase[k-1] != 30) {
+      
+      sumfroot[1, 1] <- sum(sumfroot[1, 1], 1 - beta1[1] ** (30 - soilbase[k-1]))
+      sumfroot[1, 2] <- sum(sumfroot[1, 2], 1 - beta2[1] ** (30 - soilbase[k-1]))
+      break
+      
+    }
+    
+  }
+  ###----------------------------------------------------
+  
   assign("froot", froot, envir = env)
-
+  assign("sumfroot", sumfroot, envir = env)
+  
 # ### using the database rooting proflies: BY MICHEL
 #   # calculate rooting profiles
 #   for(k in 1: nsoilay) {

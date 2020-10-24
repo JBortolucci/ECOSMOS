@@ -43,6 +43,7 @@ UseDailyStationData <- function(day, month, year) {
   tmin    <- TN$var + 273.16
   td      <- (tmax + tmin) / 2 
   precip  <- PR$var
+  # precip  <- PR$var +10 # simulando evapotranspiração potencial
   stinrad <- RS$var  
   ud      <- U2$var
   qd     <-  min (0.99,max (0.05, RH$var/100))
