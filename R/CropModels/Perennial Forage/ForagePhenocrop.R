@@ -289,6 +289,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       FPSTR[1] = 1.
       K = TSELC[1]
       
+      if(ISWWAT == 'Y') {
       #-----------------------------------------------------------------------
       #      Compute average soil temp, water in top 10 cm for emergence phase
       #         SWFEM = Average soil water content of top 10 cm
@@ -314,19 +315,37 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
         TSDEP = TSDEP + DTRY * (tsoi[k]-273.16)
         if (XDEP >= 10.) { break}
       }
-       TSDEP = TSDEP / 10.
+      SWFEM <- (SWFEM / 10.) * 100.0
+      TSDEP <- TSDEP / 10.
       
       #-----------------------------------------------------------------------
       #      Compute temperature and soil water effects for phase 1, emergence
       #-----------------------------------------------------------------------
       
-      FT[1] = CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TSDEP) #todo: escrever função CURV () em algum outro script
-      SWFEM = (SWFEM / 10.) * 100.0
-      FSW[1] = CURV("LIN",0.0,20.0,100.,1000.,SWFEM)
+      FT[1]  <- CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TSDEP) #todo: escrever função CURV () em algum outro script
+      SWFEM  <- (SWFEM / 10.) * 100.0
+      FSW[1] <- CURV("LIN",0.0,20.0,100.,1000.,SWFEM)
       
-      FSW[1] = 1. + (1.-FSW[1])*WSENP[1]
-    }
+      FSW[1] <- 1. + (1.-FSW[1])*WSENP[1]
+      FT[1]  <- CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TGROAV)
+      } else {
+        FSW[1] <- 1.
+        FT[1]  <- CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TGROAV)
+      }
     
+      #-----------------------------------------------------------------------
+      #      Transplants
+      #     SJR 5/26/04 moved statement to this location - must appear before 
+      #      calculation of today's FT(2).  Otherwise sets DTX using ATEMP 
+#      instead of TGRO(I) on emergence day - results in inaccurate 
+#      estimate of today's increase in VSTAGE
+      #-----------------------------------------------------------------------
+        if ((PLME == 'T') && (YRPLT == YRDOY)) {
+      K <- TSELC
+      FT[2] <- CURV(CTMP[2],TB[K],TO1[K],TO2[K],TM[K],ATEMP)
+      PHZACC[2] <- FT[2] * SDAGE
+        }
+      
     
     
     #       Calculate daily water stess factors (from SWFACS)
@@ -367,32 +386,26 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       K = TSELC[J]
       FT[J] = 0.0
       
-      for (I in 1:TS) {
+      for (I in 1:24) {
         
         # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
         # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
-        FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
-        FT[J] = FT[J] + FTHR/TS
+        FTHR  <- CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
+        FT[J] <- FT[J] + FTHR/24.
       }
       
       if (DAS < NR1) {
-        FUDAY[J] = CURV(DLTYP[J],1.0,CSDVAR,CLDVAR,THVAR,DAYL)
+        FUDAY[J] <- CURV(DLTYP[J],1.0,CSDVAR,CLDVAR,THVAR,DAYL)
       } else {
-        FUDAY[J] = CURV(DLTYP[J],1.0,CSDVRR,CLDVRR,THVAR,DAYL)
+        FUDAY[J] <- CURV(DLTYP[J],1.0,CSDVRR,CLDVRR,THVAR,DAYL)
       }
       
-      FSW[J]   = 1. + (1. - SWFAC)  * WSENP[J]
-      FNSTR[J] = 1. + (1. - NSTRES) * NSENP[J]
-      FPSTR[J] = 1. + (1. - PStres2) * PSENP[J]
-    }
-    
+      FSW[J]   <- 1. + (1. - SWFAC)  * WSENP[J]
+      FNSTR[J] <- 1. + (1. - NSTRES) * NSENP[J]
+      FPSTR[J] <- 1.
     #-----------------------------------------------------------------------
-    #     Transplants
+    #     Add FPSTR(J) later for phosphorus effects on development
     #-----------------------------------------------------------------------
-    if (PLME == "T" & YRPLT == YRDOY) {
-      K = TSELC[2]
-      FT[2] = CURV(CTMP[2],TB[K],TO1[K],TO2[K],TM[K],ATEMP)  #todo: escrever função CURV ('curvilinar' provavelmente)
-      PHZACC[2] = FT[2] * SDAGE
     }
     
     #-----------------------------------------------------------------------
@@ -590,7 +603,7 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
     #     (TRIFOL), a water stress factor (TURFAC) and physiological units
     #     for today (DTX).
     #-----------------------------------------------------------------------
-    if (RVSTGE > 1.E-6) { VSTGED = 1. / RVSTGE } else { VSTGED = 0.0 }
+    if (RVSTGE > 0.) { VSTGED = 1. / RVSTGE } else { VSTGED = 0.0 }
     
     VSTAGP = VSTAGE
     
@@ -700,11 +713,6 @@ RSTAGES <- function (DAS,DYNAMIC,
     YRNR7  = -99
     MDATE  = -99
     YREMRG = -99
-    # For P module:
-    SeedFrac = 0.0
-    VegFrac  = 0.0
-    VegTime = PHTHRS[3] + PHTHRS[4] + PHTHRS[5] + PHTHRS[8]
-    
     #***********************************************************************
     #***********************************************************************
     #     Daily Integration
@@ -724,20 +732,20 @@ RSTAGES <- function (DAS,DYNAMIC,
       NVEG0 = DAS
       NVALPH[2] = NVEG0
       YREMRG    = YRDOY
-      if ((PHZACC[2] - PHTHRS[2]) > -1.E-6) {
+      if (PHZACC[2] >= PHTHRS[2]) {
         NVEG1 = DAS
         NVALPH[3] = NVEG1
         PHZACC[3] = PHZACC[2] - PHTHRS[2]
-        if ((PHZACC[3] - PHTHRS[3]) > -1.E-6) {
+        if (PHZACC[3] >= PHTHRS[3]) {
           JPEND = DAS
           NVALPH[4] = JPEND
           PHZACC[4] = PHZACC(3) - PHTHRS(3)
-          if ((PHZACC[4] - PHTHRS[4]) > -1.E-6) {
+          if (PHZACC[4] >= PHTHRS[4]) {
             NR0 = DAS
             NVALPH[5] = NR0
             RSTAGE    = 0
             PHZACC[5] = PHZACC[4] - PHTHRS[4]
-            if ((PHZACC[5] - PHTHRS[5]) > -1.E-6) {
+            if (PHZACC[5] >= PHTHRS[5]) {
               NR1 = DAS
               NVALPH[6] = NR1
               YRNR1     = YRDOY
@@ -759,7 +767,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       PROG[1] = FT[1] * FUDAY[1] * min(FSW[1],FNSTR[1],FPSTR[1])
       PHZACC[1] = PHZACC[1] + PROG[1]
       
-      if ((PHZACC[1] - PHTEM) > -1.E-6 | (ISIMI == "E")) {
+      if ((PHZACC[1] >= PHTEM) || (ISIMI == 'E')) {
         
         #-----------------------------------------------------------------------
         #       Emergence, next stage, occurs on day DAS
@@ -789,7 +797,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       PROG[2] = FT[2] * FUDAY[2] * min(FSW[2],FNSTR[2],FPSTR[2]) * REM[NPRIOR[2]]
       PHZACC[2] = PHZACC[2] + PROG[2]
       
-      if (PHZACC[2] - PHTHRS[2] > -1.E-6) {
+      if (PHZACC[2] >= PHTHRS[2]) {
         #-------------------------------------------------------------------------------
         #       V1 occurs on day DAS
         #-------------------------------------------------------------------------------
@@ -810,7 +818,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       
       if (VegTime > 0) {VegFrac = PHZACC[3] / VegTime } else { VegFrac = 0.0}
       
-      if( (PHZACC[3] - PHTHRS[3]) > -1.E-6) {
+      if (PHZACC[3] >= PHTHRS[3]) {
         
         #-------------------------------------------------------------------------------
         #       End of juvenile phase occurs on day DAS
@@ -831,7 +839,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       PHZACC[4] = PHZACC[4] + PROG[4]
       VegFrac = (PHTHRS[3] + PHZACC[4]) / VegTime
       
-      if((PHZACC[4] - PHTHRS[4]) > 1.E-6) {
+      if (PHZACC[4] >= PHTHRS[4]) {
         #-------------------------------------------------------------------------------
         #       Floral induction occurs on day DAS, end of phase 4
         #-------------------------------------------------------------------------------
@@ -852,7 +860,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       PHZACC[5] = PHZACC[5] + PROG[5]
       VegFrac = (PHTHRS[3] + PHTHRS[4] + PHZACC[5]) / VegTime
       
-      if(PHZACC[5] - PHTHRS[5] > -1.E-6) {
+      if (PHZACC[5] >= PHTHRS[5]) {
         #-------------------------------------------------------------------------------
         #       First flower occurs on day DAS
         #-------------------------------------------------------------------------------
@@ -874,7 +882,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       PROG[6] = FT[6] * FUDAY[6] * min(FSW[6],FNSTR[6],FPSTR[6]) * REM[NPRIOR[6]]
       PHZACC[6] = PHZACC[6] + PROG[6]
       
-      if(PHZACC[6] - PHTHRS[6] > -1.E-6) {
+      if (PHZACC[6] >= PHTHRS[6]) {
         #-------------------------------------------------------------------------------
         #       First peg occurs on day DAS
         #-------------------------------------------------------------------------------
@@ -898,7 +906,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       PROG[7] = FT[7] * FUDAY[7] * min(FSW[7],FNSTR[7],FPSTR[7]) * REM[NPRIOR[7]]
       PHZACC[7] = PHZACC[7] + PROG[7]
       
-      if(PHZACC[7] - PHTHRS[7] > -1.E-6) {
+      if (PHZACC[7] >= PHTHRS[7]) {
         #-------------------------------------------------------------------------------
         #       Stage R3 occurs on day DAS
         #-------------------------------------------------------------------------------
@@ -921,9 +929,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       
       PROG[8] = FT[8] * FUDAY[8] * min(FSW[8],FNSTR[8],FPSTR[8]) * REM[NPRIOR[8]]
       PHZACC[8] = PHZACC[8] + PROG[8]
-      VegFrac =(PHTHRS[3] + PHTHRS[4] + PHTHRS[5] + PHZACC[8])/VegTime
-      
-      if(PHZACC[8] - PHTHRS[8] > -1.E-6) {
+      if (PHZACC[8] >= PHTHRS[8]) {
         #-------------------------------------------------------------------------------
         #       Stage R5 occurs on day DAS
         #-------------------------------------------------------------------------------
@@ -946,7 +952,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       PROG[9] = FT[9] * FUDAY[9] * max(FSW[9],FNSTR[9],FPSTR[9]) * REM[NPRIOR[9]] #max ao inves de MIN
       PHZACC[9] = PHZACC[9] + PROG[9]
       
-      if(PHZACC[9] - PHTHRS[9] > -1.E-6) {
+      if (PHZACC[9] >= PHTHRS[9]) {
         #-------------------------------------------------------------------------------
         #       Stage NDSET occurs on day DAS
         #-------------------------------------------------------------------------------
@@ -966,9 +972,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       
       PROG[10] = FT[10] * FUDAY[10]*max(FSW[10],FNSTR[10],FPSTR[10]) * REM[NPRIOR[10]] #max ao inves de MIN
       PHZACC[10] = PHZACC[10] + PROG[10]
-      SeedFrac = PHZACC[10] / PHTHRS[10]
-      
-      if(PHZACC[10] - PHTHRS[10] > -1.E-6) {
+      if (PHZACC[10] >= PHTHRS[10]) {
         #-------------------------------------------------------------------------------
         #       Stage NR7, physiological maturity, occurs on day DAS
         #-------------------------------------------------------------------------------
@@ -991,7 +995,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       
       PROG[11] = FT[11] * FUDAY[11]*min(FSW[11],FNSTR[11],FPSTR[11]) * REM[NPRIOR[11]]
       PHZACC[11] = PHZACC[11] + PROG[11]
-      if(PHZACC[11] - PHTHRS[11] > 1.E-6) {
+      if (PHZACC[11] >= PHTHRS[11]) {
         #-------------------------------------------------------------------------------
         #       Stage NR8, harvest maturity, occurs on day DAS
         #-------------------------------------------------------------------------------
@@ -1014,7 +1018,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       PROG[12] = FT[12] * FUDAY[12]*min(FSW[12],FNSTR[12],FPSTR[12]) * REM[NPRIOR[12]]
       PHZACC[12] = PHZACC[12] + PROG[12]
       
-      if((PHZACC[12] - PHTHRS[12]) > 1.E-6) {
+      if (PHZACC[12] >= PHTHRS[12]) {
         #-------------------------------------------------------------------------------
         #       Stage NDVST, end of V-stage addition, occurs on day DAS
         #-------------------------------------------------------------------------------
@@ -1036,7 +1040,7 @@ RSTAGES <- function (DAS,DYNAMIC,
       PROG[13] = FT[13] * FUDAY[13]*min(FSW[13],FNSTR[13],FPSTR[13]) * REM[NPRIOR[13]]
       PHZACC[13] = PHZACC[13] + PROG[13]
       
-      if(PHZACC[13] - PHTHRS[13] > -1.E-6) {
+      if (PHZACC[13] >= PHTHRS[13]) {
         #-------------------------------------------------------------------------------
         #      Stage NDLEAF, end of leaf growth, occurs on day DAS
         #-------------------------------------------------------------------------------
