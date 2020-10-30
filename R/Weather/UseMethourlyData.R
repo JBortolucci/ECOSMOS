@@ -81,5 +81,15 @@ UseMethourlyData <- function(year, jday, time) {
   if(me_current$var4 < 1)
     stop(paste("rh too low!", me_current$var4, "month, day, hour", imonth, iday, ihtime))
   
-  
 }
+
+# Colunm  Variables
+# 1 <-    Year
+# 2 <-    Julian day
+# 3 <-    hour (Min)
+# 4 <-    var 1: precipitation: mm
+# 5 <-    var 2: radiation: W/m2
+# 6 <-    var 3: ar temperature : ºC
+# 7 <-    var 4: Umidity : %
+# 8 <-    var 5: Wind speed: m/s
+# 9 <-    var 6: Ar pressure: hPa

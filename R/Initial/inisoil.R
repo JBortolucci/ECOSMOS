@@ -230,17 +230,17 @@ inisoil <- function() {
     # ------------------------------------------------------------------------
     ### Michel: 24/out/2020
     ### Calculation the soil texture for top soil, which can be set in global params (nslaym)
-    prof     <- 30
+    # prof     <- 100 
 
-    if(tab.DSSAT$SLB[k] <= prof){
+    if(tab.DSSAT$SLB[k] <= nslaym){
       
-      texfact <- texfact + tab.DSSAT$SLCL[k]/100 * (hsoi[k]*100) / prof
-      carfrac <- carfrac + (100 - tab.DSSAT$SLCL[k] - tab.DSSAT$SLSI[k])/100 * (hsoi[k]*100) / prof
+      texfact <- texfact + tab.DSSAT$SLCL[k]/nslaym * (hsoi[k]*nslaym) / nslaym
+      carfrac <- carfrac + (nslaym - tab.DSSAT$SLCL[k] - tab.DSSAT$SLSI[k])/nslaym * (hsoi[k]*nslaym) / nslaym
       
-    } else if (tab.DSSAT$SLB[k] > prof && tab.DSSAT$SLB[k-1] <= prof) {
+    } else if (tab.DSSAT$SLB[k] > nslaym && tab.DSSAT$SLB[k-1] <= nslaym) {
 
-      texfact <- texfact + tab.DSSAT$SLCL[k]/100 * (prof - tab.DSSAT$SLB[k-1]) / prof
-      carfrac <- carfrac + (100 - tab.DSSAT$SLCL[k] - tab.DSSAT$SLSI[k])/100 * (prof - tab.DSSAT$SLB[k-1]) / prof
+      texfact <- texfact + tab.DSSAT$SLCL[k]/nslaym * (nslaym - tab.DSSAT$SLB[k-1]) / nslaym
+      carfrac <- carfrac + (nslaym - tab.DSSAT$SLCL[k] - tab.DSSAT$SLSI[k])/nslaym * (nslaym - tab.DSSAT$SLB[k-1]) / nslaym
 
     }
   }
