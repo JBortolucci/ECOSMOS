@@ -25,7 +25,8 @@ ReadConfigFromCSV <- function(filePath) {
     sim$id                  <- atualData[[1]]
     sim$coord               <- list(lat = lat  <- atualData[[2]], 
                                     lon = lon  <- atualData[[3]])
-    
+    # Henrique & Leandro
+    # 1) foram inseridos DOYs para controle da janela de simulação [2020-10-XX]
     sim$startYear           <- atualData[[4]]
     sim$startOfSimulation   <- atualData[[5]]
     sim$endYear             <- atualData[[6]]
@@ -33,13 +34,16 @@ ReadConfigFromCSV <- function(filePath) {
             
     sim$soilId              <- atualData[[8]]
     sim$stationID           <- atualData[[9]]
-    sim$soilcspin           <- atualData[[10]]
-    sim$isimveg             <- atualData[[11]]
-    sim$isimfire            <- atualData[[12]]
-    sim$irrigate            <- atualData[[13]]
+    # 2) flag para uso ou não da funcionalidade de 'initial conditions' [2020-11-04]
+    sim$soilic              <- atualData[[10]]
+    
+    sim$soilcspin           <- atualData[[11]]
+    sim$isimveg             <- atualData[[12]]
+    sim$isimfire            <- atualData[[13]]
+    sim$irrigate            <- atualData[[14]]
     sim$npft                <- 0
     
-    for (i in seq(from = 14, to = length(atualData), by = 9)) {
+    for (i in seq(from = 15, to = length(atualData), by = 9)) {
       if(!is.na(atualData[[i]]) && !atualData[[i]] == "") {
         plant <- list()
         plant$name          <- atualData[[i]]

@@ -1,3 +1,0 @@
-ID,LAT,LON,startYear,endYear,SOILID,StationID,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,cycle length,cycles,params
-USNELI_Rainfed_2004_Pn93B09,41.1649,-96.4701,2004,2004,IBAFlUSNe3,,0,1,0,0,soybean,154,2004,,1,soybean6
-USNELI_Irrigated_2004_Pn93B09,41.1649,-96.4701,2004,2004,IBAFlUSNe2,,0,1,0,0,soybean,154,2004,,1,soybean6

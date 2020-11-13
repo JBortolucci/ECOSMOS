@@ -40,11 +40,25 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]][["asurd"]]  <- numeric(simInstances[[id]]$nband)
     simInstances[[id]][["asuri"]]  <- numeric(simInstances[[id]]$nband)
     
-    
+    #browser()
     tab.DSSAT <- read.csv('inst/input/perfil_solo_ecosmos_UPDATE.csv',sep = ",")
     if(!is.na(simConfigs[[i]]$soilId)) {
       simInstances[[id]]$layers    <- subset(tab.DSSAT, SID == simConfigs[[i]]$soilId)
       simInstances[[id]]$nsoilay <- length(simInstances[[id]]$layers$SID)
+    }
+    
+    # Henrique & Leandro: including initial conditions (IC) [2020-11-04]
+    tab.IC <- read.csv('inst/input/initial_conditions.csv',sep = ",")
+    if(simConfigs[[i]]$soilic == 1) {
+      # when the user insert the initial conditions (nsoilay MUST be equal in both tab's [DSSAT & IC])
+      simInstances[[id]]$ic  <- subset(tab.IC, SimIDic == id)
+      #simInstances[[id]]$nsoilay <- length(simInstances[[id]]$ic$SimIDic) #it seems to be unnecessary here
+    } else {
+      # when there isn't explicitily values for the initial conditions
+      simInstances[[id]]$ic <- data.frame(
+        SimIDic = rep(id, simInstances[[id]]$nsoilay),
+        SWic    = simInstances[[id]]$layers$SDUL,       # Soi water arbitrarily starting at field capacity (sfield) aka drained upper limit (DUL)
+        STic    = rep(20, simInstances[[id]]$nsoilay) ) # Soil temp arbitrarily set as 20 ºC
     }
 
     simInstances[[id]][["tsoi"]]     <- numeric(simInstances[[id]]$nsoilay)
@@ -125,6 +139,8 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     
     ReadDailyStationData(stationDataPath, simConfigs[[i]]$coord$lat, simConfigs[[i]]$coord$lon,  simInstances[[id]])
     
+    # Henrique & Leandro: irrigation feature [2020-11-06]
+    try(ReadDailyIrrigationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)
   }
   
   # TODO: Nessa prieira versão uma planta roda após a outra, tal como especificado no arquivo de configuração.

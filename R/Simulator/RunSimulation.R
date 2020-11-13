@@ -532,7 +532,7 @@ GeneralModel <- function(simVars = NULL) {
           # writeLines(output_hourly, simVars$out_tower_hourly)
           # 
           if(!is.null(simVars$OnEndHourlyStep))
-            simVars$OnEndHourlyStep(simVars)
+            simVars$OnEndHourlyStep(simVars,step)
           
           
         } # FIM DO LOOP HORÁRIO

@@ -3,14 +3,18 @@
 
 SoybeanCropresidue <- function (year, year0, jday, index) {
   
-  deltay    <- plantList$rice$params$deltay 
-  
   j <- index
   
-  # zero out litter fall rates
-  
-  
+  # TODO: Henrique - to be done
+  # fall: serrapilheira, liteira, palhada, residuo...
   if(croplive[j] == 1) {
+    # Century (3 components): falll, fallr, fallw
+    # check if sheels and stem fits (or at least partially) in wood 
+    # senesced components (find them) in C (needs conversion) *usually endind with 'OT'*
+       # SENES.for: SSDOT, SLDOT, SLNDOT, SSNDOT (aboveground components)
+       # ROOTS.for: SENRT (each layer L), SRDOT
+       # NFIX.for: SENNOD (each layer L), NDTH
+    # TODO look at SENESCE's matrix for Century in DSSAT (Leandro elaborou algo, talvez falta apenas na colheita)
     falll <- falll   #+ DRLVTa*cbiol[j]
     fallr <- fallr + cbior[j] / tauroot[j]
   }
@@ -33,7 +37,7 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
     
     # adjust actual grain yield value (params.crp)
     dumg <- cbiog[j] 
-    cbiog[j] <- cbiog[j] * fyield[j] 
+    cbiog[j] <- cbiog[j] * fyield[j] #TODO: check fyield, but needs to be equal 1
     
     # add excess (i.e. pod of soybeans) to stem storage pool of plant 
     cbios[j] <- max(0, cbios[j] + (dumg - cbiog[j]))
@@ -66,7 +70,7 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
     #      que represente o conteudo de agua no material colhido   
     
     # calculate crop fresh yield  t / ha of fresh weight
-    cropyld[j] <- cbiog[j]  * (1 / 0.9) * 10 * (1 / cgrain[j])
+    cropyld[j] <- cbiog[j]  * 1.13 * 10 * (1 / cgrain[j])
     
     
     
@@ -129,12 +133,15 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
       cnroot[j] <- 80
     }
     
+    #TODO: Henrique - estudar!!!
+    # tempo de residência (standing dead)
+    
     # assume that stem and leaf are both included in leaf litterfall value
     # these annual total values (falll, fallr, fallw) cannot be changed 
     # on a daily basis because biogeochem.f uses the annual total, split
     # between each day of the year equally 
     # carbon returned as residue
-    falll <- falll +  cbiol[j] + cbios[j]
+    falll <- falll + cbiol[j] + cbios[j] + cbiop[j]
     
     fallr <- fallr + cbior[j] 
     
@@ -150,9 +157,9 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
     
   }  # harvest <- jday
   
-  falll <- as.vector(falll )
-  fallr <- as.vector(fallr )
-  fallw <- as.vector(fallw )
+  falll <- as.vector(falll)
+  fallr <- as.vector(fallr)
+  fallw <- as.vector(fallw)
   
   
   # assign("cnleaf", cnleaf, envir = env)

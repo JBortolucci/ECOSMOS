@@ -25,6 +25,7 @@ UseDailyStationData <- function(day, month, year) {
   if((year < 1980 || year > 2020) && month == 2 && day == 29) {
     useDay <- 28
   }
+  # Henrique: e em situações em que no dia 29 (anos bissextos) tiver uma chuva e/ou irrigação expressiva???
   
   #### Retrieve variable value for current time from file ####
   
@@ -53,6 +54,15 @@ UseDailyStationData <- function(day, month, year) {
   psurf  <- 101325 * (td / (td + 0.0065 * xintopo)) ** (grav / rair / 0.0065)
   
   qd <- qd * qsat(esat(td), psurf)
+  
+  # Henrique & Leandro: irrigation feature [2020-11-06]
+  if(irriON) {
+    irrig <- inirrig[which(inirrig$day == useDay &  inirrig$month == month & inirrig$year == useYear),]
+    irrig <- ifelse(as.numeric(nrow(irrig))==1,irrig$irrig,0)
+    } else {
+    irrig <- 0
+  }
+  precip <- precip + irrig
 
   # Assign to global environment
   assign("tmax", tmax, envir = env)
@@ -63,6 +73,6 @@ UseDailyStationData <- function(day, month, year) {
   assign("ud", ud, envir = env)
   assign("qd", qd, envir = env)
   assign("psurf", psurf, envir = env)
-  
+  assign("irrig", irrig, envir = env) # Henrique & Leandro: irrigation feature [2020-11-06]
   
 }

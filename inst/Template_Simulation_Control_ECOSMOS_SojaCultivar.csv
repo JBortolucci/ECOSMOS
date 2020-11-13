@@ -1,5 +1,0 @@
-ID,LAT,LON,startYear,startOfSimulation,endYear,endOfSimulation,SOILID,StationID,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
-ref,-15.75,-47.75,2017,287,2018,40,BRZL000001,,0,1,0,0,soybean,288,2017,40,50,2.5,150,1,soybean1
-pop,-15.75,-47.75,2017,287,2018,40,BRZL000001,,0,1,0,0,soybean,288,2017,50,50,2.5,150,1,soybean1
-row,-15.75,-47.75,2017,287,2018,40,BRZL000001,,0,1,0,0,soybean,288,2017,40,80,2.5,150,1,soybean1
-pd,-15.75,-47.75,2017,287,2018,40,BRZL000001,,0,1,0,0,soybean,288,2017,40,50,5,150,1,soybean1

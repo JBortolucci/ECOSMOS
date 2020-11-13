@@ -24,7 +24,7 @@ inisoil <- function() {
   # also initialize daily average fields for crops
 
   # TODO: Leandro. Mudei de 0.9 pra 0.5
-  assign("wsoi", matrix(0.9, 1, nsoilay), envir = env)
+  assign("wsoi", matrix(0.5, 1, nsoilay), envir = env)
   # assign("wsoi", matrix(0.5, 1, nsoilay), envir = env)
 
   assign("wisoi", matrix(0, 1, nsoilay), envir = env)
@@ -63,10 +63,10 @@ inisoil <- function() {
   swater   <- matrix(0, nrow = 1, ncol = nsoilay)
   sice     <- matrix(0, nrow = 1, ncol = nsoilay)
 
-
-  fclay    <- 0
-  fsilt    <- 0
-  fsand    <- 0
+  # Henrique: Commented on 2020-11-04
+  #fclay    <- 0
+  #fsilt    <- 0
+  #fsand    <- 0
 
   cpwfdat <- c(
     0.0495,     # sand
@@ -81,7 +81,6 @@ inisoil <- function() {
     0.2922,     # silty clay
     0.3163)
 
-    
   for(k in 1:nsoilay) {
 
     if(k <= 6) {
@@ -108,7 +107,7 @@ inisoil <- function() {
       
       fclay      <- tab.DSSAT$SLCL[k]/100   # clay content
       fsilt      <- tab.DSSAT$SLSI[k]/100   # silt content
-      fsand      <- 1- fclay - fsilt        # sand content
+      fsand      <- 1- fclay - fsilt        # sand content 
       poros[k]   <-  tab.DSSAT$SSAT[k]      # porosity
       sfield[k]  <- (1 / poros[k]) * tab.DSSAT$SDUL[k]  # field capacity
       swilt[k]   <- (1 / poros[k]) * tab.DSSAT$SLLL[k]  # wilting point
@@ -222,8 +221,15 @@ inisoil <- function() {
 
   }
   
-  #assign("hsoi", hsoi, envir = env)
-  assign("wsoi",  wsoi, envir = env)
+  # Henrique & Leandro: including initial conditions (IC) [2020-11-04]
+  for (k in 1:nsoilay) {
+    wsoi[k] <- (1 / poros[k]) * ic$SWic[k] # soil water (relative to poros)
+    tsoi[k] <- ic$STic[k] + 273.15 # soil temperature (K)
+  }
+  
+  assign("wsoi",  wsoi  , envir = env)
+  assign("hsoi", hsoi, envir = env)
+  assign("tsoi",  tsoi, envir = env)
   assign("rhosoi",  rhosoi, envir = env)
   assign("csoi",  csoi, envir = env)
   assign("fracsand",  fracsand, envir = env)
@@ -239,7 +245,6 @@ inisoil <- function() {
   assign("cpwf",  cpwf, envir = env)
   assign("swater",  swater, envir = env)
   assign("sice",  sice, envir = env)
-  assign("hsoi",  hsoi, envir = env)
 
   # surface parameters
   assign("albsav",  fracsand[ ,1] * 0.120 + fracsilt[,1] * 0.085 + fracclay[,1] * 0.050, envir = env)

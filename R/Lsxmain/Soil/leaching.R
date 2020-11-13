@@ -139,7 +139,7 @@ leaching <- function (irstyear, istep,iday,
     yno3leach <- 0  # total annual nitrate leaching
     assimn <- 0   
     snbalance <- 0  # soil nitrogen balance
-    
+    #browser()
     for(k in 1:nsoilay) { 
       smsoil[k] <- co * (snode[k] / cndepth)
       smsoln[k] <- cf * smsoil[k]

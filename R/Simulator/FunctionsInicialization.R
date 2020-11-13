@@ -15,6 +15,7 @@ source("R/Input/ReadDailyStationData.R")
 source("R/Weather/UseDailyStationData.R")
 source("R/Input/ReadMethourlyData.R")
 source("R/Weather/UseMethourlyData.R")
+source("R/Input/ReadDailyIrrigationData.R") # Henrique & Leandro: irrigation feature [2020-11-06]
 
 # UseDailyStationData = cmpfun(UseDailyStationData)
 # UseMethourlyData    = cmpfun(UseMethourlyData)

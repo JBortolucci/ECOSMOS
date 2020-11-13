@@ -224,7 +224,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     #  TGRO esta sendo atribuido internamente, para testar temos que passar via leituro do fortran
     
-    #To do: levar os parametros para a plant_params.csv    
+    #To do: levar os parametros para a plant_params.csv 
+    # usar emergencia aqui, ao invés de idpp[i]!
     if(idpp[i]==1){     
       cbior[i]  <- 0.00
       cbiol[i]  <- 0.05
@@ -316,11 +317,11 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       # Estava antes das declaracoes de variaveis 
       if(DAS==1){
         
-        for (L in 1:NLAYR)
-        {
-          wsoi[L]    <- 1
-        }
-        assign("wsoi",  wsoi  , envir = env)
+        # for (L in 1:NLAYR)
+        # {
+        #   wsoi[L]    <- 1
+        # }
+        # assign("wsoi",  wsoi  , envir = env)
         
         CMINEP = 0.0
         CNOD   = 0.0
@@ -813,10 +814,10 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     # cbios[i] <- cbios[i] + astem[i] * max (0.0, adnpp[i]) 
     # cbiop[i] <- cbiop[i] + arepr[i] * max (0.0, adnpp[i]) 
     
-    
-    cbiol[i] <- WTLF * 0.45 * (1/1000)
-    cbios[i] <- STMWT * 0.45 * (1/1000)
-    cbior[i] <- RTWT * 0.45 * (1/1000)
+    # Agro-IBIS reference: 0.50 for plant components and 0.45 for grain and shell
+    cbiol[i] <- WTLF * 0.5 * (1/1000)
+    cbios[i] <- STMWT * 0.5 * (1/1000)
+    cbior[i] <- RTWT * 0.5 * (1/1000)
     cbiog[i] <- SDWT * 0.45 * (1/1000)
     cbiop[i] <- (PODWT - SDWT) * 0.45 * (1/1000)
     
