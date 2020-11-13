@@ -204,7 +204,6 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   #   } else if (DYNAMIC == 'SEASINIT') {
   if (DYNAMIC == 'SEASINIT') {
     
-    #TODO: MOVEMOS PARA BAIXO, ESTAVA NO RUNINIT, PASSAMOS PARA SAESINIT
     if (CROP != "FA") {
       # Minimum days from emergence to Vegetative Growth Stage 1:
       MNEMV1 = PHTHRS[2]
@@ -320,7 +319,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       #      Compute temperature and soil water effects for phase 1, emergence
       #-----------------------------------------------------------------------
       
-      FT[1] = CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TSDEP) #todo: escrever função CURV () em algum outro script
+      FT[1] = CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TSDEP) 
       SWFEM = (SWFEM / 10.) * 100.0
       FSW[1] = CURV("LIN",0.0,20.0,100.,1000.,SWFEM)
       
@@ -371,7 +370,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
         
         # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
         # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
-        FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I]) #todo: escrever função CURV ('curvilinar' provavelmente)
+        FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I])
         FT[J] = FT[J] + FTHR/TS
       }
       
@@ -391,7 +390,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #-----------------------------------------------------------------------
     if (PLME == "T" & YRPLT == YRDOY) {
       K = TSELC[2]
-      FT[2] = CURV(CTMP[2],TB[K],TO1[K],TO2[K],TM[K],ATEMP)  #todo: escrever função CURV ('curvilinar' provavelmente)
+      FT[2] = CURV(CTMP[2],TB[K],TO1[K],TO2[K],TM[K],ATEMP) 
       PHZACC[2] = FT[2] * SDAGE
     }
     

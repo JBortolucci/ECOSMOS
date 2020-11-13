@@ -197,15 +197,13 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     
     
-    # to do, comparar o valor PAR com o usado pelo CROPGRO
     # vamos ter que criar uma leitura trazendo as variaveis do fortran
     
     # PAR       Daily photosynthetically active radiation or photon flux density (moles[quanta]/m2-d)
-    # PAR = (stinrad) * 4.59e-06 # from W/m2 to mole.m2/s # TODO: Usando VARAUX , VERIFICAR
+    # PAR = (stinrad) * 4.59e-06 # from W/m2 to mole.m2/s 
     # TAVG = td -273.16
     
     #PG        Daily gross photosynthesis (g[CH2O] / m2 - d)
-    # TODO: Usando VARAUX , VERIFICAR
     # PG = max (0.0, adnpp[i]) *(1/0.45) * 10^3  ## adnpp       # daily total npp for each plant type (kg-C/m**2/day) 
     
     
@@ -213,7 +211,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     ISWWAT<-'Y'
     ISWNIT<-'Y'
     ISWSYM<-'Y'
-    # TODO: VERIFICAR
     # ISWPHO<-'N'
     # MEPHO<-'L'
     
@@ -255,7 +252,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #  Reads variables from crop or species specific data file
       
       
-      # To do: Henrique, limpar os parametros que ja estao sendo criados mais de uma vez        
       # CONTROL VARS (.SBX) 
       
       #!*CARBON AND NITROGEN MINING PARAMETERS
@@ -264,7 +260,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #!*EVAPOTRANSPIRATION    
       EORATIO <- params$EORATIO  #1.1
       KEP     <- params$KEP  #0.68
-      # To do, remover completamente, pois fizemos as leituras
       KTRANS = KEP
       # KSEVAP = params$KSEVAP  #-99.   #Defaults to old method of light
       #!*VEGETATIVE PARTITIONING PARAMETERS
@@ -363,15 +358,13 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         GROW(DYNAMIC,iyear,jday, ISWNIT,ISWSYM)
         
         #-----------------------------------------------------------------------
-        # To do Santiago
         NUPTAK(DYNAMIC)
         
         #-----------------------------------------------------------------------
         MOBIL(DYNAMIC)
         
         #-----------------------------------------------------------------------
-        # To do Santiago
-        NFIX(DYNAMIC, DAS, CNODMN, CTONOD) # falta linkar, DLAYR, NLAYR,SAT, ST, SW
+        NFIX(DYNAMIC, DAS, CNODMN, CTONOD) 
         
         #-----------------------------------------------------------------------
         PODS(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday,PGAVL)
@@ -397,7 +390,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #***********************************************************************
       DYNAMIC = 'RATE'
       if (YREMRG != -99){
-        # TODO: adaptação para funcao timdif 
         yrdoy <- as.character(paste0(substr(YRDOY,1,4),'-01-01'))
         yrdoy <- as.Date(yrdoy)+as.numeric(substr(YRDOY,5,7))-1
         
@@ -435,7 +427,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       if (CROP != 'FA' & DAS > NVEG0) {
         #TODO usar PHOTO.R ou trazer AGEFAC and PG do DSSAT/Fortran
-        #TODO: Estamos trazendo AGEFAC and PG do DSSAT/Fortran
         # if (MEPHO == 'L') {
         #   #Retrieve AGEFAC and PG from ETPHOT routine.
         #   #CALL GET('SPAM', 'AGEFAC', AGEFAC)
