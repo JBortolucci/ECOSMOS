@@ -24,7 +24,7 @@ inisoil <- function() {
   # also initialize daily average fields for crops
 
   # TODO: Leandro. Mudei de 0.9 pra 0.5
-  assign("wsoi", matrix(0.9, 1, nsoilay), envir = env)
+  assign("wsoi", matrix(0.5, 1, nsoilay), envir = env)
   # assign("wsoi", matrix(0.5, 1, nsoilay), envir = env)
 
   assign("wisoi", matrix(0, 1, nsoilay), envir = env)
@@ -63,10 +63,10 @@ inisoil <- function() {
   swater   <- matrix(0, nrow = 1, ncol = nsoilay)
   sice     <- matrix(0, nrow = 1, ncol = nsoilay)
 
-
-  fclay    <- 0
-  fsilt    <- 0
-  fsand    <- 0
+  # Henrique: Commented on 2020-11-04
+  #fclay    <- 0
+  #fsilt    <- 0
+  #fsand    <- 0
 
   cpwfdat <- c(
     0.0495,     # sand
@@ -104,18 +104,27 @@ inisoil <- function() {
       # tab.DSSAT<- subset(tab.DSSAT, LAT == point$coord$lat & LON == point$coord$lon)
       
       tab.DSSAT <- layers #subset(tab.DSSAT, SID == soilType)
-
+      
       fclay      <- tab.DSSAT$SLCL[k]/100   # clay content
       fsilt      <- tab.DSSAT$SLSI[k]/100   # silt content
-      fsand      <- 1- fclay - fsilt        # sand content
+      fsand      <- 1- fclay - fsilt        # sand content 
       poros[k]   <-  tab.DSSAT$SSAT[k]      # porosity
       sfield[k]  <- (1 / poros[k]) * tab.DSSAT$SDUL[k]  # field capacity
       swilt[k]   <- (1 / poros[k]) * tab.DSSAT$SLLL[k]  # wilting point
       hydraul[k] <- tab.DSSAT$SSKS[k] / (100 * 3600)    
       suction[k] <- swilt[k]*1.5
       bex[k]     <- tab.DSSAT$BEXP[k]
-      # SRGF[k] <- tab.DSSAT$SRGF[k]
-      # assign("SRGF", SRGF, envir = env)
+      SRGF[k] <- tab.DSSAT$SRGF[k]   # Root hospitality factor, used to compute root distribution
+      bulkd[k] <- tab.DSSAT$SBDM[k]  # Bulk density, soil layer L
+      assign("SRGF", SRGF, envir = env)
+      assign("bulkd", bulkd, envir = env)
+      
+      if(!is.na(tab.DSSAT$BEXP[k])) {
+        bex[k]    <- tab.DSSAT$BEXP[k]
+      } else{
+        bex[k]  <- 3.10 + 15.7 * fclay - 0.3 * fsand
+      }
+      assign("bex", bex, envir = env) # bexp = Campbell's 'b' exponent
       
       if(!is.na(tab.DSSAT$Bperm[k])) {
         bperm <-  tab.DSSAT$Bperm[1]
@@ -211,9 +220,16 @@ inisoil <- function() {
     sice[k]   <- 0
 
   }
-
-  #assign("hsoi", hsoi, envir = env)
-  assign("wsoi",  wsoi, envir = env)
+  
+  # Henrique & Leandro: including initial conditions (IC) [2020-11-04]
+  for (k in 1:nsoilay) {
+    wsoi[k] <- (1 / poros[k]) * ic$SWic[k] # soil water (relative to poros)
+    tsoi[k] <- ic$STic[k] + 273.15 # soil temperature (K)
+  }
+  
+  assign("wsoi",  wsoi  , envir = env)
+  assign("hsoi", hsoi, envir = env)
+  assign("tsoi",  tsoi, envir = env)
   assign("rhosoi",  rhosoi, envir = env)
   assign("csoi",  csoi, envir = env)
   assign("fracsand",  fracsand, envir = env)
@@ -229,7 +245,6 @@ inisoil <- function() {
   assign("cpwf",  cpwf, envir = env)
   assign("swater",  swater, envir = env)
   assign("sice",  sice, envir = env)
-  assign("hsoi",  hsoi, envir = env)
 
   # surface parameters
   assign("albsav",  fracsand[ ,1] * 0.120 + fracsilt[,1] * 0.085 + fracclay[,1] * 0.050, envir = env)

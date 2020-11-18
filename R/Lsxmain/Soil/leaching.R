@@ -34,7 +34,7 @@
 # fwtop      # h20 flux into top layer from evap/condens 
 # hsoi       # soil layer thickness (m)
 # idoy       # day of year counter  
-# isoilay    # daily average soil ice content for each soil layer
+# isoilay    # daily average soil ice content for each soil layer            #Henrique: duas definições para mesma sigla? (25/09/2020)
 # isoilay    # soil layer for which drainage and leaching data is output
 # nout       # current timestep nitrate leaching flux  (kg_solute/m2)
 # smsoil     # current timestep solute in soil (kg_solute/m2)
@@ -139,7 +139,7 @@ leaching <- function (irstyear, istep,iday,
     yno3leach <- 0  # total annual nitrate leaching
     assimn <- 0   
     snbalance <- 0  # soil nitrogen balance
-    
+    #browser()
     for(k in 1:nsoilay) { 
       smsoil[k] <- co * (snode[k] / cndepth)
       smsoln[k] <- cf * smsoil[k]

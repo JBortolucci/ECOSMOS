@@ -133,6 +133,10 @@ drystressR <- function(envi, time,jday) {
   
   # 34   format (1x,i3,1x,13(1x,f4.2))
   
+  # To do Henrique : if crop ==soybean stresstl= CROPGRO ???
+  stresstl = 1
+    
+    
   assign("stresstl", stresstl, envir = env)
   assign("stresstu", stresstu, envir = env)
   assign("stressl", stressl, envir = env)

@@ -51,6 +51,15 @@ COMPETE_LANDCOVER_CLIMATE 1
 # JAIR: Ver com santiago as constantes
 NONE 0
 
+# Initiation
+simulationStartMonth 0
+simulationStartDay 0
+startOfSimulation 0
+simulationEndMonth 0
+simulationEndDay 0
+endOfSimulation 0
+simulationEnd logical F
+
 ##### com1d.h #####
 
 termu vector 7 0
@@ -452,7 +461,9 @@ DBranch_decay 0
 Signew 0
 cbiold 0.015
 cbiols 0.01
-
+tl_h vector 24 0
+tu_h vector 24 0
+ta_h vector 24 0
 ##### comhour.h #####
 
 iiyear vector 9000 0
@@ -681,6 +692,8 @@ csoln vector length(-nsoilay:nsoilay) 0
 tnuptake vector nsoilay 0
 anuptake vector nsoilay 0
 wflo vector nsoilay+1 0
+SRGF vector nsoilay 0
+bulkd vector nsoilay 0
 
 ##### comwork.h #####
 
@@ -847,6 +860,7 @@ cbiog vector npft 0
 cbios vector npft 0
 cbiocr vector npft 0
 cbiob vector npft 0
+cbiop vector npft 0
 clitll 0 
 clitlm 0 
 clitls 0 
@@ -873,6 +887,7 @@ frac vector npft 0
 plai vector npft 0
 plaimx vector npft 0
 tnpp vector npft 0
+tan vector npft 0
 tgpp vector npft 0
 nppdummy vector npft 0
 lai matrix 1 2 0
@@ -983,6 +998,8 @@ amco2ratio 0
 amnmintot 0 
 amnpp vector npft 0
 adnpp vector npft 0
+adan vector npft 0
+adpar 0
 ayprcp 0 
 ayaet 0 
 aytrans 0 
@@ -1071,6 +1088,7 @@ temp vector npft 1
 rgrowthc vector npft 0
 mcbior vector npft 0 
 mcbiog vector npft 0
+mcbiop vector npft 0
 mcbiow vector npft 0 
 mcbios vector npft 0 
 mcbiocr vector npft 0

@@ -1,0 +1,4 @@
+ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,planting day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
+FROCAZ_Irrigated_2017,43.52,1.508,2017,129,2017,284,FRNC000001,,1,0,1,0,0,soybean,130,2017,45,50,3,,1,soybean10
+FROCAZ_Rainfed_2017,43.52,1.508,2017,129,2017,284,FRNC000001,,1,0,1,0,0,soybean,130,2017,42,50,3,,1,soybean10
+BRSPCI_Rainfed_2018-2019,-21.638,-51.915,2018,323,2019,131,MANEOSFRN1,,0,0,1,0,0,soybean,324,2018,22,50,2.5,130,1,soybean1

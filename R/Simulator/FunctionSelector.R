@@ -38,7 +38,7 @@ SetCompiledFunctions <- function(){
   setsoi    <- setsoiCpp
   fwetcal   <- fwetcalCpp
   solset    <- solsetCpp
-  solsur    <- solsurCpp
+  solsur    <- solsurR
   solalb    <- solalbCpp
   solarf    <- solarfCpp
   irrad     <- irradCpp

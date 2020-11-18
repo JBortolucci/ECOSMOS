@@ -35,7 +35,7 @@
 # cs      - Leaf boundary layer co2 concentration (mol_co2/mol_air)
 # gs      - Lower canopy stomatal conductance (mol_co2 m-2 s-1)
 # ag      - Canopy average gross photosynthesis rate (mol_co2 m-2 s-1)
-# an     - Canopy average net photosynthesis rate (mol_co2 m-2 s-1)
+# an      - Canopy average net photosynthesis rate (mol_co2 m-2 s-1)
 # totcond 
 
 # greenfrac
@@ -131,9 +131,12 @@ StomataC3Crops <- function(i) {
     
     tempvm <- q10 ** ((tleaf - 8) / 10) / ((1 + exp(f1[i] * (lotemp[i] - tleaf))) * (1 + exp(f2[i] * (tleaf - hitemp[i]))))
     
-    stressc3c <- min(1, stresst)
+    stressc3c <-  min(1, stresst)
+    
 #    vmax <- max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i]))
-    vmax <- min(max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i])),150) # maxim value of 150: Michel
+    vmax <- min(max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i])),200) # maxim value of 150: Michel
+    
+    # if(croplive[i]==1) print(paste( stressc3c, stressn[i],tempvm, vmax,sep = " || "))
     
     rdarkc3 <- gamma[i] * vmax_pft[i] * tempvm * croplive[i]
     
@@ -149,7 +152,7 @@ StomataC3Crops <- function(i) {
     dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
     
     jp <- min (dumq / duma, dumc / dumq)
-    js <- vmax / 4.2#2.2
+    js <- vmax / 4.2
     
     duma <- beta[i]
     dumb <- jp + js
