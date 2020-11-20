@@ -166,13 +166,26 @@ StomataC3Crops <- function(i) {
     
     cs[i] <- max (1.05 * gamstar, cs[i])
     
-    gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 * rh34 / cs[i] + coefb[i] * stressc3c)
+    # gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 * rh34 / cs[i] + coefb[i] * stressc3c)
+    #CSVC BBL
+    D0    <- 1.5#3.0
+    gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 / ((cs[i]-gamstar)*(1+rh34/D0)) + coefb[i] * stressc3c) #Ball (1988) & Berry (1991) model
+    
+    #CSVC Modified BBL
+    
+    #  VPDSLP = -0.32  
+    #  VPDMIN = 0.5    
+    
+    #  if (rh34 >= VPDMIN) { VPDFACTOR=MAX(0.3,(1+VPDSLP*(rh34-VPDMIN))) }else{VPDFACTOR=1.0}
+    #  
+    #  gs[i] <- 0.5 * (gs[i] +  (coefm[i] * anc3*VPDFACTOR) / (cs[i]-gamstar) + coefb[i] * stressc3c) #Ball (1988) & Berry (1991) model
     
     gs[i] <- max (gsmin[i], coefb[i] * stressc3c, gs[i])
     
     ci[i] <- 0.5 * (ci[i] + cs[i] - 1.6 * anc3 / gs[i])
     
     ci[i] <- max (1.05 * gamstar, min (cimax, ci[i]))
+    
     
   } else {
     
