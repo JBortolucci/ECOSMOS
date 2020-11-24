@@ -407,7 +407,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   ROWSPC <- config$plant1$rowSpacing / 100 # 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
   
   
-  SDWTPL <- -99 # equivalente ao [.SBX] *PLANTING DETAILS: PLDS
+  SDWTPL <- -99 # equivalente ao [.SBX] *PLANTING DETAILS: PLWT
   
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL

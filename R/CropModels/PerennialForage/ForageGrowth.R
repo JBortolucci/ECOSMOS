@@ -1,5 +1,139 @@
 simDataVars$TGRO     <- rep(1.,24)
 
+#------------------SENMOB & DORMANCY VARS---------------------
+simDataVars$TSDNOS  <- 0
+simDataVars$TSDNOL  <- 0
+simDataVars$TSDNOM  <- 0
+simDataVars$TSDWTS  <- 0
+simDataVars$TSDWTL  <- 0
+simDataVars$TSDWTM  <- 0
+simDataVars$TSHNOS  <- 0
+simDataVars$TSHNOL  <- 0
+simDataVars$TSHNOM  <- 0
+simDataVars$TSHWTS  <- 0
+simDataVars$TSHWTL  <- 0
+simDataVars$TSHWTM  <- 0
+simDataVars$PL      <- rep(0,6)
+simDataVars$TLFAD   <- 0 
+simDataVars$PLFAD   <- 0
+simDataVars$TLFMD   <- 0
+simDataVars$PLFMD   <- 0
+simDataVars$PCLMT   <- 0
+simDataVars$PCLMA   <- 0
+simDataVars$PDLA    <- 0
+simDataVars$TDLA    <- 0
+simDataVars$VSTGD   <- 0
+simDataVars$PVSTGD  <- 0 
+simDataVars$WSTMD   <- 0
+simDataVars$PSTMD   <- 0
+simDataVars$PCSTMD  <- 0
+simDataVars$WRTMD   <- 0
+simDataVars$PRTMD   <- 0
+simDataVars$TRTLV   <- 0
+simDataVars$PRTLV   <- 0
+simDataVars$PRTLF   <- 0
+simDataVars$TRTLF   <- 0
+simDataVars$PRLV    <- 0
+simDataVars$NSDDS   <- 0
+simDataVars$PSDDS   <- 0
+simDataVars$NSDDL   <- 0
+simDataVars$PSDDL   <- 0
+simDataVars$NSDDM   <- 0
+simDataVars$PSDDM   <- 0
+simDataVars$WSDDS   <- 0
+simDataVars$WSDDL   <- 0
+simDataVars$WSDDM   <- 0
+simDataVars$PSDD    <- 0
+simDataVars$WSDD    <- 0
+simDataVars$NSHDS   <- 0
+simDataVars$NSHDL   <- 0
+simDataVars$NSHDM   <- 0
+simDataVars$PSHDS   <- 0
+simDataVars$PSHDL   <- 0
+simDataVars$PSHDM   <- 0
+simDataVars$WSHDS   <- 0
+simDataVars$WSHDL   <- 0
+simDataVars$WSHDM   <- 0
+simDataVars$NPLTD   <- 0
+simDataVars$PPLTD   <- 0
+simDataVars$CPPLTD  <- 0
+simDataVars$TPSR    <- 0
+simDataVars$PPSR    <- 0
+simDataVars$LAIW    <- 0
+simDataVars$PLAIW   <- 0
+simDataVars$PCSTRD  <- 0
+simDataVars$PSTRD   <- 0
+simDataVars$WSTRD   <- 0
+simDataVars$HPDAM   <- 0
+
+simDataVars$SDIDOT <- 0.0
+simDataVars$SHIDOT <- 0.0
+simDataVars$CSDM   <- 0.0
+simDataVars$CSDN   <- 0.0
+simDataVars$SDWDES <- rep(0,300)
+simDataVars$SDNDES <- rep(0,300)
+simDataVars$SHWDES <- rep(0,300)
+simDataVars$SHNDES <- rep(0,300)
+simDataVars$CSHM   <- 0.0
+simDataVars$CSHN   <- 0.0
+
+simDataVars$DAYLY  <- 0.0
+
+simDataVars$RLVDOT  <- 0
+simDataVars$CRLV    <- 0
+simDataVars$RLFDOT  <- 0
+simDataVars$CRLF    <- 0
+simDataVars$CRTM    <- 0
+simDataVars$WRIDOT  <- 0
+
+simDataVars$CLSEN  <- 0
+simDataVars$CLAI   <- 0
+simDataVars$CLFM   <- 0
+simDataVars$LAIDOT <- 0
+simDataVars$DISLA  <- 0
+simDataVars$DISLAP <- 0
+simDataVars$CLFRZ  <- 0
+simDataVars$CSTEM  <- 0
+simDataVars$CSFRZ  <- 0
+simDataVars$WSIDOT <- 0
+simDataVars$CSRFRZ <- 0
+simDataVars$CSTRM  <- 0
+simDataVars$DSTOR  <- 0
+simDataVars$SRDAM  <- 0
+
+simDataVars$DRMST  <- ""
+simDataVars$PPGFAC <- 0 
+simDataVars$FREEZ2 <- 0
+
+simDataVars$PPMFAC    <- 0
+simDataVars$VNMOBR    <- 0
+simDataVars$RLSEN     <- rep(0,20)
+simDataVars$CMINELF   <- 0
+simDataVars$CMINERT   <- 0
+simDataVars$CMINESH   <- 0
+simDataVars$CMINESR   <- 0
+simDataVars$CMINEST   <- 0
+simDataVars$NMINELF   <- 0
+simDataVars$NMINERT   <- 0
+simDataVars$NMINESR   <- 0
+simDataVars$NMINEST   <- 0
+simDataVars$SHNMINE   <- 0
+simDataVars$CMOBSR    <- 0
+simDataVars$NMOBSR    <- 0
+simDataVars$LAIMOBR   <- 0
+
+simDataVars$ASMDOT <- 0
+simDataVars$CASM <- 0
+
+simDataVars$ROW <- rep(0.0,6)
+simDataVars$PL  <- rep(0.0,6)
+#------------------ENDSENMOB & DORMANCY VARS---------------------
+
+
+#------------------CH2OREF VARS---------------------
+simDataVars$CDEBIT  <-  0
+#------------------END CH2OREF VARS---------------------
+
 #------------------GROW VARS---------------------
 simDataVars$SWIDOT  <-  0 #input/output
 simDataVars$WLFDOT  <-  0 #input/output
@@ -3609,7 +3743,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
     #***********************************************************************
   }
   
-  assign("AGRSD2", AGRSD2, envir = env)
+  # assign("AGRSD2", AGRSD2, envir = env)
   assign("AGRVG", AGRVG, envir = env)
   assign("AGRVG2", AGRVG2, envir = env)
   assign("CDMREP", CDMREP, envir = env)
@@ -3763,6 +3897,7 @@ SDCOMP <- function (TAVG) {
   
   POTCAR <- POTCAR - PMINSD - POASD - PLIGSD
   AGRSD1 <- PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + POTLIP*RLIP + POTCAR*RCH2O
+  
   AGRSD2 <- AGRSD1 + RNO3C*POTPRO
   FNINSD <- POTPRO / 6.25
   
@@ -5442,7 +5577,7 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAV
   assign("FRSTM", FRSTM, envir = env)
   assign("CADLF", CADLF, envir = env)
   assign("CADST", CADST, envir = env)
-  assign("CANHT", CANHT, envir = env)
+  # assign("CANHT", CANHT, envir = env)
   assign("CANWH", CANWH, envir = env)
   assign("CMINEA", CMINEA, envir = env)
   assign("CRUSLF", CRUSLF, envir = env)
@@ -7114,3 +7249,1426 @@ RESPIR <- function (DAS, PG) {
   return()
 }
 #--------------END RESPIR FUNCTION-------------
+
+
+simDataVars$CDEBIT  <-  0
+
+CH2OREF <- function(DYNAMIC, PG, PGAVL){
+  
+  params <- plantList$forage$params
+  
+  TYPCREF   <- params$TYPCREF
+  TYPLREF   <- params$TYPLREF
+  TYPPREF   <- params$TYPPREF 
+  FILEC     <- params$FILEC
+  FILEE     <- params$FILEE
+  PATHEC    <- params$PATHEC
+  ALPHL     <- params$ALPHL
+  ALPH      <- params$ALPH
+  ALPHS     <- params$ALPHS
+  ALPHR     <- params$ALPHR
+  ALPHSH    <- params$ALPHSH
+  ALPHSR    <- params$ALPHSR
+  PHTMAX    <- params$PHTMAX
+  CRREF     <- params$CRREF
+  LRREF     <- params$LRREF
+  PRREF     <- params$PRREF 
+  LMXSTD    <- params$LFMAX # TODO: parametro com nome diferente na hjora da leitura LMXSTD = LFMAX
+  CADPV     <- params$CADPV
+  PGREF     <- params$PGREF
+  PCHOLFF   <- params$PCHOLFF
+  PCHORTF   <- params$PCHORTF
+  PCHOSRF   <- params$PCHOSRF
+  PCHOSTF   <- params$PCHOSTF
+  
+  #***********************************************************************
+  #     Run Initialization - Called once per simulation
+  #***********************************************************************
+  
+  if (DYNAMIC == "RUNINIT") {
+    
+    #-----------------------------------------------------------------------
+    #     Initialize Refill variables
+    #-----------------------------------------------------------------------
+    CDEBIT  <- 0.0
+    LFCDEBT <- 0.0
+    STCDEBT <- 0.0
+    RTCDEBT <- 0.0
+    SRCDEBT <- 0.0
+    CADVG   <- 0.0
+    
+    #***********************************************************************
+    #     Daily Rate Calculations 
+    #***********************************************************************
+  } else if (DYNAMIC == "RATE") {
+    #***********************************************************************
+    #     Daily Integration 
+    #***********************************************************************
+  } else if (DYNAMIC == "INTEGR") {
+    CDEBIT  <- 0.0
+    LFCDEBT <- 0.0
+    STCDEBT <- 0.0
+    RTCDEBT <- 0.0
+    SRCDEBT <- 0.0
+    CADVG   <- 0.0
+    #-----------------------------------------------------------------------
+    #     Calculate current mobile CH2O status and deficit
+    #-----------------------------------------------------------------------
+    #      02/01/06 SJR Modified calculations of CSTATUS and xxCCAP for CH2O 
+    #      mobilization and loss from natural senescence
+    #-----------------------------------------------------------------------
+    #-----------------------------------------------------------------------
+    #      Max CH2O capacity for leaves is ALPHL * today's leaf mass without CH2O
+    #      Today's leaf mass without CH2O is:
+    #      WTLF minus today's DM lost to natural senescence minus today's CH2O content
+    #      DM lost to natural senescence is SLMDOT corrected for N and CH2O 
+    #      mobilized prior to abscission (LFSNMOB and LFSCMOB).
+    #      Leaf CH2O content is WCRLF adjusted for CH2O lost with SLMDOT (SLMDOT*PCHOLFF)
+    #      CH2O REFILL capacity is the Max CH2O capacity described above minus 
+    #      today's CH2O content.
+    #-----------------------------------------------------------------------
+    LFMCCAP <- ALPHL * (WTLF - SLDOT - WCRLF)
+    STMCCAP <- ALPHS * (STMWT - SSDOT - WCRST)
+    RTMCCAP <- ALPHR * (RTWT - SRDOT - WCRRT)
+    SRMCCAP <- ALPHSR * (STRWT  - SSRDOT - WCRSR)
+    #-------------------------------------------------------------------
+    #  PDA 6/3/2010 Corrected math so that ALPHX is actually the maximum
+    #-------------------------------------------------------------------
+    #      LFMCCAP = (ALPHL/(1-ALPHL)) * (WTLF - SLDOT - WCRLF)
+    
+    #      STMCCAP = (ALPHS/(1-ALPHS)) * (STMWT - SSDOT - WCRST)
+    
+    #      RTMCCAP = (ALPHR/(1-ALPHR)) * (RTWT - SRDOT - WCRRT)
+    
+    #      SRMCCAP = (ALPHSR/(1-ALPHSR)) * (STRWT  - SSRDOT - WCRSR)
+    #-------------------------------------------------------------------
+    
+    #      SRMCCAP = ALPHSR * (STRWT  - SSRMDOT + SRSCMOB + SRSNMOB / 0.16 
+    #               &                         - WCRSR - SSRMDOT * PCHOSRF)
+    #-----------------------------------------------------------------------
+    # Status is current CH2O concentration as a proportion of Max CH2O capacity
+    #-----------------------------------------------------------------------
+    CSTATUS <- (WCRLF + WCRRT + WCRSR + WCRST  - (SLDOT * WCRLF/RTWT - LFSCMOB) - (SSDOT * WCRST/STMWT - STSCMOB) - (SRDOT * WCRRT/RTWT - RTSCMOB) - (SSRDOT * WCRSR/STRWT - SRSCMOB)) / (LFMCCAP + STMCCAP + RTMCCAP + SRMCCAP)
+    #-----------------------------------------------------------------------
+    #      CH2O REFILL capacity is the Max CH2O capacity described above minus 
+    #      today's CH2O content.
+    #-----------------------------------------------------------------------
+    LFCCAP <- LFMCCAP - WCRLF - (SLDOT * WCRLF/WTLF - LFSCMOB)
+    if (LFCCAP <= 0.0) LFCCAP <- 0.0
+    STCCAP <- STMCCAP - WCRST - (SSDOT * WCRST/STMWT - STSCMOB)
+    if (STCCAP <= 0.0) STCCAP <- 0.0
+    RTCCAP <- RTMCCAP - WCRRT - (SRDOT * WCRRT/RTWT - RTSCMOB)
+    if (RTCCAP <= 0.0) RTCCAP <- 0.0
+    SRCCAP <- SRMCCAP - WCRSR - (SSRDOT * WCRSR/STRWT - SRSCMOB)
+    if (SRCCAP <= 0.0) SRCCAP <- 0.0
+    #      CDEBIT = (ALPHL * WTLF + ALPHR * RTWT + ALPHS * STMWT + 
+    #     &          ALPHSR *STRWT) - (WCRLF + WCRRT + WCRSR + WCRST)
+    CDEBIT <- LFCCAP + STCCAP + RTCCAP + SRCCAP
+    CDEBIT <- max(CDEBIT, 0.0)
+    
+    if (CDEBIT > 0.0) {
+      LFCDEBT = LFCCAP / CDEBIT
+      if (LFCDEBT <= 0.0) LFCDEBT = 0.0
+      
+      STCDEBT = STCCAP / CDEBIT
+      if (STCDEBT <= 0.0) STCDEBT = 0.0
+      
+      RTCDEBT = RTCCAP / CDEBIT
+      if (RTCDEBT <= 0.0) RTCDEBT = 0.0
+      
+      SRCDEBT = SRCCAP / CDEBIT
+      if (SRCDEBT <= 0.0) SRCDEBT = 0.0
+      
+    } else { 
+      LFCDEBT <- 0.0
+      STCDEBT <- 0.0
+      RTCDEBT <- 0.0
+      SRCDEBT <- 1.0
+    }
+    
+    
+    #-----------------------------------------------------------------------
+    #     Calculate mobile CH2O refill rate modifiers
+    #-----------------------------------------------------------------------
+    PGLFMX    <- (1. - exp(-1.6 * LMXSTD)) / (1. - exp(-1.6 * PGREF))
+    PGSTATUS  <- PG / PHTMAX * PGLFMX 
+    #      PGSTATUS = PG / PHTMAX * PGLFMX
+    CFILL <- CURV(TYPCREF,CRREF[1],CRREF[2],CRREF[3],CRREF[4],CSTATUS)
+    LFILL <- CURV(TYPLREF,LRREF[1],LRREF[2],LRREF[3],LRREF[4],XLAI)
+    PFILL <- CURV(TYPPREF,PRREF[1],PRREF[2],PRREF[3],PRREF[4],PGSTATUS)
+    #-----------------------------------------------------------------------
+    #     Calculate amount of PGAVL allocated to mobile CH2O status refill
+    #-----------------------------------------------------------------------
+    CADVG <- CADPV * CFILL * LFILL * PFILL * min(PG,PGAVL)
+    CADVG <- min(CADVG, CDEBIT)
+    #***********************************************************************
+    #     OUTPUT
+    #***********************************************************************
+  } else if (DYNAMIC == "OUTPUT") {
+    #***********************************************************************
+    #     SEASEND
+    #***********************************************************************
+  } else if (DYNAMIC == "SEASEND") {
+  }
+  
+  assign("CDEBIT",CDEBIT , envir = env)
+  assign("CADVG",CADVG , envir = env)
+  assign("LFCDEBT",LFCDEBT, envir = env)
+  assign("RTCDEBT",RTCDEBT, envir = env)
+  assign("SRCDEBT",SRCDEBT, envir = env)
+  assign("STCDEBT",STCDEBT, envir = env)
+  return()
+}
+# CADPV    Maximum fraction of PGAVL for vegetative growth that can be 
+#            allocated to mobile carbohydrate storage under non-stress   
+#            conditions during vegetative growth stages. ( fraction)
+# CADVG        CH2O to be reserved today for CH2O refill of vegetative 
+#                  organs g [CH2O] m-2 d-1
+# CDEBIT        Mobile CH2O deficit relative to mobile CH2O content 
+#                  if plant was all "new" tissue
+# CFILL        CH2O status effect on routine mobile CH2O refill rate 
+# CRREF(4)  CURV response of routine refill of mobile CH2O during 
+#                  vegetaive stages to current mobile CH2O status
+# CSTATUS        Mobile CH2O content relative to mobile CH2O content 
+#                  if plant were all "new" tissue
+# LFCCAP    Leaf mobile CH2O deficit relative to mobile CH2O content 
+#                  if leaf was all "new" tissue
+# LFCDEBT        Proportion of total plant CH2O "deficit" attributed to leaves
+# LFILL        LAI effect on routine mobile CH2O refill rate 
+# LFMCCAP        Maximum CH2O content of leaves if tissues are at ALPHL concentration of CH2O
+# LRREF(4)  CURV response of routine refill of mobile CH2O during 
+#                  vegetaive stages to current LAI
+# PCH2OLFF Proportion of mobile CH2O remaining in senesced leaf tissue
+#             g [CH2O] / g [senesced leaf DM]
+# PCH2ORTF Proportion of mobile CH2O remaining in senesced root tissue
+#             g [CH2O] / g [senesced root DM]
+# PCH2OSRF Proportion of mobile CH2O remaining in senesced STOR tissue
+#             g [CH2O] / g [senesced STOR DM]
+# PCH2OSTF Proportion of mobile CH2O remaining in senesced stem tissue
+#             g [CH2O] / g [senesced leaf DM]
+# PFILL        Canopy PG effect on routine mobile CH2O refill rate 
+# PHTMAX   Maximum amount of CH20 which can be produced if 
+#            photosynthetically active radiation (PAR) is very high (3 
+#            times PARMAX) and all other factors are optimal (g[CH2O]/m2-d)
+# PRREF(4)  CURV response of routine refill of mobile CH2O during 
+#                  vegetaive stages to today's canopy PG rate
+# RTCCAP    Root mobile CH2O deficit relative to mobile CH2O content 
+#                  if root was all "new" tissue
+# RTCDEBT        Proportion of total plant CH2O "deficit" attributed to roots
+# RTMCCAP        Maximum CH2O content of roots if tissues are at ALPHR concentration of CH2O
+# SLMDOT    Defoliation due to daily leaf senescence that is lost at PROLFF, 
+#              hence, some fraction of the N content is subject to mobilization (g/m2/day)
+# SRCCAP    STOR mobile CH2O deficit relative to mobile CH2O content 
+#                  if STOR was all "new" tissue
+# SRCDEBT        Proportion of total plant CH2O "deficit" attributed to STOR
+# SRMCCAP        Maximum CH2O content of STOR if tissues are at ALPHSR concentration of CH2O
+# SRMDOT    Daily root senescence that is lost at PRORTF, 
+#              hence, some fraction of the N content is subject to mobilization (g/m2/day)
+# SSMDOT    Daily petiole senescence that is lost at PROSTF, 
+#              hence, some fraction of the N content is subject to mobilization (g/m2/day)
+# SSRMDOT   Daily STOR senescence that is lost at PROSRF, 
+#              hence, some fraction of the N content is subject to mobilization (g/m2/day)
+# STCCAP    Stem mobile CH2O deficit relative to mobile CH2O content 
+#                  if stem was all "new" tissue
+# STCDEBT        Proportion of total plant CH2O "deficit" attributed to stem
+# STMCCAP        Maximum CH2O content of Stems if tissues are at ALPHS concentration of CH2O
+# TYPCREF        Shape of CURV response for refilling mobile CH2O to CH2O status
+# TYPLREF        Shape of CURV response for refilling mobile CH2O to LAI
+# TYPPREF        Shape of CURV response for refilling mobile CH2O to canopy PG rate
+
+#--------------END CH2OREF FUNCTION-------------
+
+
+#=======================================================================
+#  DORMANCY Subroutine 6/20/03 SJR
+#  Fall Dormancy with cold hardening for perennial grasses and legumes
+#  Separate functions for effects on partitioning, photosynthesis, mobilization
+#  Generate a reduction factor for each for use in appropriate modules
+#  Factor is 0-1 value adjusted for cultivar sensitivity to daylength
+#  Cold hardening lowers the minimum survivable temperature for the crop
+#  with increased exposure to low temperatures.
+#  This subroutine also provides a death rate to allow partial
+#  or total depletion of the stand by a freeze event
+#----------------------------------------------------------------------
+#  Called by: CROPGRO
+#  Calls    : None
+#=======================================================================
+
+DORMANCY <- function (DYNAMIC) {
+  
+  params <- plantList$forage$params
+  
+  TYPPGD <- params$TYPPGD
+  TYPPTD <- params$TYPPTD
+  TYPPMD <- params$TYPPMD
+  TYPHRD <- params$TYPHRD
+  TYPDHD <- params$TYPDHD
+  ECOTYP <- params$ECOTYP
+  ECONO  <- params$ECONO
+  FILEC  <- params$FILEC
+  FILEE  <- params$FILEE
+  ECONAM <- params$ECONAM
+  PATHCR <- params$PATHCR
+  PATHEC <- params$PATHEC
+  RDRMT  <- params$RDRMT
+  RDRMG  <- params$RDRMG
+  RDRMM  <- params$RDRMM
+  FNPGD  <- params$FNPGD
+  FNPTD  <- params$FNPTD
+  FNPMD  <- params$FNPMD
+  FRZHRD <- params$FRZHRD
+  FRZDHD <- params$FRZDHD
+  RCHDP  <- params$RCHDP
+  FRZDC  <- params$FRZDC
+  HARD1  <- params$HARD1
+  HARD2  <- params$HARD2
+  
+  #***********************************************************************
+  #     Seasonal initialization - run once per season
+  #***********************************************************************
+  #***********************************************************************
+  #    Initialize yesterdays daylength to that passed in from PLANT
+  #***********************************************************************
+  
+  if (DYNAMIC == "SEASINIT") {
+    
+    PPGFAC <- 0.0
+    PPTFAC <- 0.0
+    PPMFAC <- 0.0
+    DRMST  <- 'NODORM'
+    DAYLY  <- 0.0
+    RDRMT  <- 1.0
+    RDRMG  <- 1.0
+    RDRMM  <- 1.0
+    
+    DAYLY  <- DAYL
+    
+    #-----------------------------------------------------------------------
+    #      All cultivars share the same freeze-killing temperature before
+    #      cold hardening
+    #
+    #      Minimum survivable temperature after hardening varies with the
+    #      cold hardening potential of the cultivar
+    #-----------------------------------------------------------------------
+    FREEZ2  <- HARD1
+    HARD2   <- HARD1-(HARD1-HARD2)*RCHDP
+    #-----------------------------------------------------------------------
+    #
+    #   THE FOLLOWING GENERATES HEADINGS FOR NEW OUTPUT FILE DORMANT.OUT
+    #
+    #-----------------------------------------------------------------------
+    #      OPEN(UNIT = NOUTDT, FILE = OUTT, STATUS = 'UNKNOWN')
+    #
+    #      IF (IDETL == 'Y') {
+    #
+    #
+    #-----------------------------------------------------------------------
+    #     Variable heading for DORMANT.OUT
+    #-----------------------------------------------------------------------
+    #
+    #        WRITE (NOUTDT,2202) NREP,TITLET,
+    #     &    MODEL,CROPD,EXPER,CROP,ENAME,TRTNO,TITLET, ECOTYP, ECONAM
+    # 2202   FORMAT (/,'*RUN ',I3,8X,': ',A25,/,
+    #     &    1X,'MODEL',10X,':',1X,A8,' - ',A10,/,
+    #     &    1X,'EXPERIMENT',5X,':',1X,A8,1X,A2,4X,A47,/,
+    #     &    1X,'TREATMENT',I3, 3X,':',1X,A25,/,
+    #     &        1X,'ECOTYPE',8X,':',1X,A6,1X,A16,/)
+    #
+    #
+    #        WRITE (NOUTDT,2203)
+    # 2203   FORMAT('@DATE',
+    #     &  ' DAYL  DRMST  PPGFA#   PRTFA#  WTLF  WCRLF  LFDM    STMWT',
+    #     &  '  WCRST  STDM    STRWT   WCRSR  SRDM   RTWT  WCRRT   RTDM')
+    #      ENDIF
+    
+    
+  } else if (DYNAMIC == "EMERG") {
+    #      NONE
+    #***********************************************************************
+    #     Daily Rate Calculations
+    #***********************************************************************
+    
+    
+  } else if (DYNAMIC == "RATE") {
+    
+    #      NONE
+    #***********************************************************************
+    #     Daily Integration
+    #***********************************************************************
+    
+  } else if (DYNAMIC == "INTEGR") {
+    
+    #***********************************************************************
+    #     Calculate cold-hardening status for day
+    #     Killing freeze temperature decreases as cold hardening proceeds.
+    #      Cold hardening is reversible while days are getting shorter.
+    #      Maximum rate of hardening (degrees C decrease in FREEZ2 per day)
+    #      occurs at FRZHRD(1) with fractional rates between FRZHRD(1) and FRZHRD(2)
+    #      Cold hardening is reversed between FRZHRD(2) and FRZHRD(3).
+    #      Dehardening will not occur until daylength begins to increase.
+    #      Dehardening is not reversible.
+    #      FRZDC is the rate of plant/tissue death per degree C below FREEZ2.
+    #      This allows gradual killing of the stand with increased rate at
+    #      lower temperatures.
+    #      Adapted from ALFACOLD model (Kanneganti et al., 1998, Agron J. 90:687-697)
+    #      Note: this routine allows hardening and dehardening to occur on the
+    #      same day with reverse hardening and dehardening combining to
+    #      accelerate dehardening at higher temperatures.
+    #***********************************************************************
+    
+    if (DAYL <= DAYLY) {
+      
+      HARDR  <- CURV(TYPHRD,FRZHRD[1],FRZHRD[2],FRZHRD[3],FRZHRD[4],TMIN)
+      DHARDR <- 0.0
+      
+    }else{
+      
+      HARDR  <- CURV(TYPHRD,FRZHRD[1],FRZHRD[2],FRZHRD[3],FRZHRD[4],TMIN)
+      DHARDR <- CURV(TYPDHD,FRZDHD[1],FRZDHD[2],FRZDHD[3],FRZDHD[4],TMIN)
+      
+    }
+    
+    FREEZ2 <- FREEZ2 - (HARDR - DHARDR)*RCHDP
+    FREEZ2 <- min(HARD1, FREEZ2)
+    FREEZ2 <- max(FREEZ2, HARD2)
+    
+    
+    #***********************************************************************
+    #     Calculate Partitioning, Pg, and mobilization reduction
+    #     factors and dormancy state for day
+    #***********************************************************************
+    PPTFAC  <-  CURV(TYPPTD,FNPTD[1],FNPTD[2],FNPTD[3],FNPTD[4],DAYL)
+    PPTFAC  <-  RDRMT * PPTFAC
+    PPTFAC  <-  min(PPTFAC,1.0)
+    
+    #            FNPGD(4) = RDRMG * FNPGD(4)
+    PPGFAC  <-  CURV(TYPPGD,FNPGD[1],FNPGD[2],FNPGD[3],FNPGD[4],DAYL)
+    PPGFAC  <-   PPGFAC/RDRMG
+    PPGFAC  <-  min (PPGFAC,1.0)
+    
+    #            FNPMD(4) = RDRMM * FNPMD(4)
+    PPMFAC   <-  CURV(TYPPMD,FNPMD[1],FNPMD[2],FNPMD[3],FNPMD[4],DAYL)
+    PPMFAC   <-  PPMFAC/RDRMM
+    PPMFAC   <-  min (PPMFAC,1.0)
+    
+    if (PPTFAC > 0.0 | PPGFAC < 1.0 | PPMFAC < 1.0) {
+      DRMST  <-  'DORM'
+    } else {
+      DRMST  <-  'NODORM'
+    }
+    
+    DAYLY   <-  DAYL
+    
+  } else if (DYNAMIC == "OUTPUT") {
+    #-----------------------------------------------------------------------
+    #     Calculate new variables for DORMANCY.OUT
+    #-----------------------------------------------------------------------
+    
+    #-----------------------------------------------------------------------
+    #     Sent daily growth and partitioning detail to DORMANCY.OUT
+    #-----------------------------------------------------------------------
+    
+    
+    
+    #        IF (IDETL == 'Y') {
+    #-----------------------------------------------------------------------
+    #     Print out dormancy parameters - TEMPORARY
+    #-----------------------------------------------------------------------
+    #
+    #            WRITE (NOUTDT,401) YRDOY, DAYL, DRMST, PPGFAC,
+    #     &              PPTFAC, WTLF, WCRLF, LFDM,
+    #     &              STMWT, WCRST, STDM, STRWT, WCRSR, SRDM,
+    #     &              RTWT, WCRRT, RTDM
+    # 401      FORMAT (1X,I5,1X,F5.2,1X,A6,1X,F5.3,1X,F5.3,1X,F6.1,
+    #     &              1X,F6.1,1X,F6.1,1X,F7.1,1X,F6.1,1X,F6.1,1X,F7.1,
+    #     &              1X,F6.1,1X,F6.1,1X,F6.1,1X,F6.1,1X,F6.1)
+    #        ENDIF
+    
+    #***********************************************************************
+    #     SEASEND
+    #***********************************************************************
+    
+  } else if (DYNAMIC == "SEASEND") {
+    #-----------------------------------------------------------------------
+    #     Close DORMANCY.OUT
+    #-----------------------------------------------------------------------
+    
+  }
+  assign("FREEZ2",FREEZ2, envir = env)
+  assign("PPGFAC",PPGFAC, envir = env)
+  assign("DRMST",DRMST, envir = env)
+  assign("PPMFAC",PPMFAC, envir = env)
+  assign("PPTFAC",PPTFAC, envir = env)
+  assign("DAYLY",DAYLY, envir = env)
+  return()
+  #END    #SUBROUTINE DORMANCY
+}
+
+#-----------------------------------------------------------------------
+#     DORMANT VARIABLES
+#-----------------------------------------------------------------------
+# BLANK         ' '
+# C255       255 character record
+# DAYL         Current daylength (hours)
+# DAYLY         Yesterdays daylength (hours)
+# DRMST         Dormancy status (NODORM=not dormant, DORM=dormant - reversible,
+# DYNAMI#         Controls run sequence: DYNAMIC =RUNINIT, SEASINIT, RATE,
+#             EMERG, INTEGR, OUTPUT, or SEASEND
+# ECONAM     Ecotype name - not used
+# ECONO      Used to match ECOTYP in .ECO file
+# ECOTYP     Ecotype code
+# ERR
+# ERRKEY
+# ERRNUM
+# FILEC, FILEE   Filenames for Crop and Species files
+# FILECC, FILEGC File+pathname for Crop and Eco files
+# FILEIO    Filename for Input file
+# FNPGD(1)  Base daylength for CURV function for daylength effect on Pg
+#              for short-day dormancy (daylength when dormancy is maximum)
+# FNPGD(2)  Daylength threshold where dormancy effect begins
+#              for daylength effect on Pg (for short-day dormancy)
+# FNPGD(3)  Longest daylength threshold where there is no dormancy effect
+#              for daylength effect on Pg (for long-day dormancy)
+# FNPGD(4)  Daylength when dormancy effect is maximum
+#              for daylength effect on Pg (long-day dormancy)
+# FNPMD(1)  Base daylength for CURV function for daylength effect on mobilization
+#              for short-day dormancy (daylength when dormancy is maximum)
+# FNPMD(2)  Daylength threshold where dormancy effect begins
+#              for daylength effect on mobilization (for short-day dormancy)
+# FNPMD(3)  Longest daylength threshold where there is no dormancy effect
+#              for daylength effect on mobilization (for long-day dormancy)
+# FNPMD(4)  Daylength when dormancy effect is maximum
+#              for daylength effect on mobilization (long-day dormancy)
+# FNPTD(1)  Ignored for short-day dormancy
+# FNPTD(2)  Daylength threshold where dormancy effect is maximum
+#              for daylength effect on partitioning (for short-day dormancy)
+# FNPTD(3)  Shortest daylength threshold where there is no dormancy effect
+#              for daylength effect on partitioning (for short-day dormancy)
+# FNPTD(4)  Minimum relative effect of dormancy when crop is non-dormant (set to 0.0)
+# FREEZ2    Temperature below which plant growth stops completely. (�C)
+# FRZD#        Freezing death coefficient  - percentage tissue/population death per day per degree below FREEZ2)
+# FRZDHD(1) Minimum temperature at which dehardening begins (relative rate=0)
+# FRZDHD(2) Temperature at which dehardening reaches maximum rate (relative rate=1)
+# FRZDHD(3) Not used
+# FRZDHD(4) Maximum (absolute) rate of dehardening (degrees C increase above HARD2 per day)n of STRWT and PLNTPOP)
+# FRZHRD(1) Temperature at which cold hardening reaches maximum rate (relative rate=1)
+# FRZHRD(2) Temperature below which cold hardening begins (relative rate=0)
+# FRZHRD(3) Temperature at which hardening is reversed at maximum rate (relative rate=-1)
+# FRZHRD(4) Maximum (absolute) rate of cold hardening (degrees C decrease towards HARD2 per day)
+# HARD1        Killing low temperature before cold hardening (begins killing storage organ)
+# HARD2        Killing low temperature after cold hardening (begins killing storage organ)
+# ISECT
+# LNUM
+# LUNECO    Logical unit number for ECO files
+# LUNIO     Input file logical unit no.
+# PATHL
+# PPGFA#        Reduction in photosynthetic rate due to dormancy
+# PPMFA#        Reduction in mobilization rate due to dormancy
+# PPTFA#        Reduction in partitioning to vegetative tissues during dormancy
+# RCHDP        Ecotype relative cold hardening potential (0-1)
+# RDRMG     Relative sensitivity of ecotype to daylength/dormancy effects on Pg
+# RDRMM     Relative sensitivity of ecotype to daylength/dormancy effects on
+#              mobilization
+# RDRMT     Relative sensitivity of ecotype to daylength/dormancy effects on
+#           partitioning to perenniating tissues
+# SECTION   Heading name in input files
+# TMIN        Daily average temperature
+# TYPDHD        Response type for cold dehardening
+# TYPHRD         Response type for cold hardening
+# TYPPGD        Type of response curve for effect of daylength/dormancy on Pg
+# TYPPMD    Type of response curve for effect of daylength/dormancy on
+#           mobilization
+# TYPPTD    Type of response curve for effect of daylength/dormancy on
+#           partitioning to perenniating organ
+#-----------------------------------------------------------------------
+#     END SUBROUTINE DORMANT
+#-----------------------------------------------------------------------
+
+
+#=======================================================================
+#  FOR_SENMOB Subroutine, S.J. Rymph, K.J. Boote, J.W. Jones and G. Hoogenboom
+#  Calculates leaf, stem, root, and STOR senescence only for tissues lost
+#  at "final" N concentration (due to natural aging, light stress, and
+#  physiological maturity).  Also consolidates the calculation of
+#  potential mining of C and N in one location.
+#-----------------------------------------------------------------------
+#  REVISION       HISTORY
+#  09/23/2005 SJR Created from parts of CROPGRO, DEMAND, ROOTS, SENES
+#-----------------------------------------------------------------------
+#  Called : CROPGRO
+#  Calls  : ERROR, FIND, IGNORE
+#========================================================================
+SENMOB <- function (DYNAMIC, DAS, ISWWAT, PAR) {
+  
+  params    <- plantList$forage$params
+  
+  TYPLMOB   <- params$TYPLMOB
+  TYPNMOB   <- params$TYPNMOB
+  LFSEN     <- params$LFSEN
+  ICMP      <- params$ICMP
+  KCAN      <- params$KCAN
+  PORPT     <- params$PORPT
+  SENDAY    <- params$SENDAY
+  SENRT2    <- params$SENRT2
+  SENRTE    <- params$SENRTE
+  TCMP      <- params$TCMP
+  SENMAX    <- params$SENMAX
+  SENPOR    <- params$SENPOR
+  XSENMX    <- params$XSENMX
+  XSTAGE    <- params$XSTAGE
+  SENSR     <- params$SENSR
+  SENCLV    <- params$SENCLV
+  SENCRV    <- params$SENCRV
+  SENCSV    <- params$SENCSV
+  SENCSRV   <- params$SENCSRV
+  SENNLV    <- params$SENNLV
+  SENNRV    <- params$SENNRV
+  SENNSV    <- params$SENNSV
+  SENNSRV   <- params$SENNSRV
+  PORMIN    <- params$PORMIN
+  RTSDF     <- params$RTSDF
+  RTEXF     <- params$RTEXF
+  LRMOB     <- params$LRMOB
+  NRMOB     <- params$NRMOB
+  PCHOLFF   <- params$PCHOLFF
+  PCHORTF   <- params$PCHORTF
+  PCHOSRF   <- params$PCHOSRF
+  PCHOSTF   <- params$PCHOSTF
+  PROLFF    <- params$PROLFF
+  PRORTF    <- params$PRORTF
+  PROSRF    <- params$PROSRF
+  PROSTF    <- params$PROSTF
+  RFAC1     <- params$RFAC1
+  RLDSM     <- params$RLDSM
+  RTSEN     <- params$RTSEN
+  CMOBMX    <- params$CMOBMX
+  CMOBSRN   <- params$CMOBSRN
+  CMOBSRX   <- params$CMOBSRX
+  NMOBMX    <- params$NMOBMX
+  NMOBSRN   <- params$NMOBSRN
+  NMOBSRX   <- params$NMOBSRX
+  NVSMOB    <- params$NVSMOB
+  
+  WSLOSS    <- 0  # TODO: nao sei como inicializar essa variável - local mas esta sem inicialização, Vem da Senes, mas pra Forage nao é chamado portanto o valor da variável é ZERO
+  
+  #***********************************************************************
+  #***********************************************************************
+  #     Seasonal initialization - run once per season
+  #***********************************************************************
+  if (DYNAMIC == "SEASINIT") {
+    #-----------------------------------------------------------------------
+    SRDOT   <- 0.0
+    SRNDOT  <- 0.0
+    RLV     <- 0.0
+    #      RTDEP = 0.0
+    #      SENRT = 0.0
+    SUMEX   <- 0.0
+    SUMRL   <- 0.0
+    
+    LFNSEN  <- 0.0
+    
+    LFSNMOB <- 0.0
+    RTSNMOB <- 0.0
+    SRSNMOB <- 0.0
+    STSNMOB <- 0.0
+    TSNMOB  <- 0.0
+    
+    CMINELF <- 0.0
+    CMINEP  <- 0.0
+    CMINERT <- 0.0
+    CMINESH <- 0.0
+    CMINESR <- 0.0
+    CMINEST <- 0.0
+    CMOBSR  <- 0.0
+    LFCMINE <- 0.0
+    LFSCMOB <- 0.0
+    LFSNMOB <- 0.0
+    LTSEN   <- 0.0
+    NMINELF <- 0.0
+    NMINEP  <- 0.0
+    NMINERT <- 0.0
+    NMINESR <- 0.0
+    NMINEST <- 0.0
+    NMOBR   <- 0.0
+    NMOBSR  <- 0.0
+    RLSEN   <- 0.0
+    RTCMINE <- 0.0
+    RTSCMOB <- 0.0
+    RTSNMOB <- 0.0
+    SHCMINE <- 0.0
+    SHNMINE <- 0.0
+    SLMDOT  <- 0.0
+    SRCMINE <- 0.0
+    SRMDOT  <- 0.0
+    SRSCMOB <- 0.0
+    SRSNMOB <- 0.0
+    SSMDOT  <- 0.0
+    SSRMDOT <- 0.0
+    STCMINE <- 0.0
+    STSCMOB <- 0.0
+    STSNMOB <- 0.0
+    TSCMOB  <- 0.0
+    TSNMOB  <- 0.0
+    
+    SSDOT   <- 0.0
+    SLDOT   <- 0.0
+    SLNDOT  <- 0.0
+    SSNDOT  <- 0.0
+    RATTP   <- 1.0
+    SSRDOT  <- 0.0
+    SSRNDOT <- 0.0
+    DAYL_1  <- -1.0
+    DAYL_2  <- -2.0
+    
+    for (I in 1:5){
+      SWFCAB[I] <- 1.0
+    }
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     DAILY RATE/INTEGRATION
+    #***********************************************************************
+  } else if (DYNAMIC == "INTEGR") {
+    #-----------------------------------------------------------------------
+    # DAS   <- max(0,TIMDIF(YRSIM,YRDOY)) # TODO: DAS VEM POR PARÃMETRO NECESSÁRIO ESSA ATRIBUIÇÃO?? LEANDRO 03/11/2020 
+    
+    #Update value of RATTP.
+    NSWAB  <- 5
+    for (I in NSWAB:2){ #TODO Leandro
+      SWFCAB[I] <- SWFCAB[I-1]
+    }
+    #      DO I=NSWAB,2,-1
+    #       WSWTLF(I)=WSWTLF(I-1)
+    #      END DO
+    SWFCAB[1] <- SWFAC
+    #      WSWTLF(1)=WTLF
+    RATTP <- SWFCAB[NSWAB]
+    
+    SSDOT   <- 0.0
+    SLDOT   <- 0.0
+    SLNDOT  <- 0.0
+    
+    SSNDOT  <- 0.0
+    
+    SSRDOT  <- 0.0
+    SSRNDOT <- 0.0
+    
+    LFNSEN  <- 0.0
+    SLMDOT  <- 0.0
+    SRMDOT  <- 0.0
+    SSRMDOT <- 0.0
+    SSMDOT  <- 0.0
+    
+    LFSCMOB <- 0.0
+    RTSCMOB <- 0.0
+    SRSCMOB <- 0.0
+    STSCMOB <- 0.0
+    TSCMOB  <- 0.0
+    
+    LFSNMOB <- 0.0
+    RTSNMOB <- 0.0
+    SRSNMOB <- 0.0
+    STSNMOB <- 0.0
+    TSNMOB  <- 0.0
+    
+    CMINELF <- 0.0
+    CMINERT <- 0.0
+    CMINESR <- 0.0
+    CMINEST <- 0.0
+    
+    LFCMINE <- 0.0
+    RTCMINE <- 0.0
+    SHCMINE <- 0.0
+    SRCMINE <- 0.0
+    STCMINE <- 0.0
+    
+    CMINEP  <- 0.0
+    CMINEO  <- 0.0
+    
+    NMINELF <- 0.0
+    NMINERT <- 0.0
+    NMINESR <- 0.0
+    NMINEST <- 0.0
+    
+    LFNMINE <- 0.0
+    RTNMINE <- 0.0
+    SHNMINE <- 0.0
+    SRNMINE <- 0.0
+    STNMINE <- 0.0
+    
+    NMINEP  <- 0.0
+    NMINEO  <- 0.0
+    
+    #-----------------------------------------------------------------------
+    #     Calculate root senescence
+    #-----------------------------------------------------------------------
+    #     Calculate root length per cm2 soil and initiate growth,
+    #     respiration and senescence by layer
+    #-----------------------------------------------------------------------
+    TRTDY   <- 0.0
+    TRLSEN  <- 0.0
+    TRLNSEN <- 0.0
+    # NL = 20
+    RNDOT <- rep(0.0,20)
+    
+    for (L in 1:NLAYR){
+      L1 <- L
+      TRTDY <- TRTDY + RLV[L] * DLAYR[L]
+      RLSEN[L] <- 0.0
+      
+      
+      RNDOT[L]  <- 0.0
+      RLNSEN[L] <- 0.0
+      
+    }
+    
+    SRNDOT <- 0.0
+    #      TRLDF  = 0.0
+    SUMEX <- 0.0
+    SUMRL <- 0.0
+    
+    if (RTWT >= 0.0001) {
+      #       RFAC3 = TRTDY * 10000.0 / (RTWT - WRDOTN)
+      #       RTWT has not yet been updated today, so use yesterday's
+      #       value and don't subtract out today's growth - chp 11/13/00
+      RFAC3 <- TRTDY * 10000.0 / RTWT
+    } else {
+      RFAC3 <- RFAC1
+    }
+    
+    for (L in 1:L1){
+      
+      RLSEN[L] <- RLV[L] * RTSEN * DTX
+      SWDF     <- 1.0
+      SWEXF    <- 1.0
+      
+      #-----------------------------------------------------------------------
+      #     Calculate water-stress factors only when H2O optionis "on"
+      #-----------------------------------------------------------------------
+      
+      if (ISWWAT == 'Y') {
+        if (SAT[L]-SW[L] < PORMIN) {
+          SWEXF <- (SAT[L] - SW[L]) / PORMIN
+          SWEXF <- min(SWEXF, 1.0)
+        }
+        
+        #        SUMEX  = SUMEX + DLAYR(L)*RLV(L)*(1.0 - SWEXF)
+        SUMEX  <- SUMEX + DLAYR[L]*(RLV[L] - RLSEN[L])*(1.0 - SWEXF)
+        #       SUMRL  = SUMRL + DLAYR(L)*RLV(L)
+        SUMRL  <- SUMRL + DLAYR[L]*(RLV[L] - RLSEN[L])
+        
+        ESW    <- rep(0, NL)
+        #     Need to calculate ESW where used. CHP 10/15/01
+        ESW[L] <- DUL[L] - LL[L]
+        if (SW[L] - LL[L] < 0.25*ESW[L]) {
+          SWDF <- (SW[L] - LL[L]) / (0.25*ESW[L])
+          SWDF <- max(SWDF, 0.0)
+        }
+      }
+      
+      #-----------------------------------------------------------------------
+      
+      RTSURV <- min(1.0,(1.-RTSDF*(1.-SWDF)),(1.-RTEXF*(1.-SWEXF)))
+      #-----------------------------------------------------------------------
+      if ((RLV[L] - RLSEN[L]) > RLDSM) {
+        #            RNDOT(L) = RLV(L) * (1 - RTSURV)
+        RNDOT[L] <- (RLV[L] - RLSEN[L]) * (1 - RTSURV)
+        #          RLV(L) = RLV(L) * RTSURV
+      }
+      RLNSEN[L] <- RNDOT[L]
+      TRLNSEN   <- TRLNSEN + RLNSEN[L] * DLAYR[L]
+      
+      TRLSEN <- TRLSEN + RLSEN[L] * DLAYR[L]
+      
+    }
+    
+    #-----------------------------------------------------------------------
+    #     Calculate root senescence, growth, maintenance and growth
+    #     respiration, and update root length density for each layer.
+    #-----------------------------------------------------------------------
+    
+    #     SRDOT = (TRTDY + RLNEW - TRLV) * 10000.0 / RFAC3
+    #     Sum RLSEN for total root senescence today. chp 11/13/00
+    SRMDOT <- TRLSEN / RFAC3 * 10000.     #g/m2
+    SRNDOT <- TRLNSEN / RFAC3 * 10000. #g/m2
+    SRDOT  <- SRMDOT + SRNDOT
+    
+    #-----------------------------------------------------------------------
+    #     This section calculates natural senescence of storage organ tissue
+    #      Thought about moving this below the IF...{ line but did not
+    #      Don't want to senesce if seedling but do want to senesce mature
+    #      stand after it has been cut or frozen back
+    #-----------------------------------------------------------------------
+    SSRMDOT <- STRWT *  SENSR * DTX
+    SSRMDOT <- min(SSRMDOT,STRWT)
+    #-----------------------------------------------------------------------
+    #     Calculate STOR water-stress senescence.
+    #-----------------------------------------------------------------------
+    SSRNDOT <- 0.0
+    #-----------------------------------------------------------------------
+    #     Calculate STOR senescence.
+    #-----------------------------------------------------------------------
+    SSRDOT <- SSRMDOT + SSRNDOT
+    SSRDOT <- min(STRWT,SSRDOT)
+    
+    if (DAS <= NR7 & VSTAGE >= 1.0) {
+      #-----------------------------------------------------------------------
+      #     This section calculates natural senescence prior to the
+      #     beginning of seed growth
+      #-----------------------------------------------------------------------
+      #        IF (VSTAGE >= 5.0) {
+      #          PORLFT = 1.0 - TABEX(SENPOR,XSTAGE,VSTAGE,4)
+      #          IF ((WTLF * ( 1.0 - RHOL)) > CLW*PORLFT) {
+      #            SLDOT = WTLF * ( 1.0 - RHOL) - CLW * PORLFT
+      #          }
+      #        }
+      #-----------------------------------------------------------------------
+      #     09/18/05 SJR - Modify for forages Short harvest cycles prevent
+      #     VSTAGE>5.0.  CLW gets too large relative to WTLF to be useful.
+      #      Revise and simplify using one rate all the time, adjusted for
+      #      temperature.  Rate is now a proportion of tissue senesced
+      #      per physiological day.
+      #-----------------------------------------------------------------------
+      #      IF (WTLF > WTLF * (1 - RHOL) * LFSEN * DTX *
+      #     &  (1-EXP(-KCAN * XLAI))) {
+      #            LFNSEN = WTLF * (1 - RHOL) * LFSEN * DTX *
+      if (WTLF > WTLF * LFSEN * DTX) {
+        LFNSEN <- WTLF * LFSEN * DTX
+      } else {
+        LFNSEN <- WTLF
+      }
+      SLMDOT <- LFNSEN
+      #-----------------------------------------------------------------------
+      #     This section calculates senescence due to low light in lower
+      #     canopy.  First compute LAI at which light compensation is reached
+      #     { allow LAI above this amount to be senesced over TCMP thermal
+      #     days.
+      #-----------------------------------------------------------------------
+      LTSEN <- 0.0
+      if (PAR > 0.) {
+        LCMP  <- -(1. / KCAN) * log(ICMP / PAR)
+        LTSEN <- DTX * (XLAI - LCMP) / TCMP
+        LTSEN <- max(0.0, LTSEN)
+      }
+      #-----------------------------------------------------------------------
+      #     8/3/05 SJR Change LTSEN from leaf area senesced to the equivalent
+      #      leaf mass senesced.  Moved conversion from SLDOT update equation.
+      #      For ease of use in calculating DM, CH2O, and N lost in GROW
+      #      subroutine
+      #-----------------------------------------------------------------------
+      LTSEN <- LTSEN * 10000. / SLAAD
+      #-----------------------------------------------------------------------
+      #     Convert area loss to biomass(m2 *10000cm2/m2)/(cm2/g)=g/m2
+      #-----------------------------------------------------------------------
+      #        SLDOT = SLDOT + LTSEN * 10000. / SLAAD
+      SLDOT <- LFNSEN + LTSEN
+      SLDOT <- min(WTLF,SLMDOT)
+      
+      #-----------------------------------------------------------------------
+      #     Calculate senescence due to water stress.
+      #-----------------------------------------------------------------------
+      #        IF (WTLF >= WSWTLF(5)) {
+      #          WSLOSS = SENDAY * (1. - RATTP) * WTLF
+      #        } else if (SENDAY*(1.-RATTP) > WSWTLF(5)-WTLF) {
+      #          WSLOSS=SENDAY*(1.-RATTP)*(WSWTLF(5)-WTLF/WSWTLF(5))
+      #        ELSE
+      #          WSLOSS=0
+      #        }
+      
+      if (WSLOSS > 0.0) {
+        PORLFT <- 1.0 - TABEX(SENMAX, XSENMX, VSTAGE, 4)
+        WSLOSS <- min(WSLOSS, WTLF - CLW * PORLFT)
+        WSLOSS <- max(WSLOSS, 0.0)
+        SLNDOT <- WSLOSS
+      }
+      
+      SLDOT <- SLDOT + SLNDOT
+      SLDOT <- min(WTLF,SLDOT)
+      
+      #-----------------------------------------------------------------------
+      #     Calculate Stem senescence.
+      #-----------------------------------------------------------------------
+      SSMDOT <- SLMDOT * PORPT
+      SSMDOT <- min(SSMDOT,0.1*STMWT)
+      
+      #-----------------------------------------------------------------------
+      #     10/04/05 SJR Link to SENMOB where natural senescence was already
+      #                         calculated.  Calculate SSDOT in same way as SLDOT.
+      #-----------------------------------------------------------------------
+      SSDOT   <- SSMDOT
+      SSDOT   <- SSDOT + LFSENWT * PORPT
+      SSDOT   <- min(SSDOT,0.1*STMWT)
+      STSENWT <- SSDOT - SSMDOT
+      
+      SSDOT   <- SSDOT + LTSEN * PORPT
+      SSDOT   <- min(SSDOT,0.1*STMWT)
+      STLTSEN <- SSDOT - (SSMDOT + STSENWT)
+      
+      SSNDOT  <- SLNDOT * PORPT
+      SSDOT   <- SSDOT + SSNDOT
+      SSDOT   <- min(SSDOT, 0.1 * STMWT)
+      SSNDOT  <- SSDOT - (SSMDOT + STSENWT + STLTSEN)
+      
+      #-----------------------------------------------------------------------
+      #     This section calculates senescence of leaves and petioles
+      #     after R7.
+      #-----------------------------------------------------------------------
+    } else if (DAS > NR7) {
+      if(WTLF > 0.0001) {
+        #          SLMDOT = WTLF * SENRT2
+        #          SLNDOT = SLDOT
+        SLMDOT <- 0.0
+        #          SSMDOT = SLMDOT * PORPT
+        #          SSNDOT = SSDOT
+        SSMDOT <- 0.0
+      } else {
+        SLMDOT <- 0.0
+        SSMDOT <- 0.0
+        #          SLNDOT = 0.0
+        #          SSNDOT = 0.0
+      }
+      #        IF (STMWT < 0.0001) {
+      #          SLNDOT = 0.0
+      #          SSNDOT = 0.0
+      #        }
+    }
+    
+    #-----------------------------------------------------------------------
+    #     Calculate N available from today's senescence.
+    #      Only Age, low-light and N-mobilization-based senescece are lost at
+    #      less than current N and CH2O concentration.
+    #      Senesced tissues will contain N and CH2O concentrations between
+    #      "final" and "current" levels - calculated as
+    #      PROLFF * 0.16+( SENNxV * PCNL/100 - PROLFF * 0.16)
+    #      so mobilization would be the difference between "current" N or C
+    #      concentration and this calculated level at senescence.
+    #-----------------------------------------------------------------------
+    LFSNMOB <- SLMDOT * (PCNL/100 - (SENNLV * (PCNL / 100 - PROLFF*0.16) + PROLFF*0.16)) + LTSEN * (PCNL / 100 - PROLFF * 0.16)
+    STSNMOB <- SSMDOT * (PCNST/100 - (SENNSV * (PCNST / 100 - PROSTF*0.16) + PROSTF*0.16)) + STLTSEN * (PCNST / 100 - PROSTF * 0.16)
+    
+    SRSNMOB <- SSRMDOT * (PCNSR / 100 - (SENNSRV * (PCNSR / 100 - PROSRF*0.16) + PROSRF*0.16))
+    RTSNMOB <- SRMDOT * (PCNRT / 100 - (SENNRV * (PCNRT / 100 - PRORTF*0.16) + PRORTF*0.16))
+    
+    #     TAKE OUT FROM HERE TO
+    #        LFSENWT = SENRTE * LFSNMOB / 0.16
+    #        LFSENWT = MIN(WTLF,LFSENWT)
+    #        SLDOT = SLDOT + LFSENWT
+    #        SLDOT = MIN(WTLF,SLDOT)
+    
+    #        STSENWT = LFSENWT * PORPT
+    #        SSDOT = SSDOT + STSENWT
+    #        SSDOT = MIN(STMWT, SSDOT)
+    
+    #            LFSNMOB = LFSNMOB + LFSENWT * (PCNL/100 -
+    #     &              (SENNLV * (PCNL / 100 - PROLFF*0.16) + PROLFF*0.16))
+    
+    #            STSNMOB = STSNMOB + STSENWT * (PCNST/100 -
+    #     &              (SENNSV * (PCNST / 100 - PROSTF*0.16) + PROSTF*0.16))
+    
+    #      HERE
+    #            TSNMOB = LFSNMOB + STSNMOB + SRSNMOB + RTSNMOB
+    
+    #-----------------------------------------------------------------------
+    #     Calculate CH2O available from today's senescence.
+    #-----------------------------------------------------------------------
+    #            LFSCMOB = (SLMDOT + LTSEN + LFSENWT) * (WCRLF / WTLF -
+    #     &              (SENCLV * (WCRLF / WTLF - PCHOLFF) + PCHOLFF))
+    #            STSCMOB = (SSMDOT + STLTSEN + STSENWT) * (WCRST / STMWT -
+    #     &              (SENCSV * (WCRST / STMWT - PCHOSTF) + PCHOSTF))
+    #            SRSCMOB = SSRMDOT * (WCRSR / STRWT -
+    #     &              (SENCSRV * (WCRSR / STRWT - PCHOSRF) + PCHOSRF))
+    #            RTSCMOB = SRMDOT * (WCRRT / RTWT -
+    #     &              (SENCRV * (WCRRT / RTWT - PCHORTF) + PCHORTF))
+    
+    #            LFSCMOB = SLMDOT * ((WCRLF / WTLF) - PCHOLFF)
+    #            STSCMOB = SSMDOT * ((WCRST / STMWT) - PCHOSTF)
+    #            SRSCMOB = SSRMDOT * ((WCRSR / STRWT) - PCHOSRF)
+    #            RTSCMOB = SRMDOT * ((WCRRT / RTWT) - PCHORTF)
+    
+    TSCMOB <- LFSCMOB + STSCMOB + SRSCMOB + RTSCMOB
+    
+    #-----------------------------------------------------------------------
+    # DSSAT4 code for CMINEP
+    #      CMINEP = CMOBMX * (DTX + DXR57) * (WCRST + WCRRT + WCRSH +WCRLF)
+    #-----------------------------------------------------------------------
+    # New code to deal with forages and dormancy
+    # Boosts mobilization from storage organs after harvests (LAI<CLAIT)
+    # Lowers mobilization during dormancy (when PPMFAC>0.0)
+    #-----------------------------------------------------------------------
+    #      IF (XLAI <= CLAIT) {
+    #      CMOBSR=CMOBSRX*(PPMFAC)
+    #      NMOBSR=NMOBSRX*(PPMFAC)
+    #      ELSE
+    #      CMOBSR=CMOBSRN*(PPMFAC)
+    #      NMOBSR=NMOBSRN*(PPMFAC)
+    #      }
+    
+    LAIMOBR <- CURV(TYPLMOB,LRMOB[1],LRMOB[2],LRMOB[3], LRMOB[4], min(XLAI,LRMOB[4]))
+    
+    #-----------------------------------------------------------------------
+    #      Increase mobilization from storage if N status of plant is high.
+    #-----------------------------------------------------------------------
+    
+    VEGNCNT <- PCNL/100*WTLF + PCNST/100*STMWT +  PCNRT/100*RTWT + PCNSR/100*STRWT
+    VEGNCMX <- FNINL*WTLF + FNINS*STMWT + FNINR*RTWT + FNINSR*STRWT
+    VNSTAT  <- min((VEGNCNT / VEGNCMX),  1.0)
+    
+    VNMOBR  <- CURV(TYPNMOB,NRMOB[1],NRMOB[2],NRMOB[3],NRMOB[4],VNSTAT)
+    #-----------------------------------------------------------------------
+    #      Set N mobilization rate from storage
+    #      Default to NMOBSRN under most conditions
+    #      set to NMOBSRX (max rate) after harvest or severe damage
+    #      Reduce from either level depending on degree of dormancy
+    #      Mobilization from storage is unaffected by water or N stress
+    #      but is accelerated by low N status.
+    #-----------------------------------------------------------------------
+    #      Tried various equations - a straight multiplicative equation
+    #      doesn't work because LAIMOBR is usually 0.0 which forces
+    #      mobilization to the minimum rate * PPMFAC.
+    #-----------------------------------------------------------------------
+    #      NMOBSR = (NMOBSRN + ((NMOBSRX-NMOBSRN)*VNMOBR * LAIMOBR)) * PPMFAC
+    #-----------------------------------------------------------------------
+    #      Additive equation would give the highest rate of mobilization.
+    #-----------------------------------------------------------------------
+    #      NMOBSR = (NMOBSRN + (NMOBSRX-NMOBSRN)*VNMOBR)
+    #      NMOBSR = (NMOBSR + (NMOBSRX-NMOBSR)*LAIMOBR)*PPMFAC
+    #-----------------------------------------------------------------------
+    #      Let the maximum of the two modifiers set the rate of mobilization.
+    #-----------------------------------------------------------------------
+    NMOBSR <- (NMOBSRN + max(VNMOBR,LAIMOBR) * (NMOBSRX - NMOBSRN)) * PPMFAC
+    
+    #-----------------------------------------------------------------------
+    #      Set C mobilization rate from storage
+    #      Default to CMOBSRN under most conditions
+    #      set to CMOBSRX (max rate) after harvest or severe damage
+    #      Reduce from either level depending on degree of dormancy
+    #      Mobilization from storage is unaffected by water or N stress
+    #-----------------------------------------------------------------------
+    #      CMOBSR = (CMOBSRN + ((CMOBSRX-CMOBSRN)*VNMOBR * LAIMOBR)) * PPMFAC
+    
+    #      CMOBSR = (CMOBSRN + (CMOBSRX-CMOBSRN)*VNMOBR)
+    #      CMOBSR = (CMOBSR + (CMOBSRX-CMOBSR)*LAIMOBR)*PPMFAC
+    
+    #      CMOBSR = (CMOBSRN + MAX(VNMOBR,LAIMOBR) *
+    #     &              (CMOBSRX - CMOBSRN)) * PPMFAC
+    
+    CMOBSR <- (CMOBSRN + LAIMOBR * (CMOBSRX - CMOBSRN)) * PPMFAC
+    
+    #-----------------------------------------------------------------------
+    #      Calculate potential N mobilization for the day
+    #-----------------------------------------------------------------------
+    #-----------------------------------------------------------------------
+    #     Compute max N mining, NMINEP, based on stage-dependent mining
+    #     rate, NMOBR
+    #-----------------------------------------------------------------------
+    #     Assume that a Maximum Fraction (NMOBMX) of N can be Mobilized per Day
+    #     NVSMOB is the relative N mobil rate in veg stage, rel to reprod. stage
+    #-----------------------------------------------------------------------
+    #     9/27/95 ACCELERATE N MOBILIZATION AFTER R5, FUNCTION OF (1-SWFAC)
+    #     ALLOWS ACCELERATING BY 50% IF MAX DEFICIT.
+    #     2/6/96 SOMETIMES SEEDS FILL, XPOD IS LOW, { N MOBILIZATION SLOWS
+    #     I DON'T REALLY WANT THAT, LATE IN CYCLE.  KJB
+    #     NOW, DXR57 HITS CLOSE TO 1 AT MATURITY AND PREVENTS THAT
+    #-----------------------------------------------------------------------
+    
+    NMOBR  <- NVSMOB * NMOBMX * TDUMX
+    if (DAS > NR5) {
+      NMOBR <- NMOBMX * TDUMX2 * (1.0 + 0.5*(1.0 - SWFAC)) * (1.0 + 0.3*(1.0 - NSTRES)) * (NVSMOB + (1. - NVSMOB) * max(XPOD,DXR57**2.))
+    }
+    
+    NMINELF <- NMOBR * WNRLF
+    LFNMINE <- LFSNMOB + NMINELF
+    LFSNMOB <- LFNMINE
+    
+    NMINEST <- NMOBR * WNRST
+    STNMINE <- STSNMOB + NMINEST
+    STSNMOB <- STNMINE
+    
+    NMINERT <- NMOBR * PPMFAC * WNRRT
+    RTNMINE <- RTSNMOB + NMINERT
+    RTSNMOB <- RTNMINE
+    
+    NMINESR <- NMOBSR * WNRSR
+    SRNMINE <- SRSNMOB + NMINESR
+    SRSNMOB <- SRNMINE
+    
+    SHNMINE <- NMOBR * WNRSH
+    
+    NMINEP  <- LFNMINE + STNMINE + RTNMINE + SRNMINE + SHNMINE
+    NMINEO  <- NMINELF + NMINEST + NMINERT + NMINESR + SHNMINE
+    
+    TSNMOB  <- LFSNMOB + STSNMOB + SRSNMOB + RTSNMOB
+    #      TSNMOB = LFNMINE + STNMINE + RTNMINE + SRNMINE + SHNMINE
+    #      ADDITIONAL DM LOSS DUE TO N MOBILIZATION? SENRTE
+    
+    LFSENWT <- SENRTE * NMINELF / 0.16
+    LFSENWT <- min(WTLF,LFSENWT)
+    SLDOT   <- SLDOT + LFSENWT
+    SLDOT   <- min(WTLF,SLDOT)
+    
+    STSENWT <- LFSENWT * PORPT
+    SSDOT   <- SSDOT + STSENWT
+    SSDOT   <- min(STMWT, SSDOT)
+    
+    #-----------------------------------------------------------------------
+    #      Calculate potential CH2O mobilization for the day
+    #-----------------------------------------------------------------------
+    CMINELF <- CMOBMX * (DTX + DXR57)* (WCRLF - WTLF * PCHOLFF)
+    LFCMINE <- max(LFSCMOB, CMINELF)
+    
+    CMINEST <- CMOBMX * (DTX + DXR57)* (WCRST - STMWT * PCHOSTF)
+    STCMINE <- max(STSCMOB, CMINEST)
+    
+    CMINERT <- CMOBMX * (DTX + DXR57)* PPMFAC * (WCRRT - RTWT * PCHORTF)
+    RTCMINE <- max(RTSCMOB, CMINERT)
+    
+    CMINESR <- CMOBSR * (DTX + DXR57)* (WCRSR - STRWT * PCHOSRF)
+    SRCMINE <- max(SRSCMOB, CMINESR)
+    
+    SHCMINE <- CMOBMX * (DTX + DXR57)* WCRSH
+    
+    CMINEP  <- LFCMINE + STCMINE + RTCMINE + SRCMINE + SHCMINE
+    CMINEO  <- CMINELF + CMINEST + CMINERT + CMINESR + SHCMINE
+    
+    #***********************************************************************
+    #***********************************************************************
+    #     END OF DYNAMIC IF CONSTRUCT
+    #***********************************************************************
+  }
+  #***********************************************************************
+  assign("SLDOT",SLDOT  , envir = env)
+  assign("SSDOT",SSDOT  , envir = env)
+  assign("SRDOT",SRDOT  , envir = env)
+  assign("LTSEN",LTSEN  , envir = env)
+  assign("SWFCAB",SWFCAB  , envir = env) 
+  assign("SRNDOT",SRNDOT  , envir = env)
+  assign("SSRDOT",SSRDOT  , envir = env)
+  assign("SSRNDOT",SSRNDOT  , envir = env)
+  assign("STLTSEN",STLTSEN  , envir = env)
+  assign("STSENWT",STSENWT  , envir = env)
+  assign("LFSENWT",LFSENWT  , envir = env)
+  assign("SSNDOT",SSNDOT  , envir = env)
+  assign("RLNSEN",RLNSEN  , envir = env)          # TODO: atenção com essa Variável!!!!
+  assign("SLMDOT",SLMDOT  , envir = env)
+  assign("SRMDOT",SRMDOT  , envir = env)
+  assign("SSMDOT",SSMDOT  , envir = env)
+  assign("SSRMDOT",SSRMDOT  , envir = env)
+  assign("LFSCMOB",LFSCMOB  , envir = env)
+  assign("RTSCMOB",RTSCMOB  , envir = env)
+  assign("SRSCMOB",SRSCMOB  , envir = env)
+  assign("STSCMOB",STSCMOB  , envir = env)
+  assign("TSCMOB",TSCMOB  , envir = env)
+  assign("LFSNMOB",LFSNMOB  , envir = env)
+  assign("RTSNMOB",RTSNMOB  , envir = env)
+  assign("SRSNMOB",SRSNMOB  , envir = env)
+  assign("STSNMOB",STSNMOB  , envir = env)
+  assign("TSNMOB",TSNMOB  , envir = env)
+  assign("CMINEP",CMINEP  , envir = env)
+  assign("LFCMINE",LFCMINE  , envir = env)
+  assign("RTCMINE",RTCMINE  , envir = env)
+  assign("SHCMINE",SHCMINE  , envir = env)
+  assign("SRCMINE",SRCMINE  , envir = env)
+  assign("STCMINE",STCMINE  , envir = env)
+  assign("NMINEP", NMINEP , envir = env)  
+  assign("NMOBR",NMOBR , envir = env)
+  assign("VNMOBR",VNMOBR , envir = env)
+  assign("RLSEN",RLSEN  , envir = env)
+  assign("CMINELF",CMINELF, envir = env)
+  assign("CMINERT",CMINERT, envir = env)
+  assign("CMINESH",CMINESH, envir = env)
+  assign("CMINESR",CMINESR, envir = env)
+  assign("CMINEST",CMINEST, envir = env)
+  assign("NMINELF",NMINELF, envir = env)
+  assign("NMINERT",NMINERT, envir = env)
+  assign("NMINESR",NMINESR, envir = env)
+  assign("NMINEST",NMINEST, envir = env)
+  assign("SHNMINE",SHNMINE, envir = env)
+  assign("CMOBSR",CMOBSR , envir = env)
+  assign("NMOBSR",NMOBSR , envir = env)
+  assign("LAIMOBR",LAIMOBR, envir = env)
+  return()
+  #END # SUBROUTINE FOR_SENMOB
+}
+#***********************************************************************
+#     SENES VARIABLE DEFINITIONS:
+#-----------------------------------------------------------------------
+# CHAR      Contains the contents of last record read
+# CMINELF   Potential mobile CH2O avaialable today from leaf (g [CH2O] m-2)
+# CMINEO        DSSAT4 potential CH2O mobilization from storage (g[CH2O] / m2 / d)
+# CMINEP        Potential whole-plant CH2O mobilization from storage (g[CH2O] / m2 / d)
+# CMINERT   Potential mobile CH2O avaialable today from root (g [CH2O] m-2)
+# CMINESR   Potential mobile CH2O avaialable today from STOR (g [CH2O] m-2)
+# CMINEST   Potential mobile CH2O avaialable today from stem (g [CH2O] m-2)
+# DAS       Days after start of simulation (days)
+# DAYL      Current daylength (hours)
+# DAYL_1    Yesterdays daylength (hours)
+# DAYL_1    Daylength two days ago (hours)
+# DLAYR(L)  Soil Depth in layer L (cm)
+# DTX       Thermal time that occurs in a real day based on vegetative
+#             development temperature function (thermal days / day)
+# DYNAMI#   Module control variable; =RUNINIT, SEASINIT, RATE, EMERG,
+#             INTEGR, OUTPUT, or SEASEND
+# ERR       Error code for file operation
+# FILEC#    Path plus filename for species file (*.spe)
+# FOUND     Indicator that good data was read from file by subroutine FIND
+#             (0 - End-of-file encountered, 1 - NAME was found)
+# ICMP      Light compensation point for senescence of lower leaves because
+#             of excessive self-shading by crop canopy (moles / m2 / day)
+# ISECT     Data record code (0 - End of file encountered, 1 - Found a good
+#             line to read, 2 - End of Section in file encountered, denoted
+#             by * in column 1
+# KCAN      Canopy light extinction coefficient for daily PAR, for
+#             equidistant plant spacing, modified when in-row and between
+#             row spacings are not equal
+# LCMP      LAI at which today's light compensation (ICMP) is reached
+#             (m2[leaf] / m2[ground])
+# LFCMINE        Today's maximum potential CH2O mobilization from leaf (g [CH2O] m-2)
+# LFNMINE   Today's maximum potential N mobilization from leaf (g [N] m-2)
+# LFNSEN        Defoliation from natural senescence (g [DM] m-2 d-1)
+# LFSEN     Maximum rate of natural leaf senescence per physiological day
+# LFSCMOB   Mass of leaf CH2O mobilized from tissue lost to natural
+#              senescence (g [CH2O] m-2 d-1)
+# LFSNMOB   Mass of leaf N mobilized from tissue lost to natural
+#              senescence (g [N] m-2 d-1)
+# LNUM      Current line number of input file
+# LTSEN     Senescence of lower leaves due to self-shading of canopy
+#             (1/day) 8/3/05 now is g [DM] m-2 d-1
+# LUNCRP    Logical unit number for FILEC (*.spe file)
+# NL        Maximum number of soil layers = 20
+# NLAYR     Number of soil layers
+# NMINELF   Potential mobile N avaialable today from leaf (g [N] m-2)
+# NMINEO        DSSAT4 potential N mobilization from storage (g[N] / m2 / d)
+# NMINEP        Potential whole-plant N mobilization from storage (g[N] / m2 / d)
+# NMINERT   Potential mobile N avaialable today from root (g [N] m-2)
+# NMINESR   Potential mobile N avaialable today from STOR (g [N] m-2)
+# NMINEST   Potential mobile N avaialable today from stem (g [N] m-2)
+# NR7       Day when 50% of plants first have yellowing or maturing pods
+#             (days)
+# PAR       Daily photosynthetically active radiation or photon flux
+#             density (moles[quanta]/m2-d)
+# PORLFT    Proportion of leaf weight grown which will have been senesced
+#             if no water stress has occurred prior to this V-stage
+# PORPT     Ratio of petiole to leaf weight
+# RATTP     Factor used in determining increased senescence due to water
+#             stress
+# RFAC1     Root length per unit  root weight. (cm/g)
+# RFAC3     Ratio of root length to root weight at the current time (cm/g)
+# RHOL      Fraction of leaf which is carbohydrate (g [CH20] / g[leaf])
+# RLV(L)    Root length density for soil layer L (cm[root] / cm3[soil])
+# RTCMINE        Today's maximum potential CH2O mobilization from root (g [CH2O] m-2)
+# RTNMINE   Today's maximum potential N mobilization from root (g [N] m-2)
+# RTSEN     Fraction of existing root length which can be senesced per
+#             physiological day. (fraction / ptd)
+# RTSCMOB   Mass of root CH2O mobilized from tissue lost to natural senescence
+#              (g [CH2O] m-2 d-1)
+# RTSNMOB   Mass of root N mobilized from tissue lost to natural senescence
+#              (g [N] m-2 d-1)
+# RTWT      Dry mass of root tissue, including C and N
+#             (g[root] / m2[ground])
+# SECTION   Section name in input file
+# SENDAY    Maximum fraction of existing leaf weight which can be senesced
+#             on day N as a function of severe water stress 4 days earlier.
+# SENMAX(I) Maximum proportion of total leaf weight as a function of
+#             V-stage (XSENMX(I)) which can be senesced due to water stress.
+# SENCLV     Proportion used to calculate amount of CHO mobilized from leaves lost to
+#               natural senescence, low-light senescence, and N-mobilization senescence
+#               Is a fraction of the difference between PCNL (current N concentration and
+#               PROLFI*0.16 or "final" N concentration.
+# SENCRV     Proportion used to calculate amount of CHO mobilized from leaves lost to
+#               natural senescence, low-light senescence, and N-mobilization senescence
+#               Is a fraction of the difference between PCNL (current N concentration and
+#               PROLFI*0.16 or "final" N concentration.
+# SENCSV     Proportion used to calculate amount of CHO mobilized from leaves lost to
+#               natural senescence, low-light senescence, and N-mobilization senescence
+#               Is a fraction of the difference between PCNL (current N concentration and
+#               PROLFI*0.16 or "final" N concentration.
+# SENCSRV     Proportion used to calculate amount of CHO mobilized from leaves lost to
+#               natural senescence, low-light senescence, and N-mobilization senescence
+#               Is a fraction of the difference between PCNL (current N concentration and
+#               PROLFI*0.16 or "final" N concentration.
+# SENNLV     Proportion used to calculate amount of N mobilized from leaves lost to
+#               natural senescence, low-light senescence, and N-mobilization senescence
+#               Is a fraction of the difference between PCNL (current N concentration and
+#               PROLFI*0.16 or "final" N concentration.
+# SENNRV     Proportion used to calculate amount of N mobilized from leaves lost to
+#               natural senescence, low-light senescence, and N-mobilization senescence
+#               Is a fraction of the difference between PCNL (current N concentration and
+#               PROLFI*0.16 or "final" N concentration.
+# SENNSV     Proportion used to calculate amount of N mobilized from leaves lost to
+#               natural senescence, low-light senescence, and N-mobilization senescence
+#               Is a fraction of the difference between PCNL (current N concentration and
+#               PROLFI*0.16 or "final" N concentration.
+# SENNSRV     Proportion used to calculate amount of N mobilized from leaves lost to
+#               natural senescence, low-light senescence, and N-mobilization senescence
+#               Is a fraction of the difference between PCNL (current N concentration and
+#               PROLFI*0.16 or "final" N concentration.
+# SENPOR(I) Proportion of leaf weight grown which will have been senesced
+#             by a given V- stage (XSTAGE(I)) if no water stress has
+#             occurred prior to this V-stage (XSTAGE(I)) -- normal
+#             vegetative senescence does not occur if prior water stress
+#             has already  reduced leaf
+# SENRT2    Factor by which leaf weight is multiplied to determine
+#             senescence each day after NR7 (g(leaf) / g(protein loss))
+# SENRTE    Factor by which protein mined from leaves each day is
+#             multiplied to determine LEAF senescence.
+#             (g(leaf) / g(protein loss))
+# SENSR        Constant for senescence of storage organ tissue
+#                  (proportion of cumulative storage weight lost / physiological day)
+# SENWT     Leaf senescence due to N mobilization (g[leaf] / m2[ground])
+# SHCMINE   Potential mobile CH2O avaialable today from shell (g [CH2O] m-2)
+# SHNMINE   Potential mobile N avaialable today from shell (g [N] m-2)
+# SLAAD     Specific leaf area, excluding weight of C stored in leaves
+#             (cm2[leaf] / g[leaf])
+# SLMDOT    Defoliation due to daily leaf senescence that is lost at PROLFF,
+#              hence, some fraction of the N content is subject to mobilization (g/m2/day)
+# SRCMINE        Today's maximum potential CH2O mobilization from STOR (g [CH2O] m-2)
+# SRMDOT    Daily root senescence that is lost at PRORTF,
+#              hence, some fraction of the N content is subject to mobilization (g/m2/day)
+# SRNMINE   Today's maximum potential N mobilization from STOR (g [N] m-2)
+# SRSCMOB   Mass of STOR CH2O mobilized from tissue lost to natural senescence
+#              (g [CH2O] m-2 d-1)
+# SRSNMOB   Mass of STOR N mobilized from tissue lost to natural senescence
+#              (g [N] m-2 d-1)
+# SSMDOT    Daily petiole senescence that is lost at PROSTF,
+#              hence, some fraction of the N content is subject to mobilization (g/m2/day)
+# SSRMDOT   Daily STOR senescence that is lost at PROSRF,
+#              hence, some fraction of the N content is subject to mobilization (g/m2/day)
+# STCMINE        Today's maximum potential CH2O mobilization from stem (g [CH2O] m-2)
+# STMWT     Dry mass of stem tissue, including C and N
+#             (g[stem] / m2[ground)
+# STNMINE   Today's maximum potential N mobilization from stem (g [N] m-2)
+# STRWT     Dry mass of storage organ tissue, including C and N
+# STSCMOB   Mass of petiole CH2O mobilized from tissue lost to natural senescence
+#              (g [CH2O] m-2 d-1)
+# STSNMOB   Mass of petiole N mobilized from tissue lost to natural senescence
+#              (g [N] m-2 d-1)
+# TABEX     Function subroutine - Lookup utility
+# TCMP      Time constant for senescence of lower leaves because of
+#             excessive self-shading by crop canopy (thermal days)
+# TIMDIF    Integer function which calculates the number of days between
+#             two Julian dates (da)
+# TRLSEN    Total root length density senesced today (cm[root]/ cm2[soil])
+# TRTDY     Total root length per square cm soil yesterday
+#             (cm[root]/cm2[soil])
+# TSCMOB    Total plant CH2O mobilized from tissue lost to natural and
+#              low-light senescence (g [CH2O] m-2 d-1)
+# TSNMOB    Total plant N mobilized from tissue lost to natural and
+#              low-light senescence (g [N] m-2 d-1)
+# VSTAGE    Number of nodes on main stem of plant
+# WRDOTN    Dry weight growth rate of new root tissue including N but not C
+#             reserves (g[root] / m2[ground]-d)
+# WTLF      Dry mass of leaf tissue including C and N
+#             (g[leaf] / m2[ground])
+# XLAI      Leaf area (one side) per unit of ground area
+#             (m2[leaf] / m2[ground])
+# XSENMX(I) V-stage at which maximum fraction of cumulative leaf growth
+#             vulnerable to loss due to water stress is SENMAX(I).
+#             (# leaf nodes)
+# XSTAGE(I) V-stage at which SENPOR(I) fraction of cumulative leaf growth
+#             will have been senesced if no water stress occurred.
+#             (# leaf nodes)
+# YRDOY     Current day of simulation (YYDDD)
+# YRSIM     Start of simulation date (YYDDD)
+#-----------------------------------------------------------------------
+#     END SUBROUTINE FOR_SENMOB
+#-----------------------------------------------------------------------

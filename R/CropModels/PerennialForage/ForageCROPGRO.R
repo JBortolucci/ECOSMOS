@@ -64,8 +64,8 @@ simDataVars$Cumul_FHTOTN    <- 0
 # Carregando subrotinas necessárias
 source("R/CropModels/PerennialForage/ForagePhenocrop.R")
 source("R/CropModels/PerennialForage/ForageGrowth.R")
-source("R/CropModels/PerennialForage/CH2OREF.R")
-source("R/CropModels/PerennialForage/ForageMOW.R")
+# source("R/CropModels/PerennialForage/CH2OREF.R")
+# source("R/CropModels/PerennialForage/ForageMOW.R")
 source("R/CropModels/PerennialForage/HARV.R")
 source("R/CropModels/PerennialForage/UTILS.R")
 
