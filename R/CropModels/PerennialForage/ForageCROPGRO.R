@@ -150,6 +150,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     if (integr[11]){   NO3 <- as.double(NO3_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NO3[L]  <- 1.1}}
     if (integr[12]){   NH4 <- as.double(NH4_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NH4[L]  <- 0.1}}
     
+    
     assign("TMIN",  TMIN  , envir = env)
     assign("NLAYR", NLAYR , envir = env)
     assign("DLAYR", DLAYR , envir = env)
@@ -164,6 +165,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign("NO3",   NO3   , envir = env)
     assign("NH4",   NH4   , envir = env)
     assign("TGRO",  TGRO  , envir = env)
+    
     
     plotVARAUX <- PG
     
@@ -361,7 +363,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #     Seasonal initialization for Dormancy processes
         #-----------------------------------------------------------------------
         
-        DORMANCY(DYNAMIC)
+        DORMANCY(DYNAMIC, DAYL)
         
         #-----------------------------------------------------------------------
         #     Initialize pest coupling point and damage variables, first day only
@@ -483,7 +485,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #     Call Dormancy module to determine today's
       #     dormancy status and adjustment factors.
       #-----------------------------------------------------------------------
-      DORMANCY(DYNAMIC)
+      DORMANCY(DYNAMIC, DAYL)
       
       
       if (ISWDIS == 'Y') {
@@ -538,7 +540,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #      Compute adjustment factors for Dormancy processes
       # -----------------------------------------------------------------------
       
-      DORMANCY(DYNAMIC)
+      DORMANCY(DYNAMIC, DAYL)
       
       
       #-----------------------------------------------------------------------

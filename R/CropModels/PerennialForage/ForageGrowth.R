@@ -2477,6 +2477,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   assign("WCRRT", WCRRT, envir = env)
   assign("WCRSH", WCRSH, envir = env)
   assign("WCRST", WCRST, envir = env)
+  assign("WCRSR", WCRSR, envir = env)
   assign("WNRLF", WNRLF, envir = env)
   assign("WNRRT", WNRRT, envir = env)
   assign("WNRSH", WNRSH, envir = env)
@@ -3683,10 +3684,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
       #                        to natural senescence
       #-----------------------------------------------------------------------
       
-      NDMOLD <-   max(0.0,(WTLF - SLDOT - WCRLF) * PROLFR * 0.16 - WTNLF) 
-      + max(0.0,(STMWT - SSDOT - WCRST) * PROSTR * 0.16 - WTNST)
-      + max(0.0,(RTWT  - SRDOT - WCRRT) * PRORTR * 0.16 - WTNRT)
-      + max(0.0,(STRWT - SSRDOT - WCRSR) * PROSRR * 0.16 - WTNSR)
+      NDMOLD <-   max(0.0,(WTLF - SLDOT - WCRLF) * PROLFR * 0.16 - WTNLF) + max(0.0,(STMWT - SSDOT - WCRST) * PROSTR * 0.16 - WTNST) + max(0.0,(RTWT  - SRDOT - WCRRT) * PRORTR * 0.16 - WTNRT) + max(0.0,(STRWT - SSRDOT - WCRSR) * PROSRR * 0.16 - WTNSR)
       
       if (NDMOLD > (CNOLD/RNO3C*0.16)) {
         NDMOLD <- CNOLD/RNO3C*0.16
@@ -5133,7 +5131,7 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAV
     #-----------------------------------------------------------------------
     #     Compute C and N remaining to add to reserves
     #-----------------------------------------------------------------------
-    PGLEFT <- max(0.0,PGAVL - ((WLDOTN + WSDOTN + WRDOTN) * AGRVG))
+    PGLEFT <- max(0.0,PGAVL - ((WLDOTN + WSDOTN + WRDOTN + WSRDOTN) * AGRVG))
     #-----------------------------------------------------------------------
     #     Scales to 1.0 if PGLEFT is small fraction, and to 0.2 if large
     #     fraction.  Used 0.04, so minor PGLEFT has no effect.  Used square
@@ -5593,6 +5591,7 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAV
   assign("NGRST", NGRST, envir = env)
   assign("NSTRES", NSTRES, envir = env)
   assign("TNLEAK", TNLEAK, envir = env)
+  assign("NLEAK", NLEAK, envir = env)
   assign("WLDOTN", WLDOTN, envir = env)
   assign("WRDOTN", WRDOTN, envir = env)
   assign("WSDOTN", WSDOTN, envir = env)
@@ -6403,9 +6402,9 @@ INCOMP <- function(DYNAMIC) {
   
   ECONO   <- params$ECONO
   ECOTYP  <- params$ECOTYP
-  PLIGSR  <- params$PROSRI
-  PROSRI  <- params$PLIPSR
-  PLIPSR  <- params$PLIGSR
+  PLIGSR  <- params$PLIGSR
+  PROSRI  <- params$PROSRI
+  PLIPSR  <- params$PLIPSR
   POASR   <- params$POASR
   PMINSR  <- params$PMINSR
   PCARSR  <- params$PCARSR
@@ -6549,8 +6548,8 @@ NUPTAK <- function (DYNAMIC, PGAVL) {
     # TODO: Verificar o uso do -99.000000
     SNO3   <- rep(0, NL)    #vem do INSOIL.for
     SNH4   <- rep(0, NL)    #vem do INSOIL.for
-    INO3   <- c(1.10000002,1.10000002,1.10000002,1.10000002,1.10000002,1.10000002,1.10000002,1.10000002,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000)
-    INH4   <- c(0.100000001,0.100000001,0.100000001,0.100000001,0.100000001,0.100000001,0.100000001,0.100000001,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000,-99.0000000)
+    INO3   <- c(0.765724599,0.765695214,0.777774155,0.826896667,0.829848289,0.821437180,0.819682658,0.821198344,0.823067784,0.821296036,0.041169,0.01474,0.013714,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000)
+    INH4   <- c(0.323939919,0.316013902,0.262957454,0.224088147,0.151944980,0.150918275,0.150737450,0.129154205,0.0843000,0.0869814,0.024334,0.0244818,0.0245653,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000)
     
     # TODO: Verificar A necessidade dessa Variável KG2PPM, No origiral era pra ser REMOVIDA!!!
     KG2PPM <- rep(0, NL)
@@ -7494,7 +7493,7 @@ CH2OREF <- function(DYNAMIC, PG, PGAVL){
 #  Calls    : None
 #=======================================================================
 
-DORMANCY <- function (DYNAMIC) {
+DORMANCY <- function (DYNAMIC, DAYL) {
   
   params <- plantList$forage$params
   
@@ -7650,6 +7649,7 @@ DORMANCY <- function (DYNAMIC) {
     PPMFAC   <-  CURV(TYPPMD,FNPMD[1],FNPMD[2],FNPMD[3],FNPMD[4],DAYL)
     PPMFAC   <-  PPMFAC/RDRMM
     PPMFAC   <-  min (PPMFAC,1.0)
+    
     
     if (PPTFAC > 0.0 | PPGFAC < 1.0 | PPMFAC < 1.0) {
       DRMST  <-  'DORM'

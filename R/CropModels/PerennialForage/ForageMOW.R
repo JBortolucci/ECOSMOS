@@ -1812,7 +1812,7 @@ ASMDM  <- function (DYNAMIC, PGAVL) {
 #  Calls    : None
 #=======================================================================
 
-DORMANCY <- function (DYNAMIC) {
+DORMANCY <- function (DYNAMIC, DAYL) {
   
   params <- plantList$forage$params
   
