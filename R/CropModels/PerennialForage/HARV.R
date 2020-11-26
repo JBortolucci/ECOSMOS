@@ -29,7 +29,7 @@ forage_harvest <- function(day, month, year, FHTOTN){
   # if (day == 14 )browser()
   for (I in 1:length(MOW) ){
     
-    if((DayMOW[I] == day) && (MonthMOW[I] == month) && (YearMOW[I] == year)) {
+    if((DayMOW[I] == day) & (MonthMOW[I] == month) & (YearMOW[I] == year)) {
       if ((MOW[I] >= 0)) {
         if(MOW[I]/10 < TOPWT) {
           FHLEAF <- 0
@@ -111,7 +111,7 @@ forage_harvest <- function(day, month, year, FHTOTN){
           
         }
         
-        if((DayMOW[I] == day) && (MonthMOW[I] == month) && (YearMOW[I] == year)) {
+        if((DayMOW[I] == day) & (MonthMOW[I] == month) & (YearMOW[I] == year)) {
           PWTCO <- WTCO 
           PWTLO <- WTLO
           PWTSO <- WTSO

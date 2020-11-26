@@ -138,7 +138,7 @@ PHENOL <- function (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT){
   
   
   #______________________________________________________________        
-  # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   CSDL       <- params$CSDL  #12.58 
   CSDVAR     <- CSDL  #CSDL  #code uses CSDVAR
   PPSEN      <- params$PPSEN  #0.311
@@ -149,7 +149,7 @@ PHENOL <- function (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT){
   PHTHRS[13] <- params$FL_LF  #18.00 # FL-LF - Time between first flower (R1) and end of leaf expansion (photothermal days)
   
   #______________________________________________________________        
-  # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES ECOTYPE COEFFICIENTS: CRGRO047 MODEL
   THVAR      <- params$THVAR  #0.0      # THVAR   Minimum rate of reproductive development under long days and optimal temperature
   #PHTHRS [5,7,9] 
   PHTHRS[1]  <-  params$PL_EM  #3.6     # PL-EM  - Time between planting and emergence (V0) (thermal days)           
@@ -168,7 +168,7 @@ PHENOL <- function (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT){
   SLOBI      <- params$SLOBI  #0.035    # Slope of relationship reducing progress toward flowering if tmin for the day is less than OPTBI
   
   #______________________________________________________________        
-  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   
   # LEAF GROWTH PARAMETERS
   EVMODC <- params$EVMODC #0.0           # Modifier of rate of vegetative node appearance for the first few nodes, primarily used for peanut 
@@ -334,7 +334,7 @@ PHENOL <- function (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT){
     #      instead of TGRO(I) on emergence day - results in inaccurate 
     #      estimate of today's increase in VSTAGE
     #-----------------------------------------------------------------------
-    if ((PLME == 'T') && (YRPLT == YRDOY)) {
+    if ((PLME == 'T') & (YRPLT == YRDOY)) {
       K <- TSELC[2]
       FT[2] <- CURV(CTMP[2],TB[K],TO1[K],TO2[K],TM[K],ATEMP)
       PHZACC[2] <- FT[2] * SDAGE

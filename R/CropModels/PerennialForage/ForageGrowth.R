@@ -13,7 +13,7 @@ simDataVars$TSHNOM  <- 0
 simDataVars$TSHWTS  <- 0
 simDataVars$TSHWTL  <- 0
 simDataVars$TSHWTM  <- 0
-simDataVars$PL      <- rep(0,6)
+#simDataVars$PL      <- rep(0,6)
 simDataVars$TLFAD   <- 0 
 simDataVars$PLFAD   <- 0
 simDataVars$TLFMD   <- 0
@@ -127,7 +127,7 @@ simDataVars$CASM <- 0
 
 simDataVars$ROW <- rep(0.0,6)
 simDataVars$PL  <- rep(0.0,6)
-#------------------ENDSENMOB & DORMANCY VARS---------------------
+#------------------END SENMOB & DORMANCY VARS---------------------
 
 
 #------------------CH2OREF VARS---------------------
@@ -266,7 +266,7 @@ simDataVars$WTNNA  <- 0
 simDataVars$SDPDOT  <- 0
 simDataVars$PUNDOT  <- 0
 
-
+# new in GROW
 simDataVars$WSFDOT  <- 0
 simDataVars$SRNDOT  <- 0
 simDataVars$DWTCO   <- 0
@@ -317,7 +317,6 @@ simDataVars$STSENWT <- 0
 simDataVars$FHLEAF <- 0
 simDataVars$FHSTEM <- 0
 simDataVars$FHVSTG <- 0
-
 #----------------END GROW VARS-------------------
 
 #-----------------ROOTS VARS---------------------
@@ -332,14 +331,12 @@ simDataVars$RTDEP  <-  0
 simDataVars$TRLV  <-  0
 simDataVars$CumRootMass  <-  0
 
-simDataVars$SRCADDOT  <-  0
-simDataVars$SRNADDOT  <-  0
+simDataVars$SRCADDOT  <-  0 #new
+simDataVars$SRNADDOT  <-  0 #new
 simDataVars$RLNSEN  <-  rep(0, 20)
 simDataVars$RLSEN  <-  rep(0, 20)
 simDataVars$RO  <-  0
 simDataVars$RP  <-  0
-
-
 #----------------END ROOTS VARS------------------
 
 #-----------------DEMAND VARS--------------------
@@ -393,7 +390,7 @@ simDataVars$NDMSH  <- 0
 
 simDataVars$YVGROW <- rep(0,6)
 
-# -------new---------------
+# new in DEMAND
 simDataVars$CUMNSF   <- 0
 simDataVars$AGRSTR   <- 0 
 simDataVars$FNINSR   <- 0 
@@ -497,12 +494,13 @@ simDataVars$WLDOTN  <-  0
 simDataVars$WRDOTN  <-  0
 simDataVars$WSDOTN  <-  0
 
+# new in VEGGR
 simDataVars$CUMTUR  <-  0
 simDataVars$FNINLG  <-  0
 simDataVars$FNINRG  <-  0
 simDataVars$FNINSG  <-  0
 
-#canopy
+# canopy
 # simDataVars$CANHT   <-  0
 simDataVars$CUMNHT    <-  0
 simDataVars$PNMLF     <-  0
@@ -515,8 +513,6 @@ simDataVars$ANMINERT  <-  0
 simDataVars$ANMINESH  <-  0
 simDataVars$ANMINESR  <-  0
 simDataVars$ANMINEST  <-  0
-
-
 
 simDataVars$TSCMOB  <-  0
 simDataVars$LFCMINE  <-  0
@@ -534,8 +530,6 @@ simDataVars$CHORECOVER  <-  0
 simDataVars$NLKSPENT  <-  0
 simDataVars$NLKNUSED  <-  0
 simDataVars$NLEAK  <-  0
-
-
 #-----------------END VEGGR VARS------------------
 
 #-------------------PODDET VARS-------------------
@@ -589,9 +583,10 @@ simDataVars$TRNU   <- 0
 simDataVars$UNH4   <- 0
 simDataVars$UNO3   <- 0
 
+#new
 simDataVars$NUPNH4 <- rep(0, 20)
 simDataVars$NUPNO3 <- rep(0, 20)
-simDataVars$TSNMOB <- 0
+simDataVars$TSNMOB <- 0 
 #-----------------END NUPTAK VARS-----------------
 
 #--------------------MOBIL VARS-------------------
@@ -619,7 +614,6 @@ simDataVars$SNO3     <- rep(0,20)
 simDataVars$SNH4     <- rep(0,20)
 #-------------------END NFIX VARS-----------------
 
-
 #------------------RESPIR VARS---------------------
 simDataVars$MAINR  <-  0 #output
 #-----------------END RESPIR VARS------------------
@@ -637,7 +631,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   
   YRDOY <- paste0(iyear,sprintf("%03d", jday))
   
-  PLME   <- 'T' # equivalente ao [.SBX] *PLANTING DETAILS: PLME  
+  PLME   <- 'T' # equivalente ao [.SBX] *PLANTING DETAILS: PLME | Henrique: levar para template [2020-11-26]
   IHARI  <- 'M' # TODO VERIFICAR (provável que pertença ao '[.SBX] *HARVEST DETAILS')
   PLTPOP <- config$plant1$plantPop  #40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
   
@@ -645,7 +639,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   ROWSPC <- config$plant1$rowSpacing / 100 # 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
   
   
-  SDWTPL <- 2000 # equivalente ao [.SBX] *PLANTING DETAILS: PLWT
+  SDWTPL <- 2000 # equivalente ao [.SBX] *PLANTING DETAILS: PLWT | Henrique: levar para template [2020-11-26]
   
   TNCFAC   <- params$TNCFAC
   PLIGSR   <- params$PLIGSR
@@ -673,7 +667,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   
   
   #______________________________________________________________        
-  # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   SDLIP <- params$SDLIP  #0.200 # Fraction oil in seeds (g(oil)/g(seed)) [from VAR# BR0001]
   SDPRO <- params$SDPRO  #0.400 # Fraction protein in seeds (g(protein)/g(seed)) [from VAR# BR0001]
   WTPSD <- params$WTPSD  #0.19  # Maximum weight per seed (g)
@@ -683,7 +677,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   
   
   #______________________________________________________________        
-  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*PLANT COMPOSITION VALUES
   PROLFF  <- params$PROLFF  #0.112
   PROSTF  <- params$PROSTF  #0.035
@@ -774,7 +768,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       # ROWSPC = ROWSPC / 100.
       
       
-      if ((ROWSPC > 0.0) && (PLTPOP > 0.0)) {
+      if ((ROWSPC > 0.0) & (PLTPOP > 0.0)) {
         BETN <- 1 / (ROWSPC*PLTPOP)
       } else {
         BETN <- 0
@@ -1175,7 +1169,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #     pest and freeze-damaged tissue and also mobilization (from other than natural senescence 
     #      and low-light senescence.
     # ----------------------------------------------------------------------
-    if((WTLF < 0.0) && (FHLEAF == 0)) {
+    if((WTLF < 0.0) & (FHLEAF == 0)) {
       WLDOT <- WLDOT + CADLF - LFCADDM + (NADLF - LFNADDM)/0.16
     }
     
@@ -1221,7 +1215,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #      ENDIF
     #--------------------------------------------
     
-    if ((STMWT > 0.0) && (FHSTEM == 0)) {
+    if ((STMWT > 0.0) & (FHSTEM == 0)) {
       WSDOT <- WSDOT + CADST - STCADDM + (NADST - STNADDM) / 0.16
     }
     
@@ -1548,7 +1542,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #      ENDIF
     #--------------------------------------------
     
-    if ((WTLF > 0.0) && (FHLEAF == 0.0)) {
+    if ((WTLF > 0.0) & (FHLEAF == 0.0)) {
       WRCLDT <- WRCLDT + CADLF - LFCADDM
     }
     
@@ -1631,7 +1625,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #--------------------------------------------
     
     #      WRCSDT = WSDOTN * ALPHS - CRUSST - CSOFF
-    if ((STMWT > 0.0) && (FHSTEM == 0.0)) {
+    if ((STMWT > 0.0) & (FHSTEM == 0.0)) {
       WRCSDT <- WRCSDT + CADST - STCADDM
     }
     
@@ -1818,8 +1812,6 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #      ENDIF
     #--------------------------------------------
     
-    
-    # ALTERADO: .LT. to <
     if (NLOFF < 0.0) {
       NLOFF <- 0.0
     }
@@ -1845,7 +1837,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #        ENDIF
     #      ENDIF
     #--------------------------------------------
-    if (WTLF > 0.0 && FHLEAF == 0.0)  {
+    if (WTLF > 0.0 & FHLEAF == 0.0)  {
       NLDOT <- NLDOT + NADLF - LFNADDM
     }
     
@@ -1888,7 +1880,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     
     #--------------------------------------------
     
-    if (STMWT > 0.0 && FHSTEM == 0.0) {
+    if (STMWT > 0.0 & FHSTEM == 0.0) {
       NSDOT <- NSDOT + NADST - STNADDM
     }
     
@@ -1999,7 +1991,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #-----------------------------------------------------------------------
     #     Total nitrogen in the storage tissues
     #-----------------------------------------------------------------------
-    if ((NSRDOT < 0.0) && (abs(NSRDOT) > WTNSR)) {
+    if ((NSRDOT < 0.0) & (abs(NSRDOT) > WTNSR)) {
       NSRDOT <- - WTNSR
     }
     WTNSR <- WTNSR + NSRDOT
@@ -2114,7 +2106,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #-----------------------------------------------------------------------
     #    Nodules
     #-----------------------------------------------------------------------
-    if (ISWNIT == 'Y' && ISWSYM == 'Y') {
+    if (ISWNIT == 'Y' & ISWSYM == 'Y') {
       DWNODA <- DWNODA + NODGR
       WTNFX <- WTNFX + NFIXN + (NODGR * 0.16 * PRONOD) - NTOVR
       WTNNAG <- DWNODA * 0.16 * PRONOD
@@ -2153,7 +2145,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       PCNST <- 0.0
     }
     
-    if ((STRWT > 0.0) && (STRWT > WTNSR) && (WTNSR > 0.0)) {
+    if ((STRWT > 0.0) & (STRWT > WTNSR) & (WTNSR > 0.0)) {
       PCNSR <- WTNSR / STRWT * 100.0
     } else {
       PCNSR <- 0.0
@@ -2366,7 +2358,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     AREALF <- max(AREALF, 0.0)
     
     XLAI   <- AREALF / 10000.
-    if ((AREALF > 0.00001) && (WTLF > 0.0)) {
+    if ((AREALF > 0.00001) & (WTLF > 0.0)) {
       SLA    <- AREALF / WTLF
       SLAAD  <- AREALF / (WTLF - WCRLF)
       if (SLA > 999.) SLA     <- -99.  # TODO: Vericar o valor -99 
@@ -2418,7 +2410,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
         return()
       }
       
-      if (IHARI != 'R' && IHARI != 'D') {
+      if (IHARI != 'R' & IHARI != 'D') {
         if ((RTWT < 0.00001) || (WTLF < 0.00001)) {
           STRESS(AGEFAC, iyear, jday)
           return()
@@ -2625,7 +2617,7 @@ ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT) {
   PLME      <- 'T'      # equivalente ao [.SBX]  #TODO: Levar para o template??? Leandro 12/11/2020
   
   #______________________________________________________________        
-  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*ROOT PARAMETERS
   RFAC1  <- params$RFAC1   #7500.0
   RLDSM  <- params$RLDSM   #0.1
@@ -2660,7 +2652,7 @@ ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT) {
     #     ROOT DEPTH INCREASE RATE WITH TIME, cm/physiological day
     #-----------------------------------------------------------------------
     # if (CROP != 'FA' & ISWWAT != 'N') {
-    if ((CROP != 'FA') && (ISWWAT != 'N')) { #TODO verificar conexão com initial_conditions.csv
+    if ((CROP != 'FA') & (ISWWAT != 'N')) { #TODO verificar conexão com initial_conditions.csv
       RFAC2 <- TABEX(YRTFAC,XRTFAC,0.0,4)
     }
     
@@ -3032,7 +3024,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
   KCOLD     <- params$KCOLD  
   
   #______________________________________________________________        
-  # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   SDLIP  <- params$SDLIP   #0.200 # Fraction oil in seeds (g(oil)/g(seed))
   SDPRO  <- params$SDPRO   #0.400 # Fraction protein in seeds (g(protein)/g(seed))
   SLAVAR <- params$SLAVR  #370   # Specific leaf area of cultivar under standard growth conditions (cm2/g)
@@ -3040,12 +3032,12 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
   THRESH <- params$THRSH  #78    # Threshing percentage. The maximum ratio of (seed/(seed+shell)) at maturity. Causes seeds to stop growing as their dry weight
   XFRUIT <- params$XFRT  #1.000  # Maximum fraction of daily growth that is partitioned to seed + shell 
   #______________________________________________________________        
-  # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES ECOTYPE COEFFICIENTS: CRGRO047 MODEL
   # ECO# SB0602
   LNGSH <- params$LNGSH  #10.0  # Time required for growth of individual shells (photothermal days)
   
   #______________________________________________________________        
-  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   # !*VEGETATIVE PARTITIONING PARAMETERS
   XLEAF   <- params$XLEAF   #c( 0.0,  1.5,   3.3,   5.0,  7.8,  10.5,  30.0,  40.0)
   YLEAF   <- params$YLEAF   #c(0.41, 0.42,  0.42,  0.41, 0.36,  0.32,  0.31,  0.31)
@@ -3823,15 +3815,15 @@ SDCOMP <- function (TAVG) {
   params <- plantList$forage$params
   
   #______________________________________________________________        
-  # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   SDLIP <- params$SDLIP   #0.200 #Fraction oil in seeds (g(oil)/g(seed)) 
   SDPRO <- params$SDPRO   #0.400 #Fraction protein in seeds (g(protein)/g(seed)) 
   
   #______________________________________________________________        
-  # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES ECOTYPE COEFFICIENTS: CRGRO047 MODEL
   
   #______________________________________________________________        
-  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*SEED  COMPOSITION VALUES 
   CARMIN <- params$CARMIN  #0.180
   LIPOPT <- params$LIPOPT  #23.65 
@@ -3920,7 +3912,7 @@ PODS <- function(DYNAMIC, DAS, NAVL, ISWWAT, iyear, jday, PGAVL) {
   NLAYR <- nsoilay
   
   #______________________________________________________________        
-  # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   # XFRT    <- 1.000 # Maximum fraction of daily growth that is partitioned to seed + shell
   SDPDVR  <- params$SDPDV  #2.05 # ***SDPDV no .CUL*** Average seed per pod under standard growing conditions (#/pod)
   PODUR   <- params$PODUR   #10.0  # Time required for cultivar to reach final pod load under optimal conditions (photothermal days)
@@ -3929,13 +3921,13 @@ PODS <- function(DYNAMIC, DAS, NAVL, ISWWAT, iyear, jday, PGAVL) {
   SFDUR   <- params$SFDUR   #21.0  # Seed filling duration for pod cohort at standard growth conditions (photothermal days)
   
   #______________________________________________________________        
-  # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES ECOTYPE COEFFICIENTS: CRGRO047 MODEL
   # ECO# SB0602
   LNGSH <- params$LNGSH  #10.0 #Time required for growth of individual shells (photothermal days)
   
   
   #______________________________________________________________        
-  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*SEED AND SHELL GROWTH PARAMETERS
   DSWBAR  <- params$DSWBAR  #15.0
   SETMAX  <- params$SETMAX  #0.60
@@ -4581,7 +4573,7 @@ PODCOMP <- function(DYNAMIC, NAVL) {
   params <- plantList$forage$params
   
   #______________________________________________________________        
-  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*PLANT COMPOSITION VALUES
   PLIGSD <- params$PLIGSD  #0.020 
   PMINSD <- params$PMINSD  #0.025
@@ -4882,7 +4874,7 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAV
   NSTFAC  <- params$NSTFAC
   
   #______________________________________________________________        
-  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*CARBON AND NITROGEN MINING PARAMETERS
   CMOBMX <- params$CMOBMX  #0.024
   #!*RESPIRATION PARAMETERS
@@ -5816,13 +5808,13 @@ CANOPY <- function (DYNAMIC, DAS, PAR, TGRO) {
   NSLA <- params$NSLA
   
   #______________________________________________________________        
-  # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES ECOTYPE COEFFICIENTS: CRGRO047 MODEL
   # ECO# SB0602
   RHGHT  <- params$RHGHT    #0.9
   RWIDTH <- params$RWDTH   #1.0 #RWDTH no .ECO
   
   #______________________________________________________________        
-  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*PHOTOSYNTHESIS PARAMETERS
   KCAN   <- params$KCAN   #0.67
   #!*CANOPY HEIGHT AND WIDTH GROWTH PARAMETERS
@@ -5946,7 +5938,7 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
   
   #-----------------------------------------------------------------------
   #______________________________________________________________        
-  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*POD LOSS PARAMETERS
   DWC    <- params$DWC  #6.0
   PR1DET <- params$PR1DET  #0.3961
@@ -6052,7 +6044,7 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
           MSHELN[NPP] <- SHELN[NPP]
         }
         if (WTSD[NPP] + WTSHE[NPP] >= 0.01) {
-          if (WTSD[NPP] + WTSHE[NPP] <= WPODY[NPP] &&  WTSD[NPP] > 0.0) {
+          if (WTSD[NPP] + WTSHE[NPP] <= WPODY[NPP] &  WTSD[NPP] > 0.0) {
             DAYS[NPP] <-  DAYS[NPP] + 1.
           }
           
@@ -6155,7 +6147,7 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
 SENES <- function (DYNAMIC, DAS, PAR) {
   params <- plantList$forage$params
   #______________________________________________________________        
-  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*LEAF SENESCENCE FACTORS
   ICMP   <- params$ICMP    #0.80
   TCMP   <- params$TCMP    #10.0
@@ -6315,7 +6307,7 @@ FREEZE <- function(TMIN, iyear, jday) {
   FREEZ1  <- params$FREEZ1
   
   #______________________________________________________________        
-  # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*LEAF SENESCENCE FACTORS
   FREEZ2 <- params$FREEZ2  #-5.00
   assign("FREEZ2",FREEZ2, envir = env)
@@ -6404,12 +6396,12 @@ INCOMP <- function(DYNAMIC) {
   PCARSR  <- params$PCARSR
   
   #______________________________________________________________        
-  # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   SDLIP <- params$SDLIP  #0.200 #Fraction oil in seeds (g(oil)/g(seed))  
   SDPRO <- params$SDPRO  #0.400 #Fraction protein in seeds (g(protein)/g(seed))  
   
   #______________________________________________________________        
-  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*PLANT COMPOSITION VALUES
   PCARLF   <- params$PCARLF    #0.405
   PCARNO   <- params$PCARNO    #0.450
@@ -6525,7 +6517,7 @@ NUPTAK <- function (DYNAMIC, PGAVL) {
   RNO3C  <- params$RNO3C
   
   #______________________________________________________________        
-  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*ROOT PARAMETERS
   RTNO3  <- params$RTNO3  #0.006
   RTNH4  <- params$RTNH4  #0.006
@@ -6934,7 +6926,7 @@ MOBIL <- function(DYNAMIC) {
 NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, DLAYR, NLAYR,SAT, ST, SW 
   params <- plantList$forage$params
   #______________________________________________________________
-  # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  # *PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*NITROGEN FIXATION PARAMETERS
   TYPFXT <- params$TYPFXT  #'LIN'
   TYPNGT <- params$TYPNGT  #'LIN'
@@ -7188,7 +7180,7 @@ RESPIR <- function (DAS, PG) {
   STMMRC    <- params$STMMRC
   STRMRC    <- params$STRMRC
   
-  #*SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
+  #*PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #*RESPIRATION PARAMETERS
   RES30C <- params$RES30C   #3.5E-04
   R30C2  <- params$R30C2   #.0040

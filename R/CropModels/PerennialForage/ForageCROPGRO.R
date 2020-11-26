@@ -370,7 +370,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #     Initialize pest coupling point and damage variables, first day only
         #         Moved to FOR_PEST module - CHP
         #-----------------------------------------------------------------------
-        if ((CROP != 'FA') && (ISWDIS == 'Y')) {
+        if ((CROP != 'FA') & (ISWDIS == 'Y')) {
           # CALL FOR_PEST(CONTROL, ISWITCH, 
           #               &    AREALF, CLW, CSW, LAGSD, LNGPEG, NR2, PGAVL,    !Input
           #               &    PHTIM, PLTPOP, RTWT, SLA, SLDOT, SOILPROP,      !Input
@@ -1005,8 +1005,11 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         forage_harvest(iday, imonth, iyear, FHTOTN)
         
-        Cumul_FHTOT  <- Cumul_FHTOT  + FHWAH
+        Cumul_FHTOT  <- Cumul_FHTOT  + FHWAH   #TODO Henrique: verificar valores para acumular [2020-11-26]
         Cumul_FHTOTN <- Cumul_FHTOTN + FHTOTN
+        
+        assign("Cumul_FHTOT", Cumul_FHTOT, envir = env)
+        assign("Cumul_FHTOTN", Cumul_FHTOTN, envir = env)
         
         #-----------------------------------------------------------------------
         #     End of DAS > NVEG0 if construct
@@ -1142,7 +1145,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     if(cropy == 1) {
       
-      if ( RSTAGE == 8 | frost ) {
+      if ( RSTAGE == 8 | frost ) { #TODO Henrique: adapt for Perennial Forages (perhaps take a look at cane may help) [2020-11-26]
         # frost is when TMIN < FREEZE2 (Temperature below which plant growth stops completely)
         # R8 is the physiological maturity, usually when growers should harvest the crop
         # TODO 3rd option to be implemented: user chooses the harvesting date
