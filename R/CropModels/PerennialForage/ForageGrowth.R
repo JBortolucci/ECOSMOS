@@ -2622,7 +2622,7 @@ ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT) {
   
   NLAYR <- nsoilay
   
-  PLME      <- 'T'      # equivalente ao [.SBX]  # TODO: Levar para o template??? Leandro 12/11/2020
+  PLME      <- 'T'      # equivalente ao [.SBX]  #TODO: Levar para o template??? Leandro 12/11/2020
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -2660,7 +2660,7 @@ ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT) {
     #     ROOT DEPTH INCREASE RATE WITH TIME, cm/physiological day
     #-----------------------------------------------------------------------
     # if (CROP != 'FA' & ISWWAT != 'N') {
-    if ((CROP != 'FA') && (ISWWAT != 'N')) {
+    if ((CROP != 'FA') && (ISWWAT != 'N')) { #TODO verificar conexão com initial_conditions.csv
       RFAC2 <- TABEX(YRTFAC,XRTFAC,0.0,4)
     }
     
@@ -5366,10 +5366,7 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAV
       #      Current N content is WTNxx minus N lost in today's natural senescence
       #-----------------------------------------------------------------------
       
-      ONDMOLD <- max(0.0,(WTLF - SLDOT - WCRLF) * PROLFR * 0.16 - (WTNLF -(SLDOT * PCNL/100 - LFSNMOB))) 
-      + max(0.0,(STMWT - SSDOT - WCRST) * PROSTR * 0.16 - (WTNST - (SSDOT * PCNST /100 - STSNMOB)))
-      + max(0.0,(RTWT  - SRDOT - WCRRT) * PRORTR * 0.16 - (WTNRT - (SRDOT * PCNRT / 100 - RTSNMOB)))
-      + max(0.0,(STRWT - SSRDOT - WCRSR) * PROSRR * 0.16 - (WTNSR -(SSRDOT * PCNSR / 100 - SRSNMOB)))
+      ONDMOLD <- max(0.0,(WTLF - SLDOT - WCRLF) * PROLFR * 0.16 - (WTNLF -(SLDOT * PCNL/100 - LFSNMOB)))  + max(0.0,(STMWT - SSDOT - WCRST) * PROSTR * 0.16 - (WTNST - (SSDOT * PCNST /100 - STSNMOB))) + max(0.0,(RTWT  - SRDOT - WCRRT) * PRORTR * 0.16 - (WTNRT - (SRDOT * PCNRT / 100 - RTSNMOB))) + max(0.0,(STRWT - SSRDOT - WCRSR) * PROSRR * 0.16 - (WTNSR -(SSRDOT * PCNSR / 100 - SRSNMOB)))
       
       #-----------------------------------------------------------------------
       #       10/03/05 SJR Limit refill to N uptake + TSBNMOB to
@@ -5460,10 +5457,7 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAV
       #                        to natural senescence
       #-----------------------------------------------------------------------
       
-      DNADRAT <-   PWLF * max(0.0,(WTLF - SLDOT - WCRLF)   * PROLFR * 0.16 - (WTNLF -(SLDOT * PCNL/100 - LFSNMOB))) 
-      + PWST * max(0.0,(STMWT - SSDOT - WCRST)  * PROSTR * 0.16 - (WTNST -(SSDOT * PCNST/100 - STSNMOB))) 
-      + PWRT * max(0.0,(RTWT  - SRDOT - WCRRT)  * PRORTR * 0.16 - (WTNRT -(SRDOT * PCNRT/100 - RTSNMOB))) 
-      + PWSR * max(0.0,(STRWT - SSRDOT - WCRSR) * PROSRR * 0.16 - (WTNSR -(SSRDOT * PCNSR/100 - SRSNMOB))) 
+      DNADRAT <-   PWLF * max(0.0,(WTLF - SLDOT - WCRLF)   * PROLFR * 0.16 - (WTNLF -(SLDOT * PCNL/100 - LFSNMOB))) + PWST * max(0.0,(STMWT - SSDOT - WCRST)  * PROSTR * 0.16 - (WTNST -(SSDOT * PCNST/100 - STSNMOB))) + PWRT * max(0.0,(RTWT  - SRDOT - WCRRT)  * PRORTR * 0.16 - (WTNRT -(SRDOT * PCNRT/100 - RTSNMOB))) + PWSR * max(0.0,(STRWT - SSRDOT - WCRSR) * PROSRR * 0.16 - (WTNSR -(SSRDOT * PCNSR/100 - SRSNMOB))) 
       
       
       if (DNADRAT > 0.0) {

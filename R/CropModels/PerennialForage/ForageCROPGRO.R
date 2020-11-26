@@ -17,6 +17,7 @@ simDataVars$DSSATdb <- read.table(file = 'C:/DSSAT47/Brachiaria/INTEGRACAO_CONTR
 # T <- DSSAT/fortran, F <- Ecosmos 
                       # PG  DAYL PAR  TMIN TAVG TGRO TURFAC SWFAC  SW  ST  NO3  NH4
 simDataVars$integr <- c(T  ,T   ,T   ,T   ,T   ,T   ,T     ,T     ,T  ,T  ,T   ,T)
+#simDataVars$integr <- c(F  ,F   ,F   ,F   ,F   ,F   ,F     ,F     ,F  ,F  ,T   ,T)
 # OK  OK   OK   OK   OK   !   OK      OK
 
 NL <- 20
@@ -136,7 +137,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #_______________________________________________________________________________  
     # Vars solved by DSSAT/CROPGRO and ECOSMOS  
     
-    #                  VARS FROM DSSAT/CROGRO                               |      VARS FROM ECOSMOS
+    #                  VARS FROM DSSAT/CROPGRO                              |      VARS FROM ECOSMOS
     ifelse(integr[1],  PG <- VARAUX$PG[VARAUX$DAS==DAS]                     ,      PG <- adan * (30/12) * 1000 ) # converter kg C / m2.d para g CH2O / m2.d
     ifelse(integr[2],  DAYL <- TGRO_T$V4[TGRO_T$V1==DAS & TGRO_T$V2==1]     ,      DAYL <- daylength/60. ) # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
     ifelse(integr[3],  PAR <- VARAUX$PAR[VARAUX$DAS==DAS]                   ,      PAR <- adpar* (86400/1000000)* 4.59 ) # (86400/1000000) W/m2 para MJ/m2.d  and 4.59 # MJ/m2.d para mol/m2.d 

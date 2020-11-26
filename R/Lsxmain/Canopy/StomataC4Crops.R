@@ -57,7 +57,7 @@ StomataC4Crops <- function(i) {
   qsat34 <- qsat (esat34, psurf)
   rh34 <- max (0.30, airHumidity / qsat34)
   
-  q10 <- 2.5  
+  q10 <- 2.92 # Henrique: alterado após análise de dados de milho em Nebraska [2020-11-26] (talvez trazer como parâmetro?)
   
   rwork <- 3.47e-03 - 1 / canopyTemp
   tleaf <- canopyTemp - 273.16
