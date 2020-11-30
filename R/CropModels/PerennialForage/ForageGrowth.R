@@ -791,6 +791,9 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       #-----------------------------------------------------------------------
     }
     
+    PSRSRFL <- STRSRFL
+    PSRLYR1 <- STRLYR1
+    
     ALFDOT <- 0.0
     AREALF <- 0.0
     AREAH  <- 0.0
@@ -4828,7 +4831,7 @@ PODCOMP <- function(DYNAMIC, NAVL) {
 #--------------END PODS FUNCTION---------------
 
 #---------------VEGGR FUNCTION-----------------
-VEGGR <- function(DYNAMIC, DAS, iyear, jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) {                 
+VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {                 
   
   environment(CANOPY) <- env
   environment(NLKDIST) <- env
@@ -5522,7 +5525,11 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAV
     
     if (NLEAK > 0.0) {
       
-      NLKDIST(CHORECOVER, NLKSPENT, NLKNUSED)
+      auxRetorno   <- NLKDIST(CHORECOVER, NLKSPENT, NLKNUSED, NLEAK)
+      CHORECOVER   <- auxRetorno$CHORECOVER
+      NLKSPENT     <- auxRetorno$NLKSPENT
+      NLKNUSED     <- auxRetorno$NLKNUSED
+      NLEAK        <- auxRetorno$NLEAK
       
       if (NLEAK < 0.0001) NLEAK <- 0.0
       
@@ -5603,10 +5610,9 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAV
   assign("STSCMOB", STSCMOB, envir = env)
   assign("TSNMOB", TSNMOB, envir = env)
   assign("TNLKCHK", TNLKCHK, envir = env)
-  
-  
-  
-  
+  assign("CHORECOVER", CHORECOVER, envir = env)
+  assign("NLKSPENT", NLKSPENT, envir = env)
+  assign("NLKNUSED", NLKNUSED, envir = env)
   
   return()
 }
@@ -5620,8 +5626,8 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAV
 #        of CH2O was used for growth and liberation of just enough
 #        N for that new growth, no excess.
 #-----------------------------------------------------------------------
-# TODO: Verificar Parêtros da Função
-NLKDIST <- function (CHORECOVER, NLKSPENT, NLKNUSED) {
+# TODO: Verificar Parâmetros da Função
+NLKDIST <- function (CHORECOVER, NLKSPENT, NLKNUSED, NLEAK) {
   
   params  <- plantList$forage$params
   
@@ -5775,11 +5781,11 @@ NLKDIST <- function (CHORECOVER, NLKSPENT, NLKNUSED) {
   assign("NRUSRT", NRUSRT, envir = env)
   assign("NRUSSR", NRUSSR, envir = env)
   assign("NRUSST", NRUSST, envir = env)
-  assign("NLEAK", NLEAK, envir = env)
+  # assign("NLEAK", NLEAK, envir = env)
   assign("NGRLF", NGRLF, envir = env)
-  assign("CHORECOVER", CHORECOVER, envir = env)
-  assign("NLKSPENT", NLKSPENT, envir = env)
-  assign("NLKNUSED", NLKNUSED, envir = env)
+  # assign("CHORECOVER", CHORECOVER, envir = env)
+  # assign("NLKSPENT", NLKSPENT, envir = env)
+  # assign("NLKNUSED", NLKNUSED, envir = env)
   assign("NGRRT", NGRRT, envir = env)
   assign("NGRST", NGRST, envir = env)
   assign("NGRSR", NGRSR, envir = env)
@@ -5790,7 +5796,7 @@ NLKDIST <- function (CHORECOVER, NLKSPENT, NLKNUSED) {
   assign("WSDOTN", WSDOTN, envir = env)
   assign("WSRDOTN", WSRDOTN, envir = env)
   assign("AGRVG", AGRVG, envir = env)
-  return()
+  return(list(CHORECOVER = CHORECOVER, NLKSPENT = NLKSPENT, NLKNUSED = NLKNUSED, NLEAK = NLEAK))
 }
 
 
@@ -6536,6 +6542,8 @@ NUPTAK <- function (DYNAMIC, PGAVL) {
     SNH4   <- rep(0, NL)    #vem do INSOIL.for
     INO3   <- c(0.765724599,0.765695214,0.777774155,0.826896667,0.829848289,0.821437180,0.819682658,0.821198344,0.823067784,0.821296036,0.041169,0.01474,0.013714,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000)
     INH4   <- c(0.323939919,0.316013902,0.262957454,0.224088147,0.151944980,0.150918275,0.150737450,0.129154205,0.0843000,0.0869814,0.024334,0.0244818,0.0245653,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000)
+    #INO3   <- rep(10, NL)
+    #INH4   <- rep(10, NL)
     
     # TODO: Verificar A necessidade dessa Variável KG2PPM, No origiral era pra ser REMOVIDA!!!
     KG2PPM <- rep(0, NL)
@@ -7190,7 +7198,7 @@ RESPIR <- function (DAS, PG) {
   
   
   
-  if ((TRSWITCH == "M") || (TRSWITCH == "m")){
+  if ((TRSWITCH == "M") | (TRSWITCH == "m")){
     for (H in 1:24) {
       TRSFAC <- TRSFAC + 0.044+0.0019*TGRO[H]+0.001*TGRO[H]**2
     }
@@ -8200,7 +8208,7 @@ SENMOB <- function (DYNAMIC, DAS, ISWWAT, PAR) {
       #     after R7.
       #-----------------------------------------------------------------------
     } else if (DAS > NR7) {
-      if(WTLF > 0.0001) {
+      if(WTLF > 0.0) {
         #          SLMDOT = WTLF * SENRT2
         #          SLNDOT = SLDOT
         SLMDOT <- 0.0

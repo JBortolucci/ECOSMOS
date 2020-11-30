@@ -57,7 +57,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
       # when there isn't explicitily values for the initial conditions
       simInstances[[id]]$ic <- data.frame(
         SimIDic = rep(id, simInstances[[id]]$nsoilay),
-        SWic    = simInstances[[id]]$layers$SDUL,       # Soi water arbitrarily starting at field capacity (sfield) aka drained upper limit (DUL)
+        SWic    = simInstances[[id]]$layers$SDUL,       # Soil water arbitrarily starting at field capacity (sfield) aka drained upper limit (DUL)
         STic    = rep(20, simInstances[[id]]$nsoilay) ) # Soil temp arbitrarily set as 20 ºC
     }
 
@@ -141,6 +141,9 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     
     # Henrique & Leandro: irrigation feature [2020-11-06]
     try(ReadDailyIrrigationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)
+    
+    # Henrique & Leandro: fertilization feature [2020-11-30]
+    try(ReadDailyFertilizationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)
   }
   
   # TODO: Nessa prieira versão uma planta roda após a outra, tal como especificado no arquivo de configuração.

@@ -17,7 +17,7 @@ simDataVars$DSSATdb <- read.table(file = 'C:/DSSAT47/Brachiaria/INTEGRACAO_CONTR
 # T <- DSSAT/fortran, F <- Ecosmos 
                       # PG  DAYL PAR  TMIN TAVG TGRO TURFAC SWFAC  SW  ST  NO3  NH4
 simDataVars$integr <- c(T  ,T   ,T   ,T   ,T   ,T   ,T     ,T     ,T  ,T  ,T   ,T)
-#simDataVars$integr <- c(F  ,F   ,F   ,F   ,F   ,F   ,F     ,F     ,F  ,F  ,T   ,T)
+#simDataVars$integr <- c(F  ,F   ,F   ,F   ,F   ,F   ,F     ,F     ,F  ,F  ,F   ,F)
 # OK  OK   OK   OK   OK   !   OK      OK
 
 NL <- 20
@@ -144,12 +144,12 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     ifelse(integr[4],  TMIN  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]    ,      TMIN <- tmin - 273.16 )
     ifelse(integr[5],  TAVG  <- VARAUX$TAVG[VARAUX$DAS==DAS]                ,      TAVG <- mean(ta_h) - 273.16 )
     ifelse(integr[6],  TGRO  <- TGRO_T$V3[TGRO_T$V1==DAS]                   ,      TGRO <- ta_h - 273.16 )
-    if (integr[7]) {   TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]          }else{   if(stresstl<=0.9) TURFAC = (1./RWUEP1) * stresstl}
-    if (integr[8]) {   SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]           }else{   if(stresstl<=0.9) SWFAC  = stresstl}
+    if (integr[7]) {   TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]          }else{   if(stresstl<=0.9) {TURFAC = (1./RWUEP1) * stresstl} else {TURFAC=1} }
+    if (integr[8]) {   SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]           }else{   if(stresstl<=0.9) {SWFAC  = stresstl} else {SWFAC=1} }
     if (integr[9]) {   SW <- as.double(SW_T[DAS,][-1])                    }else{   for (L in 1:NLAYR) {SW[L]  <- wsoi[L] * poros[L]}}
     if (integr[10]){   ST <- as.double(ST_T[DAS,][-1])                    }else{   for (L in 1:NLAYR) {ST[L]  <- tsoi[L] - 273.16}}
-    if (integr[11]){   NO3 <- as.double(NO3_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NO3[L]  <- 1.1}}
-    if (integr[12]){   NH4 <- as.double(NH4_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NH4[L]  <- 0.1}}
+    if (integr[11]){   NO3 <- as.double(NO3_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NO3[L]  <- 10}}
+    if (integr[12]){   NH4 <- as.double(NH4_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NH4[L]  <- 10}}
     
     
     assign("TMIN",  TMIN  , envir = env)
@@ -428,7 +428,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         PODS(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday,PGAVL)
         
         #-----------------------------------------------------------------------
-        VEGGR (DYNAMIC,DAS,iyear,jday,CMINEP,CSAVEV,NAVL,PAR,PG,PGAVL)
+        VEGGR (DYNAMIC,DAS,iyear,jday,CSAVEV,NAVL,PAR,PG,PGAVL)
         
         #-----------------------------------------------------------------------
         #     Call leaf senescence routine for initialization
@@ -564,7 +564,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         PODS("EMERG", DAS, NAVL,ISWWAT,iyear,jday,PGAVL)
         #-----------------------------------------------------------------------
-        VEGGR ("EMERG",DAS,iyear,jday, CMINEP, CSAVEV,   NAVL,  PAR, PG, PGAVL)
+        VEGGR ("EMERG",DAS,iyear,jday, CSAVEV,   NAVL,  PAR, PG, PGAVL)
         
         #-----------------------------------------------------------------------
       }
@@ -925,7 +925,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #     Call routine to compute actual vegetative growth, C to mine or add
         #-----------------------------------------------------------------------
-        VEGGR (DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV,   NAVL,  PAR, PG, PGAVL)
+        VEGGR (DYNAMIC,DAS,iyear,jday, CSAVEV,   NAVL,  PAR, PG, PGAVL)
         
         #-----------------------------------------------------------------------
         #     Compute C required for LF, ST, and RT growth, and remaining C and N
@@ -953,7 +953,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
         #     Call freeze damage routine if TMIN is less than FREEZ1 deg C
         #-----------------------------------------------------------------------
-        if ((TMIN < FREEZ1) || (TMIN < FREEZ2)) {
+        if ((TMIN < FREEZ1) | (TMIN < FREEZ2)) {
           FREEZE(TMIN, iyear, jday)
         } else {
           WLFDOT  <- 0.0

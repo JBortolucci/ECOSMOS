@@ -259,6 +259,7 @@ GeneralModel <- function(simVars = NULL) {
     environment(ReadDailyStationData) <- simVars
     environment(ReadMethourlyData)    <- simVars
     environment(UseDailyStationData)  <- simVars
+    environment(UseDailyFertilizationData)  <- simVars # # Henrique & Leandro: fertilization feature [2020-11-30]
     
     
     environment(Cropupdate)              <- simVars
@@ -392,6 +393,7 @@ GeneralModel <- function(simVars = NULL) {
         simVars$cdays <- simVars$cdays + 1
         
         UseDailyStationData(day, month, year)
+        UseDailyFertilizationData(day, month, year) # Henrique & Leandro: fertilization feature [2020-11-30]
         
         
         # TODO: Testando, comentar caso queira rodar o modelo corretamente (ou antes de terminar de testar)
