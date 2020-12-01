@@ -116,7 +116,7 @@ inisoil <- function() {
       poros[k]   <-  tab.DSSAT$SSAT[k]      # porosity
       sfield[k]  <- (1 / poros[k]) * tab.DSSAT$SDUL[k]  # field capacity
       swilt[k]   <- (1 / poros[k]) * tab.DSSAT$SLLL[k]  # wilting point
-      hydraul[k] <- tab.DSSAT$SSKS[k] / (100 * 3600)    
+      hydraul[k] <- tab.DSSAT$SSKS[k] / (100 * 3600)    # saturated hydraulic conductivity (m s-1):
       suction[k] <- swilt[k]*1.5
       bex[k]     <- tab.DSSAT$BEXP[k]
       soilbase[k]<- tab.DSSAT$SLB[k]

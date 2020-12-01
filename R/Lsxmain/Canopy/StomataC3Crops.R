@@ -127,12 +127,12 @@ StomataC3Crops <- function(i) {
     rwork <- 3.47e-03 - 1 / canopyTemp # recalcula aqui
     tleaf <- canopyTemp - 273.16       # recalcula aqui
     
-    q10 <- 2
+    q10 <- 2.2
     
     tempvm <- q10 ** ((tleaf - 8) / 10) / ((1 + exp(f1[i] * (lotemp[i] - tleaf))) * (1 + exp(f2[i] * (tleaf - hitemp[i]))))
     
     stressc3c <- min(1, stresst)
-#    vmax <- max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i]))
+    #    vmax <- max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i]))
     vmax <- min(max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i])),150) # maxim value of 150: Michel
     
     rdarkc3 <- gamma[i] * vmax_pft[i] * tempvm * croplive[i]
@@ -149,7 +149,7 @@ StomataC3Crops <- function(i) {
     dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
     
     jp <- min (dumq / duma, dumc / dumq)
-    js <- vmax / 4.2#2.2
+    js <- vmax #/ 4.2#2.2
     
     duma <- beta[i]
     dumb <- jp + js
@@ -166,19 +166,22 @@ StomataC3Crops <- function(i) {
     
     cs[i] <- max (1.05 * gamstar, cs[i])
     
-    # gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 * rh34 / cs[i] + coefb[i] * stressc3c)
-    #CSVC BBL
-    D0    <- 1.5#3.0
+    ### BB -----------
+    # gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 * rh34 / cs[i] + coefb[i] * stressc3c) #Ball (1988) & Berry (1991) model
+    
+    ### CSVC BBL -----------
+    D0    <- 3#4.5#3.7#1.3#3.0
     gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 / ((cs[i]-gamstar)*(1+rh34/D0)) + coefb[i] * stressc3c) #Ball (1988) & Berry (1991) model
     
-    #CSVC Modified BBL
     
-    #  VPDSLP = -0.32  
-    #  VPDMIN = 0.5    
-    
-    #  if (rh34 >= VPDMIN) { VPDFACTOR=MAX(0.3,(1+VPDSLP*(rh34-VPDMIN))) }else{VPDFACTOR=1.0}
-    #  
-    #  gs[i] <- 0.5 * (gs[i] +  (coefm[i] * anc3*VPDFACTOR) / (cs[i]-gamstar) + coefb[i] * stressc3c) #Ball (1988) & Berry (1991) model
+    ### CSVC Modified BBL --------
+    # VPDSLP <- -0.32
+    # VPDMIN <- 0.5
+    # if (rh34 >= VPDMIN) {
+    #   VPDFACTOR <- max(0.3, (1 + VPDSLP * (rh34 - VPDMIN)))
+    # }else {VPDFACTOR <- 1.0}
+    # gs[i] <- 0.5 * (gs[i] +  (coefm[i] * anc3*VPDFACTOR) / (cs[i]-gamstar) + coefb[i] * stressc3c) #Ball (1988) & Berry (1991) model
+    ###------
     
     gs[i] <- max (gsmin[i], coefb[i] * stressc3c, gs[i])
     
@@ -226,9 +229,9 @@ StomataC3Crops <- function(i) {
   if(croplive[i] == 1) {
     
     cscc3 <- max (1.05 * gamstar, co2conc - an[i] / gbco2l)
-
+    
     gscc3 <- coefm[i] * an[i] * rh34 / cscc3 + coefb[i] * stressc3c
-  
+    
     gscc3 <- max (gsmin[i], coefb[i] * stressc3c, gscc3)
     
     gscc3 <- gscc3 * greenfrac[i]

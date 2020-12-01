@@ -123,7 +123,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         cbior[i]  <- 0.0001482158/kg_C_M2_to_T_ha
         cbiol[i]  <- 0.005065926 /kg_C_M2_to_T_ha
         cbiocr[i] <- 0.000163217 /kg_C_M2_to_T_ha
-        plai[i]   <- cbiol[i]*specla[i]  }
+        plai[i]   <- cbiol[i] * specla[i]  }
 
       rm          <- min(mxmat[i]/365, idpp[i]/365)
       hsum        <- 0
@@ -137,13 +137,11 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         # new michel
         mh_aw <- 16.61*(1-exp(-0.00202 * idpp[i]))^(1.5883) # Maximum root depth Christina et al. (2017)
-        mh_aw <- min(mh_aw, sum(hsoi))                  # mh_w can not be greater than the last soil layer
-        
-   #     print(paste(sum(hsoi),mh_aw,sep="/"))
-        
+        mh_aw <- min(mh_aw, sum(hsoi))                      # mh_w can not be greater than the last soil layer
+
         if(hsum <= mh_aw) {
-          Wcapac <- Wcapac + 1000*(1.0     * hsoi[k] *  poros[k] ) #*froot[k,1] 
-          water  <- water  + 1000*(wsoi[k] * hsoi[k] *  poros[k] ) #*froot[k,1] 
+          Wcapac <- Wcapac + 1000*(1.0     * hsoi[k] *  poros[k] ) *froot[k,1] 
+          water  <- water  + 1000*(wsoi[k] * hsoi[k] *  poros[k] ) *froot[k,1] 
         }
       }
 
@@ -154,7 +152,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       waterfact <-  ((water / capac) - Fwpmin ) / ( Fwpmax - Fwpmin )
       # waterfact <-  gday_c$waterfact
 
-      waterfact<-max(min(waterfact,1),0)
+      waterfact <-max(min(waterfact,1),0)
 
       greenfrac[i] <- 1
 
@@ -162,11 +160,11 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       Finerootexp <- Fineroot1 * (plai[i]*greenfrac[i])
       
       
-      aroot[i] = (0.5 + 0.5 * (1.- (cbior[i]*kg_C_M2_to_T_ha) / Finerootexp ) / Allocsensf )
+      aroot[i] <- (0.5 + 0.5 * (1.- (cbior[i]*kg_C_M2_to_T_ha) / Finerootexp ) / Allocsensf )
       # Finerootexp <- Fineroot1 * (gday_c$lai*greenfrac[i])
       # aroot[i] = (0.5 + 0.5 * (1.- (gday_c$cbior) / Finerootexp ) / Allocsensf )
-      aroot[i]= aroot[i]*(nrx*nrn)/(nrn+(nrx-nrn)*waterfact)
-      aroot[i]<-max(min(aroot[i],1),0)
+      aroot[i] <- aroot[i]*(nrx*nrn)/(nrn+(nrx-nrn)*waterfact)
+      aroot[i] <- max(min(aroot[i],1),0)
 
 
       #---------------------
@@ -174,22 +172,21 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       # ModelLai==2 from Param_eucaflux.h
       # Recalcular o LAI no passo anterior: biomassa de folha input, add o sla
       if (plai[i]<=0.1) {
-        aleaf[i] = Alleafinit # for very small LAI at begining, constant alloc
+        aleaf[i] <- Alleafinit # for very small LAI at begining, constant alloc
       } else {
         # leaf allocation fraction is the second priority after fine roots, and has a height (age) constraint
-        aleaf[i]= max(Alleafmin,Alleafmin+Alleaf1*exp(-Alleaf2*ztop[1]))
-        aleaf[i]= max(aleaf[i], 1-aroot[i]-Alleafremain) #second priority after fine root, with 20% kept apart
+        aleaf[i] <- max(Alleafmin, Alleafmin + Alleaf1 * exp(-Alleaf2 * ztop[1]))
+        aleaf[i] <- max(aleaf[i], 1 - aroot[i] - Alleafremain) #second priority after fine root, with 20% kept apart
       }
 
-      aleaf[i]<-max(min(aleaf[i],1),0)
-#      aleaf[i]<-max(min(aleaf[i],0.16),0)
-      
+      aleaf[i]   <-max(min(aleaf[i],1),0)
+
 
       #---------------------
-      #Branch C allocation (Stem)
-      Branchexp = Branch1 * ( plai[i] ^ Branch2 )
-      if (Branchexp < 0.)  Branchexp = 0.001
-      abranch[i] =  (0.5 + 0.5 * (1.- (cbiob[i]*kg_C_M2_to_T_ha) / Branchexp ) / Allocsensb )
+      #Branch C allocation
+      Branchexp  <- Branch1 * ( plai[i] ^ Branch2 )
+      if (Branchexp < 0.)  Branchexp <- 0.001
+      abranch[i] <-  (0.5 + 0.5 * (1.- (cbiob[i]*kg_C_M2_to_T_ha) / Branchexp ) / Allocsensb )
       #  abranch[i] =  (0.5 + 0.5 * (1.- (gday_c$cbiob) / Branchexp ) / Allocsensb )
 
       abranch[i]<-max(min(abranch[i],1),0)
@@ -265,53 +262,22 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         aleaf[i] * max (0.0, adnpp[i])
 
 
-      #---------------------
-      #Mortality - Litterfall C fluxes
-      #---------------------
-
+      # ---------------------
+      # Mortality - Litterfall C fluxes
+      # ---------------------
       #dead stem computation
-      # Deadwood    <- 0
-      # Deadcoroots <- 0
       if (rm > BdecayStart ) {    # progressive start of branch, coarse root and bark decay after age 1./Bdecay
-        fdec         <- exp(2.*log(2.)*(rm-BdecayStart))-1
-        fdec         <- max(min(fdec,1),0)
-        Deadwood     <-  fdec * Wdecay * Sapwood # Stock of dead branch that do not fall into the ground. It is assumed to start at 3 years old
-        Deadcoroots  <-  fdec * Cdecay * cbiocr[i]*kg_C_M2_to_T_ha  # cm
+        # fdec         <- exp(2.*log(2.) * (rm - BdecayStart)) - 1
+        # fdec         <- max(min(fdec,1), 0)
+        # fdec         <- 2 * exp(log(1.4) * (rm - BdecayStart))
+        fdec         <- exp(log(1.3) * (rm - BdecayStart))
+        fdec         <- max(min(fdec, 20), 0)
+        Deadwood     <- fdec * Wdecay * Sapwood # Stock of dead branch that do not fall into the ground. It is assumed to start at 3 years old
+        Deadcoroots  <- fdec * Cdecay * cbiocr[i] * kg_C_M2_to_T_ha  # cm
       }
-
-      #---------------------
-      #dead branches computation
-
-      # if (rm <= BdecayStart ) {    # progressive start of branch, coarse root and bark decay after age 1./Bdecay
-      #   #dead stem computation
-      #   DeadGbranch <- 0
-      #   Deadbranch  <- 0
-      # 
-      # } else if (rm > BdecayStart ) {    # progressive start of branch, coarse root and bark decay after age 1./Bdecay
-      #   fdec <- exp(2.*log(2.)*(rm-BdecayStart))-1
-      #   fdec <- max(min(fdec,1),0)
-      #   DeadGbranch  =  fdec * Bdecay * cbiob[i]*kg_C_M2_to_T_ha
-      # 
-      # } else if ( rm > BfallStart ) {
-      #   #beginning of the dead branches fall
-      #   fdec = exp(2*log(2)*(rm-BfallStart))-1.
-      #   fdec <- max(min(fdec,1),0)
-      #   Deadbranch   =  fdec * Bfall * DBranch_attached*kg_C_M2_to_T_ha   # Dead branch that falls into the ground and entered the above-ground structural litter pool
-      # 
-      # } else  if (rm > 4 ) {
-      #   # After 4.5 years, both branch death and branch fall increase considerably ==> empirical correction
-      #   fdec = exp(2*log(2)*(rm-4))-1.
-      #   fdec <- max(min(fdec,1),0)
-      #   # TODO: Reve valores de cada
-      #   DeadGbranch = fdec * 4 * cbiob[i]*kg_C_M2_to_T_ha  # DeadGbranch increasis after 4 years old
-      #   
-      #   # implementar corretamente depois
-      #   # DBranch<-cbiob[i]*kg_C_M2_to_T_ha/5
-      #   
-      #   Deadbranch  = fdec * 3 * DBranch_attached*kg_C_M2_to_T_ha
-      # }
-      # 
-      #--------------------------------------------------------------
+      
+      # ---------------------
+      # Dead branches computation
       ###Michel : Nov. 2020
       if (rm <= BdecayStart ) {    # progressive start of branch, coarse root and bark decay after age 1./Bdecay
         DeadGbranch <- 0
@@ -320,22 +286,19 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       } else if (rm > BdecayStart ) {    # progressive start of branch, coarse root and bark decay after age 1./Bdecay
         fdec        <- exp(0.2*(rm-BdecayStart))-1
         fdec        <- max(min(fdec,1),0)#*0.3
-        # DeadGbranch <- fdec * Bdecay * cbiob[i]*kg_C_M2_to_T_ha
-        DeadGbranch <- fdec * 0.7 * cbiob[i]*kg_C_M2_to_T_ha
-        # print(paste("teste-0.21",fdec,BdecayStart,Bfall,sep="/"))
+        DeadGbranch <- fdec * Bdecay * cbiob[i]*kg_C_M2_to_T_ha # Original Bdecay = 0.24839385
+        # DeadGbranch <- fdec * 0.7 * cbiob[i]*kg_C_M2_to_T_ha
         
       }
       
       if ( rm > BfallStart ) {
         #beginning of the dead branches fall
-        # fdec        <- exp(2*log(2)*(rm-BfallStart))-1
         fdec        <- exp(0.2 * (rm-BfallStart)) - 1
         fdec        <- max(min(fdec, 1), 0)#*0.3
-        # Deadbranch  <- fdec * Bfall * DBranch*kg_C_M2_to_T_ha   # Dead branch that falls into the ground and entered the above-ground structural litter pool
-        Deadbranch  <- fdec * 0.24 * DBranch * kg_C_M2_to_T_ha   # Dead branch that falls into the ground and entered the above-ground structural litter pool
+        Deadbranch  <- fdec * Bfall * DBranch*kg_C_M2_to_T_ha   # Dead branch that falls into the ground and entered the above-ground structural litter pool
+        # Deadbranch  <- fdec * 0.24 * DBranch * kg_C_M2_to_T_ha   # Dead branch that falls into the ground and entered the above-ground structural litter pool . Bfall original: 0.786798096
         Deadbranch  <- max(Deadbranch,0)
-        # print(paste("teste-2",BfallStart,fdec,Bfall,DBranch*kg_C_M2_to_T_ha,Deadbranch,sep="/"))
-        
+
       }
       
       # if (rm > 4 ) {
@@ -355,54 +318,36 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       DBranch     <- max((DeadGbranch-Deadbranch),0)
 
-      print(paste(DeadGbranch,DBranch,Deadbranch,sep="///"))
+      # print(paste(DeadGbranch,DBranch,Deadbranch,sep="///"))
 
-      # Deadbranch  : galho que cai no chão
-      # deadGbranch : pool intermediário dos galhos mortos attached
-      # DBranch     : pool atualizado dos gahos mortos attached
+      # Deadbranch  : dead branch on the ground
+      # deadGbranch : intermediary pool, the dead branches that are attached in the trees
+      # DBranch     : updated pool of attached dead branches. This start before the attached dead brances start to fall into the ground
 
-      
-      #--------------------------------------------------------------
-      ### Santiago Branch decay
-      if(idpp[i]<=2*365){
-        DBranch_decay<-0
-      }else if (idpp[i]>2*365 & idpp[i]<=4*365) {
-        tauleaf_branch <- (1/280)*(1-exp(-0.0065*(idpp[i]-2*365)))  
-        DBranch_decay <- DBranch_attached*tauleaf_branch
-      }else{
-        DBranch_decay <- DBranch_attached*(1/280)
-      }
-      
-      DBranch_attached <- DBranch_attached + (deltay * DeadGbranch   /kg_C_M2_to_T_ha) - DBranch_decay
-      
-      # DBranch_attached<-DBranch_attached + (deltay * DeadGbranch   /kg_C_M2_to_T_ha) - (deltay * Deadbranch/kg_C_M2_to_T_ha)
-      # DBranch_decay <-(deltay * Deadbranch/kg_C_M2_to_T_ha)
-      
-      
-      #--------------------------------------------------------------
       
       #---------------------
       #dead fine roots computation
+      #---------------------
       Finerootexp   <- Fineroot1 * plai[i]
       Rdecay        <- Rdecay1+ Rdecay2 * (cbior[i]*kg_C_M2_to_T_ha / Finerootexp )
-      Deadfineroots <-  Rdecay * cbior[i]*kg_C_M2_to_T_ha
+      Deadfineroots <- Rdecay * cbior[i]*kg_C_M2_to_T_ha
       
       #---------------------
       #dead leaves computation
-      
+      #---------------------
       #there is a double litterfall cause: sapwood area target, and higher fall when higher production
-      leaftosapexp <- Leafsap1 + Leafsap2*exp(-Leafsap3*ztop[1])
+      leaftosapexp <- Leafsap1 + Leafsap2 * exp(-Leafsap3 * ztop[1])
       
       if (leaftosapexp>Leafsap2) leaftosapexp <- Leafsap2
       #cm : Sapwoodarea is now directly inferred from mean height, according to experimental observations
-      Sapwoodarea   <- Sapheight*ztop[1]
-      Leaftosaparea <- plai[i]*10000./Sapwoodarea
+      Sapwoodarea   <- Sapheight * ztop[1]
+      Leaftosaparea <- plai[i] * 10000 / Sapwoodarea
       
       Fdecay <- Fdecay1 + Fdecay2*(Leaftosaparea/leaftosapexp)*
-        (1+(aleaf[i] * max (0.0, adnpp[i])*kg_C_M2_to_T_ha)/Fdecay3)*
-        (1-(max(0,min(water/capac,1)))/Fdecay4)
+        (1+(aleaf[i] * max (0.0, adnpp[i]) * kg_C_M2_to_T_ha)/Fdecay3)*
+        (1-(max(0,min(water/capac,1))) / Fdecay4)
       
-      Deadleaves <- Fdecay * cbiol[i]*kg_C_M2_to_T_ha  #rever dif entre Leaves_Predicted  e Shoot_Predicted
+      Deadleaves <- Fdecay * cbiol[i] * kg_C_M2_to_T_ha  #rever dif entre Leaves_Predicted  e Shoot_Predicted
       
       
       #---------------------
@@ -412,9 +357,12 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       #computation of SLA of new leaves (expanded)
       Sigmax <- Siginit
-      Signew <- Sigmax - (Sigmax-Sigmin) * (ztop[1] - 1.)/(10. - 1.)
+      Signew <- Sigmax - (Sigmax-Sigmin) * (ztop[1] - 1.)/(10 - 1.)
+      # Signew <- Sigmax - (Sigmax-8) * (ztop[1] - 1)/(10 - 1)
       Signew <- min(max(Signew,Sigmin), Sigmax)
-      Signew <- Signew * (0.5+0.5*waterfact)
+      Signew <- Signew * (0.5+0.5 * waterfact)
+      
+      print(paste(Signew,ztop[1],sep="//"))
       
       #computation of new LAI from G'DAY  (not using, see bellow that LAI is re-calculated)
       # Deadleaves/Shoot = fraction of leaf mass which turns over; it is assumed that the same fraction of leaf area turns over.
@@ -438,12 +386,12 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       cbiocr[i] <- cbiocr[i] + (acroot[i] * max (0.0, adnpp[i])) - (deltay * Deadcoroots  /kg_C_M2_to_T_ha)
       plai[i] <- max(cbiol[i]*Signew/ Cfracts,0.02) # G'DAYS SLA
       # plai[i] = max(cbiol[i]*specla[i],0.02)      # SLA from ECOSMOS (other crops)
-
-
+      
+      
       #                     NOT IMPLEMENTED
       # #sapwood update
-      Sapwoodarea <- Sapheight*ztop[1] # cm2/ha
-      sap <- Sapwoodarea * ztop[1] * Cfracts * Density * 0.001 ; #new sapwood mass, tC/ha
+      Sapwoodarea <- Sapheight * ztop[1] # cm2/ha
+      sap         <- Sapwoodarea * ztop[1] * Cfracts * Density * 0.001 ; #new sapwood mass, tC/ha
       
       if (sap > cbiow[i]*kg_C_M2_to_T_ha) {
         
@@ -519,7 +467,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
     sapfrac <- Sapwood / (Sapwood + Heartwood)
     
     # ztopPft[i] <- (min(plai[i]/3, 1)) * ztopmxPft[i] * min(1,(rm /0.7))
-    ztopPft[i] <- Ht0 * cbiow[i]^(Htpower)
+    ztopPft[i] <- Ht0 * (cbiow[i]*kg_C_M2_to_T_ha)^(Htpower)
     
   }
   
@@ -592,8 +540,10 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("Sapwood",Sapwood  , envir = env)
   assign("Heartwood",Heartwood, envir = env)
 
-  assign("DBranch_attached",DBranch_attached, envir = env)
+  # assign("DBranch_attached",DBranch_attached, envir = env)
   assign("DBranch_decay",DBranch_decay, envir = env)
   assign("Signew",Signew, envir = env)
+  assign("waterfact",waterfact, envir = env)
+  
   
 }

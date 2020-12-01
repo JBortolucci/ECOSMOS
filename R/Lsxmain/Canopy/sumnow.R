@@ -260,7 +260,8 @@ sumnow <- function() {
   #
   # finally, note that growth respiration is only applied to
   # positive carbon gains (i.e., when gpp - rmaint is positive)
-  rwood <- 0.0125 / (ndaypy * 86400) * (1000 / 12)
+  # rwood <- 0.0125 / (ndaypy * 86400) * (1000 / 12)
+  rwood <- 0.125 / (ndaypy * 86400) * (1000 / 12)
   rroot <- 2.50 / (ndaypy * 86400) * (1000 / 12)
 
   stemtemp <- ts

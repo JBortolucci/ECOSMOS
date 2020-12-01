@@ -55,9 +55,10 @@ simDataVars$G_AS_KG         <- 1/1000 # grams as kilograms
 simDataVars$Sapwood     <- 0.0001
 simDataVars$Heartwood   <- 0.0001
 simDataVars$Deadcoroots <- 0.0001
-
 simDataVars$tauleaf_branch <- 365
+simDataVars$betag          <- 0.1
 
+  
 ### AVERAGE companies params: FROM AHTIA ET AL. (2019)
 #simDataVars$Leafsap3      <- 0.13 #Computation of target leaf to sapwood area in function of height : leaftosapexp <- Leafsap1 + Leafsap2*exp(-Leafsap3*Height)
 #simDataVars$Calloccr      <- 0.28 #Carbon allocation coarse roots
@@ -99,6 +100,8 @@ EucaliptoModel <- function(year, month, day, index) {
   b1 <- plantList$eucalipto$params$b1 # não usando
   b2 <- plantList$eucalipto$params$b2 # não usando 
   
+  beta1A       <- plantList$eucalipto$params$beta1A
+  betamax      <- plantList$eucalipto$params$betamax
   
   environment(EucaliptoPlanting)    <- env
   environment(EucaliptoPhenocrop)   <- env
@@ -106,11 +109,35 @@ EucaliptoModel <- function(year, month, day, index) {
   
   depth <- numeric(nsoilay)
   
+  ###-------------------
   # new michel
   # beta1[index] <- min(0.982 + idpp[index] * 0.00002, 0.995)
-  beta1[index] <- min(0.995*(1-exp(-0.1*idpp[index])), 0.995) # funcao que altera vmax_pft do eucalipto em funcao do tempo
-  assign("beta1", beta1[index], envir = env)
+  # beta1[index] <- min(0.995*(1-exp(-0.1*idpp[index])), 0.995) # funcao que altera vmax_pft do eucalipto em funcao do tempo
+  # assign("beta1", beta1[index], envir = env)
 
+  
+  ###-------------------
+  #### By Michel: Crescimento da raiz em funcao do tempo. perfis de raizes baseado no artigo de Christina et al. (2011). OBS: O Mathias passou os dados de densidade de raiz
+  awc     <- 0
+  sumroot <- 0
+  for (k in 1:nsoilay) {
+    # crescimento da raiz em função da disponibilidade de agua no solo
+    awc     <- awc + froot[k]*min (1.0, max (0.0, (wsoi[k]*(1 - wisoi[k]) - swilt[k]) / (sfield[k] - swilt[k])))
+    sumroot <- sumroot + froot[k]
+  }
+  awc <- awc/sumroot
+  
+  if(idpp[index]>1) { betag <- betag + 0.1*max(0.5,awc) }
+  beta1[index] <- min(betamax*(1-beta1A*exp(-betag/12)), betamax) # funcao que altera densidade de raiz em função do tempo e quantidade de agua: Michel
+  # beta1[index] <- min(betamax*(1-0.05*exp(-betag/12)), betamax) # funcao que altera densidade de raiz em função do tempo e quantidade de agua: Michel
+  #beta1[index] <- min((0.95+(0.045/180)*betag), 0.995) # funcao que altera densidade de raiz em função do tempo e quantidade de agua: Santiago
+  #print(paste(idpp[index],0.995*(1-0.05*exp(-idpp[index]/120)),0.995*(1-0.05*exp(-betag/12)),0.95+(0.045/180)*betag,sep=" / "))
+  ###-------------------
+  
+  ###  beta1[index] <- min(0.995*(1-0.045*exp(-idpp[index]/120)), 0.995) # funcao que altera densidade de raiz em função do tempo. Perfis de raizes baseado no artigo de Christina et al. (2011). OBS: O Mathias passou os dados de densidade de raiz
+  ###-------------------
+
+  
   totdepth <- 0
   for(k in 1: nsoilay) {
     totdepth <- totdepth + hsoi[k] * 100
@@ -155,6 +182,9 @@ EucaliptoModel <- function(year, month, day, index) {
   
   assign("froot", froot, envir = env)
   assign("sumfroot", sumfroot, envir = env)
+  
+  assign("betag", betag, envir = env)
+  assign("beta1",beta1[index],envir = env)
   
 # ### using the database rooting proflies: BY MICHEL
 #   # calculate rooting profiles

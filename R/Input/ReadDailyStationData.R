@@ -23,12 +23,12 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
   print(paste(latc,lonc,"Data Xavier",sep="/"))
   
   #### Get csv filename for current coordinate ####
-  file_wth_TN_nm <- paste0(path, "Xavier_Tmin_", lonc, latc, ".csv")
-  file_wth_TX_nm <- paste0(path, "Xavier_Tmax_", lonc, latc, ".csv")
-  file_wth_PR_nm <- paste0(path, "Xavier_prec_", lonc, latc, ".csv")
-  file_wth_RS_nm <- paste0(path, "Xavier_Rs_", lonc, latc, ".csv")
-  file_wth_RH_nm <- paste0(path, "Xavier_RH_", lonc, latc, ".csv")
-  file_wth_U2_nm <- paste0(path, "Xavier_u2_", lonc, latc, ".csv")
+  file_wth_TN_nm <- paste0(path, "Xavier_Tmin_", lonc, latc, ".csv") # Minimal temperature (C)
+  file_wth_TX_nm <- paste0(path, "Xavier_Tmax_", lonc, latc, ".csv") # Maximum temperature (C)
+  file_wth_PR_nm <- paste0(path, "Xavier_prec_", lonc, latc, ".csv") # Precipiration (mm)
+  file_wth_RS_nm <- paste0(path, "Xavier_Rs_", lonc, latc, ".csv")   # Solar radiation ()
+  file_wth_RH_nm <- paste0(path, "Xavier_RH_", lonc, latc, ".csv")   # Relative humidity (%)
+  file_wth_U2_nm <- paste0(path, "Xavier_u2_", lonc, latc, ".csv")   # Wind speed (m s-1)
   
   #### Read csv file for current coordinate ####
   intmin   <- read.csv(file_wth_TN_nm, header = T, sep = ";", stringsAsFactors = F, dec = ".")
