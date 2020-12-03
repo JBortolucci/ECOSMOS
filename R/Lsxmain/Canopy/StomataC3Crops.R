@@ -149,7 +149,7 @@ StomataC3Crops <- function(i) {
     dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
     
     jp <- min (dumq / duma, dumc / dumq)
-    js <- vmax #/ 4.2#2.2
+    js <- vmax / 2.7#/ 4.2#2.2
     
     duma <- beta[i]
     dumb <- jp + js
