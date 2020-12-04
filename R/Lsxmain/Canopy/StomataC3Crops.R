@@ -127,9 +127,9 @@ StomataC3Crops <- function(i) {
     rwork <- 3.47e-03 - 1 / canopyTemp # recalcula aqui
     tleaf <- canopyTemp - 273.16       # recalcula aqui
     
-    q10 <- 2
+    # q10 <- 2 # TODO: Valor de q10 esta no arquivo PlantParams - 04/12/2020
     
-    tempvm <- q10 ** ((tleaf - 8) / 10) / ((1 + exp(f1[i] * (lotemp[i] - tleaf))) * (1 + exp(f2[i] * (tleaf - hitemp[i]))))
+    tempvm <- q10 ** ((tleaf - 15) / 10) / ((1 + exp(f1[i] * (lotemp[i] - tleaf))) * (1 + exp(f2[i] * (tleaf - hitemp[i]))))
     
     stressc3c <-  min(1, stresst)
     
@@ -152,7 +152,7 @@ StomataC3Crops <- function(i) {
     dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
     
     jp <- min (dumq / duma, dumc / dumq)
-    js <- vmax / 4.2
+    js <- vmax / 2.2
     
     duma <- beta[i]
     dumb <- jp + js
