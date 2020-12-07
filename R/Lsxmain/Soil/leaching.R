@@ -15,7 +15,7 @@
 # daydrn     # daily drainage at specified depth in solute.f (mm/day)
 # daynconc   # daily average nitrate concentration at specified depth in solute.f (mg/liter)  
 # ddrn       # daily total drainage through specified layer in soil profile (mm/day)
-# deposn     # annual total nitrogen deposition (wet and dry) (kg n m-2 y-1)
+# deposn     # annual total nitrogen deposition (wet and dry) (kg n m-2 y-1)  #Henrique: duas definições para mesma sigla? (30/11/2020)
 # deposn     # daily nitrogen deposition from atmosphere (kg n m-2 day-1)
 # dnileach   # daily rate of nitrate-nitrogen leached from profile (kg no3 m-2 y-1)
 # drntot     # annual total drainage through the soil profile (mm y-1)
@@ -23,7 +23,7 @@
 # dtnleach   # daily total inorganic nitrogen leached from entire profile (kg (nh4 + no3) m-2 d-1)
 # exist      # probability of existence of each plant functional type in a gridcell
 # fertnitro  # nitrogen added as fertilizer to each crop
-# fixn       # nitrogen fixation by crop in kg/ha/yr 
+# fixn       # nitrogen fixation by crop in kg/ha/yr                               #Henrique: duas definições para mesma sigla? (30/11/2020)
 # fixn       # timstep total nitrogen fixation 
 # fixsoin    # annual total nitrogen fixation by natural vegetation (kg n m-2 y-1) 
 # fout       # current timestep total nitrogen leaching (flux)  (kg_solute/m2)
@@ -139,7 +139,7 @@ leaching <- function (irstyear, istep,iday,
     yno3leach <- 0  # total annual nitrate leaching
     assimn <- 0   
     snbalance <- 0  # soil nitrogen balance
-    #browser()
+
     for(k in 1:nsoilay) { 
       smsoil[k] <- co * (snode[k] / cndepth)
       smsoln[k] <- cf * smsoil[k]
