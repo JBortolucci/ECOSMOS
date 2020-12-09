@@ -1,0 +1,2 @@
+ID,LAT,LON,simStartYear,simEndYear,SOILID,StationID,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,cycle length,cycles,params
+M2006,-2.00,-48.50,2006,2017,MOJ,inst/input_1d/input.MOJ.txt,0,1,0,0,oilpalm,288,2006,12784,1,oilpalm1
