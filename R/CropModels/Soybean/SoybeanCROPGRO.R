@@ -124,19 +124,19 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #_______________________________________________________________________________  
     # Vars solved by DSSAT/CROPGRO and ECOSMOS  
     
-    #                  VARS FROM DSSAT/CROGRO                               |      VARS FROM ECOSMOS
+    #                  VARS FROM DSSAT/CROPGRO                               |      VARS FROM ECOSMOS
     ifelse(integr[1],  PG <- VARAUX$PG[VARAUX$DAS==DAS]                     ,      PG <- adan * (30/12) * 1000 ) # converter kg C / m2.d para g CH2O / m2.d
     ifelse(integr[2],  DAYL <- TGRO_T$V4[TGRO_T$V1==DAS & TGRO_T$V2==1]     ,      DAYL <- daylength/60. ) # ! DAYL      Day length on day of simulation (from sunrise to sunset) (hr)
     ifelse(integr[3],  PAR <- VARAUX$PAR[VARAUX$DAS==DAS]                   ,      PAR <- adpar* (86400/1000000)* 4.59 ) # (86400/1000000) W/m2 para MJ/m2.d  and 4.59 # MJ/m2.d para mol/m2.d 
     ifelse(integr[4],  TMIN  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]    ,      TMIN <- tmin - 273.16 )
     ifelse(integr[5],  TAVG  <- VARAUX$TAVG[VARAUX$DAS==DAS]                ,      TAVG <- mean(ta_h) - 273.16 )
     ifelse(integr[6],  TGRO  <- TGRO_T$V3[TGRO_T$V1==DAS]                   ,      TGRO <- ta_h - 273.16 )
-    if (integr[7]) {   TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]          }else{   if(stresstl<=0.9) TURFAC = (1./RWUEP1) * stresstl}
-    if (integr[8]) {   SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]           }else{   if(stresstl<=0.9) SWFAC  = stresstl}
+    if (integr[7]) {   TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]          }else{   if(stresstl<=0.9) {TURFAC = (1./RWUEP1) * stresstl} else {TURFAC=1} }
+    if (integr[8]) {   SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]           }else{   if(stresstl<=0.9) {SWFAC  = stresstl} else {SWFAC=1} }
     if (integr[9]) {   SW <- as.double(SW_T[DAS,][-1])                    }else{   for (L in 1:NLAYR) {SW[L]  <- wsoi[L] * poros[L]}}
     if (integr[10]){   ST <- as.double(ST_T[DAS,][-1])                    }else{   for (L in 1:NLAYR) {ST[L]  <- tsoi[L] - 273.16}}
-    if (integr[11]){   NO3 <- as.double(NO3_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NO3[L]  <- 1.1}}
-    if (integr[12]){   NH4 <- as.double(NH4_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NH4[L]  <- 0.1}}
+    if (integr[11]){   NO3 <- as.double(NO3_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NO3[L]  <- 10}}
+    if (integr[12]){   NH4 <- as.double(NH4_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NH4[L]  <- 10}}
     
     assign("TMIN",  TMIN  , envir = env)
     assign("NLAYR", NLAYR , envir = env)

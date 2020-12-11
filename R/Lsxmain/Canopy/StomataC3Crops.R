@@ -127,9 +127,9 @@ StomataC3Crops <- function(i) {
     rwork <- 3.47e-03 - 1 / canopyTemp # recalcula aqui
     tleaf <- canopyTemp - 273.16       # recalcula aqui
     
-    q10 <- 2
+    #q10 <- 2
     
-    tempvm <- q10 ** ((tleaf - 8) / 10) / ((1 + exp(f1[i] * (lotemp[i] - tleaf))) * (1 + exp(f2[i] * (tleaf - hitemp[i]))))
+    tempvm <- q10 ** ((tleaf - 15) / 10) / ((1 + exp(f1[i] * (lotemp[i] - tleaf))) * (1 + exp(f2[i] * (tleaf - hitemp[i]))))
     
     stressc3c <-  min(1, stresst)
     
@@ -152,7 +152,7 @@ StomataC3Crops <- function(i) {
     dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
     
     jp <- min (dumq / duma, dumc / dumq)
-    js <- vmax / 4.2
+    js <- vmax / 2.2
     
     duma <- beta[i]
     dumb <- jp + js
@@ -169,7 +169,43 @@ StomataC3Crops <- function(i) {
     
     cs[i] <- max (1.05 * gamstar, cs[i])
     
-    gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 * rh34 / cs[i] + coefb[i] * stressc3c)
+    # Stomatal conductance models [2020-11-18]
+    {
+      
+      gsmodel <- "BBC" # BBO | BBL | USO | BBC
+      
+      # Ball (1988) & Berry (1991) model [BBO] 'O' means original
+      if (gsmodel=="BBO") {
+        gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 * rh34 / cs[i] + coefb[i] * stressc3c)
+      }
+      
+      # BB after Leuning (1995) [BBL]
+      if (gsmodel=="BBL") {
+        D0 = 3.0 # new plant parameter in case of success
+        gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 / ((cs[i]-gamstar)*(1+rh34/D0)) + coefb[i] * stressc3c)
+      }
+      
+      # BB with the optimal stomatal control model of Cowan and Farquhar (1977) was proposed by Medlyn et al. (2011) [USO]
+      if (gsmodel=="USO") {
+        gs[i] <- 0.5 * (gs[i] + 1.6 * (1 + coefm[i] / sqrt(rh34)) * (anc3 / cs[i]) ) 
+        # check if rh34 = D & where to include stressc3c
+      }
+      
+      # BB after Cuadra et al. (2021) [BBC]
+      if (gsmodel=="BBC") {
+        VPDSLP = -0.32  # new plant parameter in case of success
+        VPDMIN = 0.5    # new plant parameter in case of success
+        
+        if (rh34 >= VPDMIN) {
+          VPDFACTOR=max(0.3,(1+VPDSLP*(rh34-VPDMIN)))
+        } else {
+          VPDFACTOR=1.0
+        }
+        
+        gs[i] <- 0.5 * (gs[i] +  (coefm[i] * anc3*VPDFACTOR) / (cs[i]-gamstar) + coefb[i] * stressc3c)
+      }
+      
+    }
     
     gs[i] <- max (gsmin[i], coefb[i] * stressc3c, gs[i])
     

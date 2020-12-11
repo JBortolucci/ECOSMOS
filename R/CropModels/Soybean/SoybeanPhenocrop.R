@@ -730,7 +730,7 @@ RSTAGES <- function (DAS,DYNAMIC,
         if ((PHZACC[3] - PHTHRS[3]) > -1.E-6) {
           JPEND = DAS
           NVALPH[4] = JPEND
-          PHZACC[4] = PHZACC(3) - PHTHRS(3)
+          PHZACC[4] = PHZACC[3] - PHTHRS[3]
           if ((PHZACC[4] - PHTHRS[4]) > -1.E-6) {
             NR0 = DAS
             NVALPH[5] = NR0

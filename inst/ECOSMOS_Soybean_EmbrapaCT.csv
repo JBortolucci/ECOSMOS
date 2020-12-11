@@ -1,0 +1,6 @@
+ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,planting day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
+BRRSTB_Cultivar_2014-2015_BMXAPL,-32,-52.25,2014,336,2015,126,IB00000001,,0,0,1,0,0,soybean,337,2014,35,35,5.1,,1,soybean11
+BRRSTB_Cultivar_2014-2015_BRS246,-32,-52.25,2014,336,2015,126,IB00000001,,0,0,1,0,0,soybean,337,2014,35,35,5.1,,1,soybean12
+BRRSTB_Cultivar_2014-2015_BMXPOT,-32,-52.25,2014,336,2015,126,IB00000001,,0,0,1,0,0,soybean,337,2014,35,35,5.1,,1,soybean13
+BRRSTB_Cultivar_2014-2015_FUND57,-32,-52.25,2014,336,2015,126,IB00000001,,0,0,1,0,0,soybean,337,2014,35,35,5.1,,1,soybean14
+BRRSTB_Cultivar_2014-2015_NA5909,-32,-52.25,2014,336,2015,126,IB00000001,,0,0,1,0,0,soybean,337,2014,35,35,5.1,,1,soybean15

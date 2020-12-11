@@ -478,7 +478,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   NLAYR <- nsoilay
   
   # danos por pestes...
-  DISLA  <- 1 #TODO VERIFICAR PEST.for (Diseased leaf area (cm2[leaf]/m2[ground]/d))
+  DISLA  <- 0 #TODO VERIFICAR PEST.for (Diseased leaf area (cm2[leaf]/m2[ground]/d))
   PPLTD  <- 0 #TODO VERIFICAR PEST.for (Percent plants destroyed (%/m2/d))
   NPLTD  <- 0 #TODO VERIFICAR PEST.for (Number of plants destroyed (#/m2/d))
   WRIDOT <- 0 #TODO VERIFICAR PEST.for & ROOTDM.for (Daily pest damage to root mass (g/m2/day))
