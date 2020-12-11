@@ -1,4 +1,3 @@
-
 StomataC4Crops <- function(i) {
   
   canopy <- plantList[[i]]$canopy
@@ -57,7 +56,7 @@ StomataC4Crops <- function(i) {
   qsat34 <- qsat (esat34, psurf)
   rh34 <- max (0.30, airHumidity / qsat34)
   
-  q10 <- 2.5  
+  #q10 <- 2.5  
   
   rwork <- 3.47e-03 - 1 / canopyTemp
   tleaf <- canopyTemp - 273.16
