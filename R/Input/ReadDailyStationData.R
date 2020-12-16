@@ -62,7 +62,19 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
   }
   intd     <- intmin
   intd$var <- (intmin$var + intmax$var) / 2
-
+  
+  # ### Start Irrigation
+  # if (irrigate==1){
+  # irrig       <- read.csv("C:/Michel/ECOSMOS/inst/irrigation.csv", header = T, sep = ";", stringsAsFactors = F, dec = ".")
+  # inprec      <- merge(inprec, irrig, by = "mydate", all.x = T)
+  # inprec[is.na(inprec[,6]),][6] <- 0
+  # inprec[,5]  <- inprec[,5] + inprec[,6]
+  # inprec      <- inprec[,c(1,2,3,4,5)]
+  # colnames(inprec)[5] <- "var"
+  # inprec      <-inprec[order(inprec$mydate),]
+  # }
+  # ### End Irrigation
+  # print(inprec[11690:11750,])
   
   # Assign to global environment
   assign("intmin", intmin, envir = instanceEnv)

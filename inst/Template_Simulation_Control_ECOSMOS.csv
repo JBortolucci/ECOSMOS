@@ -1,2 +1,2 @@
 ID,LAT,LON,startYear,endYear,SOILID,StationID,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,cycle length,cycles,params
-simEUCFLUX_4,-22.967778,-48.727778,2001,2016,EUCFLUX,inst/input_1d/met_EUCAFLUX_60min.txt,0,1,0,0,eucalipto,305,2001,2500,4,eucalipto1
+SUZ_29_TECHS_IRRIG,-3.437777778,-43.06638889,2010,2018,SUZ_29,,0,1,0,0,eucalipto,3,2011,2800,1,eucalipto_TECHS
