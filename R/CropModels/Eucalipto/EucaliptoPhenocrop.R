@@ -197,8 +197,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       if (Branchexp < 0.)  Branchexp <- 0.001
       abranch[i] <-  (0.5 + 0.5 * (1.- (cbiob[i]*kg_C_M2_to_T_ha) / Branchexp ) / Allocsensb )
-      #  abranch[i] =  (0.5 + 0.5 * (1.- (gday_c$cbiob) / Branchexp ) / Allocsensb )
-      
+
       abranch[i]<-max(min(abranch[i],1),0)
       
       
@@ -230,7 +229,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         acroot[i]       <-acroot[i]*reductionfactor
       }
       
-      awood[i] = 1 - (aroot[i] + aleaf[i] + abranch[i] + acroot[i])
+      awood[i] <- 1 - (aroot[i] + aleaf[i] + abranch[i] + acroot[i])
       
       awood[i]     <- max(0.0, awood[i])
       aroot[i]     <- max(0.0, aroot[i])
@@ -295,7 +294,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       # Deadbranch  : dead branch on the ground
       # deadGbranch : intermediary pool, the dead branches that are attached in the trees
       # DBranch     : updated pool of attached dead branches. This start before the attached dead brances start to fall into the ground
-      
       if (rm <= BdecayStart ) {    # progressive start of branch, coarse root and bark decay after age 1./Bdecay
         DeadGbranch <- 0
         Deadbranch  <- 0
@@ -330,10 +328,8 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       #   Deadbranch  <- max(Deadbranch,0)
       #   # print(paste("teste-4",fdec,DBranch*kg_C_M2_to_T_ha,DeadGbranch,Deadbranch,sep="/"))
       # 
-      # }
-      
+
       DBranch     <- max((DeadGbranch-Deadbranch),0)
-      
       # print(paste(DeadGbranch,DBranch,Deadbranch,sep="///"))
       
       
