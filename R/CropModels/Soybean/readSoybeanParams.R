@@ -10,9 +10,9 @@ readSoybeanParams <-function(pathExcel = "a",filePath = "SBGRO047", simInstances
   
   n <-1
   
-  while(!(is.na(as.character(data[n,"parameter"])) && is.na(as.character(data[n,"value"])))){
+  while(!(is.na(as.character(data[n,"parameter"])) & is.na(as.character(data[n,"value"])))){
     # if(!(startsWith(as.character(data[n,"parameter"]), '!'))){
-      if(is.na(as.character(data[n+1,"parameter"])) && !is.na(as.character(data[n+1,"value"]))){
+      if(is.na(as.character(data[n+1,"parameter"])) & !is.na(as.character(data[n+1,"value"]))){
         vector <- c()
         vectorName <- as.character(data[n,"parameter"])
         #atribui ao vetor - primeiro valor
@@ -22,7 +22,7 @@ readSoybeanParams <-function(pathExcel = "a",filePath = "SBGRO047", simInstances
           vector <- c(vector, as.character(data[n,"value"]))
         }
         n <- n + 1
-        while(is.na(as.character(data[n,"parameter"])) && !is.na(as.character(data[n,"value"]))){
+        while(is.na(as.character(data[n,"parameter"])) & !is.na(as.character(data[n,"value"]))){
           #atribui ao vetor - proximos valores
           if (grepl("^[0-9.E-]*$", as.character(data[n,"value"]), perl = T)){
             vector <- c(vector, as.numeric(data[n,"value"]))

@@ -396,9 +396,9 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   params <- plantList$soybean$params
   
     #  Nitrogen
-  N = 1
+  N <- 1
   
-  YRDOY <- paste0(iyear,sprintf("%03d", jday))
+  YRDOY  <- paste0(iyear,sprintf("%03d", jday))
   
   PLME   <- 'S' # equivalente ao [.SBX] *PLANTING DETAILS: PLME  
   IHARI  <- 'M' # TODO VERIFICAR (provável que pertença ao '[.SBX] *HARVEST DETAILS')
@@ -507,63 +507,63 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       # ROWSPC = ROWSPC / 100.
       
       if (ROWSPC * PLTPOP > 1.E-4) {
-        BETN = 1 / (ROWSPC*PLTPOP)
+        BETN <- 1 / (ROWSPC*PLTPOP)
       } else {
-        BETN = 0
+        BETN <- 0
       }
       
       #-----------------------------------------------------------------------
       #     Newest version of CROPGRO has variable seed N, oil, CH2O,
       #     which may make this tougher
       #-----------------------------------------------------------------------
-      CPFLF  = 30./44.*(PLIPLF*1.720 + PLIGLF*0.659 + POALF*(-0.011) + PMINLF*RMIN + PCARLF*0.170)
-      CPFSTM = 30./44.*(PLIPST*1.720 + PLIGST*0.659 + POAST*(-0.011) + PMINST*RMIN + PCARST*0.170)
-      CPFRT  = 30./44.*(PLIPRT*1.720 + PLIGRT*0.659 + POART*(-0.011) + PMINRT*RMIN + PCARRT*0.170)
-      CPFNOD = 30./44.*(PLIPNO*1.720 + PLIGNO*0.659 + POANO*(-0.011) + PMINNO*RMIN + PCARNO*0.170)
-      CPFSH1 = 30./44.*(PLIPSH*1.720 + PLIGSH*0.659 + POASH*(-0.011) + PMINSH*0.073 + PCARSH*0.170)
-      CPFSD1 = 30./44.*(PMINSD*0.073 + PLIGSD*0.659 + POASD*(-0.011) + (SDLIP*1.720 + PCARSD*0.170)*(1. - SDPROR))
+      CPFLF  <- 30./44.*(PLIPLF*1.720 + PLIGLF*0.659 + POALF*(-0.011) + PMINLF*RMIN + PCARLF*0.170)
+      CPFSTM <- 30./44.*(PLIPST*1.720 + PLIGST*0.659 + POAST*(-0.011) + PMINST*RMIN + PCARST*0.170)
+      CPFRT  <- 30./44.*(PLIPRT*1.720 + PLIGRT*0.659 + POART*(-0.011) + PMINRT*RMIN + PCARRT*0.170)
+      CPFNOD <- 30./44.*(PLIPNO*1.720 + PLIGNO*0.659 + POANO*(-0.011) + PMINNO*RMIN + PCARNO*0.170)
+      CPFSH1 <- 30./44.*(PLIPSH*1.720 + PLIGSH*0.659 + POASH*(-0.011) + PMINSH*0.073 + PCARSH*0.170)
+      CPFSD1 <- 30./44.*(PMINSD*0.073 + PLIGSD*0.659 + POASD*(-0.011) + (SDLIP*1.720 + PCARSD*0.170)*(1. - SDPROR))
       #-----------------------------------------------------------------------
       #     CALCULATE PERCENT NITROGEN IN LEAVES AT END OF SEASON
-      PCNMIN = PROLFF * 16.0            #Moved from INCOMP
+      PCNMIN <- PROLFF * 16.0            #Moved from INCOMP
       #-----------------------------------------------------------------------
     }
     
-    ALFDOT = 0.0
-    AREALF = 0.0
-    AREAH  = 0.0
-    CANWAA = 0.0
-    CANNAA = 0.0
-    GROWTH = 0.0
-    GRWRES = 0.0
-    LAIMX  = 0.0
-    NLDOT  = 0.0
-    NSDOT  = 0.0
-    NRDOT  = 0.0
-    NSDDOT = 0.0
-    NSHDOT = 0.0
-    NTOVR  = 0.0
-    PCCSD  = 0.0
-    PCLSD  = 0.0
-    PCNL   = 0.0
-    PCNRT  = 0.0
-    PCNSD  = 0.0
-    PCNSH  = 0.0
-    PCNST  = 0.0
-    PODWT  = 0.0
-    RHOL   = 0.0
-    RHOR   = 0.0
-    RHOS   = 0.0
-    RHOSH  = 0.0
-    RTWT   = 0.0
-    SDRATE = 0.0
-    SDWT   = 0.0
-    SDWTAM = 0.0
-    SEEDNI = 0.0
-    SEEDNO = 0.0
+    ALFDOT <- 0.0
+    AREALF <- 0.0
+    AREAH  <- 0.0
+    CANWAA <- 0.0
+    CANNAA <- 0.0
+    GROWTH <- 0.0
+    GRWRES <- 0.0
+    LAIMX  <- 0.0
+    NLDOT  <- 0.0
+    NSDOT  <- 0.0
+    NRDOT  <- 0.0
+    NSDDOT <- 0.0
+    NSHDOT <- 0.0
+    NTOVR  <- 0.0
+    PCCSD  <- 0.0
+    PCLSD  <- 0.0
+    PCNL   <- 0.0
+    PCNRT  <- 0.0
+    PCNSD  <- 0.0
+    PCNSH  <- 0.0
+    PCNST  <- 0.0
+    PODWT  <- 0.0
+    RHOL   <- 0.0
+    RHOR   <- 0.0
+    RHOS   <- 0.0
+    RHOSH  <- 0.0
+    RTWT   <- 0.0
+    SDRATE <- 0.0
+    SDWT   <- 0.0
+    SDWTAM <- 0.0
+    SEEDNI <- 0.0
+    SEEDNO <- 0.0
     
     SenWt  <-  rep(0,20)
     SenLig <-  rep(0,20)
-    SenE <- matrix(0,NL,NELEM)
+    SenE   <- matrix(0,NL,NELEM)
     
     #TODO: sera usado no cropResidue  
     simDataVars$SENESCE_ResWt   <-  rep(0,20)
@@ -571,77 +571,77 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     simDataVars$SENESCE_ResE    <-  matrix(0,20,3)
     simDataVars$SENESCE_CumResE <-  c()
     
-    SHELWT = 0.0
-    SLAAD  = 0.0
-    STMWT  = 0.0
-    TGROW  = 0.0
-    TOPWT  = 0.0
-    TOTWT  = 0.0
-    WCRLF  = 0.0
-    WCRRT  = 0.0
-    WCRSH  = 0.0
-    WCRST  = 0.0
-    WNRLF  = 0.0
-    WNRRT  = 0.0
-    WNRSH  = 0.0
-    WNRST  = 0.0
-    WSDDOT = 0.0
-    WSHDOT = 0.0
-    WTCO   = 0.0
-    WTCSD  = 0.0
-    WTLF   = 0.0
-    WTLO   = 0.0
-    WTLSD  = 0.0
-    WTMAIN = 0.0
-    WTNCAN = 0.0
-    WTNLA  = 0.0
-    WTNLF  = 0.0
-    WTNLO  = 0.0
-    WTNMOB = 0.0
-    WTNNA  = 0.0
-    WTNNAG = 0.0
-    WTNNO  = 0.0
-    WTNNOD = 0.0
-    WTNOO  = 0.0
-    WTNRA  = 0.0
-    WTNRO  = 0.0
-    WTNRT  = 0.0
-    WTNSA  = 0.0
-    WTNSD  = 0.0
-    WTNSDA = 0.0
-    WTNSDO = 0.0
-    WTNSH  = 0.0
-    WTNSHA = 0.0
-    WTNSHO = 0.0
-    WTNSO  = 0.0
-    WTNST  = 0.0
-    WTNTOT = 0.0
-    WTNUP  = 0.0
-    WTRO   = 0.0
-    WTSDO  = 0.0
-    WTSHO  = 0.0
-    WTSO   = 0.0
-    XLAI   = 0.0
-    XHLAI  = 0.0
-    XPOD   = 0.0
+    SHELWT <- 0.0
+    SLAAD  <- 0.0
+    STMWT  <- 0.0
+    TGROW  <- 0.0
+    TOPWT  <- 0.0
+    TOTWT  <- 0.0
+    WCRLF  <- 0.0
+    WCRRT  <- 0.0
+    WCRSH  <- 0.0
+    WCRST  <- 0.0
+    WNRLF  <- 0.0
+    WNRRT  <- 0.0
+    WNRSH  <- 0.0
+    WNRST  <- 0.0
+    WSDDOT <- 0.0
+    WSHDOT <- 0.0
+    WTCO   <- 0.0
+    WTCSD  <- 0.0
+    WTLF   <- 0.0
+    WTLO   <- 0.0
+    WTLSD  <- 0.0
+    WTMAIN <- 0.0
+    WTNCAN <- 0.0
+    WTNLA  <- 0.0
+    WTNLF  <- 0.0
+    WTNLO  <- 0.0
+    WTNMOB <- 0.0
+    WTNNA  <- 0.0
+    WTNNAG <- 0.0
+    WTNNO  <- 0.0
+    WTNNOD <- 0.0
+    WTNOO  <- 0.0
+    WTNRA  <- 0.0
+    WTNRO  <- 0.0
+    WTNRT  <- 0.0
+    WTNSA  <- 0.0
+    WTNSD  <- 0.0
+    WTNSDA <- 0.0
+    WTNSDO <- 0.0
+    WTNSH  <- 0.0
+    WTNSHA <- 0.0
+    WTNSHO <- 0.0
+    WTNSO  <- 0.0
+    WTNST  <- 0.0
+    WTNTOT <- 0.0
+    WTNUP  <- 0.0
+    WTRO   <- 0.0
+    WTSDO  <- 0.0
+    WTSHO  <- 0.0
+    WTSO   <- 0.0
+    XLAI   <- 0.0
+    XHLAI  <- 0.0
+    XPOD   <- 0.0
     
-    CLW = 0.0   #Cumulative leaf growth
-    CSW = 0.0   #Cumulative stem growth
+    CLW     <- 0.0   #Cumulative leaf growth
+    CSW     <- 0.0   #Cumulative stem growth
     
-    ShutMob = 0.0
-    RootMob = 0.0
-    ShelMob = 0.0
+    ShutMob <- 0.0
+    RootMob <- 0.0
+    ShelMob <- 0.0
     
-    SDPDOT = 0.0    #CHP - not used
-    PUNDOT = 0.0    #CHP - not used
+    SDPDOT  <- 0.0    #CHP - not used
+    PUNDOT  <- 0.0    #CHP - not used
     
-    NLPEST = 0.0    #CHP - N loss due to pest damage
+    NLPEST  <- 0.0    #CHP - N loss due to pest damage
     
     #-----------------------------------------------------------------------
     # KJB 02/12/03 Set SLA to zero until emergence
     # JWJ 09/16/03 Set SLA to -99 until emergence
     # CHP 09/17/03 Do this for output only - SLA is used in calculations!
-    SLA = 0.0
+    SLA <- 0.0
     #     Need to get initial value of F from DEMAND first  chp 9/14/98
     #      if (CROP != 'FA') {
     #        SLA    = F                 
@@ -655,42 +655,42 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   } else if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
     #     Net growth rates
-    WLDOT  = 0.0
-    WSDOT  = 0.0
-    WRDOT  = 0.0
-    WNDOT  = 0.0
-    WPDOT  = 0.0
-    WLFDOT = 0.0
+    WLDOT  <- 0.0
+    WSDOT  <- 0.0
+    WRDOT  <- 0.0
+    WNDOT  <- 0.0
+    WPDOT  <- 0.0
+    WLFDOT <- 0.0
     
     #     Initial seedling or transplant weight
-    SDRATE  = WTPSD * PLTPOP / 0.8 * 10
+    SDRATE  <- WTPSD * PLTPOP / 0.8 * 10
     
     if (PLME != 'T') {
-      WTNEW  = WTFSD * WTPSD
-      TOTWT  = WTNEW * PLTPOP
+      WTNEW  <- WTFSD * WTPSD
+      TOTWT  <- WTNEW * PLTPOP
     } else {
-      TOTWT = SDWTPL / 10.
-      WTNEW = TOTWT / PLTPOP
+      TOTWT <- SDWTPL / 10.
+      WTNEW <- TOTWT / PLTPOP
     }
     
     #     Initial mass of plant components
-    WTLF  = FRLF * TOTWT
-    STMWT = FRSTM * TOTWT
-    TOPWT = WTLF + STMWT
-    RTWT  = TOTWT - TOPWT
+    WTLF   <- FRLF * TOTWT
+    STMWT  <- FRSTM * TOTWT
+    TOPWT  <- WTLF + STMWT
+    RTWT   <- TOTWT - TOPWT
     
-    WLFI   = WTLF
-    WSTI   = STMWT
-    WRTI   = RTWT
+    WLFI   <- WTLF
+    WSTI   <- STMWT
+    WRTI   <- RTWT
     
     #     Initialize cumulative variables
-    CLW   = WTLF
-    CSW   = STMWT
+    CLW    <- WTLF
+    CSW    <- STMWT
     
     #     CH2O reserves
-    WCRLF = ALPHL * WTLF
-    WCRST = ALPHS * STMWT
-    WCRRT = ALPHR * RTWT
+    WCRLF  <- ALPHL * WTLF
+    WCRST  <- ALPHS * STMWT
+    WCRRT  <- ALPHR * RTWT
     
     #     Initialize cumulative C variables
     #      WCRLA = WCRLF
@@ -698,48 +698,48 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #      WCRRA = WCRRT
     
     #     Carbohydrate composition of plant components (fraction)
-    RHOL   = ALPHL
-    RHOR   = ALPHR
-    RHOS   = ALPHS
-    RHOSH  = ALPHSH
+    RHOL   <- ALPHL
+    RHOR   <- ALPHR
+    RHOS   <- ALPHS
+    RHOSH  <- ALPHSH
     
     #     Net carbon addition variables
-    WRCLDT = 0.0
-    WRCSDT = 0.0
-    WRCRDT = 0.0
-    WRCSHD = 0.0
+    WRCLDT <- 0.0
+    WRCSDT <- 0.0
+    WRCRDT <- 0.0
+    WRCSHD <- 0.0
     
     #     Compute N in plant components
-    WTNLF  = WLFI * PROLFI * 0.16
-    WTNST  = WSTI * PROSTI * 0.16
-    WTNRT  = WRTI * PRORTI * 0.16
-    WTNSH  = 0.0
-    WTNSD  = 0.0
-    WTNTOT = WTNLF + WTNST + WTNRT + WTNSH + WTNSD
+    WTNLF  <- WLFI * PROLFI * 0.16
+    WTNST  <- WSTI * PROSTI * 0.16
+    WTNRT  <- WRTI * PRORTI * 0.16
+    WTNSH  <- 0.0
+    WTNSD  <- 0.0
+    WTNTOT <- WTNLF + WTNST + WTNRT + WTNSH + WTNSD
     
     #     Seed or transplant N at planting
-    SDNPL  = WTPSD * SDPRO * 0.16 * 0.75 * PLTPOP - (WTNLF + WTNST + WTNRT)
-    SDNPL  = max(SDNPL,0.0)
-    SEEDNI = WTNLF + WTNST + WTNRT + SDNPL
+    SDNPL  <- WTPSD * SDPRO * 0.16 * 0.75 * PLTPOP - (WTNLF + WTNST + WTNRT)
+    SDNPL  <- max(SDNPL,0.0)
+    SEEDNI <- WTNLF + WTNST + WTNRT + SDNPL
     
     #     Initialize cumulative N variables
-    WTNLA  = WTNLF
-    WTNSA  = WTNST
-    WTNRA  = WTNRT
+    WTNLA  <- WTNLF
+    WTNSA  <- WTNST
+    WTNRA  <- WTNRT
     
     #     Percent N in plant components
-    PCNL   = WTNLF / WLFI * 100.
-    RNITP  = PCNL
-    PCNST  = WTNST / WSTI * 100.
-    PCNRT  = WTNRT / WRTI * 100.
+    PCNL   <- WTNLF / WLFI * 100.
+    RNITP  <- PCNL
+    PCNST  <- WTNST / WSTI * 100.
+    PCNRT  <- WTNRT / WRTI * 100.
     
     #     Intialize leaf area.  Value of F initialized in DEMAND.
-    AREALF = WTLF * Fnew  #*** Fnew is 'F' in the original file. Changed because F is logical in R. ***
-    AREAH  = AREALF
-    SLA    = AREALF / WTLF
-    SLAAD  = AREALF / (WTLF - WCRLF)
-    XLAI   = AREALF / 10000.
-    XHLAI  = XLAI
+    AREALF <- WTLF * Fnew  #*** Fnew is 'F' in the original file. Changed because F is logical in R. ***
+    AREAH  <- AREALF
+    SLA    <- AREALF / WTLF
+    SLAAD  <- AREALF / (WTLF - WCRLF)
+    XLAI   <- AREALF / 10000.
+    XHLAI  <- XLAI
     
     #***********************************************************************
     #***********************************************************************
@@ -747,11 +747,11 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #***********************************************************************
   } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
-    NLPEST = 0.0    #CHP - N loss due to pest damage
+    NLPEST <- 0.0    #CHP - N loss due to pest damage
     
-    GROWTH = WLDOTN + WSDOTN + WRDOTN + WSHDTN + WSDDTN + NODGR
+    GROWTH <- WLDOTN + WSDOTN + WRDOTN + WSHDTN + WSDDTN + NODGR
     
-    GRWRES = WLDOTN*CPFLF + WSDOTN*CPFSTM + WRDOTN*CPFRT + NODGR*CPFNOD + WSHDTN*CPFSH1 + WSDDTN*CPFSD1 + 30./44 *(TRNO3U/0.16 * 1.798 + TRNH4U/0.16 * 0.462 + NFIXN/0.16 * 1.798)
+    GRWRES <- WLDOTN*CPFLF + WSDOTN*CPFSTM + WRDOTN*CPFRT + NODGR*CPFNOD + WSHDTN*CPFSH1 + WSDDTN*CPFSD1 + 30./44 *(TRNO3U/0.16 * 1.798 + TRNH4U/0.16 * 0.462 + NFIXN/0.16 * 1.798)
     
     #-----------------------------------------------------------------------
     #    Use 1982 Penning de Vries book, p. 125, composition of tissue,
@@ -764,92 +764,92 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #-----------------------------------------------------------------------
     #       WLDOT = Net leaf growth rate
     #-----------------------------------------------------------------------
-    WLDOT = WLDOTN - SLDOT - WLIDOT - WLFDOT - NRUSLF/0.16 - CRUSLF
+    WLDOT <- WLDOTN - SLDOT - WLIDOT - WLFDOT - NRUSLF/0.16 - CRUSLF
     
     #     ShutMob is amount of leaf mass lost due to N and C mobilization
     #     A positive value represents leaf mass lost. (kg/ha)
-    ShutMob = (NRUSLF/0.16 + CRUSLF) * 10.      #kg/ha
+    ShutMob <- (NRUSLF/0.16 + CRUSLF) * 10.      #kg/ha
     
     if (WTLF > 1.E-4) {
-      WLDOT = WLDOT + (CADLF+NADLF/0.16) * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
-      ADD = (CADLF+NADLF/0.16) * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
-      ShutMob = ShutMob - ADD * 10.             #kg/ha
+      WLDOT   <- WLDOT + (CADLF+NADLF/0.16) * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
+      ADD     <- (CADLF+NADLF/0.16) * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
+      ShutMob <- ShutMob - ADD * 10.             #kg/ha
     } else {
-      ADD = 0.0
+      ADD     <- 0.0
     }
     if (WLDOT < 0.0) {
-      WLDOT = max(WLDOT, -WTLF)
+      WLDOT   <- max(WLDOT, -WTLF)
     }
     
     #-----------------------------------------------------------------------
     #       WSDOT = Net stem growth rate
     #-----------------------------------------------------------------------
-    WSDOT = WSDOTN - SSDOT - WSIDOT - NRUSST / 0.16 - CRUSST
-    ShutMob = ShutMob + (NRUSST / 0.16 + CRUSST) * 10.      #kg/ha
+    WSDOT   <- WSDOTN - SSDOT - WSIDOT - NRUSST / 0.16 - CRUSST
+    ShutMob <- ShutMob + (NRUSST / 0.16 + CRUSST) * 10.      #kg/ha
     
     if (STMWT > 1.E-4) {
-      WSDOT = WSDOT + (CADST+NADST/0.16) * (1. - min(1.0,(SSDOT+WSIDOT)/STMWT))
-      ADD = (CADST+NADST/0.16) * (1. - min(1.0,(SSDOT+WSIDOT)/STMWT))
-      ShutMob = ShutMob - ADD * 10.                         #kg/ha
+      WSDOT   <- WSDOT + (CADST+NADST/0.16) * (1. - min(1.0,(SSDOT+WSIDOT)/STMWT))
+      ADD     <- (CADST+NADST/0.16) * (1. - min(1.0,(SSDOT+WSIDOT)/STMWT))
+      ShutMob <- ShutMob - ADD * 10.                         #kg/ha
     } else {
-      ADD = 0.
+      ADD     <- 0.
     }
     if (WSDOT < 0.0) {
-      WSDOT = max(WSDOT, -STMWT)
+      WSDOT <- max(WSDOT, -STMWT)
     }
     #-----------------------------------------------------------------------
     #     Net root growth rate
     #-----------------------------------------------------------------------
-    WRDOT = WRDOTN - SRDOT - NRUSRT/0.16 - CRUSRT - WRIDOT
-    RootMob = (NRUSRT/0.16 + CRUSRT) * 10.      #kg/ha
+    WRDOT   <- WRDOTN - SRDOT - NRUSRT/0.16 - CRUSRT - WRIDOT
+    RootMob <- (NRUSRT/0.16 + CRUSRT) * 10.      #kg/ha
     
     if (RTWT > 1.E-4) {
-      WRDOT = WRDOT + (NADRT/0.16) * (1. - min(1.0,(SRDOT+WRIDOT)/RTWT))
-      ADD = (NADRT/0.16) * (1. - min(1.0,(SRDOT+WRIDOT)/RTWT))
-      RootMob = RootMob - ADD * 10.             #kg/ha
+      WRDOT   <- WRDOT + (NADRT/0.16) * (1. - min(1.0,(SRDOT+WRIDOT)/RTWT))
+      ADD     <- (NADRT/0.16) * (1. - min(1.0,(SRDOT+WRIDOT)/RTWT))
+      RootMob <- RootMob - ADD * 10.             #kg/ha
     } else {
-      ADD = 0.0
+      ADD     <- 0.0
     }
     
     if (WRDOT < 0.0) {
-      WRDOT = max(WRDOT, -RTWT)
+      WRDOT <- max(WRDOT, -RTWT)
     }
     #-----------------------------------------------------------------------
     #     Net shell growth rate
     #-----------------------------------------------------------------------
-    WSHIDT = min(WSHIDT,SHELWT)     # pest damage to shells
-    WSHDOT = WSHDTN - WSHIDT - WTABRT - NRUSSH / 0.16 - CRUSSH
-    ShelMob = (NRUSSH / 0.16 + CRUSSH) * 10.    #kg/ha
+    WSHIDT  <- min(WSHIDT,SHELWT)     # pest damage to shells
+    WSHDOT  <- WSHDTN - WSHIDT - WTABRT - NRUSSH / 0.16 - CRUSSH
+    ShelMob <- (NRUSSH / 0.16 + CRUSSH) * 10.    #kg/ha
     
     #-----------------------------------------------------------------------
     #     Net seed growth rate
     #-----------------------------------------------------------------------
-    SWIDOT = min(SWIDOT,SDWT)       # pest damage to seeds
-    WSDDOT = WSDDTN - SWIDOT        
-    WTLSD  = WTLSD + WSDDOT * POTLIP    #lipids in seed
-    WTCSD  = WTCSD + WSDDOT * POTCAR    #carbohydrates in seed
+    SWIDOT <- min(SWIDOT,SDWT)       # pest damage to seeds
+    WSDDOT <- WSDDTN - SWIDOT        
+    WTLSD  <- WTLSD + WSDDOT * POTLIP    #lipids in seed
+    WTCSD  <- WTCSD + WSDDOT * POTCAR    #carbohydrates in seed
     
     #-----------------------------------------------------------------------
     #     Net nodule growth rate
     #-----------------------------------------------------------------------
-    WNDOT  = NODGR - NDTH            
+    WNDOT  <- NODGR - NDTH            
     
     #-----------------------------------------------------------------------
     #     Net pod growth rate
     #-----------------------------------------------------------------------
-    WPDOT = WSHDOT + WSDDOT          
+    WPDOT <- WSHDOT + WSDDOT          
     
     #-----------------------------------------------------------------------
     #     Total Net plant growth rate
     #-----------------------------------------------------------------------
-    WDOT = WLDOT + WSDOT + WRDOT + WPDOT + WNDOT 
+    WDOT <- WLDOT + WSDOT + WRDOT + WPDOT + WNDOT 
     
     #-----------------------------------------------------------------------
     if (GROWTH > 1.E-4) {
       if (XPODF == 'PD') {
-        XPOD = 0.17 * (WSDDTN+WSHDTN)/GROWTH + 0.83 * XPOD
+        XPOD <- 0.17 * (WSDDTN+WSHDTN)/GROWTH + 0.83 * XPOD
       } else if (XPODF == 'SD') {
-        XPOD = 0.17 * (WSDDTN)/GROWTH + 0.83 * XPOD
+        XPOD <- 0.17 * (WSDDTN)/GROWTH + 0.83 * XPOD
       } else {
         #TODO: Mostrar mensagem de erro 
         print(paste("Erro"))
@@ -858,36 +858,36 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #-----------------------------------------------------------------------
     #    Integration, Add Today's Net Growth to Existing Weights
     #-----------------------------------------------------------------------
-    TOTWT  = TOTWT  + WDOT
-    TOPWT  = TOPWT  + WSDOT + WLDOT + WPDOT
-    WTLF   = WTLF   + WLDOT
-    STMWT  = STMWT  + WSDOT
-    SDWT   = SDWT   + WSDDOT
-    SHELWT = SHELWT + WSHDOT
-    RTWT   = RTWT   + WRDOT
-    PODWT  = PODWT  + WPDOT
-    DWNOD  = DWNOD  + WNDOT
-    TGROW  = TGROW  + GROWTH
+    TOTWT  <- TOTWT  + WDOT
+    TOPWT  <- TOPWT  + WSDOT + WLDOT + WPDOT
+    WTLF   <- WTLF   + WLDOT
+    STMWT  <- STMWT  + WSDOT
+    SDWT   <- SDWT   + WSDDOT
+    SHELWT <- SHELWT + WSHDOT
+    RTWT   <- RTWT   + WRDOT
+    PODWT  <- PODWT  + WPDOT
+    DWNOD  <- DWNOD  + WNDOT
+    TGROW  <- TGROW  + GROWTH
     
     #-----------------------------------------------------------------------
     #     Cumulative leaf and stem growth
     #-----------------------------------------------------------------------
-    CLW = CLW + WLDOTN      
-    CSW = CSW + WSDOTN      
+    CLW <- CLW + WLDOTN      
+    CSW <- CSW + WSDOTN      
     
     #-----------------------------------------------------------------------
     #     Store values of TOPWT at flowering and SDWT at maturity
     #-----------------------------------------------------------------------
     if (YRDOY == YRNR1) {
-      CANWAA = TOPWT
+      CANWAA <- TOPWT
     } else if (YRDOY == MDATE) {
-      SDWTAM = SDWT
+      SDWTAM <- SDWT
     }
     #---------------------------------------------------------------------
     #     Compute Seed Weight for Which there is Maintenance Costs.
     #-----------------------------------------------------------------------
-    WSDMAN = min(SDWT,SHELWT)
-    WTMAIN = TOTWT - SDWT + WSDMAN
+    WSDMAN <- min(SDWT,SHELWT)
+    WTMAIN <- TOTWT - SDWT + WSDMAN
     
     #-----------------------------------------------------------------------
     #     Carbon Reserves:  Net Growth Rates for Mobile Carbohydrates
@@ -897,67 +897,67 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #     get increase in tissue N composition when tissue is aborted.  Need
     #     to account for mass, N and C lost this way in sections below
     #-----------------------------------------------------------------------
-    WRCLDT = ALPHL * WLDOTN - CRUSLF - RHOL*(SLNDOT+WLIDOT+WLFDOT)
+    WRCLDT <- ALPHL * WLDOTN - CRUSLF - RHOL*(SLNDOT+WLIDOT+WLFDOT)
     if (WTLF > 1.E-4) {
-      WRCLDT = WRCLDT + CADLF * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
+      WRCLDT <- WRCLDT + CADLF * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
     }
     
-    WRCSDT = ALPHS * WSDOT - CRUSST - RHOS * SSNDOT
+    WRCSDT <- ALPHS * WSDOT - CRUSST - RHOS * SSNDOT
     if (STMWT > 1.E-4) {
-      WRCSDT = WRCSDT + CADST * (1. - min(1.0,(SSDOT+WSIDOT)/STMWT))
+      WRCSDT <- WRCSDT + CADST * (1. - min(1.0,(SSDOT+WSIDOT)/STMWT))
     }
     
-    WRCRDT = ALPHR * WRDOT - CRUSRT - RHOR * SRDOT
-    WRCSHD = ALPHSH * WSHDOT - CRUSSH - RHOSH*(WTABRT+WTSHMT+WSHIDT)
+    WRCRDT <- ALPHR * WRDOT - CRUSRT - RHOR * SRDOT
+    WRCSHD <- ALPHSH * WSHDOT - CRUSSH - RHOSH*(WTABRT+WTSHMT+WSHIDT)
     #-----------------------------------------------------------------------
     #     Update C Storage, Concentrations in Leaves, Stems, Roots, and Shells
     #-----------------------------------------------------------------------
-    WCRLF = WCRLF + WRCLDT
-    WCRST = WCRST + WRCSDT
-    WCRRT = WCRRT + WRCRDT
-    WCRSH = WCRSH + WRCSHD
+    WCRLF <- WCRLF + WRCLDT
+    WCRST <- WCRST + WRCSDT
+    WCRRT <- WCRRT + WRCRDT
+    WCRSH <- WCRSH + WRCSHD
     
-    if (WCRLF <= 1.0E-30) WCRLF = 0.0
-    if (WCRST <= 1.0E-30) WCRST = 0.0
-    if (WCRRT <= 1.0E-30) WCRRT = 0.0
-    if (WCRSH <= 1.0E-30) WCRSH = 0.0
+    if (WCRLF <= 1.0E-30) WCRLF <- 0.0
+    if (WCRST <= 1.0E-30) WCRST <- 0.0
+    if (WCRRT <= 1.0E-30) WCRRT <- 0.0
+    if (WCRSH <= 1.0E-30) WCRSH <- 0.0
     
     #-----------------------------------------------------------------------
     #     Compute Cumulative C loss During Season
     #-----------------------------------------------------------------------
-    WTLO  = WTLO  + SLDOT  + WLIDOT + WLFDOT
-    WTSO  = WTSO  + SSDOT  + WSIDOT
-    WTRO  = WTRO  + SRDOT  + WRIDOT
-    WTSHO = WTSHO + WTABRT + WSHIDT
-    WTSDO = WTSDO + SWIDOT
-    WTNOO = WTNOO + NDTH
-    WTCO  = WTLO  + WTSO   + WTSHO  + WTSDO
+    WTLO  <- WTLO  + SLDOT  + WLIDOT + WLFDOT
+    WTSO  <- WTSO  + SSDOT  + WSIDOT
+    WTRO  <- WTRO  + SRDOT  + WRIDOT
+    WTSHO <- WTSHO + WTABRT + WSHIDT
+    WTSDO <- WTSDO + SWIDOT
+    WTNOO <- WTNOO + NDTH
+    WTCO  <- WTLO  + WTSO   + WTSHO  + WTSDO
     
     #-----------------------------------------------------------------------
     #     Compute CH20 fractions
     #-----------------------------------------------------------------------
     if (WTLF > 0.0001) {
-      RHOL =  WCRLF/WTLF
+      RHOL <-  WCRLF/WTLF
     } else {
-      RHOL = 0.0
+      RHOL <- 0.0
     }
     
     if (STMWT > 0.0001) {
-      RHOS =  WCRST/STMWT
+      RHOS <-  WCRST/STMWT
     } else {
-      RHOS = 0.0
+      RHOS <- 0.0
     }
     
     if (RTWT > 0.0001) {
-      RHOR =  WCRRT/RTWT
+      RHOR <-  WCRRT/RTWT
     } else {
-      RHOR = 0.0
+      RHOR <- 0.0
     }
     
     if (SHELWT > 0.0001) {
-      RHOSH =  WCRSH/SHELWT
+      RHOSH <-  WCRSH/SHELWT
     } else {
-      RHOSH = 0.0
+      RHOSH <- 0.0
     }
     
     #=======================================================================
@@ -973,82 +973,82 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #     Leaf nitrogen senescence and pest damage loss
     #-----------------------------------------------------------------------
     #              senesc. + pest   + freeze  
-    NLOFF  = (SLNDOT + WLIDOT + WLFDOT) * (PCNL/100.) + (SLDOT-SLNDOT) * PROLFF * 0.16
-    NLPEST = NLPEST + WLIDOT * PCNL/100.
+    NLOFF  <- (SLNDOT + WLIDOT + WLFDOT) * (PCNL/100.) + (SLDOT-SLNDOT) * PROLFF * 0.16
+    NLPEST <- NLPEST + WLIDOT * PCNL/100.
     
     # ALTERADO: .LT. to <
     if (NLOFF < 0.0) {
-      NLOFF = 0.0
+      NLOFF <- 0.0
     }
     
     #-----------------------------------------------------------------------
     #     Net growth rate of nitrogen in the leaves
     #-----------------------------------------------------------------------
-    NLDOT = NGRLF - NLOFF - NRUSLF
+    NLDOT <- NGRLF - NLOFF - NRUSLF
     if (WTLF > 1.E-4) {
-      NLDOT = NLDOT + NADLF * (1. - min(1.0,(SLDOT + WLIDOT + WLFDOT) / WTLF))
+      NLDOT <- NLDOT + NADLF * (1. - min(1.0,(SLDOT + WLIDOT + WLFDOT) / WTLF))
     }
     
     #-----------------------------------------------------------------------
     #     Stem nitrogen senescence and pest damage loss
     #-----------------------------------------------------------------------
     #              senesce + pest
-    NSOFF  = (SSNDOT + WSIDOT) * (PCNST/100.) + (SSDOT - SSNDOT) * PROSTF * 0.16
-    NLPEST = NLPEST + WSIDOT * PCNST/100.
+    NSOFF  <- (SSNDOT + WSIDOT) * (PCNST/100.) + (SSDOT - SSNDOT) * PROSTF * 0.16
+    NLPEST <- NLPEST + WSIDOT * PCNST/100.
     if (NSOFF < 0.0) {
-      NSOFF = 0.0
+      NSOFF <- 0.0
     }
     
     #-----------------------------------------------------------------------
     #     Net growth rate of nitrogen in the stems
     #-----------------------------------------------------------------------
-    NSDOT = NGRST - NSOFF - NRUSST
+    NSDOT <- NGRST - NSOFF - NRUSST
     if (STMWT > 1.E-4) {
-      NSDOT = NSDOT + NADST * (1. - min(1.0,(SSDOT + WSIDOT) / STMWT))
+      NSDOT <- NSDOT + NADST * (1. - min(1.0,(SSDOT + WSIDOT) / STMWT))
     }
     
     #-----------------------------------------------------------------------
     #     Root nitrogen senescence and pest damage loss
     #-----------------------------------------------------------------------
-    NROFF  = (SRDOT+WRIDOT) * (PCNRT/100.)
+    NROFF  <- (SRDOT+WRIDOT) * (PCNRT/100.)
     if (NROFF < 0.0) {
-      NROFF = 0.0
+      NROFF <- 0.0
     }
     
     #-----------------------------------------------------------------------
     #     Net growth rate of nitrogen in the roots
     #-----------------------------------------------------------------------
-    NRDOT = NGRRT - NROFF - NRUSRT
+    NRDOT <- NGRRT - NROFF - NRUSRT
     if (RTWT > 1.E-4) {
-      NRDOT = NRDOT + NADRT * (1. - min(1.0,(SRDOT + WRIDOT) / RTWT))
+      NRDOT <- NRDOT + NADRT * (1. - min(1.0,(SRDOT + WRIDOT) / RTWT))
     }
     
     #-----------------------------------------------------------------------
     #     Shell nitrogen senescence, abortion and pest damage loss
     #-----------------------------------------------------------------------
-    NSHOFF = (WTABRT+WSHIDT) * (PCNSH/100.)
-    NLPEST = NLPEST + WSHIDT * PCNSH/100.
+    NSHOFF <- (WTABRT+WSHIDT) * (PCNSH/100.)
+    NLPEST <- NLPEST + WSHIDT * PCNSH/100.
     if (NSHOFF < 0.0) {
-      NSHOFF = 0.0
+      NSHOFF <- 0.0
     }
     
     #-----------------------------------------------------------------------
     #     Net growth rate of nitrogen in shells
     #-----------------------------------------------------------------------
-    NSHDOT = NGRSH - NSHOFF - NRUSSH
+    NSHDOT <- NGRSH - NSHOFF - NRUSSH
     
     #-----------------------------------------------------------------------
     #     Seed nitrogen senescence, abortion and pest damage loss
     #-----------------------------------------------------------------------
-    NSDOFF = SWIDOT * PCNSD/100.
+    NSDOFF <- SWIDOT * PCNSD/100.
     if (NSDOFF < 0.0) {
-      NSDOFF = 0.0
+      NSDOFF <- 0.0
     }
     
     #-----------------------------------------------------------------------
     #     Net growth rate of nitrogen in seeds
     #-----------------------------------------------------------------------
-    NSDDOT = NGRSD - NSDOFF
+    NSDDOT <- NGRSD - NSDOFF
     
     #-----------------------------------------------------------------------
     #   Integration, Update N in Each Component by Adding Today's Growth
@@ -1059,63 +1059,63 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #-----------------------------------------------------------------------
     # ALTERADO: ABS to abs(). Se repetia, mas só comentei aqui pra não duplicar.
     if ((NLDOT < 0.0) & (abs(NLDOT) > WTNLF)) {
-      NLDOT = - WTNLF
+      NLDOT <- - WTNLF
     }
-    WTNLF = WTNLF + NLDOT
+    WTNLF <- WTNLF + NLDOT
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the stems
     #-----------------------------------------------------------------------
     if ((NSDOT < 0.0) & (abs(NSDOT) > WTNST)) {
-      NSDOT = - WTNST
+      NSDOT <- - WTNST
     }
-    WTNST = WTNST + NSDOT
+    WTNST <- WTNST + NSDOT
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the roots
     #-----------------------------------------------------------------------
     if ((NRDOT < 0.0) & (abs(NRDOT) > WTNRT)) {
-      NRDOT = - WTNRT
+      NRDOT <- - WTNRT
     }
-    WTNRT = WTNRT + NRDOT
+    WTNRT <- WTNRT + NRDOT
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the nodules
     #-----------------------------------------------------------------------
-    WTNNOD = DWNOD * 0.16 * PRONOD
+    WTNNOD <- DWNOD * 0.16 * PRONOD
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the shells
     #-----------------------------------------------------------------------
     if ((NSHDOT < 0.0) & (abs(NSHDOT) > WTNSH)) {
-      NSHDOT = - WTNSH
+      NSHDOT <- - WTNSH
     }
-    WTNSH = WTNSH + NSHDOT
+    WTNSH <- WTNSH + NSHDOT
     
     if ((NSDDOT < 0.0) & (abs(NSDDOT) > WTNSD)) {
-      NSDDOT = - WTNSD
+      NSDDOT <- - WTNSD
     }
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the seed
     #-----------------------------------------------------------------------
-    WTNSD = WTNSD + NSDDOT
+    WTNSD <- WTNSD + NSDDOT
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the plant
     #-----------------------------------------------------------------------
-    WTNTOT = WTNLF + WTNST + WTNRT + WTNSH + WTNSD + WTNNOD
+    WTNTOT <- WTNLF + WTNST + WTNRT + WTNSH + WTNSD + WTNNOD
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the canopy (all above ground components)
     #-----------------------------------------------------------------------
-    WTNCAN = WTNLF + WTNST + WTNSH + WTNSD
+    WTNCAN <- WTNLF + WTNST + WTNSH + WTNSD
     
     #-----------------------------------------------------------------------
     #     Save total nitrogen in the canopy at the start of flowering
     #-----------------------------------------------------------------------
     if (YRDOY == YRNR1) {
-      CANNAA = WTNCAN
+      CANNAA <- WTNCAN
     }
     
     #-----------------------------------------------------------------------
@@ -1132,131 +1132,131 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #     matches 'Seed N' plus 'N2 fixed' plus 'N uptake'.  Why???
     
     #     Leaf
-    NLALL = NGRLF - NRUSLF 
+    NLALL <- NGRLF - NRUSLF 
     if (WTLF > 1.E-4) {
-      NLALL = NLALL + NADLF * (1. - min(1.0,(SLDOT + WLIDOT + WLFDOT) / WTLF))
+      NLALL <- NLALL + NADLF * (1. - min(1.0,(SLDOT + WLIDOT + WLFDOT) / WTLF))
     }
     
     #     Stem
-    NSALL = NGRST - NRUSST 
+    NSALL <- NGRST - NRUSST 
     if (STMWT > 1.E-4) {
-      NSALL = NSALL + NADST * (1. - min(1.0,(SSDOT + WSIDOT) / STMWT))
+      NSALL <- NSALL + NADST * (1. - min(1.0,(SSDOT + WSIDOT) / STMWT))
     }
     
     #     Root
-    NRALL = NGRRT - NRUSRT
+    NRALL <- NGRRT - NRUSRT
     if (RTWT > 1.E-4) {
-      NRALL = NRALL + NADRT * (1. - min(1.0,(SRDOT + WRIDOT) / RTWT))
+      NRALL <- NRALL + NADRT * (1. - min(1.0,(SRDOT + WRIDOT) / RTWT))
     }
     
     #     Shell and seed
-    NSHALL = NGRSH - NRUSSH
-    NSDALL = NGRSD
+    NSHALL <- NGRSH - NRUSSH
+    NSDALL <- NGRSD
     
-    WTNLA = WTNLA + NLALL
-    WTNSA = WTNSA + NSALL
-    WTNRA = WTNRA + NRALL
-    WTNSHA = WTNSHA + NSHALL
-    WTNSDA = WTNSDA + NSDALL
+    WTNLA  <- WTNLA + NLALL
+    WTNSA  <- WTNSA + NSALL
+    WTNRA  <- WTNRA + NRALL
+    WTNSHA <- WTNSHA + NSHALL
+    WTNSDA <- WTNSDA + NSDALL
     #-----------------------------------------------------------------------
     #    Nodules
     #-----------------------------------------------------------------------
     if (ISWNIT == 'Y' & ISWSYM == 'Y') {
-      DWNODA = DWNODA + NODGR
-      WTNFX = WTNFX + NFIXN + (NODGR * 0.16 * PRONOD) - NTOVR
-      WTNNAG = DWNODA * 0.16 * PRONOD
+      DWNODA <- DWNODA + NODGR
+      WTNFX  <- WTNFX + NFIXN + (NODGR * 0.16 * PRONOD) - NTOVR
+      WTNNAG <- DWNODA * 0.16 * PRONOD
     }
     #-----------------------------------------------------------------------
     #     Compute Cumulative N loss During Season
     #-----------------------------------------------------------------------
-    WTNLO  = WTNLO  + NLOFF
-    WTNSO  = WTNSO  + NSOFF
-    WTNRO  = WTNRO  + NROFF
-    WTNSHO = WTNSHO + NSHOFF
-    WTNSDO = WTNSDO + NSDOFF
+    WTNLO  <- WTNLO  + NLOFF
+    WTNSO  <- WTNSO  + NSOFF
+    WTNRO  <- WTNRO  + NROFF
+    WTNSHO <- WTNSHO + NSHOFF
+    WTNSDO <- WTNSDO + NSDOFF
     if (ISWNIT == 'Y' & ISWSYM == 'Y') {
-      NNOFF  = NDTH * 0.16 * PRONOD
-      WTNNO  = WTNNO  + NNOFF
+      NNOFF  <- NDTH * 0.16 * PRONOD
+      WTNNO  <- WTNNO  + NNOFF
     }
     #-----------------------------------------------------------------------
     #     N Balance Components for Mobilized, Uptake, and Fixed N
     #-----------------------------------------------------------------------
-    WTNMOB = WTNMOB + NMINEA
-    WTNUP = WTNUP + TRNU
-    WTNNA = WTNNOD + WTNNO
+    WTNMOB <- WTNMOB + NMINEA
+    WTNUP  <- WTNUP + TRNU
+    WTNNA  <- WTNNOD + WTNNO
     #-----------------------------------------------------------------------
     #     Compute Percentage N in each Plant Component
     #-----------------------------------------------------------------------
     if ((WTLF > 1.E-4) & (WTLF > WTNLF) & (WTNLF > 1.E-5)) {
-      PCNL = WTNLF / WTLF * 100.0
+      PCNL <- WTNLF / WTLF * 100.0
     } else {
-      PCNL = 0.0
+      PCNL <- 0.0
     }
     
     if ((STMWT > 1.E-4) & (WTNST > 1.E-5)) {
-      PCNST = WTNST / STMWT * 100.0
+      PCNST <- WTNST / STMWT * 100.0
     } else {
-      PCNST = 0.0
+      PCNST <- 0.0
     }
     
     if ((RTWT > 1.E-4) & (WTNRT > 1.E-5)) {
-      PCNRT = WTNRT / RTWT * 100.0
+      PCNRT <- WTNRT / RTWT * 100.0
     } else {
-      PCNRT = 0.0
+      PCNRT <- 0.0
     }
     
     if ((SHELWT > 1.E-4) & (WTNSH > 1.E-5)) {
-      PCNSH = WTNSH / SHELWT * 100.0
+      PCNSH <- WTNSH / SHELWT * 100.0
     } else {
-      PCNSH = 0.0
+      PCNSH <- 0.0
     }
     #-----------------------------------------------------------------------
     #     Compute Percentage Seed Composition
     #-----------------------------------------------------------------------
     if (SDWT > 0.01) {
-      PCNSD = WTNSD / SDWT * 100.0
-      PCLSD = WTLSD / SDWT * 100.0
-      PCCSD = WTCSD / SDWT * 100.0
+      PCNSD <- WTNSD / SDWT * 100.0
+      PCLSD <- WTLSD / SDWT * 100.0
+      PCCSD <- WTCSD / SDWT * 100.0
     } else {
-      PCNSD = 0.0
-      PCLSD = 0.0
-      PCCSD = 0.0
+      PCNSD <- 0.0
+      PCLSD <- 0.0
+      PCCSD <- 0.0
     }
     #-----------------------------------------------------------------------
     #    Calculate true nitrogen concentration in leaf tissue for
     #     photosynthesis reduction.
     #-----------------------------------------------------------------------
     if ((WTLF - WCRLF) > 1.E-4) {
-      RNITP = 100.*WTNLF/(WTLF-WCRLF)
+      RNITP <- 100.*WTNLF/(WTLF-WCRLF)
     } else {
-      RNITP = PCNMIN
+      RNITP <- PCNMIN
     }
     #-----------------------------------------------------------------------
     #     Calculate Remaining N in Shells, Leaves, Stems, and Roots
     #     That can be Mined (Plant N-Balance).
     #-----------------------------------------------------------------------
     if ((WTLF - WCRLF) > 1.E-4) {
-      WNRLF = max(WTNLF - PROLFF * 0.16 * (WTLF-WCRLF), 0.0)
+      WNRLF <- max(WTNLF - PROLFF * 0.16 * (WTLF-WCRLF), 0.0)
     } else {
-      WNRLF = 0.0
+      WNRLF <- 0.0
     }
     
     if ((STMWT - WCRST) > 1.E-4) {
-      WNRST = max(WTNST - PROSTF * 0.16 * (STMWT-WCRST), 0.0)
+      WNRST <- max(WTNST - PROSTF * 0.16 * (STMWT-WCRST), 0.0)
     } else {
-      WNRST = 0.0
+      WNRST <- 0.0
     }
     
     if (RTWT > 1.E-4) {
-      WNRRT = max(WTNRT - PRORTF * 0.16 * RTWT, 0.0)
+      WNRRT <- max(WTNRT - PRORTF * 0.16 * RTWT, 0.0)
     } else {
-      WNRRT = 0.0
+      WNRRT <- 0.0
     }
     
     if (SHELWT > 1.E-4) {
-      WNRSH = max(WTNSH - PROSHF * 0.16 * SHELWT, 0.0)
+      WNRSH <- max(WTNSH - PROSHF * 0.16 * SHELWT, 0.0)
     } else {
-      WNRSH = 0.0
+      WNRSH <- 0.0
     }
     
     #-----------------------------------------------------------------------
@@ -1269,18 +1269,18 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #       At this time, the model does not senesce seed.   
     #     Convert from biomass to C with a factor 0.40.   
     #-----------------------------------------------------------------------
-    SenWt[1] = (SLDOT + WLFDOT + SSDOT + WTABRT)
+    SenWt[1] <- (SLDOT + WLFDOT + SSDOT + WTABRT)
     #     Convert from g/m2 to kg/ha with a factor of 10.
-    SenWt[1] = max(SenWt[1], 0.) * 10.0    #kg[dry matter]/ha
+    SenWt[1] <- max(SenWt[1], 0.) * 10.0    #kg[dry matter]/ha
     
     #-----------------------------------------------------------------------
     #     Surface nitrogen includes nitrogen losses computed above minus the
     #       pest damage components. 
     #-----------------------------------------------------------------------
     # VERIFICAR: SenE é uma variável? Se sim, deve usar []c, verificar posicoes SenE
-    SenE[1,2] = NLOFF + NSOFF + NSHOFF - NLPEST  
+    SenE[1,2] <- NLOFF + NSOFF + NSHOFF - NLPEST  
     #     Convert from g/m2 to kg/ha with a factor of 10.
-    SenE[1,2] = max(SenE[1,2],0.) * 10.0             #kg[N]/ha
+    SenE[1,2] <- max(SenE[1,2],0.) * 10.0             #kg[N]/ha
     
     #-----------------------------------------------------------------------
     #     Surface phosphorus senescence.  - do this is P routine
@@ -1291,72 +1291,72 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #     Contribution of lignin to surface litter from senesced and frozen 
     #       plant matter
     #-----------------------------------------------------------------------
-    SenLig[1] = (SLDOT + WLFDOT) * PLIGLF + SSDOT * PLIGST + WTABRT * PLIGSH
+    SenLig[1] <- (SLDOT + WLFDOT) * PLIGLF + SSDOT * PLIGST + WTABRT * PLIGSH
     #     Convert from g/m2 to kg/ha with a factor of 10.
-    SenLig[1] = max(SenLig[1],0.) * 10.0             #kg[lig]/ha
+    SenLig[1] <- max(SenLig[1],0.) * 10.0             #kg[lig]/ha
     
     #-----------------------------------------------------------------------
     #     Senescence of roots and nodules (kg/ha)
     #-----------------------------------------------------------------------
     for (L in 1:NLAYR) {
-      SenWt[L]  = SENRT[L] + SENNOD[L]            #kg[dry matter]/ha
-      SenLig[L] = SENRT[L] * PLIGRT + SENNOD[L] * PLIGNO   #kg[lig]/ha\
+      SenWt[L]  <- SENRT[L] + SENNOD[L]            #kg[dry matter]/ha
+      SenLig[L] <- SENRT[L] * PLIGRT + SENNOD[L] * PLIGNO   #kg[lig]/ha\
       
       #SenE(L,1) = (SENRT[L]* PRORTF + SENNOD[L] * PRONOD) * 0.16 
       #       01/19/2006 CHP Root senescence at current N% (per KJB and JWJ)
-      SenE[L,1] = SENRT[L] * PCNRT / 100. + SENNOD[L] * PRONOD * 0.16 
+      SenE[L,1] <- SENRT[L] * PCNRT / 100. + SENNOD[L] * PRONOD * 0.16 
     }
     
     #-----------------------------------------------------------------------
     #     Leaf Area, Specific Leaf Area Calculations
     #     Calculate Area Growth rate and Update Leaf Area (AREALF, XLAI)
     #-----------------------------------------------------------------------
-    ALFDOT = WLDOTN*Fnew - (SLDOT+WLIDOT+WLFDOT+NRUSLF/0.16)*SLA
+    ALFDOT <- WLDOTN*Fnew - (SLDOT+WLIDOT+WLFDOT+NRUSLF/0.16)*SLA
     if (WTLF > 1.E-4) {
-      ALFDOT = ALFDOT + SLA * (NADLF/0.16) * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
+      ALFDOT <- ALFDOT + SLA * (NADLF/0.16) * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
     }
-    AREALF = AREALF + ALFDOT
-    XLAI   = AREALF / 10000.
+    AREALF <- AREALF + ALFDOT
+    XLAI   <- AREALF / 10000.
     if (AREALF > 0.00001 & WTLF > 1.E-4) {
-      SLA    = AREALF / WTLF
-      SLAAD  = AREALF / (WTLF - WCRLF)
-      if (SLA > 999.) SLA = 0.0
-      if (SLAAD > 999.) SLAAD = -99.
+      SLA    <- AREALF / WTLF
+      SLAAD  <- AREALF / (WTLF - WCRLF)
+      if (SLA > 999.) SLA <- 0.0
+      if (SLAAD > 999.) SLAAD <- -99.
     }
     #-----------------------------------------------------------------------
     #     Remember XLAI
     #-----------------------------------------------------------------------
-    LAIMX = max(XLAI,LAIMX)
+    LAIMX <- max(XLAI,LAIMX)
     #-----------------------------------------------------------------------
     #     Calculate "Healthy" or Non-Diseased Leaf Area Index
     #-----------------------------------------------------------------------
     #     AREAH  = AREALF - 2. * DISLA
     #     KJB Remove 2. factor
-    AREAH  = AREALF - DISLA
-    AREAH  = max(0.,AREAH)
-    XHLAI  = AREAH / 10000.
+    AREAH  <- AREALF - DISLA
+    AREAH  <- max(0.,AREAH)
+    XHLAI  <- AREAH / 10000.
     #-----------------------------------------------------------------------
     #     Integrate Pest Damage to Seeds
     #-----------------------------------------------------------------------
-    PUNCSD = PUNCSD + SDPDOT           #chp not used
-    SEEDNO = SEEDNO - SDIDOT
-    PUNCTR = PUNCTR + PUNDOT           #chp not used
+    PUNCSD <- PUNCSD + SDPDOT           #chp not used
+    SEEDNO <- SEEDNO - SDIDOT
+    PUNCTR <- PUNCTR + PUNDOT           #chp not used
     #-----------------------------------------------------------------------
     #     Loss in Plants due to Pests, Adjust Plant Spacing Also
     #-----------------------------------------------------------------------
     if (NPLTD > 1.E-5) {
-      PLTPOP = PLTPOP - NPLTD
-      PLTPOP = max(0.,PLTPOP)
+      PLTPOP <- PLTPOP - NPLTD
+      PLTPOP <- max(0.,PLTPOP)
       if (PLTPOP*ROWSPC > 1.E-4) {
-        BETN = 1.0/(ROWSPC*PLTPOP)
+        BETN <- 1.0/(ROWSPC*PLTPOP)
       }
     }
     
     if (PPLTD > 1.E-4) {
-      PLTPOP = PLTPOP - PPLTD*PLTPOP/100.
-      PLTPOP = max(0.,PLTPOP)
+      PLTPOP <- PLTPOP - PPLTD*PLTPOP/100.
+      PLTPOP <- max(0.,PLTPOP)
       if(PLTPOP*ROWSPC > 1.E-4) {
-        BETN = 1.0/(ROWSPC*PLTPOP)
+        BETN <- 1.0/(ROWSPC*PLTPOP)
       }
     }
     
@@ -1528,21 +1528,21 @@ STRESS <- function(AGEFAC, iyear,jday) {
   #-----------------------------------------------------------------------
   #     Set Ending Plant Weights, Dates of Stages if Plants Died
   #-----------------------------------------------------------------------
-  TOTWT  = max(0.,TOTWT)
-  TOPWT  = max(0.,TOPWT)
-  WTLF   = max(0.,WTLF)
-  STMWT  = max(0.,STMWT)
-  SDWT   = max(0.,SDWT)
-  SHELWT = max(0.,SHELWT)
-  RTWT   = max(0.,RTWT)
-  PODWT  = max(0.,PODWT)
-  DWNOD  = max(0.,DWNOD)
+  TOTWT  <- max(0.,TOTWT)
+  TOPWT  <- max(0.,TOPWT)
+  WTLF   <- max(0.,WTLF)
+  STMWT  <- max(0.,STMWT)
+  SDWT   <- max(0.,SDWT)
+  SHELWT <- max(0.,SHELWT)
+  RTWT   <- max(0.,RTWT)
+  PODWT  <- max(0.,PODWT)
+  DWNOD  <- max(0.,DWNOD)
   
   YRDOY <- paste0(iyear,sprintf("%03d", jday))
   
   if (MDATE < 0) {
     #        NR8   = max(0,TIMDIF(YRSIM,YRDOY))
-    MDATE = YRDOY
+    MDATE <- YRDOY
   }
   
   #DAP = idpp
@@ -1576,7 +1576,7 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
   YRTFAC <- params$YRTFAC  #c(2.50, 2.50, 2.60, 2.60)
   RTWTMIN <- params$RTWTMIN  #0.0 #Soybean - Sempre ZERO
   
-  NL       = 20  #!Maximum number of soil layers 
+  NL       <- 20  #!Maximum number of soil layers 
   
   RLV_WS <- rep(0, NL)
   
@@ -1586,23 +1586,23 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #---------------------------------------------------------------------
-    SRDOT = 0.0       
-    RLV   = 0.0
-    RTDEP = 0.0       
-    SENRT = 0.0
-    SUMEX = 0.0
-    SUMRL = 0.0
-    SATFAC = 0.0
+    SRDOT  <- 0.0       
+    RLV    <- 0.0
+    RTDEP  <- 0.0       
+    SENRT  <- 0.0
+    SUMEX  <- 0.0
+    SUMRL  <- 0.0
+    SATFAC <- 0.0
     
     #-----------------------------------------------------------------------
     #     ROOT DEPTH INCREASE RATE WITH TIME, cm/physiological day
     #-----------------------------------------------------------------------
     # if (CROP != 'FA' & ISWWAT != 'N') {
     if (CROP != 'FA') {
-      RFAC2 = TABEX(YRTFAC,XRTFAC,0.0,4)
+      RFAC2 <- TABEX(YRTFAC,XRTFAC,0.0,4)
     }
     
-    CumRootMass = 0.0
+    CumRootMass <- 0.0
     
     #***********************************************************************
     #***********************************************************************
@@ -1617,15 +1617,15 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     #-----------------------------------------------------------------------
     INROOT(RFAC1)
     
-    RFAC3 = RFAC1
+    RFAC3 <- RFAC1
     
-    TRLV = 0.0
+    TRLV <- 0.0
     
     for (L in 1:NLAYR) {
-      TRLV = TRLV + RLV[L] * DLAYR[L] # cm[root] / cm2[ground]
+      TRLV <- TRLV + RLV[L] * DLAYR[L] # cm[root] / cm2[ground]
     }
     
-    CumRootMass = WTNEW * FRRT * PLTPOP * 10. 
+    CumRootMass <- WTNEW * FRRT * PLTPOP * 10. 
     #  kg[root]  g[tissue] g[root]    plants   kg/ha
     #   -------- = ----- * --------- * ------ * ----- 
     #      ha      plant   g[tissue]     m2      g/m2
@@ -1639,9 +1639,9 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     #-----------------------------------------------------------------------
     #     Calculate Root Depth Rate of Increase, Physiological Day (RFAC2)
     #-----------------------------------------------------------------------
-    RFAC2 = TABEX(YRTFAC, XRTFAC, VSTAGE, 4)
-    RLNEW = WRDOTN * RFAC1 / 10000.
-    CGRRT = AGRRT * WRDOTN
+    RFAC2 <- TABEX(YRTFAC, XRTFAC, VSTAGE, 4)
+    RLNEW <- WRDOTN * RFAC1 / 10000.
+    CGRRT <- AGRRT * WRDOTN
     
     #-----------------------------------------------------------------------
     #     Calculate root length per cm2 soil and initiate growth,
@@ -1656,9 +1656,9 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     RRLF   <- rep(0, NL)
     for (L in 1:NLAYR) {
       # TRTDY = TRTDY + RLV(L) * DLAYR(L) # cm[root] / cm2[ground]
-      RRLF[L]   = 0.0
-      RLSEN[L]  = 0.0
-      RLGRW[L]  = 0.0
+      RRLF[L]   <- 0.0
+      RLSEN[L]  <- 0.0
+      RLGRW[L]  <- 0.0
       
     }
     
@@ -1667,26 +1667,26 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
       #  RFAC3 = TRTDY * 10000.0 / (RTWT - WRDOTN)
       #  RTWT has not yet been updated today, so use yesterday's
       #  value and don't subtract out today's growth - chp 11/13/00
-      RFAC3 = TRLV * 10000.0 / RTWT
+      RFAC3 <- TRLV * 10000.0 / RTWT
     } else {
-      RFAC3 = RFAC1
+      RFAC3 <- RFAC1
     }
     
     # 10/20/2005 Limit RLV decrease due to senscence to 
     #       a minimum resulting root weight 
     if (RTWTMIN > 0.0) {
-      TRLV_MIN = RTWTMIN * RFAC3 / 1.E4   #same units as TRLV
+      TRLV_MIN <- RTWTMIN * RFAC3 / 1.E4   #same units as TRLV
       # cm/cm2  =  (g/m2) *(cm/g) / (cm2/m2)
     } else {
       # Set TRLV_MIN to zero -- no minimum root mass
-      TRLV_MIN = 0.0
+      TRLV_MIN <- 0.0
     }
     
     #-----------------------------------------------------------------------
-    TRLDF  = 0.0
-    CUMDEP = 0.0
-    SUMEX  = 0.0
-    SUMRL  = 0.0
+    TRLDF  <- 0.0
+    CUMDEP <- 0.0
+    SUMEX  <- 0.0
+    SUMRL  <- 0.0
     
     #Fortran
     RLV_WS <- rep(0, NL)
@@ -1696,10 +1696,10 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     
     for (L in 1:NLAYR) {
       
-      L1 = L
-      CUMDEP = CUMDEP + DLAYR[L]
-      SWDF = 1.0
-      SWEXF = 1.0
+      L1 <- L
+      CUMDEP <- CUMDEP + DLAYR[L]
+      SWDF <- 1.0
+      SWEXF <- 1.0
       
       #-----------------------------------------------------------------------
       #     2/21/05 - SJR - move conditional call for water stress from CROPGRO 
@@ -1710,42 +1710,42 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
       #-----------------------------------------------------------------------
       if (ISWWAT == 'Y') {
         if (SAT[L]-SW[L] < PORMIN) {
-          SWEXF = (SAT[L] - SW[L]) / PORMIN
-          SWEXF = min(SWEXF, 1.0)
+          SWEXF <- (SAT[L] - SW[L]) / PORMIN
+          SWEXF <- min(SWEXF, 1.0)
         }
         
-        SUMEX = SUMEX + DLAYR[L] * RLV[L] * (1.0 - SWEXF)
-        SUMRL = SUMRL + DLAYR[L] * RLV[L]
+        SUMEX <- SUMEX + DLAYR[L] * RLV[L] * (1.0 - SWEXF)
+        SUMRL <- SUMRL + DLAYR[L] * RLV[L]
         
-        ESW[L] = DUL[L] - LL[L]
+        ESW[L] <- DUL[L] - LL[L]
         if (SW[L] - LL[L] < 0.25*ESW[L]) {
-          SWDF = (SW[L] - LL[L]) / (0.25*ESW[L])
-          SWDF = max(SWDF, 0.0)
+          SWDF <- (SW[L] - LL[L]) / (0.25*ESW[L])
+          SWDF <- max(SWDF, 0.0)
         }
       }
       #-----------------------------------------------------------------------
       
-      RTSURV = min(1.0,(1.-RTSDF*(1.-SWDF)),(1.-RTEXF*(1.-SWEXF)))
+      RTSURV <- min(1.0,(1.-RTSDF*(1.-SWDF)),(1.-RTEXF*(1.-SWEXF)))
       if (RLV[L] > RLDSM & TRLV + RLNEW > TRLV_MIN) {
         # 1/14/2005 CHP Don't subtract water stress senescence 
         #           yet - combine with natural senescence and check to see if 
         #           enough RLV for senescence to occur (TRLV > TRLV_MIN)
         #RLV(L) = RLV(L) * RTSURV
-        RLV_WS[L] = RLV[L] * (1.0 - RTSURV)
+        RLV_WS[L] <- RLV[L] * (1.0 - RTSURV)
       } else {
-        RLV_WS[L] = 0.0
+        RLV_WS[L] <- 0.0
       }
       
       #-----------------------------------------------------------------------
-      RLDF[L] = WR[L] * DLAYR[L] * min(SWDF,SWEXF)
+      RLDF[L] <- WR[L] * DLAYR[L] * min(SWDF,SWEXF)
       if (CUMDEP < RTDEP) {
-        TRLDF = TRLDF + RLDF[L]
+        TRLDF <- TRLDF + RLDF[L]
       } else {
         if (WR[L] > 0.0 & RLNEW > 0.0) {
           if (L == 1) {
-            RTDEP = RTDEP + DTX * RFAC2
+            RTDEP <- RTDEP + DTX * RFAC2
           } else {
-            RTDEP = RTDEP + DTX * RFAC2 * min(SWDF,SWEXF) * (1. + 0.25 * (1. - max(SWFAC,0.40)))
+            RTDEP <- RTDEP + DTX * RFAC2 * min(SWDF,SWEXF) * (1. + 0.25 * (1. - max(SWFAC,0.40)))
             #-----------------------------------------------------------------------
             #-KJB  DO NOT WANT TO DECREASE ROOT DEPTH WITH STRESS.  IF PG TO ROOTS
             # IS LOW BECAUSE OF SEED GROWTH OR IF WATER DEFICIT CAUSES LOW PG TO ROOTS
@@ -1760,13 +1760,13 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
             #-----------------------------------------------------------------------
           }
           # VERIFICAR: DEPMAX estava sendo calculado no RUNINIT
-          DEPMAX = DS[NLAYR]
+          DEPMAX <- DS[NLAYR]
           if (RTDEP > DEPMAX) {
-            RTDEP = DEPMAX
+            RTDEP <- DEPMAX
           }
         }
-        RLDF[L] = RLDF[L] * (1. - (CUMDEP - RTDEP) / DLAYR[L])
-        TRLDF = TRLDF + RLDF[L]
+        RLDF[L] <- RLDF[L] * (1. - (CUMDEP - RTDEP) / DLAYR[L])
+        TRLDF <- TRLDF + RLDF[L]
         
         break
       }
@@ -1777,20 +1777,20 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     #-----------------------------------------------------------------------
     
     if (SUMRL > 0.0) {
-      SATFAC = SUMEX/SUMRL
+      SATFAC <- SUMEX/SUMRL
     } else {
-      SATFAC = 0.0
+      SATFAC <- 0.0
     }
     
-    SRDOT = 0.0
-    RLSENTOT = 0.0
+    SRDOT <- 0.0
+    RLSENTOT <- 0.0
     
     
     for (L in 1:L1) {
       if (TRLDF < 0.00001) {
-        RRLF[L] = 1.0
+        RRLF[L] <- 1.0
       } else {
-        RRLF[L] = RLDF[L]/TRLDF
+        RRLF[L] <- RLDF[L]/TRLDF
       }
       #-----------------------------------------------------------------------
       #       MRESPR, GRESPR, and RESPS are not used anywhere
@@ -1800,17 +1800,17 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
       # GRESPR[L] = RRLF[L] * (CGRRT-WRDOTN) * 44.0 /30.0
       # RESPS[L] = MRESPR[L] + GRESPR[L]
       #-----------------------------------------------------------------------
-      RLGRW[L] = RRLF[L] * RLNEW / DLAYR[L] #cm[root]/cm3[ground]
+      RLGRW[L] <- RRLF[L] * RLNEW / DLAYR[L] #cm[root]/cm3[ground]
       
       if (TRLV + RLNEW > TRLV_MIN) {
-        RLSEN[L] = RLV[L] * RTSEN * DTX
+        RLSEN[L] <- RLV[L] * RTSEN * DTX
       } else {
-        RLSEN[L] = 0.0
+        RLSEN[L] <- 0.0
       }
       
       # Limit total senescence in each layer to existing RLV
       if (RLV[L] - RLSEN[L] - RLV_WS[L] + RLGRW[L] < 0.0) {
-        RLSEN[L] = RLV[L] + RLGRW[L] - RLV_WS[L]
+        RLSEN[L] <- RLV[L] + RLGRW[L] - RLV_WS[L]
       } 
       
       # RLSENTOT is profile senescence, water stress and natural cm/cm2
@@ -1820,28 +1820,28 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     # If senescence too high (results in TRLV < TRLV_MIN) then
     # reduce senescence in each layer by factor.
     if (RLSENTOT > 1.E-6 & TRLV + RLNEW - RLSENTOT < TRLV_MIN){
-      FACTOR = (TRLV + RLNEW - TRLV_MIN) / RLSENTOT
-      FACTOR = max(0.0, min(1.0, FACTOR))
-      RLSEN  = RLSEN  * FACTOR
-      RLV_WS = RLV_WS * FACTOR
+      FACTOR <- (TRLV + RLNEW - TRLV_MIN) / RLSENTOT
+      FACTOR <- max(0.0, min(1.0, FACTOR))
+      RLSEN  <- RLSEN  * FACTOR
+      RLV_WS <- RLV_WS * FACTOR
     }
     
     # Update RLV and TRLV based on today's growth and senescence
-    TRLV = 0.0
+    TRLV <- 0.0
     for (L in 1:NLAYR) {
-      RLV[L] = RLV[L] + RLGRW[L] - RLSEN[L] - RLV_WS[L]
-      TRLV = TRLV + RLV[L] * DLAYR[L]
+      RLV[L] <- RLV[L] + RLGRW[L] - RLSEN[L] - RLV_WS[L]
+      TRLV <- TRLV + RLV[L] * DLAYR[L]
       
       # Keep senescence in each layer for adding C and N to soil
       #SENRT(L) = RLSEN(L) * DLAYR(L) / RFAC1 * 10000. * 10. #kg/ha
       # 1/14/2005 CHP - water stress senesence needs to be inlcuded.
-      SENRT[L] = (RLSEN[L] + RLV_WS[L]) * DLAYR[L] / RFAC3 * 1.E5 
+      SENRT[L] <- (RLSEN[L] + RLV_WS[L]) * DLAYR[L] / RFAC3 * 1.E5 
       #           cm[root]              g[root]   1000 cm2   10(kg/ha)
       # kg/ha  =  -------- * cm[soil] * ------- * -------- * ---------
       #          cm3[soil]             cm[root]     m2         (g/m2)
       
-      SENRT[L] = max(SENRT[L], 0.0)
-      SRDOT = SRDOT + SENRT[L]/10.        #g/m2
+      SENRT[L] <- max(SENRT[L], 0.0)
+      SRDOT <- SRDOT + SENRT[L]/10.        #g/m2
       
       # Not used:
       #TRLGRW = TRLGRW + RLGRW(L) * DLAYR(L)
@@ -1854,14 +1854,14 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     # Total root senescence = water stress + natural senescence
     # 10/3/2005 SJR
     # SRDOT = (TRTDY + RLNEW - TRLV) * 10000.0 / RFAC3    #g/m2
-    SRDOT = max(SRDOT, 0.0)
+    SRDOT <- max(SRDOT, 0.0)
     
-    TotRootMass = TRLV / RFAC3 * 1.E5
+    TotRootMass <- TRLV / RFAC3 * 1.E5
     #          cm[root]   g[root]   10000 cm2   10(kg/ha)
     # kg/ha  = -------- * ------- * -------- * ---------
     #         cm2[soil]   cm[root]     m2         (g/m2)
     
-    CumRootMass = CumRootMass + WRDOTN * 10. - SRDOT * 10. 
+    CumRootMass <- CumRootMass + WRDOTN * 10. - SRDOT * 10. 
     
     #***********************************************************************
     #***********************************************************************
@@ -1884,7 +1884,7 @@ INROOT <- function (RFAC1){
   
   params <- plantList$soybean$params
  
-  NL       = 20  #!Maximum number of soil layers 
+  NL       <- 20  #!Maximum number of soil layers 
   
   #!*ROOT PARAMETERS
   RTDEPI  <- params$RTDEPI # 20.0
@@ -1894,26 +1894,26 @@ INROOT <- function (RFAC1){
   #***********************************************************************
   #     INITIALIZE ROOT DEPTH AT EMERGENCE
   #-----------------------------------------------------------------------
-  RTDEP = RTDEPI
+  RTDEP <- RTDEPI
   #-----------------------------------------------------------------------
   #     DISTRIBUTE ROOT LENGTH EVENLY IN ALL LAYERS TO A DEPTH OF
   #     RTDEPTI (ROOT DEPTH AT EMERGENCE)
   #-----------------------------------------------------------------------
-  CUMDEP = 0.
+  CUMDEP <- 0.
   
   for (L in 1:NLAYR) {
-    RLV[L] = 0.0
+    RLV[L] <- 0.0
   }
   
   for (L in 1:NLAYR) {
-    DEP = min(RTDEP - CUMDEP, DLAYR[L])
-    RLINIT = WTNEW * FRRT * PLTPOP * RFAC1 * DEP / ( RTDEP * 10000 )
+    DEP <- min(RTDEP - CUMDEP, DLAYR[L])
+    RLINIT <- WTNEW * FRRT * PLTPOP * RFAC1 * DEP / ( RTDEP * 10000 )
     #        cm[root]   g[root]    plants  cm[root]   m2
     #        -------- = -------- * ------ * ------- * ---
     #      cm2[ground]   plant       m2     g[root]   cm2
     
-    CUMDEP = CUMDEP + DEP
-    RLV[L] = RLINIT / DLAYR[L]
+    CUMDEP <- CUMDEP + DEP
+    RLV[L] <- RLINIT / DLAYR[L]
     if (CUMDEP >= RTDEP) {
       break()
     }
@@ -2020,47 +2020,47 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
-    CDMSDR = 0.0
-    GDMSDR = 0.0
-    FNINSD = 0.0
-    NDMNEW = 0.0
-    NDMREP = 0.0
-    NDMSD  = 0.0
-    NDMSH  = 0.0
-    NDMSDR = 0.0
-    NDMVEG = 0.0
-    NMOBR  = 0.0
-    SDGR   = 0.0
-    FNINL  = 0.0
-    FNINS  = 0.0
-    FNINR  = 0.0
-    NMINEP = 0.0
+    CDMSDR <- 0.0
+    GDMSDR <- 0.0
+    FNINSD <- 0.0
+    NDMNEW <- 0.0
+    NDMREP <- 0.0
+    NDMSD  <- 0.0
+    NDMSH  <- 0.0
+    NDMSDR <- 0.0
+    NDMVEG <- 0.0
+    NMOBR  <- 0.0
+    SDGR   <- 0.0
+    FNINL  <- 0.0
+    FNINS  <- 0.0
+    FNINR  <- 0.0
+    NMINEP <- 0.0
     
-    RPRPUN = 1.0 
-    TMPFAC = 1.0
+    RPRPUN <- 1.0 
+    TMPFAC <- 1.0
     
     #-----------------------------------------------------------------------
     #     SET VARIETY SPECIFIC LEAF PARAMETERS
     #-----------------------------------------------------------------------
     if (CROP != 'FA') {
-      DUMFAC = SLAVAR / SLAREF
-      Fnew   = DUMFAC * FINREF 
-      FVEG   = DUMFAC * SLAMAX
-      SLAMN  = DUMFAC * SLAMIN
-      SLAMX  = DUMFAC * SLAMAX
-      GROMAX = 0.0
-      SIZRAT = SIZELF / SIZREF
+      DUMFAC <- SLAVAR / SLAREF
+      Fnew   <- DUMFAC * FINREF 
+      FVEG   <- DUMFAC * SLAMAX
+      SLAMN  <- DUMFAC * SLAMIN
+      SLAMX  <- DUMFAC * SLAMAX
+      GROMAX <- 0.0
+      SIZRAT <- SIZELF / SIZREF
       
       for (I in 1:6){
-        YVGROW[I] = SIZRAT * YVREF[I]
+        YVGROW[I] <- SIZRAT * YVREF[I]
       }
       
       #-----------------------------------------------------------------------
       #     INITIALIZE PARTITIONING PARAMETERS
       #-----------------------------------------------------------------------
-      FRLF = TABEX(YLEAF,XLEAF,0.0,8)
-      FRSTM = TABEX(YSTEM,XLEAF,0.0,8)
-      FRRT = 1.0 - FRLF - FRSTM
+      FRLF <- TABEX(YLEAF,XLEAF,0.0,8)
+      FRSTM <- TABEX(YSTEM,XLEAF,0.0,8)
+      FRRT <- 1.0 - FRLF - FRSTM
       
     }
     
@@ -2071,25 +2071,25 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #***********************************************************************
   } else if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
-    XFRT   = XFRUIT
-    ADDSHL = 0.0
-    TURXFR = 0.0
-    GDMSD  = 0.0
-    CDMSD  = 0.0
-    NDMSD  = 0.0
-    GDMSDR = 0.0
-    CDMSDR = 0.0
-    NDMSDR = 0.0
-    CDMREP = 0.0
-    NAGE   = 0
+    XFRT   <- XFRUIT
+    ADDSHL <- 0.0
+    TURXFR <- 0.0
+    GDMSD  <- 0.0
+    CDMSD  <- 0.0
+    NDMSD  <- 0.0
+    GDMSDR <- 0.0
+    CDMSDR <- 0.0
+    NDMSDR <- 0.0
+    CDMREP <- 0.0
+    NAGE   <- 0
     for (NPP in 1:NCOHORTS) {
-      PHTIM[NPP] = 0.
-      PNTIM[NPP] = 0.
+      PHTIM[NPP] <- 0.
+      PNTIM[NPP] <- 0.
     }
-    FNINSD = SDPRO * 0.16   
-    FNINL  = PROLFI * 0.16  
-    FNINS  = PROSTI * 0.16  
-    FNINR  = PRORTI * 0.16  
+    FNINSD <- SDPRO * 0.16   
+    FNINL  <- PROLFI * 0.16  
+    FNINS  <- PROSTI * 0.16  
+    FNINR  <- PRORTI * 0.16  
     
     #***********************************************************************
     #***********************************************************************
@@ -2109,11 +2109,11 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #     I DON'T REALLY WANT THAT, LATE IN CYCLE.  KJB
     #     NOW, DXR57 HITS CLOSE TO 1 AT MATURITY AND PREVENTS THAT
     #-----------------------------------------------------------------------
-    NMOBR  = NVSMOB * NMOBMX * TDUMX
+    NMOBR  <- NVSMOB * NMOBMX * TDUMX
     if (DAS > NR5) {
-      NMOBR = NMOBMX * TDUMX2 * (1.0 + 0.5*(1.0 - SWFAC)) * (1.0 + 0.3*(1.0 - NSTRES)) * (NVSMOB + (1. - NVSMOB) * max(XPOD,DXR57^2.))
+      NMOBR <- NMOBMX * TDUMX2 * (1.0 + 0.5*(1.0 - SWFAC)) * (1.0 + 0.3*(1.0 - NSTRES)) * (NVSMOB + (1. - NVSMOB) * max(XPOD,DXR57^2.))
     }
-    NMINEP = NMOBR * (WNRLF + WNRST + WNRRT + WNRSH)
+    NMINEP <- NMOBR * (WNRLF + WNRST + WNRRT + WNRSH)
     
     #-----------------------------------------------------------------------
     if (DAS >= NR1) {
@@ -2123,31 +2123,31 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
       
       # VERIFICAR: Nao seria DAS <= NR1 ? Pois caso DAS seja menor, a linha a seguir dara erro por ser indice negativo.
       if (DAS == NR1) {
-        PNTIM[1] = 0.0
+        PNTIM[1] <- 0.0
       } else {
-        PNTIM[DAS - NR1 + 1] = PNTIM[DAS - NR1] + TDUMX
+        PNTIM[DAS - NR1 + 1] <- PNTIM[DAS - NR1] + TDUMX
       }
       
       if (DAS <= NR2) {
-        PHTIM[1] = 0.0
+        PHTIM[1] <- 0.0
       } else {
-        PHTIM[DAS - NR2 + 1] = PHTIM[DAS - NR2] + TDUMX
+        PHTIM[DAS - NR2 + 1] <- PHTIM[DAS - NR2] + TDUMX
       }
       
       #-----------------------------------------------------------------------
       #     Calculate function for modifying seed growth rate with temperature
       #-----------------------------------------------------------------------
-      TMPFAC = 0
-      TMPFCS = 0
+      TMPFAC <- 0
+      TMPFCS <- 0
       for (I in 1:TS) {
         # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
         # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
         
-        TMPFAC = CURV(TYPSDT,FNSDT[1], FNSDT[2], FNSDT[3], FNSDT[4], TGRO[I])
-        TMPFCS = TMPFCS + TMPFAC
+        TMPFAC <- CURV(TYPSDT,FNSDT[1], FNSDT[2], FNSDT[3], FNSDT[4], TGRO[I])
+        TMPFCS <- TMPFCS + TMPFAC
       }
       
-      TMPFAC = TMPFCS / TS
+      TMPFAC <- TMPFCS / TS
       
       # 24 changed to TS on 3Jul17 by Bruce Kimball
       
@@ -2155,30 +2155,30 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
       #       Calculate reduction in seed growth due to insect punctures
       #-----------------------------------------------------------------------
       if (PUNCSD > 0.001) {
-        REDPUN = 1.0 - (PUNCTR/PUNCSD) * RPRPUN
-        REDPUN = max(0.0,REDPUN)
+        REDPUN <- 1.0 - (PUNCTR/PUNCSD) * RPRPUN
+        REDPUN <- max(0.0,REDPUN)
       } else {
-        REDPUN = 1.0
+        REDPUN <- 1.0
       }
       #-----------------------------------------------------------------------
       #       Water stress factor (TURADD) effect on reproductive growth and
       #       pod addition.  Stress is defined to INCREASE growth and addition.
       #-----------------------------------------------------------------------
-      TURADD = TABEX (YTRFAC,XTRFAC,TURFAC,4)
+      TURADD <- TABEX (YTRFAC,XTRFAC,TURFAC,4)
       #-----------------------------------------------------------------------
       #     Calculate maximum growth per seed based on temp and seed punctures
       #-----------------------------------------------------------------------
-      SDGR = SDVAR * TMPFAC * REDPUN * (1.-(1.-DRPP)*SRMAX) * (1. + TURADD)
+      SDGR <- SDVAR * TMPFAC * REDPUN * (1.-(1.-DRPP)*SRMAX) * (1. + TURADD)
       #-----------------------------------------------------------------------
       #     Initialize Seed Growth Demands and CH2O and N required for seed
       #       growth
       #-----------------------------------------------------------------------
-      GDMSD  = 0.0
-      CDMSD  = 0.0
-      NDMSD  = 0.0
-      GDMSDR = 0.0
-      CDMSDR = 0.0
-      NDMSDR = 0.0
+      GDMSD  <- 0.0
+      CDMSD  <- 0.0
+      NDMSD  <- 0.0
+      GDMSDR <- 0.0
+      CDMSDR <- 0.0
+      NDMSDR <- 0.0
       #-----------------------------------------------------------------------
       if (DAS > NR2) {
         for (NPP in 1:(DAS - NR2)) { 
@@ -2186,22 +2186,22 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
           #     Calculate physiol age of seed cohort.  Do not allow seed to grow
           #     until shells are greater than LAGSD physiol age.
           #-----------------------------------------------------------------------
-          PAGE = PHTIM[DAS - NR2 + 1] - PHTIM[NPP]
+          PAGE <- PHTIM[DAS - NR2 + 1] - PHTIM[NPP]
           if (PAGE >= LAGSD) {
             #-----------------------------------------------------------------------
             #     Allow cohort growth until threshing limit (seed wt./pod wt) occurs
             #     taking into account damage by pests to seed and shells
             #-----------------------------------------------------------------------
-            REDSHL = 0
+            REDSHL <- 0
             if (SDDES[NPP] > 0) {
-              REDSHL = WTSHE[NPP] * SDDES[NPP] / (SDDES[NPP] + SDNO[NPP])
+              REDSHL <- WTSHE[NPP] * SDDES[NPP] / (SDDES[NPP] + SDNO[NPP])
             }
-            SDMAX = (WTSHE[NPP] - REDSHL) * THRESH / (100 - THRESH) - WTSD[NPP]
-            SDMAX = max(0, SDMAX)
+            SDMAX <- (WTSHE[NPP] - REDSHL) * THRESH / (100 - THRESH) - WTSD[NPP]
+            SDMAX <- max(0, SDMAX)
             #-----------------------------------------------------------------------
             #     Compute Seed Growth Demand, GDMSD, and N required for seed, NDMSD
             #-----------------------------------------------------------------------
-            GDMSD  = GDMSD  + min(SDGR * SDNO[NPP] * REDPUN, SDMAX)
+            GDMSD  <- GDMSD  + min(SDGR * SDNO[NPP] * REDPUN, SDMAX)
           }
         }
         #-----------------------------------------------------------------------
@@ -2209,121 +2209,121 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
         #-----------------------------------------------------------------------
         SDCOMP(TAVG)
         
-        NDMSD  = FNINSD * GDMSD
+        NDMSD  <- FNINSD * GDMSD
         #-----------------------------------------------------------------------
         #     Calculate Amount of Mobilized N Which Can be Used for Seed Growth,
         #     NDMSDR, potential seed growth from this source of N, GDMSDR,
         #     and CH2O required for this seed growth from mobilized N, CDMSDR
         #-----------------------------------------------------------------------
         if (NDMSD > NMINEP) {
-          NDMSDR = NMINEP
+          NDMSDR <- NMINEP
         } else {
-          NDMSDR = NDMSD
+          NDMSDR <- NDMSD
         }
-        GDMSDR = NDMSDR / FNINSD
-        CDMSDR = GDMSDR * (AGRSD1 + FNINSD * 6.25 * RPRO)
+        GDMSDR <- NDMSDR / FNINSD
+        CDMSDR <- GDMSDR * (AGRSD1 + FNINSD * 6.25 * RPRO)
         #-----------------------------------------------------------------------
         #    Compute Total CH2O Demand to Grow GDMSD g Tissue
         #-----------------------------------------------------------------------
-        CDMSD = (max(0, (GDMSD - GDMSDR))) * AGRSD2 + CDMSDR
+        CDMSD <- (max(0, (GDMSD - GDMSDR))) * AGRSD2 + CDMSDR
       }
     }
     #-----------------------------------------------------------------------
     #     Compute max growth per shell, depending on temp, daylength
     #-----------------------------------------------------------------------
-    GRRAT1 = SHVAR * TMPFAC * (1- (1-DRPP) * SRMAX) * (1.0 + TURADD)
+    GRRAT1 <- SHVAR * TMPFAC * (1- (1-DRPP) * SRMAX) * (1.0 + TURADD)
     #-----------------------------------------------------------------------
     #     Initialize Shell Growth Demand, N (NDMSH) and C (CDMSH) needed for growth
     #-----------------------------------------------------------------------
-    GDMSH = 0.0
-    NDMSH = 0.0
-    CDMSH = 0.0
+    GDMSH <- 0.0
+    NDMSH <- 0.0
+    CDMSH <- 0.0
     #-----------------------------------------------------------------------
     #     Compute growth demand for shells, GDMSH, allowing slow growth
     #     until LNGPEG age, then potential growth until LNGSH
     #-----------------------------------------------------------------------
     if (DAS > NR2) {
       for (NPP in 1:(DAS - NR2)) {  
-        NAGE = DAS - NR2 + 1 - NPP  #NAGE not used - chp
-        PAGE = PHTIM[DAS - NR2 + 1] - PHTIM[NPP]
+        NAGE <- DAS - NR2 + 1 - NPP  #NAGE not used - chp
+        PAGE <- PHTIM[DAS - NR2 + 1] - PHTIM[NPP]
         if (PAGE <= LNGSH & SHELN[NPP] >= 0.001 & GRRAT1 >= 0.001) {
           if (PAGE >= LNGPEG) {
             #Shells between LNGPEG and LNGSH
-            ADDSHL = GRRAT1 * SHELN[NPP]
+            ADDSHL <- GRRAT1 * SHELN[NPP]
           } else {
             #Shells < LNGPEG
-            ADDSHL = GRRAT1 * SHELN[NPP] * SHLAG
+            ADDSHL <- GRRAT1 * SHELN[NPP] * SHLAG
           }
         }
-        GDMSH  = GDMSH + ADDSHL
+        GDMSH  <- GDMSH + ADDSHL
       }
       #-----------------------------------------------------------------------
       #     Compute CH2O required for the potential shell growth
       #-----------------------------------------------------------------------
-      CDMSH = GDMSH * AGRSH2
+      CDMSH <- GDMSH * AGRSH2
     }
     #-----------------------------------------------------------------------
     #     Compute TEMXFR, the temp effect on partitioning to pods
     #     High temp would increase fraction growth to vegetative tissue
     #-----------------------------------------------------------------------
-    TEMXFR = 0.
+    TEMXFR <- 0.
     for (I in 1:TS) {
       # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
-      TEMXFR = TEMXFR + TABEX(YXFTEM,XXFTEM,TGRO[I],6)
+      TEMXFR <- TEMXFR + TABEX(YXFTEM,XXFTEM,TGRO[I],6)
     }
-    TEMXFR = TEMXFR/TS
+    TEMXFR <- TEMXFR/TS
     # 24 changed to TS by Bruce Kimball on 3Jul17
     
     #-----------------------------------------------------------------------
     #     Partitioning to pods is increased under drought stress conditions
     #        depending on XFRMAX, an input parameter
     #-----------------------------------------------------------------------
-    TURXFR = XFRMAX * (1 - TURFAC)
-    TURXFR = min(TURXFR, 1)
-    TURXFR = max(TURXFR, 0)
+    TURXFR <- XFRMAX * (1 - TURFAC)
+    TURXFR <- min(TURXFR, 1)
+    TURXFR <- max(TURXFR, 0)
     #-----------------------------------------------------------------------
     #     Night length and temperature are multiplicative
     #     but turgor effect adds to the partitioning
     #-----------------------------------------------------------------------
-    XFRT = XFRUIT * TEMXFR + XFRUIT * TURXFR
+    XFRT <- XFRUIT * TEMXFR + XFRUIT * TURXFR
     #     XFRT = XFRUIT * RNIT * TEMXFR   #NEED TO FIX FOR DAYLENGTH EFFECT
-    XFRT = min(XFRT,1.0)
-    XFRT = max(XFRT,0.0)
+    XFRT <- min(XFRT,1.0)
+    XFRT <- max(XFRT,0.0)
     #-----------------------------------------------------------------------
     #    Total Potential Available CH2O for Reprod Growth (CAVTOT)
     #    and total CH2O needed for potential reproductive growth (CDMREP)
     #-----------------------------------------------------------------------
-    CAVTOT = PGAVL * XFRT
-    CDMREP = CDMSH + CDMSD
+    CAVTOT <- PGAVL * XFRT
+    CDMREP <- CDMSH + CDMSD
     #-----------------------------------------------------------------------
     #    Adjust C-Demand for New Growth if C-Available is Less than C Demand
     #    Also adjust tissue growth demand for seeds and shells
     #-----------------------------------------------------------------------
-    GDMSDO = GDMSD
+    GDMSDO <- GDMSD
     if (CDMREP > CAVTOT) {
       if (CDMSD > CAVTOT) {
-        CDMSH = 0.0
-        GDMSH = 0.0
-        CDMSD = CAVTOT
+        CDMSH <- 0.0
+        GDMSH <- 0.0
+        CDMSD <- CAVTOT
         if (CDMSDR > CAVTOT) {
-          CDMSDR = CAVTOT
+          CDMSDR <- CAVTOT
         }
-        GDMSD = (max(0.0,(CDMSD-CDMSDR)))/ AGRSD2 + CDMSDR / (AGRSD1 + FNINSD * 6.25 * RPRO)
-        NDMSDR = GDMSDR * FNINSD
+        GDMSD <- (max(0.0,(CDMSD-CDMSDR)))/ AGRSD2 + CDMSDR / (AGRSD1 + FNINSD * 6.25 * RPRO)
+        NDMSDR <- GDMSDR * FNINSD
       } else {
-        CDMSH = CAVTOT - CDMSD
-        GDMSH = CDMSH/AGRSH2
+        CDMSH <- CAVTOT - CDMSD
+        GDMSH <- CDMSH/AGRSH2
       }
-      CDMREP = CDMSD + CDMSH
+      CDMREP <- CDMSD + CDMSH
     }
     #-----------------------------------------------------------------------
     #     Compute N demand for seed, shell, and total reproductive growth
     #-----------------------------------------------------------------------
-    NDMSD  = GDMSD * FNINSD
-    NDMSH  = GDMSH * FNINSH
-    NDMREP = NDMSD + NDMSH
+    NDMSD  <- GDMSD * FNINSD
+    NDMSH  <- GDMSH * FNINSH
+    NDMREP <- NDMSD + NDMSH
     
     #-----------------------------------------------------------------------
     #     Vegetative partitioning factors and demand for C and N for new
@@ -2333,9 +2333,9 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #-----------------------------------------------------------------------
     #     Check to See if New Vegetative Tissue Can Be Grown, Using PGAVL
     #-----------------------------------------------------------------------
-    CDMVEG = max(0.0,(1.-XFRT)*PGAVL)
-    NDMVEG = 0.0
-    CDMVEG = (PGAVL * XFRT - CDMREP) + CDMVEG
+    CDMVEG <- max(0.0,(1.-XFRT)*PGAVL)
+    NDMVEG <- 0.0
+    CDMVEG <- (PGAVL * XFRT - CDMREP) + CDMVEG
     
     #-----------------------------------------------------------------------
     #       This is from documentation:  check no longer needed?? chp
@@ -2352,28 +2352,28 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
       #     Fraction of growth going to leaves and roots decreases
       #     linearly between R1 and NDLEAF.
       #-----------------------------------------------------------------------
-      FRLFM  = TABEX (YLEAF, XLEAF, VSTAGE, 8)
-      FRSTMM = TABEX (YSTEM, XLEAF, VSTAGE, 8)
-      YY = FRLFM - FRLFF 
-      XX = FRSTMM - FRSTMF
+      FRLFM  <- TABEX (YLEAF, XLEAF, VSTAGE, 8)
+      FRSTMM <- TABEX (YSTEM, XLEAF, VSTAGE, 8)
+      YY <- FRLFM - FRLFF 
+      XX <- FRSTMM - FRSTMF
     }
     #-----------------------------------------------------------------------
     if (DAS < NR1) {
       #-----------------------------------------------------------------------
       #     Calculate Pattern of Vegetative Partitioning, a function of V-STAGE
       #-----------------------------------------------------------------------
-      FRLF  = TABEX(YLEAF,XLEAF,VSTAGE,8)
-      FRSTM = TABEX(YSTEM,XLEAF,VSTAGE,8)
+      FRLF  <- TABEX(YLEAF,XLEAF,VSTAGE,8)
+      FRSTM <- TABEX(YSTEM,XLEAF,VSTAGE,8)
     } else {
       #-----------------------------------------------------------------------
       #     Partitioning between vegetative tissues depends on development
       #     as expressed by FRACDN, the relative development between R1 and NDLEAF
       #-----------------------------------------------------------------------
-      FRLF = FRLFM - YY * FRACDN
-      FRSTM = FRSTMM - XX * FRACDN
+      FRLF <- FRLFM - YY * FRACDN
+      FRSTM <- FRSTMM - XX * FRACDN
       if ( DAS >= NDLEAF) {
-        FRLF = FRLFF
-        FRSTM = FRSTMF
+        FRLF <- FRLFF
+        FRSTM <- FRSTMF
       }
     }
     
@@ -2381,40 +2381,40 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #     check units### fraction vs percentage
     #     FRLF = FRLF - FRLF/(FRLF+FRSTM) * (extra root value)
     #     FRSTM= FRSTM - FRSTM/(FRLF+FRSTM) * (extra root value)
-    FRRT = 1 - FRLF - FRSTM
+    FRRT <- 1 - FRLF - FRSTM
     
     #-----------------------------------------------------------------------
     #     Compute F, specific leaf area for new leaf weight
     #-----------------------------------------------------------------------
-    TPHFAC = 0
+    TPHFAC <- 0
     for (I in 1:TS){
       # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
-      TPHFAC = TPHFAC + TABEX (YSLATM,XSLATM,TGRO[I],5)
+      TPHFAC <- TPHFAC + TABEX (YSLATM,XSLATM,TGRO[I],5)
     }
-    TPHFAC = TPHFAC/TS
+    TPHFAC <- TPHFAC/TS
     # 24 changed to TS by Bruce Kimball on 3Jul17
     
     #-----------------------------------------------------------------------
-    PARSLA = (SLAMN+(SLAMX-SLAMN) * exp(SLAPAR*PAR)) / SLAMX
-    TURFSL = max(0.1, (1.0 - (1.0 - TURFAC)*TURSLA))
+    PARSLA <- (SLAMN+(SLAMX-SLAMN) * exp(SLAPAR*PAR)) / SLAMX
+    TURFSL <- max(0.1, (1.0 - (1.0 - TURFAC)*TURSLA))
     #-----------------------------------------------------------------------
     #     Compute overall effect of TMP, PAR, water stress on SLA (F), first
     #     for veg stages, then transition to rep stage from R1 to end leaf
     #     effect of PAR on SLA, COX PEANUT SCI. 5:27, 1978
     #-----------------------------------------------------------------------
-    FFVEG = FVEG * TPHFAC * PARSLA * TURFSL
-    Fnew = FFVEG 
+    FFVEG <- FVEG * TPHFAC * PARSLA * TURFSL
+    Fnew <- FFVEG 
     if (XFRT*FRACDN >= 0.05) { 
-      Fnew = FFVEG * (1.0 - XFRT * FRACDN) 
+      Fnew <- FFVEG * (1.0 - XFRT * FRACDN) 
     }
     #-----------------------------------------------------------------------
     #     For determinate plants (XFRUIT=1.) leaf expansion stops at NDLEAF
     #-----------------------------------------------------------------------
     # VERIFICAR: F novamente. Mudar
     if (XFRUIT > 0.9999 & DAS >= NDLEAF) { 
-      Few = 0.0 
+      Few <- 0.0 
     }
     
     #-----------------------------------------------------------------------
@@ -2426,81 +2426,81 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #     of C is partitioned to FRSTM and FRRT  (JWJ 4/1/96)
     #-----------------------------------------------------------------------
     if (VSTAGE < VSSINK) {
-      GROYES = GROMAX
-      GROMAX = TABEX(YVGROW,XVGROW,VSTAGE,6) * SIZELF/SIZREF
-      GAINNW = (GROMAX - GROYES) * PLTPOP
+      GROYES <- GROMAX
+      GROMAX <- TABEX(YVGROW,XVGROW,VSTAGE,6) * SIZELF/SIZREF
+      GAINNW <- (GROMAX - GROYES) * PLTPOP
       #-----------------------------------------------------------------------
       #     CALCULATE MINIMUM WEIGHT NEEDED TO ADD GAINNW LEAF AREA/M2,
       #     AND AMOUNT OF LEAF WEIGHT WHICH CAN BE GROWN WITH PG AVAILABLE
       #-----------------------------------------------------------------------
       if (Fnew > 1.E-5) {
-        GAINWT = GAINNW/Fnew
+        GAINWT <- GAINNW/Fnew
       } else {
-        GAINWT = 0.0
+        GAINWT <- 0.0
       }
       #-----------------------------------------------------------------------
       #     Compute fraction of C partitioned to leaves, based on F, VSSINK
       #     Limit leaf pertitioning to FRLFMX (i.e., FRLFMX = 0.7)
       #-----------------------------------------------------------------------
-      FRLF = (AGRLF*GAINWT)/(CDMVEG + 0.0001)
+      FRLF <- (AGRLF*GAINWT)/(CDMVEG + 0.0001)
       if (FRLF > FRLFMX) {
-        GAINWT = (CDMVEG/AGRLF) * FRLFMX
+        GAINWT <- (CDMVEG/AGRLF) * FRLFMX
         # VERIFICAR: F novamente. Mudar
-        GAINNW = GAINWT * Fnew
-        FRLF = FRLFMX
+        GAINNW <- GAINWT * Fnew
+        FRLF <- FRLFMX
       }
       #-----------------------------------------------------------------------
       #     Recompute FRSTM and FRRT based on FRLF
       #-----------------------------------------------------------------------
-      FRSTM = (1. - FRLF) * FRSTM / (FRSTM + FRRT)
-      FRRT  = 1. - FRLF - FRSTM
+      FRSTM <- (1. - FRLF) * FRSTM / (FRSTM + FRRT)
+      FRRT  <- 1. - FRLF - FRSTM
       #-----------------------------------------------------------------------
     }
     #-----------------------------------------------------------------------
     #     Compute CH2O cost per g of tissue, excluding cost for protein (AGRVG)
     #     and total CH2O cost per g of veg tissue (AGRVG2)
     #-----------------------------------------------------------------------
-    AGRVG = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
-    AGRVG2 = AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RPROAV
+    AGRVG <- AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
+    AGRVG2 <- AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RPROAV
     #-----------------------------------------------------------------------
     #    Compute N Demand for New Tissue, including reproductive and vegetative
     #-----------------------------------------------------------------------
-    NDMVEG = (CDMVEG/AGRVG2) * (FRLF*FNINL+FRSTM*FNINS+ FRRT*FNINR)
-    NDMNEW = NDMREP + NDMVEG
+    NDMVEG <- (CDMVEG/AGRVG2) * (FRLF*FNINL+FRSTM*FNINS+ FRRT*FNINR)
+    NDMNEW <- NDMREP + NDMVEG
     #-----------------------------------------------------------------------
     #    Check to See if Any C is Left After Reproductive Growth for
     #    Reducing N to Re-Fill Old Tissue, if N Can Be Taken up by Roots
     #-----------------------------------------------------------------------
-    CNOLD = max(0.0,PGAVL-CDMREP)
-    NDMOLD = 0.0
+    CNOLD <- max(0.0,PGAVL-CDMREP)
+    NDMOLD <- 0.0
     #-----------------------------------------------------------------------
     #    Nitrogen Demand for Old Tissue
     #-----------------------------------------------------------------------
     if (DAS > NVEG0 & DAS < NR7 & CNOLD > 0.0) {
-      NVSTL = FNINL
-      NVSTS = FNINS
-      NVSTR = FNINR
+      NVSTL <- FNINL
+      NVSTS <- FNINS
+      NVSTR <- FNINR
       if (DXR57 > 0.0) {
-        FRNLFT = (NRCVR + (1. - NRCVR) * (1. - DXR57^2))
-        NVSTL = PROLFF*0.16 + (FNINL-PROLFF*0.16) * FRNLFT
-        NVSTS = PROSTF*0.16 + (FNINS-PROSTF*0.16) * FRNLFT
-        NVSTR = PRORTF*0.16 + (FNINR-PRORTF*0.16) * FRNLFT
+        FRNLFT <- (NRCVR + (1. - NRCVR) * (1. - DXR57^2))
+        NVSTL <- PROLFF*0.16 + (FNINL-PROLFF*0.16) * FRNLFT
+        NVSTS <- PROSTF*0.16 + (FNINS-PROSTF*0.16) * FRNLFT
+        NVSTR <- PRORTF*0.16 + (FNINR-PRORTF*0.16) * FRNLFT
       }
-      NDMOLD = (WTLF  - WCRLF) * max(0.0,(NVSTL - PCNL /100.)) + (STMWT - WCRST) * max(0.0,(NVSTS - PCNST/100.)) + (RTWT  - WCRRT) * max(0.0,(NVSTR - PCNRT/100.))
+      NDMOLD <- (WTLF  - WCRLF) * max(0.0,(NVSTL - PCNL /100.)) + (STMWT - WCRST) * max(0.0,(NVSTS - PCNST/100.)) + (RTWT  - WCRRT) * max(0.0,(NVSTR - PCNRT/100.))
       if (NDMOLD > (CNOLD/RNO3C*0.16)) {
-        NDMOLD = CNOLD/RNO3C*0.16
+        NDMOLD <- CNOLD/RNO3C*0.16
       }
     }
     #-----------------------------------------------------------------------
     #    Total N Demand
     #-----------------------------------------------------------------------
-    NDMTOT = NDMREP + NDMVEG + NDMOLD
+    NDMTOT <- NDMREP + NDMVEG + NDMOLD
     #-----------------------------------------------------------------------
     #    Compute Total Demand for C, and Max. C that Could be Mined
     #     CDMTOT not used - chp
     #-----------------------------------------------------------------------
-    CDMTOT = CDMREP + CDMVEG + NDMOLD*RNO3C/0.16 
-    GDMSD = GDMSDO
+    CDMTOT <- CDMREP + CDMVEG + NDMOLD*RNO3C/0.16 
+    GDMSD <- GDMSDO
     #-----------------------------------------------------------------------
     #    At this point, PGAVL will be used entirely, assuming that N can be
     #    made available in the ratio described.
@@ -2607,48 +2607,48 @@ SDCOMP <- function (TAVG) {
   #     The quadratic plateau for predicting percentage lipids
   #-----------------------------------------------------------------------
   if (TAVG >= LIPOPT) {
-    LIPTEM= 1.0
+    LIPTEM <- 1.0
   } else if ((TAVG < LIPOPT) & (TAVG > LIPTB)) {
-    LIPTEM = 1.0 - ((LIPOPT - TAVG) / (LIPOPT - LIPTB))^2
+    LIPTEM <- 1.0 - ((LIPOPT - TAVG) / (LIPOPT - LIPTB))^2
   } else {
-    LIPTEM= 0.0
+    LIPTEM <- 0.0
   }
-  POTLIP = SDLIP * LIPTEM
+  POTLIP <- SDLIP * LIPTEM
   
   
   #-----------------------------------------------------------------------
   #     Determination of protein percentage
   #-----------------------------------------------------------------------
-  GENSUM = (SDPRO*100.0) + (SDLIP*100.0) * (1.0 - (((LIPOPT - 25.) / (LIPOPT - LIPTB))^2))
-  SUMTEM = 1.0 + SLOSUM * (TAVG - 25.0)
-  PSUMSD = GENSUM * SUMTEM / 100.0
-  POTPRO = PSUMSD - POTLIP
+  GENSUM <- (SDPRO*100.0) + (SDLIP*100.0) * (1.0 - (((LIPOPT - 25.) / (LIPOPT - LIPTB))^2))
+  SUMTEM <- 1.0 + SLOSUM * (TAVG - 25.0)
+  PSUMSD <- GENSUM * SUMTEM / 100.0
+  POTPRO <- PSUMSD - POTLIP
   
   #-----------------------------------------------------------------------
   #     Determination of carbohydrate percentage
   #-----------------------------------------------------------------------
-  POTCAR = 1.0 - POTLIP - POTPRO
+  POTCAR <- 1.0 - POTLIP - POTPRO
   if (POTCAR < CARMIN) {
-    POTCAR =  CARMIN
+    POTCAR <-  CARMIN
   }
   
-  TOTAL  = POTLIP + POTPRO + POTCAR
+  TOTAL  <- POTLIP + POTPRO + POTCAR
   #      IF (TOTAL .NE. 1.0) THEN
   if (abs(TOTAL) - 1.0 > 0.0005) {
-    POTPRO = POTPRO / TOTAL
-    POTLIP = POTLIP / TOTAL
-    POTCAR = POTCAR / TOTAL
+    POTPRO <- POTPRO / TOTAL
+    POTLIP <- POTLIP / TOTAL
+    POTCAR <- POTCAR / TOTAL
     #        Note:  POTCAR will fall below CARMIN again, if adusted.
     #        Should only POTPRO and POTLIP be adusted here? -chp
     #        Check logic - GH
     #        Check PODDETACH - GH
-    TOTAL  = POTLIP + POTPRO + POTCAR
+    TOTAL  <- POTLIP + POTPRO + POTCAR
   }
   
-  POTCAR = POTCAR - PMINSD - POASD - PLIGSD
-  AGRSD1 = PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + POTLIP*RLIP + POTCAR*RCH2O
-  AGRSD2 = AGRSD1 + RNO3C*POTPRO
-  FNINSD = POTPRO / 6.25
+  POTCAR <- POTCAR - PMINSD - POASD - PLIGSD
+  AGRSD1 <- PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + POTLIP*RLIP + POTCAR*RCH2O
+  AGRSD2 <- AGRSD1 + RNO3C*POTPRO
+  FNINSD <- POTPRO / 6.25
   
   assign("AGRSD1", AGRSD1, envir = env)
   assign("AGRSD2", AGRSD2, envir = env)
@@ -3020,8 +3020,8 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
         #-----------------------------------------------------------------------
         #     Soil water factor (SWADD1), and Water stress factor (SWADD2)
         #-----------------------------------------------------------------------
-        SWADD1 <- TABEX (YSWBAR,XSWBAR,SWBAR,5)
-        SWADD2 <- TABEX (YSWFAC,XSWFAC,SWFAC,4)
+        SWADD1 <- TABEX(YSWBAR,XSWBAR,SWBAR,5)
+        SWADD2 <- TABEX(YSWFAC,XSWFAC,SWFAC,4)
         #-----------------------------------------------------------------------
         SHMAXG <- SHVAR
         #-----------------------------------------------------------------------
@@ -3070,8 +3070,8 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
               #-----------------------------------------------------------------------
               WSHDTN <- WSHDTN + ADDSHL
               NGRSH <- NGRSH + ADDSHL * PROSHI * 0.16 * CNSTRES^0.5
-              if (PGLEFT < 1.0E-6) PGLEFT=0.0          #NBP
-              if (ADDSHL < 1.0E-6) ADDSHL=0.0          #NBP
+              if (PGLEFT < 1.0E-6) PGLEFT <- 0.0          #NBP
+              if (ADDSHL < 1.0E-6) ADDSHL <- 0.0          #NBP
               PGLEFT <- max(0.0,(PGLEFT - ADDSHL * AGRSH1))
               NLEFT  <- max(0.0,(NLEFT - ADDSHL * (FNINSH*CNSTRES^0.5)))
             }
@@ -3178,7 +3178,7 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
           RNITPD <- max(0.1,RNITPD)
           PODADD <- PMAX * TEMPOD * (DRPP^1.3) * min(SWADD1,SWADD2,RNITPD) * max((1.0 - ACCAGE),0.0)
           #    &       * max((1.0 - ACCAGE),0.0) * (1.0 + TURADD)
-          SHELN[NR2TIM + 1] = min(PODADD, PGNPOD/(SHMAXG*AGRSH1), FLADD, NAVPOD/(SHMAXG*(FNINSH*CNSTRES^0.5)))
+          SHELN[NR2TIM + 1] <- min(PODADD, PGNPOD/(SHMAXG*AGRSH1), FLADD, NAVPOD/(SHMAXG*(FNINSH*CNSTRES^0.5)))
           #-----------------------------------------------------------------------
           #    KJB ADDED 1/27/96.  2 CONDITIONS: NDSET AND TRIGGER (CUMSIG >.98)
           #    MUST BE MET TO STOP POD ADDITION.  THUS, IF WE ARE THRU THE WINDOW
@@ -3605,7 +3605,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   
   #-----------------------------------------------------------------------
   
-  YRDOY   = paste0(iyear,sprintf("%03d", jday))
+  YRDOY   <- paste0(iyear,sprintf("%03d", jday))
   
   ROWSPC <- config$plant1$rowSpacing / 100 #0.50 
   
@@ -3647,31 +3647,31 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #-----------------------------------------------------------------------
     # CANOPY(DYNAMIC,DAS, PAR, TGRO)
     
-    CADLF  = 0.0  
-    CADST  = 0.0  
-    CMINEA = 0.0  
-    CRUSLF = 0.0  
-    CRUSRT = 0.0  
-    CRUSST = 0.0  
-    CUMTUR = 1.0  
-    EXCESS = 1.0  
-    FNINLG = 0.0  
-    FNINRG = 0.0  
-    FNINSG = 0.0  
-    NADLF  = 0.0  
-    NADRT  = 0.0  
-    NADST  = 0.0  
-    NGRLF  = 0.0  
-    NGRRT  = 0.0  
-    NGRST  = 0.0  
-    NSTRES = 1.0  
-    PGLEFT = 0.0
-    SUPPN  = 0.0
-    TNLEAK = 0.0  
-    VGRDEM = 0.0
-    WLDOTN = 0.0  
-    WRDOTN = 0.0  
-    WSDOTN = 0.0  
+    CADLF  <- 0.0  
+    CADST  <- 0.0  
+    CMINEA <- 0.0  
+    CRUSLF <- 0.0  
+    CRUSRT <- 0.0  
+    CRUSST <- 0.0  
+    CUMTUR <- 1.0  
+    EXCESS <- 1.0  
+    FNINLG <- 0.0  
+    FNINRG <- 0.0  
+    FNINSG <- 0.0  
+    NADLF  <- 0.0  
+    NADRT  <- 0.0  
+    NADST  <- 0.0  
+    NGRLF  <- 0.0  
+    NGRRT  <- 0.0  
+    NGRST  <- 0.0  
+    NSTRES <- 1.0  
+    PGLEFT <- 0.0
+    SUPPN  <- 0.0
+    TNLEAK <- 0.0  
+    VGRDEM <- 0.0
+    WLDOTN <- 0.0  
+    WRDOTN <- 0.0  
+    WSDOTN <- 0.0  
     
     CANOPY(DYNAMIC,DAS, PAR, TGRO)
     
@@ -3682,10 +3682,10 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #***********************************************************************
   } else if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
-    FNINLG = PROLFG * 0.16   
-    FNINRG = PRORTG * 0.16   
-    FNINSG = PROSTG * 0.16   
-    CUMTUR = 1.0             
+    FNINLG <- PROLFG * 0.16   
+    FNINRG <- PRORTG * 0.16   
+    FNINSG <- PROSTG * 0.16   
+    CUMTUR <- 1.0             
     
     CANOPY(DYNAMIC,DAS, PAR, TGRO)
     
@@ -3698,89 +3698,89 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #-----------------------------------------------------------------------
     #     Partitioning is modified by water stress and nitrogen stress
     #-----------------------------------------------------------------------
-    SUPPN = NFIXN + TRNU + NMINEA
+    SUPPN <- NFIXN + TRNU + NMINEA
     #    chp added check for YRDOY = YREMRG, but on the next day, it still
     #     shows N stress because there is little supply.  Force a lag time?
     #      if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0.) {
     
     
     if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0. & YRDOY != YREMRG) {
-      NSTRES = min(1.0,SUPPN/(NDMNEW * 0.70))
+      NSTRES <- min(1.0,SUPPN/(NDMNEW * 0.70))
     } else {
-      NSTRES = 1.0
+      NSTRES <- 1.0
     }
     
     
     #      FRRT  = ATOP * (1.0 - (min(TURFAC,NSTRES)))*(1.0-FRRT) + FRRT
-    FRRT  = ATOP * (1.0 - (min(TURFAC, NSTRES, PStres2))) * (1.0 - FRRT) + FRRT
+    FRRT  <- ATOP * (1.0 - (min(TURFAC, NSTRES, PStres2))) * (1.0 - FRRT) + FRRT
     #-----------------------------------------------------------------------
     #     Cumulative turgor factor that remembers veg drought stress
     #     to shift partitioning between leaf and stem toward leaf,
     #     especially after drought is released.
     #     Sort of 20-day rolling average
     #-----------------------------------------------------------------------
-    CUMTUR = 0.95*CUMTUR + 0.05*TURFAC
+    CUMTUR <- 0.95*CUMTUR + 0.05*TURFAC
     if (CUMTUR < 1.E-7) {CUMTUR = 0.0}    #prevent underflow
     #-----------------------------------------------------------------------
     #     0.6 IS A SCALAR, COULD BE LESS, was once 0.8 and 0.7
     #     0.7 appears to be too much for peanut, but not for soybean.
     #-----------------------------------------------------------------------
-    FRLF  = (1.0 + 0.6*(1.0-CUMTUR))*(1.-FRRT)*FRLF/(FRLF + FRSTM)
-    FRLF = min(FRLF, 0.90*(1. - FRRT))
-    FRSTM = 1.0 - FRRT - FRLF
+    FRLF  <- (1.0 + 0.6*(1.0-CUMTUR))*(1.-FRRT)*FRLF/(FRLF + FRSTM)
+    FRLF <- min(FRLF, 0.90*(1. - FRRT))
+    FRSTM <- 1.0 - FRRT - FRLF
     #-----------------------------------------------------------------------
     #     To prevent negative partitioning to root and limit leaf plus
     #     stem to a maximum of 98 % of the vegetative partitioning
     #-----------------------------------------------------------------------
-    FRLF  = min(FRLF,FRLF*0.98/(max(0.001,FRLF+FRSTM)))
-    FRSTM = min(FRSTM,FRSTM*0.98/(max(0.001,FRLF+FRSTM)))
-    FRRT  = 1.0 - FRLF - FRSTM
+    FRLF  <- min(FRLF,FRLF*0.98/(max(0.001,FRLF+FRSTM)))
+    FRSTM <- min(FRSTM,FRSTM*0.98/(max(0.001,FRLF+FRSTM)))
+    FRRT  <- 1.0 - FRLF - FRSTM
     #-----------------------------------------------------------------------
     #     Calculate weighted PHI + GR = 1/E = AGRVG for veg. growth
     #-----------------------------------------------------------------------
-    AGRVG = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
+    AGRVG <- AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
     #-----------------------------------------------------------------------
     #     Calculate New Growth Rate of Leaves, Stems, and Roots
     #-----------------------------------------------------------------------
-    VGRDEM = PGAVL / AGRVG
-    WLDOTN = FRLF * VGRDEM
-    WSDOTN = FRSTM * VGRDEM
-    WRDOTN = FRRT * VGRDEM
+    VGRDEM <- PGAVL / AGRVG
+    WLDOTN <- FRLF * VGRDEM
+    WSDOTN <- FRSTM * VGRDEM
+    WRDOTN <- FRRT * VGRDEM
     #-----------------------------------------------------------------------
     #     Compute maximum N required for tissue growth
     #-----------------------------------------------------------------------
-    NGRLF  = WLDOTN * FNINL
-    NGRST  = WSDOTN * FNINS
-    NGRRT  = WRDOTN * FNINR
-    NGRVEG = NGRLF + NGRST + NGRRT
+    NGRLF  <- WLDOTN * FNINL
+    NGRST  <- WSDOTN * FNINS
+    NGRRT  <- WRDOTN * FNINR
+    NGRVEG <- NGRLF + NGRST + NGRRT
     #-----------------------------------------------------------------------
     #     Compute minimum N required for tissue growth
     #-----------------------------------------------------------------------
-    NGRLFG = WLDOTN * FNINLG
-    NGRSTG = WSDOTN * FNINSG
-    NGRRTG = WRDOTN * FNINRG
-    NGRVGG = NGRLFG + NGRSTG + NGRRTG
+    NGRLFG <- WLDOTN * FNINLG
+    NGRSTG <- WSDOTN * FNINSG
+    NGRRTG <- WRDOTN * FNINRG
+    NGRVGG <- NGRLFG + NGRSTG + NGRRTG
     
-    NRATIO = 1.0
+    NRATIO <- 1.0
     if (NAVL < NGRVGG) {
       #-----------------------------------------------------------------------
       #     Compute ratio for reducing leaf growth to prevent N conc of
       #       new tissue from being below the minimum for growth
       #-----------------------------------------------------------------------
       if (NGRVGG > 0.0) {
-        NRATIO = NAVL / NGRVGG
-        WLDOTN = WLDOTN * NRATIO
-        WSDOTN = WSDOTN * NRATIO
-        WRDOTN = WRDOTN * NRATIO
-        NGRLF  = NGRLFG * NRATIO
-        NGRST  = NGRSTG * NRATIO
-        NGRRT  = NGRRTG * NRATIO
+        NRATIO <- NAVL / NGRVGG
+        WLDOTN <- WLDOTN * NRATIO
+        WSDOTN <- WSDOTN * NRATIO
+        WRDOTN <- WRDOTN * NRATIO
+        NGRLF  <- NGRLFG * NRATIO
+        NGRST  <- NGRSTG * NRATIO
+        NGRRT  <- NGRRTG * NRATIO
         
         #-----------------------------------------------------------------------
         #     Adjust conversion costs to account for composition of tissue at
         #       lower N concentration
         #-----------------------------------------------------------------------
-        AGRVG = AGRLF * FRLF * (1.0 - (PROLFG - PROLFI)/(1.0 - PROLFI) )+ AGRRT * FRRT * (1.0 - (PRORTG - PRORTI)/(1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTG - PROSTI)/ (1.0 - PROSTI))
+        AGRVG <- AGRLF * FRLF * (1.0 - (PROLFG - PROLFI)/(1.0 - PROLFI) )+ AGRRT * FRRT * (1.0 - (PRORTG - PRORTI)/(1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTG - PROSTI)/ (1.0 - PROSTI))
       }
     } else {
       #-----------------------------------------------------------------------
@@ -3788,38 +3788,38 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
       #       leaf expansion occurs as normal, but N concentration is reduced
       #-----------------------------------------------------------------------
       if (NGRVEG > 0.0 & NAVL < NGRVEG) {
-        NGRLF = min(NAVL * NGRLF / NGRVEG, NGRLF)
-        NGRST = min(NAVL * NGRST / NGRVEG, NGRST)
-        NGRRT = min(NAVL * NGRRT / NGRVEG, NGRRT)
+        NGRLF <- min(NAVL * NGRLF / NGRVEG, NGRLF)
+        NGRST <- min(NAVL * NGRST / NGRVEG, NGRST)
+        NGRRT <- min(NAVL * NGRRT / NGRVEG, NGRRT)
       }
       #-----------------------------------------------------------------------
       #     Compute protein fraction of new vegetative tissue growth
       #-----------------------------------------------------------------------
       if (WLDOTN > 0.0) {
-        PROLFT = NGRLF * (100./16.)/WLDOTN
+        PROLFT <- NGRLF * (100./16.)/WLDOTN
       } else {
-        PROLFT = 0.0
+        PROLFT <- 0.0
       }
       if (WSDOTN > 0.0) {
-        PROSTT = NGRST * (100./16.)/WSDOTN
+        PROSTT <- NGRST * (100./16.)/WSDOTN
       } else {
-        PROSTT = 0.0
+        PROSTT <- 0.0
       }
       if (WRDOTN > 0.0) {
-        PRORTT = NGRRT * (100./16.)/WRDOTN
+        PRORTT <- NGRRT * (100./16.)/WRDOTN
       } else {
-        PRORTT = 0.0
+        PRORTT <- 0.0
       }
       #-----------------------------------------------------------------------
       #     Recompute respiration costs if expansion occurs at low N-conc.,
       #       allow N dilution during growth of leaves, stems, and roots
       #-----------------------------------------------------------------------
-      AGRVG = AGRLF * FRLF * (1.0 - (PROLFT - PROLFI)/ (1.0-PROLFI)) + AGRRT * FRRT * (1.0 - (PRORTT - PRORTI)/ (1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTT - PROSTI)/(1.0 - PROSTI))
+      AGRVG <- AGRLF * FRLF * (1.0 - (PROLFT - PROLFI)/ (1.0-PROLFI)) + AGRRT * FRRT * (1.0 - (PRORTT - PRORTI)/ (1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTT - PROSTI)/(1.0 - PROSTI))
     }
     #-----------------------------------------------------------------------
     #     Compute C and N remaining to add to reserves
     #-----------------------------------------------------------------------
-    PGLEFT = max(0.0,PGAVL - ((WLDOTN + WSDOTN + WRDOTN) * AGRVG))
+    PGLEFT <- max(0.0,PGAVL - ((WLDOTN + WSDOTN + WRDOTN) * AGRVG))
     if (PGLEFT < 1.E-5) {PGLEFT = 0.0}
     #-----------------------------------------------------------------------
     #     Scales to 1.0 if PGLEFT is small fraction, and to 0.2 if large
@@ -3832,18 +3832,18 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #     stimulation of photosynthesis and the sq root works differently.
     #-----------------------------------------------------------------------
     if (PG > 0.0001 & PGLEFT > 0.00001) {
-      EXCESS =  (1.20 - min(1.0, max(PGLEFT/PG,0.20)) )^0.5
+      EXCESS <-  (1.20 - min(1.0, max(PGLEFT/PG,0.20)) )^0.5
     } else {
-      EXCESS = 1.00
+      EXCESS <- 1.00
     }
     
-    CADST  = 0.0
-    CADLF  = 0.0
-    CMINEA = 0.0
-    CRUSLF = 0.0
-    CRUSST = 0.0
-    CRUSRT = 0.0
-    CRUSSH = 0.0
+    CADST  <- 0.0
+    CADLF  <- 0.0
+    CMINEA <- 0.0
+    CRUSLF <- 0.0
+    CRUSST <- 0.0
+    CRUSRT <- 0.0
+    CRUSSH <- 0.0
     #-----------------------------------------------------------------------
     #    Calculate Increase in Remobilizable C due to N shortage and
     #      add to Carbon Pool.  Distribute to Leaves and Stems.
@@ -3851,16 +3851,16 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #    Want half as much accumulation in stem in veg phae
     #-----------------------------------------------------------------------
     if (DAS < NR1) {
-      LSTR = (1.-0.6*CADSTF)/(0.6*CADSTF)
+      LSTR <- (1.-0.6*CADSTF)/(0.6*CADSTF)
     } else {
-      LSTR = (1.-CADSTF)/CADSTF
+      LSTR <- (1.-CADSTF)/CADSTF
     }
     if (STMWT+WTLF > 0.0) {
-      LSTR = LSTR * WTLF/(STMWT+WTLF*LSTR)
+      LSTR <- LSTR * WTLF/(STMWT+WTLF*LSTR)
     }
     if (PGLEFT >= CMINEP) {
-      CADLF = (PGLEFT-CMINEP)/PCH2O * LSTR
-      CADST = (PGLEFT-CMINEP) * (1. - LSTR) / PCH2O
+      CADLF <- (PGLEFT-CMINEP)/PCH2O * LSTR
+      CADST <- (PGLEFT-CMINEP) * (1. - LSTR) / PCH2O
     } else {
       
       #-----------------------------------------------------------------------
@@ -3873,39 +3873,39 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
       #
       #-----------------------------------------------------------------------
       if (CMINEP > 0) {
-        CMINEA = CMINEP - PGLEFT
-        CRUSLF = CMINEA / CMINEP * CMOBMX * WCRLF * (DTX + DXR57)
-        CRUSST = CMINEA / CMINEP * CMOBMX * WCRST * (DTX + DXR57)
-        CRUSRT = CMINEA / CMINEP * CMOBMX * WCRRT * (DTX + DXR57)
-        CRUSSH = CMINEA / CMINEP * CMOBMX * WCRSH * (DTX + DXR57)
+        CMINEA <- CMINEP - PGLEFT
+        CRUSLF <- CMINEA / CMINEP * CMOBMX * WCRLF * (DTX + DXR57)
+        CRUSST <- CMINEA / CMINEP * CMOBMX * WCRST * (DTX + DXR57)
+        CRUSRT <- CMINEA / CMINEP * CMOBMX * WCRRT * (DTX + DXR57)
+        CRUSSH <- CMINEA / CMINEP * CMOBMX * WCRSH * (DTX + DXR57)
       }
     }
-    CADLF = CADLF + CSAVEV/PCH2O * LSTR
-    CADST = CADST + CSAVEV * (1. - LSTR)/PCH2O
+    CADLF <- CADLF + CSAVEV/PCH2O * LSTR
+    CADST <- CADST + CSAVEV * (1. - LSTR)/PCH2O
     
     #-----------------------------------------------------------------------
     #    Calculate Increase in Remobilizable N Due to a C shortage,
     #      add to Nitrogen pool
     #-----------------------------------------------------------------------
-    NLEFT  = max(0.0,NAVL  -  (NGRLF  + NGRST  + NGRRT))
+    NLEFT  <-  max(0.0,NAVL  -  (NGRLF  + NGRST  + NGRRT))
     
     if (NLEFT > 0.0) {
       if (NLEFT > NDMOLD) {
-        NLEAK  = NLEFT  - NDMOLD
-        TNLEAK = TNLEAK + NLEAK
-        NLEFT  = NLEFT  - NLEAK
+        NLEAK  <- NLEFT  - NDMOLD
+        TNLEAK <- TNLEAK + NLEAK
+        NLEFT  <- NLEFT  - NLEAK
       } else {
-        NLEAK = 0.0
+        NLEAK <- 0.0
       }
-      NADRAT = NLEFT / (FRLF*FNINL+FRSTM*FNINS+FRRT*FNINR)
-      NADLF  = NADRAT * FRLF * FNINL
-      NADST  = NADRAT * FRSTM * FNINS
-      NADRT  = NADRAT * FRRT * FNINR
+      NADRAT <- NLEFT / (FRLF*FNINL+FRSTM*FNINS+FRRT*FNINR)
+      NADLF  <- NADRAT * FRLF * FNINL
+      NADST  <- NADRAT * FRSTM * FNINS
+      NADRT  <- NADRAT * FRRT * FNINR
     } else {
-      NADRAT = 0.0
-      NADST  = 0.0
-      NADLF  = 0.0
-      NADRT  = 0.0
+      NADRAT <- 0.0
+      NADST  <- 0.0
+      NADLF  <- 0.0
+      NADRT  <- 0.0
     }
     
     #-----------------------------------------------------------------------
@@ -3988,8 +3988,8 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
-    CANHT = 0.0
-    CANWH = 0.0
+    CANHT <- 0.0
+    CANWH <- 0.0
     
     #***********************************************************************
     #***********************************************************************
@@ -3998,8 +3998,8 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
     #***********************************************************************
   } else if  (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
-    CANHT  = TABEX(YVSHT,XVSHT,VSTAGE,10)       
-    CANWH  = TABEX(YVSWH,XVSHT,VSTAGE,10)       
+    CANHT  <- TABEX(YVSHT,XVSHT,VSTAGE,10)       
+    CANWH  <- TABEX(YVSWH,XVSHT,VSTAGE,10)       
     
     #***********************************************************************
     #***********************************************************************
@@ -4009,14 +4009,14 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
     #-----------------------------------------------------------------------
     #     Calculate effect of temperature on canopy expansion, HWTEM
     #-----------------------------------------------------------------------
-    HWTEM = 0.0
+    HWTEM <- 0.0
     for (I in 1:TS) {
       # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
-      HWTEM = HWTEM + TABEX(YHWTEM,XHWTEM,TGRO[I],5)
+      HWTEM <- HWTEM + TABEX(YHWTEM,XHWTEM,TGRO[I],5)
     }
-    HWTEM = HWTEM /TS
+    HWTEM <- HWTEM /TS
     #       24 changed to TS on 5 July 2017 by Bruce Kimball
     
     #-----------------------------------------------------------------------
@@ -4030,17 +4030,17 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
     #        PARNOD = PAR
     #     }
     #-----------------------------------------------------------------------
-    PARNOD = PAR * exp(-KCAN*(0.3*XLAI))
-    HPAR = TABEX(YHWPAR,XHWPAR,PARNOD,8)
-    WPAR = TABEX(YHWPAR,XHWPAR,PAR,8)
+    PARNOD <- PAR * exp(-KCAN*(0.3*XLAI))
+    HPAR <- TABEX(YHWPAR,XHWPAR,PARNOD,8)
+    WPAR <- TABEX(YHWPAR,XHWPAR,PAR,8)
     #-----------------------------------------------------------------------
     #     Calculate rate of increase in canopy height and update height, CANHT
     #-----------------------------------------------------------------------
-    RCANHT= RVSTGE * TABEX(YVSHT,XVSHT,VSTAGE,10) * HWTEM * TURFAC * HPAR * RHGHT
-    CANHT = CANHT + RCANHT
+    RCANHT<- RVSTGE * TABEX(YVSHT,XVSHT,VSTAGE,10) * HWTEM * TURFAC * HPAR * RHGHT
+    CANHT <- CANHT + RCANHT
     
     #     Set minimum Canopy height based on lookup function
-    CANHT = max(CANHT, TABEX(YVSHT,XVSHT, 0.0, 10))
+    CANHT <- max(CANHT, TABEX(YVSHT,XVSHT, 0.0, 10))
     
     #-----------------------------------------------------------------------
     #     Calculate rate of increase in canopy width and update width, CANWH
@@ -4049,12 +4049,12 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
     #     1/22/03 KJB - Don't allow reduction in vstage to reduce canopy
     #       width.
     #-----------------------------------------------------------------------
-    RCANWH = max(0.0,RVSTGE) * TABEX(YVSWH,XVSHT,VSTAGE,10) * HWTEM * TURFAC * WPAR * RWIDTH
-    CANWH  = CANWH + RCANWH
+    RCANWH <- max(0.0,RVSTGE) * TABEX(YVSWH,XVSHT,VSTAGE,10) * HWTEM * TURFAC * WPAR * RWIDTH
+    CANWH  <- CANWH + RCANWH
     
     #     Set minimum Canopy width based on lookup function
-    CANWH = max(CANWH, TABEX(YVSWH, XVSHT, 0.0, 10))  
-    CANWH = min(CANWH,ROWSPC)
+    CANWH <- max(CANWH, TABEX(YVSWH, XVSHT, 0.0, 10))  
+    CANWH <- min(CANWH,ROWSPC)
     
     #***********************************************************************
     #***********************************************************************
@@ -4108,12 +4108,12 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
     #-----------------------------------------------------------------------
     # ALTERADO: Provavelmente esse número é como o fortran referencia até onde o loop vai repetir.
     for (I in 1:NCOHORTS) {
-      DTC[I]   = 0.0
-      MSHELN[I]= 0.0
-      WPODY[I] = 0.0
-      DAYS[I]  = 0.0
+      DTC[I]   <- 0.0
+      MSHELN[I]<- 0.0
+      WPODY[I] <- 0.0
+      DAYS[I]  <- 0.0
     }
-    PODWTD = 0.0
+    PODWTD  <- 0.0
     
     #***********************************************************************
     #***********************************************************************
@@ -4124,33 +4124,33 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
     #     Compute thermal time using hourly predicted air temperature
     #     based on observed max and min temperature.
     #--------------------------------------------------------------------
-    FT = 0.0
+    FT <- 0.0
     for (I in 1:TS) {
       # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
-      FTHR = CURV('LIN',TB[3],TO1[3],TO2[3],TM[3],TGRO[I])
-      FT = FT + FTHR/TS
+      FTHR <- CURV('LIN',TB[3],TO1[3],TO2[3],TM[3],TGRO[I])
+      FT <- FT + FTHR/TS
     }
     #      24 changed to TS on 5 July 2017 by Bruce Kimball
     # -------------------------------------------------------------------
     #  Compute ratio of leaf area per pod cm2/pod
     #  and leaf mass per pod mass g/g
     # -------------------------------------------------------------------
-    TPODM = 0.0
-    RLMPM = 1.0
+    TPODM <-  0.0
+    RLMPM <-  1.0
     
     # -------------------------------------------------------------------
     #      Compute 10 day running average of leaf mass and PGAVL
     # -------------------------------------------------------------------
     for (I in seq(10, 2)) { 
-      TDLM[I]= TDLM[I-1]
+      TDLM[I]<- TDLM[I-1]
     }
-    TDLM[1] = WTLF
+    TDLM[1] <- WTLF
     # -------------------------------------------------------------------
     #     Compute slope of leaf mass curve
     # -------------------------------------------------------------------
-    SL10 = (TDLM[1] - TDLM[10])/ 10.0
+    SL10 <- (TDLM[1] - TDLM[10])/ 10.0
     
     #---------------------------------------------------------------------
     
@@ -4166,10 +4166,10 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
       #---------------------------------------------------------------------
       # ALTERADO: Sempre usar parenteses no for
       for (NPP in 1:(yrdoy - yrnr2))  { 
-        TPODM = TPODM + WTSHE[NPP] + WTSD[NPP]
+        TPODM <- TPODM + WTSHE[NPP] + WTSD[NPP]
       }
       
-      if (TPODM > 10.0) RLMPM = WTLF / TPODM
+      if (TPODM > 10.0) RLMPM <- WTLF / TPODM
       #-------------------------------------------------------------------
       #     Main loop that cycles through detachment model
       #--------------------------------------------------------------------
@@ -4179,15 +4179,15 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
         #     days without carbohydrate on a cohort basis
         #--------------------------------------------------------------------
         if (SHELN[NPP] > MSHELN[NPP]) {
-          MSHELN[NPP] = SHELN[NPP]
+          MSHELN[NPP] <- SHELN[NPP]
         }
         if (WTSD[NPP] + WTSHE[NPP] >= 0.01) {
           if (WTSD[NPP] + WTSHE[NPP] <= WPODY[NPP] &  WTSD[NPP] > 0.0) {
-            DAYS[NPP] = DAYS[NPP] + 1.
+            DAYS[NPP] <- DAYS[NPP] + 1.
           }
           
           if (WTSD[NPP] + WTSHE[NPP] > WPODY[NPP]) {
-            DAYS[NPP] = 0
+            DAYS[NPP] <- 0
           }
           
           #-----------------------------------------------------------------------
@@ -4197,13 +4197,13 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
           #           if (RLMPM > PR1DET | SL10 > PR2DET) GOTO 700
           if (RLMPM <= PR1DET & SL10 <= PR2DET) {
             if ((SL10 <= PR2DET) | DAYS[NPP] > DWC | WTLF <= 10.) {
-              DTC[NPP] = DTC[NPP] + FT
+              DTC[NPP] <- DTC[NPP] + FT
             }
           } else {
             #           Accumulate DTC based on days without carbon before RLMPM < PR1DET
             #           and SL10 < PR2DET
             if (DAYS[NPP] > DWC | WTLF <= 10.) {
-              DTC[NPP] = DTC[NPP] + FT
+              DTC[NPP] <- DTC[NPP] + FT
             }
           }
           #-----------------------------------------------------------------------
@@ -4217,48 +4217,48 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
         if (DTC[NPP] > 0) {
           
           # ALTERADO: EXP por exp
-          XPD = MSHELN[NPP] * (1.0 - XP1DET * exp(XP2DET*DTC[NPP])/100)
-          XPD = max(0.0,XPD)
+          XPD <- MSHELN[NPP] * (1.0 - XP1DET * exp(XP2DET*DTC[NPP])/100)
+          XPD <- max(0.0,XPD)
           if (SHELN[NPP] > XPD) {
             if (SHELN[NPP] >= 0.01 & DTC[NPP] <= 34.) {
-              PDET[NPP] = SHELN[NPP] - XPD
-              PDET[NPP] = max(0.0,PDET[NPP])
-              PODWTD = PODWTD + (WTSHE[NPP] + WTSD[NPP])*PDET[NPP] / SHELN[NPP]
+              PDET[NPP] <- SHELN[NPP] - XPD
+              PDET[NPP] <- max(0.0,PDET[NPP])
+              PODWTD <- PODWTD + (WTSHE[NPP] + WTSD[NPP])*PDET[NPP] / SHELN[NPP]
               
-              SDDAM =  WTSD[NPP] * PDET[NPP] / SHELN[NPP]
+              SDDAM <- WTSD[NPP] * PDET[NPP] / SHELN[NPP]
               if (SDDAM > WTSD[NPP]) {
-                SWIDOT = SWIDOT + WTSD[NPP]
+                SWIDOT <- SWIDOT + WTSD[NPP]
               } else {
-                SWIDOT = SWIDOT + SDDAM
+                SWIDOT <- SWIDOT + SDDAM
               }
               
-              SHDAM = WTSHE[NPP] * PDET[NPP] / SHELN[NPP]
+              SHDAM <- WTSHE[NPP] * PDET[NPP] / SHELN[NPP]
               if (SHDAM > WTSHE[NPP]) {
-                WSHIDT = WSHIDT + WTSHE[NPP]
+                WSHIDT <- WSHIDT + WTSHE[NPP]
               } else {
-                WSHIDT = WSHIDT + SHDAM
+                WSHIDT <- WSHIDT + SHDAM
               }
               
-              WTSD[NPP]  = WTSD[NPP] * (1. - PDET[NPP] / SHELN[NPP])
-              SDNO[NPP]  = SDNO[NPP] * (1. - PDET[NPP] / SHELN[NPP])
-              WTSHE[NPP] = WTSHE[NPP]* (1. - PDET[NPP] / SHELN[NPP])
-              SHELN[NPP] = SHELN[NPP]* (1. - PDET[NPP] / SHELN[NPP])
+              WTSD[NPP]  <- WTSD[NPP] * (1. - PDET[NPP] / SHELN[NPP])
+              SDNO[NPP]  <- SDNO[NPP] * (1. - PDET[NPP] / SHELN[NPP])
+              WTSHE[NPP] <- WTSHE[NPP]* (1. - PDET[NPP] / SHELN[NPP])
+              SHELN[NPP] <- SHELN[NPP]* (1. - PDET[NPP] / SHELN[NPP])
               
-              WTSHE[NPP] = max(0.0,WTSHE[NPP])
-              SHELN[NPP] = max(0.0,SHELN[NPP])
-              WTSD[NPP]  = max(0.0,WTSD[NPP])
-              SDNO[NPP]  = max(0.0,SDNO[NPP])
+              WTSHE[NPP] <- max(0.0,WTSHE[NPP])
+              SHELN[NPP] <- max(0.0,SHELN[NPP])
+              WTSD[NPP]  <- max(0.0,WTSD[NPP])
+              SDNO[NPP]  <- max(0.0,SDNO[NPP])
             }
           }
         }
-        WPODY[NPP] = WTSD[NPP] + WTSHE[NPP]
+        WPODY[NPP] <- WTSD[NPP] + WTSHE[NPP]
       }
       
-      SUMSD = 0.0
-      SUMSH = 0.0
+      SUMSD <- 0.0
+      SUMSH <- 0.0
       for (NPP in 1:(yrdoy - yrnr2))  { 
-        SUMSD = SUMSD + WTSD[NPP]
-        SUMSH = SUMSH + WTSHE[NPP]
+        SUMSD <- SUMSD + WTSD[NPP]
+        SUMSH <- SUMSH + WTSHE[NPP]
       }
     }
   
@@ -4312,10 +4312,10 @@ SENES <- function (DYNAMIC,DAS,PAR) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
-    SSDOT  = 0.0
-    SLDOT  = 0.0
-    SLNDOT = 0.0
-    SSNDOT = 0.0
+    SSDOT  <- 0.0
+    SLDOT  <- 0.0
+    SLNDOT <- 0.0
+    SSNDOT <- 0.0
     # RATTP  = 1.0
     
     # for (I in 1:5) {
@@ -4335,15 +4335,15 @@ SENES <- function (DYNAMIC,DAS,PAR) {
     
     # ALTERADO: NSWAB, 2, -1 to seq(NSWAV, 2)
     for (I in seq(NSWAB,2)) { 
-      SWFCAB[I] = SWFCAB[I-1]
+      SWFCAB[I]  <-  SWFCAB[I-1]
     }
-    SWFCAB[1] = SWFAC
-    RATTP = SWFCAB[NSWAB]
+    SWFCAB[1] <-  SWFAC
+    RATTP <-  SWFCAB[NSWAB]
     
-    SSDOT  = 0.0
-    SLDOT  = 0.0
-    SLNDOT = 0.0
-    SSNDOT = 0.0
+    SSDOT  <- 0.0
+    SLDOT  <- 0.0
+    SLNDOT <- 0.0
+    SSNDOT <- 0.0
     
     if (DAS <= NR7 & VSTAGE >= 1.0) {
       #-----------------------------------------------------------------------
@@ -4351,9 +4351,9 @@ SENES <- function (DYNAMIC,DAS,PAR) {
       #     beginning of seed growth
       #-----------------------------------------------------------------------
       if (VSTAGE >= 5.0) {
-        PORLFT = 1.0 - TABEX(SENPOR,XSTAGE,VSTAGE,4)
+        PORLFT <- 1.0 - TABEX(SENPOR,XSTAGE,VSTAGE,4)
         if ((WTLF * ( 1.0 - RHOL)) > CLW*PORLFT) {
-          SLDOT = WTLF * ( 1.0 - RHOL) - CLW * PORLFT
+          SLDOT <- WTLF * ( 1.0 - RHOL) - CLW * PORLFT
         }
       }
       #-----------------------------------------------------------------------
@@ -4363,60 +4363,60 @@ SENES <- function (DYNAMIC,DAS,PAR) {
       #     to contain no more mineable Protein--i.e., N content of senesced
       #     leaves and petioles is different from canopy average.
       #-----------------------------------------------------------------------
-      LFSEN = SENRTE * NRUSLF / 0.16
-      LFSEN = min(WTLF,LFSEN)
-      SLDOT = SLDOT + LFSEN
-      SLDOT = min(WTLF,SLDOT)
+      LFSEN <- SENRTE * NRUSLF / 0.16
+      LFSEN <- min(WTLF,LFSEN)
+      SLDOT <- SLDOT + LFSEN
+      SLDOT <- min(WTLF,SLDOT)
       #-----------------------------------------------------------------------
       #     This section calculates senescence due to low light in lower
       #     canopy.  First compute LAI at which light compensation is reached
       #     then allow LAI above this amount to be senesced over TCMP thermal
       #     days.
       #-----------------------------------------------------------------------
-      LTSEN = 0.0
+      LTSEN <- 0.0
       if (PAR > 0.) {
-        LCMP = -(1. / KCAN) * log(ICMP / PAR)
-        LTSEN = DTX * (XLAI - LCMP) / TCMP
-        LTSEN = max(0.0, LTSEN)
+        LCMP <- -(1. / KCAN) * log(ICMP / PAR)
+        LTSEN <- DTX * (XLAI - LCMP) / TCMP
+        LTSEN <- max(0.0, LTSEN)
       }
       #-----------------------------------------------------------------------
       #     Convert area loss to biomass(m2 *10000cm2/m2)/(cm2/g)=g/m2
       #-----------------------------------------------------------------------
-      SLDOT = SLDOT + LTSEN * 10000. / SLAAD
+      SLDOT <- SLDOT + LTSEN * 10000. / SLAAD
       #-----------------------------------------------------------------------
       #     Calculate senescence due to water stress.
       #-----------------------------------------------------------------------
-      WSLOSS = SENDAY * (1. - RATTP) * WTLF
+      WSLOSS <- SENDAY * (1. - RATTP) * WTLF
       if (WSLOSS > 0.0) {
-        PORLFT = 1.0 - TABEX(SENMAX, XSENMX, VSTAGE, 4)
-        WSLOSS = min(WSLOSS, WTLF - CLW * PORLFT)
-        WSLOSS = max(WSLOSS, 0.0)
-        SLNDOT = WSLOSS
+        PORLFT <- 1.0 - TABEX(SENMAX, XSENMX, VSTAGE, 4)
+        WSLOSS <- min(WSLOSS, WTLF - CLW * PORLFT)
+        WSLOSS <- max(WSLOSS, 0.0)
+        SLNDOT <- WSLOSS
       }
-      SLDOT = SLDOT + SLNDOT
-      SSDOT = SLDOT * PORPT
-      SSDOT = min(SSDOT,0.1*STMWT)
-      SSNDOT = SLNDOT * PORPT
-      SSNDOT = min(SSDOT,SSNDOT)
+      SLDOT <- SLDOT + SLNDOT
+      SSDOT <- SLDOT * PORPT
+      SSDOT <- min(SSDOT,0.1*STMWT)
+      SSNDOT <- SLNDOT * PORPT
+      SSNDOT <- min(SSDOT,SSNDOT)
       #-----------------------------------------------------------------------
       #     This section calculates senescence of leaves and petioles
       #     after R7.
       #-----------------------------------------------------------------------
     } else if (DAS > NR7) {
       if (WTLF > 0.0001) {
-        SLDOT = WTLF * SENRT2
-        SLNDOT = SLDOT
-        SSDOT = SLDOT * PORPT
-        SSNDOT = SSDOT
+        SLDOT <- WTLF * SENRT2
+        SLNDOT <- SLDOT
+        SSDOT <- SLDOT * PORPT
+        SSNDOT <- SSDOT
       } else {
-        SLDOT = 0.0
-        SSDOT = 0.0
-        SLNDOT = 0.0
-        SSNDOT = 0.0
+        SLDOT <- 0.0
+        SSDOT <- 0.0
+        SLNDOT <- 0.0
+        SSNDOT <- 0.0
       }
       if (STMWT < 0.0001) {
-        SLNDOT = 0.0
-        SSNDOT = 0.0
+        SLNDOT <- 0.0
+        SSNDOT <- 0.0
       }
     }
     
@@ -4444,18 +4444,18 @@ FREEZE <- function(TMIN, iyear, jday) {
   #!*LEAF SENESCENCE FACTORS
   FREEZ2 <- params$FREEZ2  #-5.00
   
-  YRDOY   = paste0(iyear,sprintf("%03d", jday))
-  YRPLT   = paste0(iyear,sprintf("%03d", jday))
+  YRDOY   <- paste0(iyear,sprintf("%03d", jday))
+  YRPLT   <- paste0(iyear,sprintf("%03d", jday))
   
   #-----------------------------------------------------------------------
   #DAP   = max(0,TIMDIF(YRPLT,YRDOY)) 
   #DAP = idpp
-  WLFDOT = WTLF - SLDOT - NRUSLF/0.16
+  WLFDOT <- WTLF - SLDOT - NRUSLF/0.16
   
   if (TMIN < FREEZ2) {
-    frost = T #Henrique: criei para encerrar o ciclo devido à geada severa (2020-10-1)
+    frost <- T #Henrique: criei para encerrar o ciclo devido à geada severa (2020-10-1)
     if (MDATE < 0) {
-      MDATE = YRDOY
+      MDATE <- YRDOY
     }
   }
   
@@ -4541,26 +4541,26 @@ INCOMP <- function(DYNAMIC) {
     #     COMPUTE RESPIRATION COEFFICIENTS BASED ON PLANT COMPOSITION
     #-----------------------------------------------------------------------
     #
-    AGRLF  =  PLIPLF*RLIP + PLIGLF*RLIG + POALF*ROA + PMINLF*RMIN + PCARLF*RCH2O
-    AGRSTM =  PLIPST*RLIP + PLIGST*RLIG + POAST*ROA + PMINST*RMIN + PCARST*RCH2O
-    AGRRT  =  PLIPRT*RLIP + PLIGRT*RLIG + POART*ROA + PMINRT*RMIN + PCARRT*RCH2O
-    AGRNOD =  PLIPNO*RLIP + PLIGNO*RLIG + POANO*ROA + PMINNO*RMIN + PCARNO*RCH2O
+    AGRLF  <- PLIPLF*RLIP + PLIGLF*RLIG + POALF*ROA + PMINLF*RMIN + PCARLF*RCH2O
+    AGRSTM <- PLIPST*RLIP + PLIGST*RLIG + POAST*ROA + PMINST*RMIN + PCARST*RCH2O
+    AGRRT  <- PLIPRT*RLIP + PLIGRT*RLIG + POART*ROA + PMINRT*RMIN + PCARRT*RCH2O
+    AGRNOD <- PLIPNO*RLIP + PLIGNO*RLIG + POANO*ROA + PMINNO*RMIN + PCARNO*RCH2O
     
     #-----------------------------------------------------------------------
     #     AGRVG2, AGRSH2, AGRSD2 include protein component of vegetative 
     #     growth cost
     #-----------------------------------------------------------------------
-    AGRVG  = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
-    AGRVG2 = AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RNO3C
+    AGRVG  <- AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
+    AGRVG2 <- AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RNO3C
     
     #-----------------------------------------------------------------------
-    AGRSH1 =  PLIPSH*RLIP + PLIGSH*RLIG + POASH*ROA  + PMINSH*RMIN + PCARSH*RCH2O
-    AGRSH2 =  AGRSH1 + PROSHI*RNO3C 
+    AGRSH1 <-  PLIPSH*RLIP + PLIGSH*RLIG + POASH*ROA  + PMINSH*RMIN + PCARSH*RCH2O
+    AGRSH2 <-  AGRSH1 + PROSHI*RNO3C 
     
     #-----------------------------------------------------------------------
-    SDPROR = (SDPRO - SDPROS) / ( SDLIP + PCARSD )
-    AGRSD1 = PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + (SDLIP*RLIP + PCARSD*RCH2O)*(1. - SDPROR)
-    AGRSD2 = AGRSD1 + SDPRO*RNO3C 
+    SDPROR <- (SDPRO - SDPROS) / ( SDLIP + PCARSD )
+    AGRSD1 <- PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + (SDLIP*RLIP + PCARSD*RCH2O)*(1. - SDPROR)
+    AGRSD2 <- AGRSD1 + SDPRO*RNO3C 
     
     #***********************************************************************
     #***********************************************************************
@@ -4614,18 +4614,18 @@ NUPTAK <- function (DYNAMIC) {
     for(L in 1:NL)
     {
       KG2PPM[L] <- 1.0/(BD[L] * 0.1 * DLAYR[L])
-      SNO3[L] = INO3[L] / KG2PPM[L]
-      SNH4[L] = INH4[L] / KG2PPM[L]
+      SNO3[L] <- INO3[L] / KG2PPM[L]
+      SNH4[L] <- INH4[L] / KG2PPM[L]
     }
     #linkar com variavel do ecosmos depois
     # NO3    <- rep(2, NL)    #vem do INSOIL.for
     # NH4    <- rep(2, NL)    #vem do INSOIL.for
     
-    TRNO3U = 0.0 
-    TRNH4U = 0.0 
-    TRNU   = 0.0 
-    UNH4   <- rep(0, NLAYR)
-    UNO3   <- rep(0, NLAYR)
+    TRNO3U  <-  0.0 
+    TRNH4U  <-  0.0 
+    TRNU    <-  0.0 
+    UNH4    <- rep(0, NLAYR)
+    UNO3    <- rep(0, NLAYR)
     
     #***********************************************************************
     #***********************************************************************
@@ -4635,82 +4635,82 @@ NUPTAK <- function (DYNAMIC) {
     #-----------------------------------------------------------------------
     #   Initialize variables
     #-----------------------------------------------------------------------
-    TRNU   = 0.0
-    TRNO3U = 0.0
-    TRNH4U = 0.0
-    NUF    = 0.0
-    XMIN   = 0.0
+    TRNU    <-  0.0
+    TRNO3U  <-  0.0
+    TRNH4U  <-  0.0
+    NUF     <-  0.0
+    XMIN    <-  0.0
     for (L in 1:NLAYR) {
-      RNO3U[L] = 0.0
-      RNH4U[L] = 0.0
-      UNH4[L]  = 0.0
-      UNO3[L]  = 0.0
-      SNO3[L] = NO3[L] / KG2PPM[L]
-      SNH4[L] = NH4[L] / KG2PPM[L]
+      RNO3U[L] <- 0.0
+      RNH4U[L] <- 0.0
+      UNH4[L]  <- 0.0
+      UNO3[L]  <- 0.0
+      SNO3[L]  <- NO3[L] / KG2PPM[L]
+      SNH4[L]  <- NH4[L] / KG2PPM[L]
     }
     #-----------------------------------------------------------------------
     #   Determine crop N demand (kg N/ha), after subtracting mobilized N
     #-----------------------------------------------------------------------
-    ANDEM = (NDMTOT - NDMSDR) * 10.0
+    ANDEM <- (NDMTOT - NDMSDR) * 10.0
     if (ANDEM > 1.E-9) {
       #-----------------------------------------------------------------------
       #   Calculate potential N uptake in soil layers with roots
       #-----------------------------------------------------------------------
       for (L in 1:NLAYR) {
         if (RLV[L] > 1.E-6) {
-          FNH4 = 1.0 - exp(-0.08 * NH4[L])
-          FNO3 = 1.0 - exp(-0.08 * NO3[L])
-          if (FNO3 < 0.04) { FNO3 = 0.0 }
-          if (FNO3 > 1.0)  { FNO3 = 1.0 }
-          if (FNH4 < 0.04) { FNH4 = 0.0 }
-          if (FNH4 > 1.0)  { FNH4 = 1.0 }
+          FNH4 <- 1.0 - exp(-0.08 * NH4[L])
+          FNO3 <- 1.0 - exp(-0.08 * NO3[L])
+          if (FNO3 < 0.04) { FNO3 <- 0.0 }
+          if (FNO3 > 1.0)  { FNO3 <- 1.0 }
+          if (FNH4 < 0.04) { FNH4 <- 0.0 }
+          if (FNH4 > 1.0)  { FNH4 <- 1.0 }
           
-          SMDFR = (SW[L] - LL[L]) / (DUL[L] - LL[L])
+          SMDFR <- (SW[L] - LL[L]) / (DUL[L] - LL[L])
           if (SMDFR < 0.0) {
-            SMDFR = 0.0
+            SMDFR <- 0.0
           }
           
           if (SW[L] > DUL[L]) {
-            SMDFR = 1.0 - (SW[L] - DUL[L]) / (SAT[L] - DUL[L])
+            SMDFR <- 1.0 - (SW[L] - DUL[L]) / (SAT[L] - DUL[L])
           }
-          RFAC = RLV[L] * SMDFR * SMDFR * DLAYR[L] * 100.0
+          RFAC <- RLV[L] * SMDFR * SMDFR * DLAYR[L] * 100.0
           #-----------------------------------------------------------------------
           #  RLV = Rootlength density (cm/cm3);SMDFR = relative drought factor
           #  RTNO3 + RTNH4 = Nitrogen uptake / root length (mg N/cm)
           #  RNO3U + RNH4  = Nitrogen uptake (kg N/ha)
           #-----------------------------------------------------------------------
-          RNO3U[L] = RFAC * FNO3 * RTNO3
-          RNH4U[L] = RFAC * FNH4 * RTNH4
-          RNO3U[L] = max(0.0,RNO3U[L])
-          RNH4U[L] = max(0.0,RNH4U[L])
-          TRNU = TRNU + RNO3U[L] + RNH4U[L] #kg[N]/ha
+          RNO3U[L] <- RFAC * FNO3 * RTNO3
+          RNH4U[L] <- RFAC * FNH4 * RTNH4
+          RNO3U[L] <- max(0.0,RNO3U[L])
+          RNH4U[L] <- max(0.0,RNH4U[L])
+          TRNU <- TRNU + RNO3U[L] + RNH4U[L] #kg[N]/ha
         }
       }
       #-----------------------------------------------------------------------
       #   Calculate N uptake in soil layers with roots based on demand (kg/ha)
       #-----------------------------------------------------------------------
       if (ANDEM > TRNU) {
-        ANDEM = TRNU
+        ANDEM <- TRNU
       }
       #        IF (TRNU == 0.0) GO TO 600
       if (TRNU > 0.001) {
-        NUF = ANDEM / TRNU
+        NUF <- ANDEM / TRNU
         for (L in 1:NLAYR) {
           if (RLV[L] > 0.0) {
-            UNO3[L] = RNO3U[L] * NUF
-            UNH4[L] = RNH4U[L] * NUF
-            XMIN    = 0.25 / KG2PPM[L]
-            MXNO3U  = max(0.0,(SNO3[L] - XMIN))
+            UNO3[L] <- RNO3U[L] * NUF
+            UNH4[L] <- RNH4U[L] * NUF
+            XMIN    <- 0.25 / KG2PPM[L]
+            MXNO3U  <- max(0.0,(SNO3[L] - XMIN))
             if (UNO3[L] > MXNO3U) {
-              UNO3[L] = MXNO3U
+              UNO3[L] <- MXNO3U
             }
             XMIN = 0.5 / KG2PPM[L]
-            MXNH4U  = max(0.0,(SNH4[L] - XMIN))
+            MXNH4U  <- max(0.0,(SNH4[L] - XMIN))
             if (UNH4[L] > MXNH4U) {
-              UNH4[L] = MXNH4U
+              UNH4[L] <-  MXNH4U
             }
-            TRNO3U  = TRNO3U + UNO3[L]
-            TRNH4U  = TRNH4U + UNH4[L]
+            TRNO3U  <- TRNO3U + UNO3[L]
+            TRNH4U  <- TRNH4U + UNH4[L]
           }
         }
         #-----------------------------------------------------------------------
@@ -4831,7 +4831,7 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
   NODRGM <- params$NODRGM  #0.170
   DWNODI <- params$DWNODI  #0.014
   SNACTM <- params$SNACTM  #0.045
-  CNODCR <- params$CNODCR  #0.05
+  CNODCR <- params$CNODCR  #0.05o
   #!*RESPIRATION PARAMETERS
   RFIXN  <- params$RFIXN  #2.830
   #!*PLANT COMPOSITION VALUES
@@ -4854,17 +4854,17 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
-    CNOD   = 0.0
-    DWNOD  = 0.0    
-    DWNODA = 0.0  
-    NDTH   = 0.0    
-    NFIXN  = 0.0    
-    NODGR  = 0.0    
-    WTNFX  = 0.0    
-    SDWNOD = 0.0
-    SENNOD = rep(0,20)
+    CNOD    <-  0.0
+    DWNOD   <-  0.0    
+    DWNODA  <-  0.0  
+    NDTH    <-  0.0    
+    NFIXN   <-  0.0    
+    NODGR   <-  0.0    
+    WTNFX   <-  0.0    
+    SDWNOD  <-  0.0
+    SENNOD  <-  rep(0,20)
     
-    DNOD   = 30.0
+    DNOD    <-  30.0
     
     #***********************************************************************
     #***********************************************************************
@@ -4875,57 +4875,57 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
     #   Set initial nodule mass to DWNODI as read from crop species file
     #-----------------------------------------------------------------------
     if (SDWNOD < 1) {
-      DWNOD  = DWNODI * PLTPOP
-      SDWNOD = 1
-      DWNODA = DWNODI * PLTPOP
-      WTNFX  = DWNODA * 0.16 * PRONOD
+      DWNOD   <-  DWNODI * PLTPOP
+      SDWNOD  <-  1
+      DWNODA  <-  DWNODI * PLTPOP
+      WTNFX   <-  DWNODA * 0.16 * PRONOD
       for (J in 1:8) {
-        SWMEM[J] = 1.0
+        SWMEM[J] <- 1.0
       }
     }
     
     #-----------------------------------------------------------------------
     #   Initialize soil water and temperature factors (top DNOD cm of soil)
     #-----------------------------------------------------------------------
-    SWFACT = 1.0
-    FLDACT = 1.0
-    ACSTF  = 0.0
-    ACSTG  = 0.0
-    DSW    = 0.0
-    FLDSUM = 0.0
+    SWFACT <- 1.0
+    FLDACT <- 1.0
+    ACSTF  <- 0.0
+    ACSTG  <- 0.0
+    DSW    <- 0.0
+    FLDSUM <- 0.0
     #-----------------------------------------------------------------------
     #     Calculate carbon allocated per unit of nodule biomass:
     #     CNODCR = C requirement for nodule respiration (g C/g nodule/d)
     #-----------------------------------------------------------------------
-    CNFACT = 1.
+    CNFACT <- 1.
     if (DWNOD > 1.E-4) {
-      FRCNM = CTONOD/DWNOD
-      if (FRCNM < CNODCR) { CNFACT = FRCNM / CNODCR }
+      FRCNM <- CTONOD/DWNOD
+      if (FRCNM < CNODCR) { CNFACT <- FRCNM / CNODCR }
     }
     #-----------------------------------------------------------------------
     #   Calculate soil water and temperature factors for each layer to DNOD
     #-----------------------------------------------------------------------
     NL <- 20
     LAYERFRAC <- rep(0,NL)
-    DSWP = 0.0
-    DNOD = 50.0
+    DSWP <- 0.0
+    DNOD <- 50.0
     for (I in 1:NLAYR) {
-      FLAYR = 1.0
-      DSW = DSW + DLAYR[I]
+      FLAYR <- 1.0
+      DSW <- DSW + DLAYR[I]
       if (DSW > DNOD) { FLAYR = (DNOD-(DSW-DLAYR[I]))/DLAYR[I] }
       
-      ACSTF = ACSTF + DLAYR[I] * FLAYR * CURV(TYPFXT,FNFXT[1],FNFXT[2],FNFXT[3],FNFXT[4],ST[I])
-      ACSTG = ACSTG + DLAYR[I] * FLAYR * CURV(TYPNGT,FNNGT[1],FNNGT[2],FNNGT[3],FNNGT[4],ST[I])
+      ACSTF <- ACSTF + DLAYR[I] * FLAYR * CURV(TYPFXT,FNFXT[1],FNFXT[2],FNFXT[3],FNFXT[4],ST[I])
+      ACSTG <- ACSTG + DLAYR[I] * FLAYR * CURV(TYPNGT,FNNGT[1],FNNGT[2],FNNGT[3],FNNGT[4],ST[I])
       
-      EPORS = max(SAT[I] - SW[I], 0.0)
-      FLDSUM = FLDSUM + DLAYR[I] * FLAYR * CURV(TYPFXW,FNFXW[1],FNFXW[2],FNFXW[3],FNFXW[4],EPORS)
+      EPORS <- max(SAT[I] - SW[I], 0.0)
+      FLDSUM <- FLDSUM + DLAYR[I] * FLAYR * CURV(TYPFXW,FNFXW[1],FNFXW[2],FNFXW[3],FNFXW[4],EPORS)
       
       if (I == 1) {
-        LAYERFRAC[1] = DSW / DNOD
+        LAYERFRAC[1] <- DSW / DNOD
       } else {
-        LAYERFRAC[I] = (DSW - DSWP)*FLAYR / DNOD
+        LAYERFRAC[I] <- (DSW - DSWP)*FLAYR / DNOD
       }
-      DSWP = DSW
+      DSWP <- DSW
       if ( FLAYR < 1.0 ) break()
       
     }
@@ -4937,88 +4937,88 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
     #   FLDACT: soil water flooding effect on N2 fixation and nodule growth
     #   NFXAGE: average nodule age effect on nodule growth
     #-----------------------------------------------------------------------
-    TNFIX  = ACSTF / DNOD
-    TNGRO  = ACSTG / DNOD
-    FLDACT = FLDSUM / DNOD
+    TNFIX  <- ACSTF / DNOD
+    TNGRO  <- ACSTG / DNOD
+    FLDACT <- FLDSUM / DNOD
     
-    SWFACT = CURV(TYPFXD,FNFXD[1],FNFXD[2],FNFXD[3],FNFXD[4],TURFAC)
-    NFXAGE = CURV(TYPFXA,FNFXA[1],FNFXA[2],FNFXA[3],FNFXA[4],DXR57)
+    SWFACT <- CURV(TYPFXD,FNFXD[1],FNFXD[2],FNFXD[3],FNFXD[4],TURFAC)
+    NFXAGE <- CURV(TYPFXA,FNFXA[1],FNFXA[2],FNFXA[3],FNFXA[4],DXR57)
     #-----------------------------------------------------------------------
     # DETERMINE MEMORY OF PREVIOUS EIGHT DAYS OF SOIL WATER DEFICITS
     #-----------------------------------------------------------------------
     for (J in seq(8, 2)) {  
-      SWMEM[J] = SWMEM[J-1]
+      SWMEM[J] <- SWMEM[J-1]
     }
-    SWMEM[1] = SWFACT
+    SWMEM[1] <- SWFACT
     
-    SWMEM8 = 0.0
+    SWMEM8 <- 0.0
     for (J in 1:8) {
-      SWMEM8 = SWMEM8 + SWMEM[J]
+      SWMEM8 <- SWMEM8 + SWMEM[J]
     }
-    SWMEM8 = SWMEM8/8
+    SWMEM8 <- SWMEM8/8
     #-----------------------------------------------------------------------
     #     Reserve CNODMN for nodule growth.  JWH 7/9/95
     #-----------------------------------------------------------------------
-    CLEFT = CTONOD - CNODMN
+    CLEFT <- CTONOD - CNODMN
     #-----------------------------------------------------------------------
     #    Compute Specific Nodule Activity taking into account the maximum
     #       activity of the nodules (SNACTM), and strain effects only.
     #    9/27/95 moved temp, water deficit, and soil water flooding effects
     #    below to the primary rate.  We are not getting proper stress effects.
     #-----------------------------------------------------------------------
-    SNACT  = SNACTM  * EFNFIX
+    SNACT  <- SNACTM  * EFNFIX
     #-----------------------------------------------------------------------
     #       Compute nodule death rate as function of SW deficit, SW flooding,
     #                               and carbon deficit (chp)
     #-----------------------------------------------------------------------
-    RNDTH = NDTHMX * max((1.-FLDACT),(1.-SWFACT),(1.-CNFACT))
-    NDTH = min(1.0,RNDTH) * DWNOD               #g/m2
+    RNDTH <- NDTHMX * max((1.-FLDACT),(1.-SWFACT),(1.-CNFACT))
+    NDTH <- min(1.0,RNDTH) * DWNOD               #g/m2
     for (I in 1:NLAYR) {
-      SENNOD[I] = NDTH * LAYERFRAC[I] * 10.     #kg/ha
+      SENNOD[I] <- NDTH * LAYERFRAC[I] * 10.     #kg/ha
     }
     #-----------------------------------------------------------------------
     #    Compute N-Fixation
     #
     #-----------------------------------------------------------------------
     if (DAS < NR7) {
-      PNFIXN = min((CLEFT * 0.16 / RFIXN), (DWNOD * SNACT)) * TNFIX
-      NFIXN = PNFIXN * min(SWFACT, SWMEM8, FLDACT)
+      PNFIXN <- min((CLEFT * 0.16 / RFIXN), (DWNOD * SNACT)) * TNFIX
+      NFIXN <- PNFIXN * min(SWFACT, SWMEM8, FLDACT)
     } else {
-      PNFIXN = 0.0
-      NFIXN = 0.0
+      PNFIXN <- 0.0
+      NFIXN <- 0.0
     }
     #-----------------------------------------------------------------------
     #    Compute C Used for N-Fixation
     #-----------------------------------------------------------------------
-    PCSFIX = (PNFIXN / 0.16) * RFIXN
-    CUSFIX = (NFIXN  / 0.16) * RFIXN
-    CNOFIX = PCSFIX - CUSFIX
+    PCSFIX <- (PNFIXN / 0.16) * RFIXN
+    CUSFIX <- (NFIXN  / 0.16) * RFIXN
+    CNOFIX <- PCSFIX - CUSFIX
     #-----------------------------------------------------------------------
     #     Compute C Left to Grow New Nodule Mass
     #     Includes minimum reserved for nodule growth (CNODMN) plus any C
     #     left after N fixation.  JWH 7/11/95
     #-----------------------------------------------------------------------
-    CLEFT = max(0.0,CLEFT - CUSFIX- 0.9*CNOFIX) + CNODMN
+    CLEFT <- max(0.0,CLEFT - CUSFIX- 0.9*CNOFIX) + CNODMN
     #-----------------------------------------------------------------------
     #    Compute Potential Growth of Nodules (Demand)
     #    EFNFIX = strain efficiency
     #    EFINOC = inoculation effectiveness (or rhizobium density factor)
     #-----------------------------------------------------------------------
     if (DAS < NR7) {
-      NODRGR = NODRGM  * EFNFIX * EFINOC
+      NODRGR <- NODRGM  * EFNFIX * EFINOC
     } else {
-      NODRGR = 0.0
+      NODRGR <- 0.0
     }
     #-----------------------------------------------------------------------
     #    Compute Nodule Growth, Limiting by Either Supply or Demand for C
     #-----------------------------------------------------------------------
-    NODGR = min(CLEFT/AGRNOD,DWNOD*NODRGR) * TNGRO * min(SWFACT,FLDACT) * NFXAGE
-    CNODGR = NODGR * AGRNOD
+    NODGR <- min(CLEFT/AGRNOD,DWNOD*NODRGR) * TNGRO * min(SWFACT,FLDACT) * NFXAGE
+    CNODGR <- NODGR * AGRNOD
     #-----------------------------------------------------------------------
     #    Compute C used in N-Fixation and Nodule Growth (Including
     #    Respiration Costs) Today
     #-----------------------------------------------------------------------
-    CNOD = CUSFIX + CNODGR
+    CNOD <- CUSFIX + CNODGR
     
     #***********************************************************************
     #***********************************************************************
@@ -5049,17 +5049,17 @@ RESPIR <- function (DAS, PG) {
   RES30C <- params$RES30C   #3.5E-04
   R30C2  <- params$R30C2   #.0040
   
-  TS = 24
-  TRSFAC = 0.0
+  TS <- 24
+  TRSFAC <- 0.0
   
-  SCLTS = 24./TS
+  SCLTS <- 24./TS
   
   for (H in 1:TS) {
     
       # TGRO[H] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==H]
       
     #        TRSFAC = TRSFAC + 0.044+0.0019*TGRO(H)+0.001*TGRO(H)**2
-    TRSFAC = TRSFAC + (0.044+0.0019*TGRO[H]+0.001*TGRO[H]**2)*SCLTS
+    TRSFAC <- TRSFAC + (0.044+0.0019*TGRO[H]+0.001*TGRO[H]**2)*SCLTS
     #         scaling factor of 24/TS added on 4July2017 by Bruce Kimball
   }
   # 24 changed to TS on 3 July 2017 by Bruce Kimball
@@ -5070,10 +5070,10 @@ RESPIR <- function (DAS, PG) {
   #     Convert maintainence respiration to actual temperature. RES30C is
   #     the g CH2O/g DW/hr used in maintenance respiration at 30 C.
   #-----------------------------------------------------------------------
-  RO = RES30C * TRSFAC
-  RP = R30C2 * TRSFAC
+  RO <- RES30C * TRSFAC
+  RP <- R30C2 * TRSFAC
   
-  MAINR = RO*WTMAIN + RP*PG
+  MAINR <- RO*WTMAIN + RP*PG
   
   assign("MAINR", MAINR, envir = env)
   return()

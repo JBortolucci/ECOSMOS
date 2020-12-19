@@ -7,12 +7,12 @@ SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   # in order to only allow a crop to be planted once each year
   # initialize cropplant = 0, but hold it = 1 through the end of the year
   
-  if (iday == pdmin[i] && imonth == pmmin[i] && croplive[i] != 1 &&  exist[i] == 1 && ncyears >= 1) {
+  if (iday == pdmin[i] & imonth == pmmin[i] & croplive[i] != 1 &  exist[i] == 1 & ncyears >= 1) {
     pstart[i] <- cdays
   }
   
   
-  if(pstart[i] == cdays && exist[i] == 1 && croplive[i] != 1) {
+  if(pstart[i] == cdays & exist[i] == 1 & croplive[i] != 1) {
     print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i]," cdays ",cdays,sep=" / "))
   }
   
@@ -20,7 +20,7 @@ SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   #_______________________________________________________
   #   reset variables at the beginning  of crop year   
   
-  if (iday == pcd[i] && imonth == pcm[i]) {
+  if (iday == pcd[i] & imonth == pcm[i]) {
     
     pdate[i]     <- 0
     
@@ -60,13 +60,13 @@ SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   #__________________ Start Planting Block _______________________
   
   
-  if (exist[i] == 1 && croplive[i] != 1 && cropplant[i] == 0) {
+  if (exist[i] == 1 & croplive[i] != 1 & cropplant[i] == 0) {
     
     
     # Plating block for Soybean, corn, and wheat
     
     
-    if(cropy == 0 && cdays >= pstart[i] && cdays <= (pstart[i]+180)) {
+    if(cropy == 0 & cdays >= pstart[i] & cdays <= (pstart[i]+180)) {
       
       croplive[i]     <- 1        # initialize freeze kill function to 1 - crops living 
       cropplant[i]    <- 1        # initialize freeze kill function to 1 - crops living 
@@ -96,7 +96,7 @@ SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
     # is planted this year...otherwise it will zero out the fertilizer
     # values for pfts 13, 14 if going through all pfts through 15 
     
-    if (jday == idop[i] && croplive[i] == 1 && exist[i] == 1) {
+    if (jday == idop[i] & croplive[i] == 1 & exist[i] == 1) {
       
       if (iyear < 1950) {
         fertnitro[i] <- 0.0009       # sugarcane - kg_n m-2 y-1

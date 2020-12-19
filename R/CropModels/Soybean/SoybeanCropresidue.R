@@ -24,7 +24,7 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
   # at this time  - this allows for the same crop (e.g., wheat) to be grown
   # across two consecutive calendar years   
   
-  if(exist[j] == 1 && harvdate[j] == jday) {
+  if(exist[j] == 1 & harvdate[j] == jday) {
     
     pdate[j] <- idop[j]
     idppout[j] <- idpp[j]

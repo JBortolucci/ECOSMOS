@@ -97,13 +97,13 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   
   #    
-  YRDOY   = paste0(iyear,sprintf("%03d", jday))
-  YRSIM   = paste0(iyear0,sprintf("%03d", 1))
+  YRDOY   <- paste0(iyear,sprintf("%03d", jday))
+  YRSIM   <- paste0(iyear0,sprintf("%03d", 1))
   
-  NPHS = 13
-  TS   = 24
+  NPHS <- 13
+  TS   <- 24
   
-  ISIMI  = 'P' 
+  ISIMI  <- 'P' 
   #         ISIMI      Start of simulation code
   #               E = On reported emergence day
   #               I = When initial conditions measured
@@ -117,7 +117,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   #   if (DYNAMIC == 'RUNINIT') {
   
-  YRPLT   = paste0(iyear,sprintf("%03d", jday))
+  YRPLT   <- paste0(iyear,sprintf("%03d", jday))
     
   
   
@@ -206,29 +206,29 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     
     if (CROP != "FA") {
       # Minimum days from emergence to Vegetative Growth Stage 1:
-      MNEMV1 = PHTHRS[2]
+      MNEMV1 <- PHTHRS[2]
       
       # Minimum days from start of flowering to last leaf appearance:
-      MNFLLL = PHTHRS[13]
+      MNFLLL <- PHTHRS[13]
       
       # Number of days from flowering to harvest maturity
-      MNFLHM = PHTHRS[8] + PHTHRS[10] + PHTHRS[11]
+      MNFLHM <- PHTHRS[8] + PHTHRS[10] + PHTHRS[11]
     }
     
     # TRIFOL<-TRIFL
-    PHTHRS[5] = max(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
-    PHTHRS[7] = PHTHRS[6] + max(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
-    PHTHRS[9] = max(0.,PHTHRS[10] * PM09)
+    PHTHRS[5] <- max(0.,PH2T5 - PHTHRS[3] - PHTHRS[4])
+    PHTHRS[7] <- PHTHRS[6] + max(0.,(PHTHRS[8] - PHTHRS[6])* PM06)
+    PHTHRS[9] <- max(0.,PHTHRS[10] * PM09)
     
     #          CLDVAR    Critical daylength above which development rate remains at min value (prior to flowering) (hours)                    
     if (PPSEN >= 0.0) {
-      CLDVAR = CSDVAR + (1.-THVAR)/max(PPSEN,0.000001)
+      CLDVAR <- CSDVAR + (1.-THVAR)/max(PPSEN,0.000001)
     } else if (PPSEN <= 0.0) {
-      CLDVAR = CSDVAR + (1.-THVAR)/min(PPSEN,-0.000001)
+      CLDVAR <- CSDVAR + (1.-THVAR)/min(PPSEN,-0.000001)
     }
     
-    CLDVRR = CLDVAR - R1PPO     # Critical daylength above which development rate remains at min value (after flowering) (hours)     
-    CSDVRR = CSDVAR - R1PPO     # Critical daylength above which development rate decreases (after flowering) (hours)                  
+    CLDVRR <- CLDVAR - R1PPO     # Critical daylength above which development rate remains at min value (after flowering) (hours)     
+    CSDVRR <- CSDVAR - R1PPO     # Critical daylength above which development rate decreases (after flowering) (hours)                  
     
     
     #------------------------------------------------------
@@ -247,19 +247,19 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #-----------------------------------------------------------------------
     #     Initialization variables from INPLNT
     #-----------------------------------------------------------------------
-    DRPP   = 0.0
-    DTX    = 0.0
-    DXR57  = 0.0
-    FRACDN = 0.0
-    TDUMX  = 0.0
-    TDUMX2 = 0.0
-    TNTFAC = 0.0
-    TNTFC2 = 0.0
-    FNSTR <- rep(1,20)
-    FPSTR <- rep(1,20)
-    FSW   <- rep(1,20)
-    FT    <- rep(0,20)
-    FUDAY <- rep(0,20)
+    DRPP   <- 0.0
+    DTX    <- 0.0
+    DXR57  <- 0.0
+    FRACDN <- 0.0
+    TDUMX  <- 0.0
+    TDUMX2 <- 0.0
+    TNTFAC <- 0.0
+    TNTFC2 <- 0.0
+    FNSTR  <- rep(1,20)
+    FPSTR  <- rep(1,20)
+    FSW    <- rep(1,20)
+    FT     <- rep(0,20)
+    FUDAY  <- rep(0,20)
     
     RSTAGES (DAS,DYNAMIC,
              FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
@@ -283,10 +283,10 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #   EMERGENCE PHASE ONLY
     #-----------------------------------------------------------------------
     if (NVEG0 > DAS) {
-      FUDAY[1] = 1.
-      FNSTR[1] = 1.
-      FPSTR[1] = 1.
-      K = TSELC[1]
+      FUDAY[1] <- 1.
+      FNSTR[1] <- 1.
+      FPSTR[1] <- 1.
+      K <- TSELC[1]
       
       #-----------------------------------------------------------------------
       #      Compute average soil temp, water in top 10 cm for emergence phase
@@ -294,36 +294,36 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
       #         TSDEP = Average temperature of top 10 cm
       #-----------------------------------------------------------------------
       
-      XDEP  = 0.0
-      SWFEM = 0.0
-      TSDEP = 0.0
+      XDEP  <- 0.0
+      SWFEM <- 0.0
+      TSDEP <- 0.0
       
       
       for (k in 1:(nsoilay)){
-        XDEPL = XDEP
-        XDEP = XDEP + hsoi[k]*100        #use in cm 
-        DTRY = min(hsoi[k]*100, 10. - XDEPL)
+        XDEPL <- XDEP
+        XDEP  <- XDEP + hsoi[k]*100        #use in cm 
+        DTRY  <- min(hsoi[k]*100, 10. - XDEPL)
         
         
         if (wsoi[k] <= sfield[k]) {
-           SWFEM = SWFEM + DTRY * (max(wsoi[k] - swilt[k],0.0)) / (sfield[k] - swilt[k])
+           SWFEM <- SWFEM + DTRY * (max(wsoi[k] - swilt[k],0.0)) / (sfield[k] - swilt[k])
         } else {
-           SWFEM = SWFEM + DTRY * (max(poros[k] - wsoi[k]*poros[k],0.0)) / (poros[k] - sfield[k]*poros[k])
+           SWFEM <- SWFEM + DTRY * (max(poros[k] - wsoi[k]*poros[k],0.0)) / (poros[k] - sfield[k]*poros[k])
         }
-        TSDEP = TSDEP + DTRY * (tsoi[k]-273.16)
+        TSDEP <- TSDEP + DTRY * (tsoi[k]-273.16)
         if (XDEP >= 10.) { break}
       }
-       TSDEP = TSDEP / 10.
+       TSDEP <- TSDEP / 10.
       
       #-----------------------------------------------------------------------
       #      Compute temperature and soil water effects for phase 1, emergence
       #-----------------------------------------------------------------------
       
-      FT[1] = CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TSDEP) 
-      SWFEM = (SWFEM / 10.) * 100.0
-      FSW[1] = CURV("LIN",0.0,20.0,100.,1000.,SWFEM)
+      FT[1]  <- CURV(CTMP[1],TB[K],TO1[K],TO2[K],TM[K],TSDEP) 
+      SWFEM  <- (SWFEM / 10.) * 100.0
+      FSW[1] <- CURV("LIN",0.0,20.0,100.,1000.,SWFEM)
       
-      FSW[1] = 1. + (1.-FSW[1])*WSENP[1]
+      FSW[1] <- 1. + (1.-FSW[1])*WSENP[1]
     }
     
     
@@ -363,51 +363,51 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     
     
     for (J in 2:NPHS) {
-      K = TSELC[J]
-      FT[J] = 0.0
+      K <- TSELC[J]
+      FT[J] <- 0.0
       
       for (I in 1:TS) {
         
         # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
         # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
-        FTHR = CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I])
-        FT[J] = FT[J] + FTHR/TS
+        FTHR <- CURV(CTMP[J],TB[K],TO1[K],TO2[K],TM[K],TGRO[I])
+        FT[J] <- FT[J] + FTHR/TS
       }
       
       if (DAS < NR1) {
-        FUDAY[J] = CURV(DLTYP[J],1.0,CSDVAR,CLDVAR,THVAR,DAYL)
+        FUDAY[J] <- CURV(DLTYP[J],1.0,CSDVAR,CLDVAR,THVAR,DAYL)
       } else {
-        FUDAY[J] = CURV(DLTYP[J],1.0,CSDVRR,CLDVRR,THVAR,DAYL)
+        FUDAY[J] <- CURV(DLTYP[J],1.0,CSDVRR,CLDVRR,THVAR,DAYL)
       }
       
-      FSW[J]   = 1. + (1. - SWFAC)  * WSENP[J]
-      FNSTR[J] = 1. + (1. - NSTRES) * NSENP[J]
-      FPSTR[J] = 1. + (1. - PStres2) * PSENP[J]
+      FSW[J]   <- 1. + (1. - SWFAC)  * WSENP[J]
+      FNSTR[J] <- 1. + (1. - NSTRES) * NSENP[J]
+      FPSTR[J] <- 1. + (1. - PStres2) * PSENP[J]
     }
     
     #-----------------------------------------------------------------------
     #     Transplants
     #-----------------------------------------------------------------------
     if (PLME == "T" & YRPLT == YRDOY) {
-      K = TSELC[2]
-      FT[2] = CURV(CTMP[2],TB[K],TO1[K],TO2[K],TM[K],ATEMP) 
-      PHZACC[2] = FT[2] * SDAGE
+      K <- TSELC[2]
+      FT[2] <- CURV(CTMP[2],TB[K],TO1[K],TO2[K],TM[K],ATEMP) 
+      PHZACC[2] <- FT[2] * SDAGE
     }
     
     #-----------------------------------------------------------------------
     #     The effect of tmin on rate of development from emergence to
     #     flowering. Piper et al., (submitted to Field Crops Research, 1995)
     #-----------------------------------------------------------------------
-    ZMODTE = 1.0
+    ZMODTE <- 1.0
     
     if (TMIN < OPTBI) {
-      ZMODTE = 1. - (SLOBI * (OPTBI - TMIN))
-      ZMODTE = max(0.0, ZMODTE)
-      ZMODTE = min(1.0, ZMODTE)
+      ZMODTE <- 1. - (SLOBI * (OPTBI - TMIN))
+      ZMODTE <- max(0.0, ZMODTE)
+      ZMODTE <- min(1.0, ZMODTE)
     }
     
-    FT[4] = FT[4] * ZMODTE
-    FT[5] = FT[5] * ZMODTE
+    FT[4] <- FT[4] * ZMODTE
+    FT[5] <- FT[5] * ZMODTE
     
     #-----------------------------------------------------------------------
     #     Compute rates of development to be used in other parts of model
@@ -416,18 +416,18 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #     physiological days during the day for reproductive development
     #     (TNTFAC & TNTFC2), and photothermal days during the day (TDUMX & TDUMX2)
     #-----------------------------------------------------------------------
-    DTX    = FT[2]
-    TNTFAC = FT[6]
-    TNTFC2 = FT[10]
+    DTX    <- FT[2]
+    TNTFAC <- FT[6]
+    TNTFC2 <- FT[10]
     #-----------------------------------------------------------------------
     #     DRPP affects seed & shell numbers set, seed and shell growth rates,
     #     ACCAGE, PODADD, FLWADD, FLWADD.  Okay to use the "SEEDFILL"
     #     photoperiod.  This change will make TDUMX2 sensitive to the R5-R7
     #     period and affect N mobilization.
     #-----------------------------------------------------------------------
-    DRPP   = FUDAY[6]
-    TDUMX  = TNTFAC * DRPP
-    TDUMX2 = TNTFC2 * FUDAY[10]
+    DRPP   <- FUDAY[6]
+    TDUMX  <- TNTFAC * DRPP
+    TDUMX2 <- TNTFC2 * FUDAY[10]
     
     #-----------------------------------------------------------------------
     #    Calculate rate of V-stage change for height and width determination
@@ -461,18 +461,18 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
     #     FRACDN is relative time from flowering to last leaf, modify leaf part
     #-----------------------------------------------------------------------
     if (DAS >= NR1) {
-      FRACDN = PHZACC[13]/MNFLLL
-      FRACDN = min(1.0,FRACDN)
+      FRACDN <- PHZACC[13]/MNFLLL
+      FRACDN <- min(1.0,FRACDN)
     }
     
     #-----------------------------------------------------------------------
     #     DXR57-rel time from R5 to R7, modifies N mobilization
     #-----------------------------------------------------------------------
     if (DAS > NR5) {
-      DXR57 = PHZACC[10]/PHTHRS[10]
-      DXR57 = min(DXR57,1.0)
+      DXR57 <- PHZACC[10]/PHTHRS[10]
+      DXR57 <- min(DXR57,1.0)
     } else {
-      DXR57 = 0.0
+      DXR57 <- 0.0
     }
     
     #-----------------------------------------------------------------------
@@ -556,10 +556,10 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
     
     #-----------------------------------------------------------------------
     
-    VSTAGE = 0.0
-    RVSTGE = 0.0
-    VSTGED = 0.0
-    VSTAGP = 0.0
+    VSTAGE <- 0.0
+    RVSTGE <- 0.0
+    VSTGED <- 0.0
+    VSTAGP <- 0.0
     
     #***********************************************************************
     #***********************************************************************
@@ -569,11 +569,11 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
     #-----------------------------------------------------------------------
     #    Calculate rate of V-stage change for height and width determination
     #-----------------------------------------------------------------------
-    RVSTGE = 0.
+    RVSTGE <- 0.
     
     if (DAS > NVEG0 & DAS <= (NDVST + round (VSTGED))) {
-      if (DAS > NDVST & VSTGED > 0.001) { RVSTGE = 1. / VSTGED
-      } else { RVSTGE = VSTAGE - VSTAGP }
+      if (DAS > NDVST & VSTGED > 0.001) { RVSTGE <- 1. / VSTGED
+      } else { RVSTGE <- VSTAGE - VSTAGP }
     }
     
     #***********************************************************************
@@ -589,29 +589,29 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
     #     (TRIFOL), a water stress factor (TURFAC) and physiological units
     #     for today (DTX).
     #-----------------------------------------------------------------------
-    if (RVSTGE > 1.E-6) { VSTGED = 1. / RVSTGE } else { VSTGED = 0.0 }
+    if (RVSTGE > 1.E-6) { VSTGED = 1. / RVSTGE } else { VSTGED <- 0.0 }
     
-    VSTAGP = VSTAGE
+    VSTAGP <- VSTAGE
     
     #-----------------------------------------------------------------------
     #     V-Stage for transplants
     #-----------------------------------------------------------------------
-    if (PLME == "T" & YRPLT == YRDOY) { VSTAGE = 1. + (PHZACC[2] - MNEMV1) * TRIFOL }
+    if (PLME == "T" & YRPLT == YRDOY) { VSTAGE <- 1. + (PHZACC[2] - MNEMV1) * TRIFOL }
     
     #-----------------------------------------------------------------------
     if (DAS >= NVEG0 & DAS <= NDVST) {
       if (DAS < NVEG1) {
-        VSTAGE  = PHZACC[2]/MNEMV1
+        VSTAGE  <- PHZACC[2]/MNEMV1
       } else {
         if (VSTAGE < abs(EVMODC) & abs(EVMODC) > 0.0001) {
           
-          EVMOD = 1.0 + (abs(EVMODC)- VSTAGE) / EVMODC
-          EVMOD = min(2.0,EVMOD)
-          EVMOD = max(0.0,EVMOD)
+          EVMOD <- 1.0 + (abs(EVMODC)- VSTAGE) / EVMODC
+          EVMOD <- min(2.0,EVMOD)
+          EVMOD <- max(0.0,EVMOD)
         } else {
-          EVMOD = 1.0
+          EVMOD <- 1.0
         }
-        VSTAGE = VSTAGE + DTX * TRIFOL * EVMOD*TURFAC*(1.0-XPOD)
+        VSTAGE <- VSTAGE + DTX * TRIFOL * EVMOD*TURFAC*(1.0-XPOD)
       }
     }
     
@@ -657,7 +657,7 @@ RSTAGES <- function (DAS,DYNAMIC,
                      PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM)   {
   
   
-  NVALP0 = 10000
+  NVALP0 <- 10000
   
   
   #***********************************************************************
@@ -669,40 +669,40 @@ RSTAGES <- function (DAS,DYNAMIC,
     
     
     
-    RSTAGE = 0
+    RSTAGE <- 0
     PHZACC <- rep(0,20)
     NVALPH <- rep(NVALP0,20)
     STGDOY <- rep(9999999,20)
     PROG   <- rep(0,20)
     
     
-    NVALPH[1]  = 1
-    STGDOY[14] = YRSIM
-    STGDOY[15] = YRPLT
+    NVALPH[1]  <- 1
+    STGDOY[14] <- YRSIM
+    STGDOY[15] <- YRPLT
     
-    NVEG0  = NVALP0
-    NVEG1  = NVALP0
-    JPEND  = NVALP0
-    NR0    = NVALP0
-    NR1    = NVALP0
-    NR2    = NVALP0
-    NR3    = NVALP0
-    NR5    = NVALP0
-    NDLEAF = NVALP0
-    NDVST  = NVALP0
-    NDSET  = NVALP0
-    NR7    = NVALP0
-    YRNR1  = -99
-    YRNR2  = -99
-    YRNR3  = -99
-    YRNR5  = -99
-    YRNR7  = -99
-    MDATE  = -99
-    YREMRG = -99
+    NVEG0  <- NVALP0
+    NVEG1  <- NVALP0
+    JPEND  <- NVALP0
+    NR0    <- NVALP0
+    NR1    <- NVALP0
+    NR2    <- NVALP0
+    NR3    <- NVALP0
+    NR5    <- NVALP0
+    NDLEAF <- NVALP0
+    NDVST  <- NVALP0
+    NDSET  <- NVALP0
+    NR7    <- NVALP0
+    YRNR1  <- -99
+    YRNR2  <- -99
+    YRNR3  <- -99
+    YRNR5  <- -99
+    YRNR7  <- -99
+    MDATE  <- -99
+    YREMRG <- -99
     # For P module:
-    SeedFrac = 0.0
-    VegFrac  = 0.0
-    VegTime = PHTHRS[3] + PHTHRS[4] + PHTHRS[5] + PHTHRS[8]
+    SeedFrac <- 0.0
+    VegFrac  <- 0.0
+    VegTime  <- PHTHRS[3] + PHTHRS[4] + PHTHRS[5] + PHTHRS[8]
     
     #***********************************************************************
     #***********************************************************************
@@ -714,34 +714,34 @@ RSTAGES <- function (DAS,DYNAMIC,
     REM <- rep(1.0,20)
     
     
-    if (YRDOY == YRPLT) { STGDOY[15] = YRPLT  }
+    if (YRDOY == YRPLT) { STGDOY[15] <- YRPLT  }
     
     #-----------------------------------------------------------------------
     #     Transplants
     #-----------------------------------------------------------------------
     if (PLME == "T" & YRPLT == YRDOY) { 
-      NVEG0 = DAS
-      NVALPH[2] = NVEG0
-      YREMRG    = YRDOY
+      NVEG0 <- DAS
+      NVALPH[2]<- NVEG0
+      YREMRG    <- YRDOY
       if ((PHZACC[2] - PHTHRS[2]) > -1.E-6) {
-        NVEG1 = DAS
-        NVALPH[3] = NVEG1
-        PHZACC[3] = PHZACC[2] - PHTHRS[2]
+        NVEG1 <- DAS
+        NVALPH[3] <- NVEG1
+        PHZACC[3] <- PHZACC[2] - PHTHRS[2]
         if ((PHZACC[3] - PHTHRS[3]) > -1.E-6) {
-          JPEND = DAS
-          NVALPH[4] = JPEND
-          PHZACC[4] = PHZACC[3] - PHTHRS[3]
+          JPEND <- DAS
+          NVALPH[4] <- JPEND
+          PHZACC[4] <- PHZACC[3] - PHTHRS[3]
           if ((PHZACC[4] - PHTHRS[4]) > -1.E-6) {
-            NR0 = DAS
-            NVALPH[5] = NR0
-            RSTAGE    = 0
-            PHZACC[5] = PHZACC[4] - PHTHRS[4]
+            NR0 <- DAS
+            NVALPH[5] <- NR0
+            RSTAGE    <- 0
+            PHZACC[5] <- PHZACC[4] - PHTHRS[4]
             if ((PHZACC[5] - PHTHRS[5]) > -1.E-6) {
-              NR1 = DAS
-              NVALPH[6] = NR1
-              YRNR1     = YRDOY
-              RSTAGE    = 1
-              PHZACC[6] = PHZACC[5] - PHTHRS[5]
+              NR1 <- DAS
+              NVALPH[6] <- NR1
+              YRNR1     <- YRDOY
+              RSTAGE    <- 1
+              PHZACC[6] <- PHZACC[5] - PHTHRS[5]
             }
           }
         }
@@ -754,19 +754,19 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-----------------------------------------------------------------------
     if (NVEG0 >= NVALP0) {
       
-      PHTEM = PHTHRS[1] + SDEPTH * 0.6
-      PROG[1] = FT[1] * FUDAY[1] * min(FSW[1],FNSTR[1],FPSTR[1])
-      PHZACC[1] = PHZACC[1] + PROG[1]
+      PHTEM <- PHTHRS[1] + SDEPTH * 0.6
+      PROG[1] <- FT[1] * FUDAY[1] * min(FSW[1],FNSTR[1],FPSTR[1])
+      PHZACC[1] <- PHZACC[1] + PROG[1]
       
       if ((PHZACC[1] - PHTEM) > -1.E-6 | (ISIMI == "E")) {
         
         #-----------------------------------------------------------------------
         #       Emergence, next stage, occurs on day DAS
         #-----------------------------------------------------------------------
-        NVEG0 = DAS
-        NVALPH[2] = NVEG0
-        YREMRG    = YRDOY
-        STGDOY[1] = YRDOY
+        NVEG0 <- DAS
+        NVALPH[2] <- NVEG0
+        YREMRG    <- YRDOY
+        STGDOY[1] <- YRDOY
         #-----------------------------------------------------------------------
         #       Account for the part of today that contributes to the next phase(s)
         #-------------------------------------------------------------------------------
@@ -785,17 +785,17 @@ RSTAGES <- function (DAS,DYNAMIC,
       #-------------------------------------------------------------------------------
       #     Skip section if stage 3 has already occurred
       #-------------------------------------------------------------------------------
-      PROG[2] = FT[2] * FUDAY[2] * min(FSW[2],FNSTR[2],FPSTR[2]) * REM[NPRIOR[2]]
-      PHZACC[2] = PHZACC[2] + PROG[2]
+      PROG[2] <- FT[2] * FUDAY[2] * min(FSW[2],FNSTR[2],FPSTR[2]) * REM[NPRIOR[2]]
+      PHZACC[2] <- PHZACC[2] + PROG[2]
       
       if (PHZACC[2] - PHTHRS[2] > -1.E-6) {
         #-------------------------------------------------------------------------------
         #       V1 occurs on day DAS
         #-------------------------------------------------------------------------------
-        NVEG1 = DAS
-        NVALPH[3] = NVEG1
-        STGDOY[2] = YRDOY
-        REM[3] = (PHZACC[2] - PHTHRS[2]) / (PROG[2] + 0.00001)
+        NVEG1 <- DAS
+        NVALPH[3] <- NVEG1
+        STGDOY[2] <- YRDOY
+        REM[3] <- (PHZACC[2] - PHTHRS[2]) / (PROG[2] + 0.00001)
       }
     }
     
@@ -804,20 +804,20 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     if (DAS >= NVALPH[NPRIOR[3]] & JPEND >= NVALP0) {
       
-      PROG[3] = FT[3] * FUDAY[3] * min(FSW[3],FNSTR[3],FPSTR[3]) * REM[NPRIOR[3]]
-      PHZACC[3] = PHZACC[3] + PROG[3]
+      PROG[3] <- FT[3] * FUDAY[3] * min(FSW[3],FNSTR[3],FPSTR[3]) * REM[NPRIOR[3]]
+      PHZACC[3] <- PHZACC[3] + PROG[3]
       
-      if (VegTime > 0) {VegFrac = PHZACC[3] / VegTime } else { VegFrac = 0.0}
+      if (VegTime > 0) {VegFrac <- PHZACC[3] / VegTime } else { VegFrac <- 0.0}
       
       if( (PHZACC[3] - PHTHRS[3]) > -1.E-6) {
         
         #-------------------------------------------------------------------------------
         #       End of juvenile phase occurs on day DAS
         #-------------------------------------------------------------------------------
-        JPEND = DAS
-        NVALPH[4] = JPEND
-        STGDOY[3] = YRDOY
-        REM[4] = (PHZACC[3] - PHTHRS[3])/(PROG[3] + 0.00001)
+        JPEND <- DAS
+        NVALPH[4] <- JPEND
+        STGDOY[3] <- YRDOY
+        REM[4] <- (PHZACC[3] - PHTHRS[3])/(PROG[3] + 0.00001)
       }
     }
     
@@ -826,19 +826,19 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     if ( DAS >= NVALPH[NPRIOR[4]] & NR0 >= NVALP0) {
       
-      PROG[4] = FT[4] * FUDAY[4] * min(FSW[4],FNSTR[4],FPSTR[4]) * REM[NPRIOR[4]]
-      PHZACC[4] = PHZACC[4] + PROG[4]
-      VegFrac = (PHTHRS[3] + PHZACC[4]) / VegTime
+      PROG[4] <- FT[4] * FUDAY[4] * min(FSW[4],FNSTR[4],FPSTR[4]) * REM[NPRIOR[4]]
+      PHZACC[4] <- PHZACC[4] + PROG[4]
+      VegFrac <- (PHTHRS[3] + PHZACC[4]) / VegTime
       
       if((PHZACC[4] - PHTHRS[4]) > 1.E-6) {
         #-------------------------------------------------------------------------------
         #       Floral induction occurs on day DAS, end of phase 4
         #-------------------------------------------------------------------------------
-        NR0 = DAS
-        NVALPH[5] = NR0
-        RSTAGE    = 0
-        STGDOY[4] = YRDOY
-        REM[5] = (PHZACC[4] - PHTHRS[4])/(PROG[4] + 0.00001)
+        NR0 <- DAS
+        NVALPH[5] <- NR0
+        RSTAGE    <- 0
+        STGDOY[4] <- YRDOY
+        REM[5] <- (PHZACC[4] - PHTHRS[4])/(PROG[4] + 0.00001)
       }
     }
     
@@ -847,20 +847,20 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     if (DAS >= NVALPH[NPRIOR[5]] & NR1 >= NVALP0) {
       
-      PROG[5] = FT[5] * FUDAY[5] * min(FSW[5],FNSTR[5],FPSTR[5]) * REM[NPRIOR[5]]
-      PHZACC[5] = PHZACC[5] + PROG[5]
-      VegFrac = (PHTHRS[3] + PHTHRS[4] + PHZACC[5]) / VegTime
+      PROG[5] <- FT[5] * FUDAY[5] * min(FSW[5],FNSTR[5],FPSTR[5]) * REM[NPRIOR[5]]
+      PHZACC[5] <- PHZACC[5] + PROG[5]
+      VegFrac <- (PHTHRS[3] + PHTHRS[4] + PHZACC[5]) / VegTime
       
       if(PHZACC[5] - PHTHRS[5] > -1.E-6) {
         #-------------------------------------------------------------------------------
         #       First flower occurs on day DAS
         #-------------------------------------------------------------------------------
-        NR1 = DAS
-        STGDOY[5] = YRDOY
-        NVALPH[6] = NR1
-        YRNR1     = YRDOY
-        RSTAGE    = 1
-        REM[6] = (PHZACC[5] - PHTHRS[5])/(PROG[5] + 0.00001)
+        NR1 <- DAS
+        STGDOY[5] <- YRDOY
+        NVALPH[6] <- NR1
+        YRNR1     <- YRDOY
+        RSTAGE    <- 1
+        REM[6] <- (PHZACC[5] - PHTHRS[5])/(PROG[5] + 0.00001)
       }
     }
     
@@ -870,22 +870,22 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     if (DAS >= NVALPH[NPRIOR[6]] & NR2 >= NVALP0) {
       
-      PROG[6] = FT[6] * FUDAY[6] * min(FSW[6],FNSTR[6],FPSTR[6]) * REM[NPRIOR[6]]
-      PHZACC[6] = PHZACC[6] + PROG[6]
+      PROG[6] <- FT[6] * FUDAY[6] * min(FSW[6],FNSTR[6],FPSTR[6]) * REM[NPRIOR[6]]
+      PHZACC[6] <- PHZACC[6] + PROG[6]
       
       if(PHZACC[6] - PHTHRS[6] > -1.E-6) {
         #-------------------------------------------------------------------------------
         #       First peg occurs on day DAS
         #-------------------------------------------------------------------------------
-        NR2 = DAS
-        STGDOY[6] = YRDOY
-        NVALPH[7] = NR2
-        YRNR2     = YRDOY
-        RSTAGE    = 2
+        NR2 <- DAS
+        STGDOY[6] <- YRDOY
+        NVALPH[7] <- NR2
+        YRNR2     <- YRDOY
+        RSTAGE    <- 2
         #-------------------------------------------------------------------------------
         #       Account for the part of today that contributes to the next phase(s)
         #-------------------------------------------------------------------------------
-        REM[7] = (PHZACC[6] - PHTHRS[6])/(PROG[6] + 0.00001)
+        REM[7] <- (PHZACC[6] - PHTHRS[6])/(PROG[6] + 0.00001)
       }
     }
     
@@ -894,23 +894,23 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     if (DAS >= NVALPH[NPRIOR[7]] & NR3 >= NVALP0) {
       
-      PROG[7] = FT[7] * FUDAY[7] * min(FSW[7],FNSTR[7],FPSTR[7]) * REM[NPRIOR[7]]
-      PHZACC[7] = PHZACC[7] + PROG[7]
+      PROG[7] <- FT[7] * FUDAY[7] * min(FSW[7],FNSTR[7],FPSTR[7]) * REM[NPRIOR[7]]
+      PHZACC[7] <- PHZACC[7] + PROG[7]
       
       if(PHZACC[7] - PHTHRS[7] > -1.E-6) {
         #-------------------------------------------------------------------------------
         #       Stage R3 occurs on day DAS
         #-------------------------------------------------------------------------------
-        NR3 = DAS
-        STGDOY[7] = YRDOY
-        if (STGDOY[7] == STGDOY[6]) STGDOY[7] = 9999999
-        NVALPH[8] = NR3
-        YRNR3     = YRDOY
-        RSTAGE    = 3
+        NR3 <- DAS
+        STGDOY[7] <- YRDOY
+        if (STGDOY[7] == STGDOY[6]) STGDOY[7] <- 9999999
+        NVALPH[8] <- NR3
+        YRNR3     <- YRDOY
+        RSTAGE    <- 3
         #-------------------------------------------------------------------------------
         #       Account for the part of today that contributes to the next phase(s)
         #-------------------------------------------------------------------------------
-        REM[8] = (PHZACC[7] - PHTHRS[7])/(PROG[7] + 0.00001)
+        REM[8] <-(PHZACC[7] - PHTHRS[7])/(PROG[7] + 0.00001)
       }
     }
     #-------------------------------------------------------------------------------
@@ -918,23 +918,23 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     if (DAS >= NVALPH[NPRIOR[8]] & NR5 >= NVALP0) {
       
-      PROG[8] = FT[8] * FUDAY[8] * min(FSW[8],FNSTR[8],FPSTR[8]) * REM[NPRIOR[8]]
-      PHZACC[8] = PHZACC[8] + PROG[8]
-      VegFrac =(PHTHRS[3] + PHTHRS[4] + PHTHRS[5] + PHZACC[8])/VegTime
+      PROG[8] <-FT[8] * FUDAY[8] * min(FSW[8],FNSTR[8],FPSTR[8]) * REM[NPRIOR[8]]
+      PHZACC[8] <-PHZACC[8] + PROG[8]
+      VegFrac <- (PHTHRS[3] + PHTHRS[4] + PHTHRS[5] + PHZACC[8])/VegTime
       
       if(PHZACC[8] - PHTHRS[8] > -1.E-6) {
         #-------------------------------------------------------------------------------
         #       Stage R5 occurs on day DAS
         #-------------------------------------------------------------------------------
-        NR5 = DAS
-        STGDOY[8] = YRDOY
-        NVALPH[9] = NR5
-        YRNR5     = YRDOY
-        RSTAGE    = 5
+        NR5 <-DAS
+        STGDOY[8] <-YRDOY
+        NVALPH[9] <-NR5
+        YRNR5     <-YRDOY
+        RSTAGE    <-5
         #-------------------------------------------------------------------------------
         #       Account for the part of today that contributes to the next phase(s)
         #-------------------------------------------------------------------------------
-        REM[9] = (PHZACC[8] - PHTHRS[8])/(PROG[8] + 0.00001)
+        REM[9] <-(PHZACC[8] - PHTHRS[8])/(PROG[8] + 0.00001)
       }
     }
     #-------------------------------------------------------------------------------
@@ -942,20 +942,20 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     if (DAS >= NVALPH[NPRIOR[9]] & NDSET >= NVALP0) {
       
-      PROG[9] = FT[9] * FUDAY[9] * max(FSW[9],FNSTR[9],FPSTR[9]) * REM[NPRIOR[9]] #max ao inves de MIN
-      PHZACC[9] = PHZACC[9] + PROG[9]
+      PROG[9] <- FT[9] * FUDAY[9] * max(FSW[9],FNSTR[9],FPSTR[9]) * REM[NPRIOR[9]] #max ao inves de MIN
+      PHZACC[9] <- PHZACC[9] + PROG[9]
       
       if(PHZACC[9] - PHTHRS[9] > -1.E-6) {
         #-------------------------------------------------------------------------------
         #       Stage NDSET occurs on day DAS
         #-------------------------------------------------------------------------------
-        NDSET = DAS
-        STGDOY[9] = YRDOY
-        NVALPH[10] = NDSET
+        NDSET <- DAS
+        STGDOY[9] <- YRDOY
+        NVALPH[10] <- NDSET
         #-------------------------------------------------------------------------------
         #       Account for the part of today that contributes to the next phase(s)
         #-------------------------------------------------------------------------------
-        REM[10] = (PHZACC[9] - PHTHRS[9])/(PROG[9] + 0.00001)
+        REM[10] <- (PHZACC[9] - PHTHRS[9])/(PROG[9] + 0.00001)
       }
     }
     #-------------------------------------------------------------------------------
@@ -963,23 +963,23 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     if (DAS >= NVALPH[NPRIOR[10]] & NR7 >= NVALP0) {
       
-      PROG[10] = FT[10] * FUDAY[10]*max(FSW[10],FNSTR[10],FPSTR[10]) * REM[NPRIOR[10]] #max ao inves de MIN
-      PHZACC[10] = PHZACC[10] + PROG[10]
-      SeedFrac = PHZACC[10] / PHTHRS[10]
+      PROG[10] <- FT[10] * FUDAY[10]*max(FSW[10],FNSTR[10],FPSTR[10]) * REM[NPRIOR[10]] #max ao inves de MIN
+      PHZACC[10] <- PHZACC[10] + PROG[10]
+      SeedFrac <- PHZACC[10] / PHTHRS[10]
       
       if(PHZACC[10] - PHTHRS[10] > -1.E-6) {
         #-------------------------------------------------------------------------------
         #       Stage NR7, physiological maturity, occurs on day DAS
         #-------------------------------------------------------------------------------
-        NR7 = DAS
-        STGDOY[10] = YRDOY
-        NVALPH[11] = NR7
-        YRNR7      = YRDOY
-        RSTAGE     = 7
+        NR7 <- DAS
+        STGDOY[10] <- YRDOY
+        NVALPH[11] <- NR7
+        YRNR7      <- YRDOY
+        RSTAGE     <- 7
         #-------------------------------------------------------------------------------
         #       Account for the part of today that contributes to the next phase(s)
         #-------------------------------------------------------------------------------
-        REM[11] = (PHZACC[10] - PHTHRS[10])/(PROG[10] + 0.00001)
+        REM[11] <- (PHZACC[10] - PHTHRS[10])/(PROG[10] + 0.00001)
       }
     }
     
@@ -988,20 +988,20 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     if (DAS >= NVALPH[NPRIOR[11]] & MDATE <= YRSIM) {
       
-      PROG[11] = FT[11] * FUDAY[11]*min(FSW[11],FNSTR[11],FPSTR[11]) * REM[NPRIOR[11]]
-      PHZACC[11] = PHZACC[11] + PROG[11]
+      PROG[11] <- FT[11] * FUDAY[11]*min(FSW[11],FNSTR[11],FPSTR[11]) * REM[NPRIOR[11]]
+      PHZACC[11] <- PHZACC[11] + PROG[11]
       if(PHZACC[11] - PHTHRS[11] > 1.E-6) {
         #-------------------------------------------------------------------------------
         #       Stage NR8, harvest maturity, occurs on day DAS
         #-------------------------------------------------------------------------------
-        STGDOY[11] = YRDOY
-        NVALPH[12] = DAS
-        MDATE      = YRDOY
-        RSTAGE     = 8
+        STGDOY[11] <- YRDOY
+        NVALPH[12] <- DAS
+        MDATE      <- YRDOY
+        RSTAGE     <- 8
         #-------------------------------------------------------------------------------
         #       Account for the part of today that contributes to the next phase(s)
         #-------------------------------------------------------------------------------
-        REM[12] = (PHZACC[11] - PHTHRS[11])/(PROG[11] + 0.00001)
+        REM[12] <- (PHZACC[11] - PHTHRS[11])/(PROG[11] + 0.00001)
       }
     }
     
@@ -1010,20 +1010,20 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     if (DAS >= NVALPH[NPRIOR[12]] & NDVST >= NVALP0) {
       
-      PROG[12] = FT[12] * FUDAY[12]*min(FSW[12],FNSTR[12],FPSTR[12]) * REM[NPRIOR[12]]
-      PHZACC[12] = PHZACC[12] + PROG[12]
+      PROG[12] <- FT[12] * FUDAY[12]*min(FSW[12],FNSTR[12],FPSTR[12]) * REM[NPRIOR[12]]
+      PHZACC[12] <- PHZACC[12] + PROG[12]
       
       if((PHZACC[12] - PHTHRS[12]) > 1.E-6) {
         #-------------------------------------------------------------------------------
         #       Stage NDVST, end of V-stage addition, occurs on day DAS
         #-------------------------------------------------------------------------------
-        NDVST = DAS
-        STGDOY[12] = YRDOY
-        NVALPH[13] = NDVST
+        NDVST <- DAS
+        STGDOY[12] <- YRDOY
+        NVALPH[13] <- NDVST
         #-------------------------------------------------------------------------------
         #       Account for the part of today that contributes to the next phase(s)
         #-------------------------------------------------------------------------------
-        REM[13] = (PHZACC[12] - PHTHRS[12])/(PROG[12] + 0.00001)
+        REM[13] <- (PHZACC[12] - PHTHRS[12])/(PROG[12] + 0.00001)
       }
     }
     
@@ -1032,20 +1032,20 @@ RSTAGES <- function (DAS,DYNAMIC,
     #-------------------------------------------------------------------------------
     if (DAS >= NVALPH[NPRIOR[13]] & NDLEAF >= NVALP0) {
       
-      PROG[13] = FT[13] * FUDAY[13]*min(FSW[13],FNSTR[13],FPSTR[13]) * REM[NPRIOR[13]]
-      PHZACC[13] = PHZACC[13] + PROG[13]
+      PROG[13] <- FT[13] * FUDAY[13]*min(FSW[13],FNSTR[13],FPSTR[13]) * REM[NPRIOR[13]]
+      PHZACC[13] <- PHZACC[13] + PROG[13]
       
       if(PHZACC[13] - PHTHRS[13] > -1.E-6) {
         #-------------------------------------------------------------------------------
         #      Stage NDLEAF, end of leaf growth, occurs on day DAS
         #-------------------------------------------------------------------------------
-        NDLEAF = DAS
-        STGDOY[13] = YRDOY
-        NVALPH[14] = NDLEAF
+        NDLEAF <- DAS
+        STGDOY[13] <- YRDOY
+        NVALPH[14] <- NDLEAF
         #-------------------------------------------------------------------------------
         #       Account for the part of today that contributes to the next phase(s)
         #-------------------------------------------------------------------------------
-        REM[14] = (PHZACC[13] - PHTHRS[13])/(PROG[13] + 0.00001)
+        REM[14] <- (PHZACC[13] - PHTHRS[13])/(PROG[13] + 0.00001)
       }
     }
     
@@ -1057,31 +1057,31 @@ RSTAGES <- function (DAS,DYNAMIC,
   #************************************************************************
   
   
-  assign("JPEND",JPEND   , envir = env)    
-  assign("MDATE",MDATE   , envir = env)    
-  assign("NDLEAF",NDLEAF  , envir = env)     
-  assign("NDSET",NDSET   , envir = env)    
-  assign("NDVST",NDVST   , envir = env)    
-  assign("NVALPH",NVALPH  , envir = env)     
-  assign("NVEG0",NVEG0   , envir = env)    
-  assign("NVEG1",NVEG1   , envir = env)    
-  assign("NR0",NR0     , envir = env)     
-  assign("NR1",NR1     , envir = env)     
-  assign("NR2",NR2     , envir = env)     
-  assign("NR3",NR3     , envir = env)     
-  assign("NR5",NR5     , envir = env)     
-  assign("NR7",NR7     , envir = env)     
-  assign("PHZACC",PHZACC  , envir = env)      
-  assign("RSTAGE",RSTAGE  , envir = env)      
-  assign("STGDOY",STGDOY  , envir = env)      
-  assign("SeedFrac",SeedFrac, envir = env)     
-  assign("VegFrac",VegFrac , envir = env)    
-  assign("VegTime",VegTime , envir = env)    
-  assign("YREMRG",YREMRG  , envir = env)      
-  assign("YRNR1",YRNR1   , envir = env)     
-  assign("YRNR2",YRNR2   , envir = env)    
-  assign("YRNR3",YRNR3   , envir = env)     
-  assign("YRNR5",YRNR5   , envir = env)     
-  assign("YRNR7",YRNR7   , envir = env)     
-  assign("PROG",PROG    , envir = env)        
+  assign("JPEND",JPEND       , envir = env)    
+  assign("MDATE",MDATE       , envir = env)    
+  assign("NDLEAF",NDLEAF     , envir = env)     
+  assign("NDSET",NDSET       , envir = env)    
+  assign("NDVST",NDVST       , envir = env)    
+  assign("NVALPH",NVALPH     , envir = env)     
+  assign("NVEG0",NVEG0       , envir = env)    
+  assign("NVEG1",NVEG1       , envir = env)    
+  assign("NR0",NR0           , envir = env)     
+  assign("NR1",NR1           , envir = env)     
+  assign("NR2",NR2           , envir = env)     
+  assign("NR3",NR3           , envir = env)     
+  assign("NR5",NR5           , envir = env)     
+  assign("NR7",NR7           , envir = env)     
+  assign("PHZACC",PHZACC     , envir = env)      
+  assign("RSTAGE",RSTAGE     , envir = env)      
+  assign("STGDOY",STGDOY     , envir = env)      
+  assign("SeedFrac",SeedFrac , envir = env)     
+  assign("VegFrac",VegFrac   , envir = env)    
+  assign("VegTime",VegTime   , envir = env)    
+  assign("YREMRG",YREMRG     , envir = env)      
+  assign("YRNR1",YRNR1       , envir = env)     
+  assign("YRNR2",YRNR2       , envir = env)    
+  assign("YRNR3",YRNR3       , envir = env)     
+  assign("YRNR5",YRNR5       , envir = env)     
+  assign("YRNR7",YRNR7       , envir = env)     
+  assign("PROG",PROG         , envir = env)        
 }
