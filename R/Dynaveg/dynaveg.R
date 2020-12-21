@@ -183,7 +183,7 @@ dynaveg <- function (isimfire) {
     ayneetot <- ayneetot - cdisturb
     
     # determine total ecosystem above-ground npp
-    ayanpptot <- sum(ayanpp[1:12])
+    ayanpptot <- sum(ayanpp[1:npft])
     
     # PFT_UPDATE: Soma todos os plais do dossel superior
     for(i in 1:npft) {

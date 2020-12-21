@@ -210,15 +210,7 @@ GeneralModel <- function(simVars = NULL) {
     
     # simVars$cropsums <- simVars$imaize + simVars$isoybean + simVars$iwheat + simVars$isgc + simVars$ieuca + simVars$ipalm + simVars$irotation 
     
-    # TODO: Transformar essas variáveis em globais e fazer o manter o calculo como está agora.
-    # Local variabels
-    rn    <- 0 # net radiation flux (SW and LW)
-    swin  <- 0 # incoming solar radiation (W/m²) 
-    swout <- 0 # reflect solar radiation (W/m²)
-    pari  <- 0 # incoming PAR
-    apar  <- 0 # APAR
-    paro  <- 0 # outgoing PAR
-    
+
     simVars$iyrlast <- simVars$year0 - 1
     
     simVars$lonindex <- point$lonIndex
