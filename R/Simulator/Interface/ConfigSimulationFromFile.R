@@ -45,6 +45,9 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     if(!is.na(simConfigs[[i]]$soilId)) {
       simInstances[[id]]$layers    <- subset(tab.DSSAT, SID == simConfigs[[i]]$soilId)
       simInstances[[id]]$nsoilay <- length(simInstances[[id]]$layers$SID)
+    }else{
+      print('SOILID not defined in the Template or found in the soil file')
+      stop()
     }
     
     # Henrique & Leandro: including initial conditions (IC) [2020-11-04]

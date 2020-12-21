@@ -216,16 +216,14 @@ GeneralModel <- function(simVars = NULL) {
     simVars$lonindex <- point$lonIndex
     simVars$latindex <- point$latIndex
     
-    simVars$lonscale <- point$coord$lon
-    simVars$latscale <- point$coord$lat
+    simVars$lonscale <- point$coord$lon #SCV/Jair - alterar para coordenado do template
+    simVars$latscale <- point$coord$lat #SCV/Jair - alterar para coordenado do template
     
     #### Dados de entrada lidos do netcdf ####
-    simVars$xintopo  <- point$xintopo
-    simVars$xinveg   <- point$xinveg
-    simVars$deltat   <- point$deltat
-    simVars$sand     <- point$sand
-    simVars$clay     <- point$clay
-    
+    simVars$xintopo  <- point$xintopo  #SCV/Jair - inserir no template
+    simVars$xinveg   <- point$xinveg   #SCV/Jair - remover
+    simVars$deltat   <- point$deltat   #SCV/Jair - remover
+   
     # TODO: Variáveis de culturas específicas? Se sim, remover daqui.
     #### Variables without input files ####
     simVars$fertmaize  <- matrix(5.76626, nrow = 1, ncol = 51)
