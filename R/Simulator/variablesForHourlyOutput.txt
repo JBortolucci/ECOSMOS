@@ -239,7 +239,6 @@
 0 - cdays 
 0 - pstart 
 0 - nratoon 
-0 - ncyears 
 0 - cropy 
 0 - nplant 
 0 - iniday 

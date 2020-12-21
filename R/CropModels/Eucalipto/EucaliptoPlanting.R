@@ -7,7 +7,7 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   # in order to only allow a crop to be planted once each year
   # initialize cropplant = 0, but hold it = 1 through the end of the year
   
-  if (iday == pdmin[i] && imonth == pmmin[i] && croplive[i] != 1 &&  exist[i] == 1 && ncyears >= 1) {
+  if (iday == pdmin[i] && imonth == pmmin[i] && croplive[i] != 1 &&  exist[i] == 1 ) {
     pstart[i] <- cdays
   }
   
