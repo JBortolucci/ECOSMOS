@@ -179,7 +179,7 @@ GeneralModel <- function(simVars = NULL) {
     simVars$irotation  <- simVars$NONE                      
     simVars$overveg    <- simVars$COMPETE_CLIM_CONSTRAINTS  
     
-    simVars$ffact      <- 1.0       
+    simVars$ffact      <- 1.0        #SCV/Jair - alterar para ler do plant_params
     simVars$isoilay    <- simVars$nsoilay # Henrique: trava qdo é > nsoilay (25/09/2020)        
     simVars$co2init    <- 0.000380 
     simVars$o2init     <- 0.209000 
@@ -224,6 +224,7 @@ GeneralModel <- function(simVars = NULL) {
     simVars$xinveg   <- point$xinveg   #SCV/Jair - remover
     simVars$deltat   <- point$deltat   #SCV/Jair - remover
    
+<<<<<<< HEAD
     # SCV/Jair - Remover daqui, colocar o valor default dentro da cultura, caso não seja lido do arquivo.
     simVars$fertmaize  <- matrix(5.76626, nrow = 1, ncol = 51)
     simVars$fertsgc    <- simVars$fertmaize * 2
@@ -231,14 +232,22 @@ GeneralModel <- function(simVars = NULL) {
     # simVars$fertwheat  <- matrix(3.15461, nrow = simVars$1, ncol = 51)
     simVars$ndepfact   <- matrix(0.5, nrow = 1, ncol = 60)
     
+=======
+    # TODO: Variáveis de culturas específicas? Se sim, remover daqui.
+    #### Variables without input files ####
+    simVars$fertmaize  <- matrix(5.76626, nrow = 1, ncol = 51)           #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao
+    simVars$fertsgc    <- simVars$fertmaize * 2                          #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao
+    simVars$fertsoy    <- matrix(2.24803, nrow = 1, ncol = 51)           #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao  
+    # simVars$fertwheat  <- matrix(3.15461, nrow = simVars$1, ncol = 51) #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao
+
+>>>>>>> 60d154a6d6e0db9e20b9b0bc80f7eaa11bc09ecd
     simVars$co2conc    <- simVars$co2init
     simVars$o2conc     <- simVars$o2init
     
     simVars$precip <- numeric(1)
     
-    simVars$ncyears  <- 1  
-    simVars$cdays    <- 0   
-    simVars$pstart[] <- 999   
+    simVars$cdays    <- 0    #SCV/Jair - SVC remover o calendario agricola 
+    simVars$pstart[] <- 999  #SCV/Jair - SVC remover o calendario agricola
     
     simVars$soilType <- config$soilId # as.character(ptos.sim[ii,]$SOIL_BR) # Soil type information from database
     
@@ -371,7 +380,6 @@ GeneralModel <- function(simVars = NULL) {
           if(!simVars$plantList[[j]]$active) next
           if(simVars$plantList[[j]]$type == simVars$CROPS) {
             if(day == simVars$pcd[j] && month == simVars$pcm[j] && simVars$exist[j] == 1) {
-              simVars$ncyears   <- 1  
               simVars$cdays     <- 0   
               simVars$pstart[j] <- 999   
             }

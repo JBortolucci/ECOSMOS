@@ -799,6 +799,7 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
     #
     # 7 - 06 - 05 CJK : modify rates for the US based on Simon's dataset that adjusts
     # the rates each year (from actual data - 1940 - 1999)
+    ndepfact<- array(0.5,60)
     if (iyear >= 1940 && iyear <= 1999) deposn <- deposn * ndepfact[iyear + 1-1940] 
     
     if (iyear > 1999) deposn <- deposn * ndepfact[60] 

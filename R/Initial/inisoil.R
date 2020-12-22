@@ -102,7 +102,9 @@ inisoil <- function() {
       
       sand[k]     <- msand
       clay[k]     <- mclay
-    }
+    }else{
+      print('soilType not defined in the Template or not in the soil file')
+      stop()   }
 
    # if(k <= 6) {
    #   msand <- sand[k]

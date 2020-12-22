@@ -82,6 +82,5 @@ initialcrop <- function() {
   assign("totlaiu", array(0, 1), envir = env)
   assign("totlail", array(0, 1), envir = env)
   assign("vf",  array(0, 1), envir = env)
-  assign("ncyears",  array(0, 1), envir = env)
-  
+
 }
