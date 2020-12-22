@@ -19,6 +19,7 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
   latc <- gsub("\\.", "", sprintf('%.3f', lat + 0.125))
   lonc <- gsub("\\.", "", sprintf('%.3f', lon - 0.125))
   
+
   #### Get csv filename for current coordinate ####
   file_wth_TN_nm <- paste0(path, "Xavier_Tmin_", lonc, latc, ".csv")
   file_wth_TX_nm <- paste0(path, "Xavier_Tmax_", lonc, latc, ".csv")

@@ -140,10 +140,12 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     # This variable controls the end of the cycle
     simInstances[[id]]$endCycle <- F
     
-    ReadDailyStationData(stationDataPath, simConfigs[[i]]$coord$lat, simConfigs[[i]]$coord$lon,  simInstances[[id]])
+
+    ReadDailyStationData(stationDataPath, simInstances[[id]]$point$coord$lat, simInstances[[id]]$point$coord$lon,  simInstances[[id]])
     
     # Henrique & Leandro: irrigation feature [2020-11-06]
-    try(ReadDailyIrrigationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)
+    assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])
+    if(simConfigs[[i]]$irrigate>0){try(ReadDailyIrrigationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)}
   }
   
   # TODO: Nessa prieira versão uma planta roda após a outra, tal como especificado no arquivo de configuração.
