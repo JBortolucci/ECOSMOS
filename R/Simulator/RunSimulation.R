@@ -224,8 +224,7 @@ GeneralModel <- function(simVars = NULL) {
     simVars$xinveg   <- point$xinveg   #SCV/Jair - remover
     simVars$deltat   <- point$deltat   #SCV/Jair - remover
    
-    # TODO: Variáveis de culturas específicas? Se sim, remover daqui.
-    #### Variables without input files ####
+    # SCV/Jair - Remover daqui, colocar o valor default dentro da cultura, caso não seja lido do arquivo.
     simVars$fertmaize  <- matrix(5.76626, nrow = 1, ncol = 51)
     simVars$fertsgc    <- simVars$fertmaize * 2
     simVars$fertsoy    <- matrix(2.24803, nrow = 1, ncol = 51)

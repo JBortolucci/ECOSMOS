@@ -1,5 +1,5 @@
 
-ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath) {
+ConfigSimulationFromFile <- function(configFilePath, paramsPath, perfilSolo, stationDataPath) {
   
   
   # TODO: Decidir se simConfigs fica uma lista ou um ambiente
@@ -45,13 +45,13 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     if(!is.na(simConfigs[[i]]$soilId)) {
       simInstances[[id]]$layers    <- subset(tab.DSSAT, SID == simConfigs[[i]]$soilId)
       simInstances[[id]]$nsoilay <- length(simInstances[[id]]$layers$SID)
-    }else{
+    } else {
       print('SOILID not defined in the Template or found in the soil file')
       stop()
     }
     
     # Henrique & Leandro: including initial conditions (IC) [2020-11-04]
-    tab.IC <- read.csv('inst/input/initial_conditions.csv',sep = ",")
+    tab.IC <- read.csv(perfilSolo,sep = ",")
     if(simConfigs[[i]]$soilic == 1) {
       # when the user insert the initial conditions (nsoilay MUST be equal in both tab's [DSSAT & IC])
       simInstances[[id]]$ic  <- subset(tab.IC, SimIDic == id)
@@ -141,6 +141,8 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]]$endCycle <- F
     
     ReadDailyStationData(stationDataPath, simConfigs[[i]]$coord$lat, simConfigs[[i]]$coord$lon,  simInstances[[id]])
+    
+    assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])
     
     # Henrique & Leandro: irrigation feature [2020-11-06]
     try(ReadDailyIrrigationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)
