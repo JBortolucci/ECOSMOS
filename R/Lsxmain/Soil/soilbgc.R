@@ -270,39 +270,9 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
   # parameter based on the average sand fraction of the top 1 m of
   # soil
   # ---------------------------------------------------------------------
-  #
-  rdepth <- 0
-  for(kk in 1: nslaym) { 
-    rdepth <- rdepth + hsoi[kk]
-  }
-  rdepth <- 1 / rdepth
-  carfrac <- 0
-  texfact <- 0 
   
-  for(k in 1: nslaym) { 
-    if(k <= 6) {
-      msand <- round(sand[k])
-      mclay <- round(clay[k]) 
-    } else {
-      msand <- round(sand[6]) 
-      mclay <- round(clay[6]) 
-    }
-  }
-  
-  # top 1 m of soil -- 8 layers
-  for(kk in 1: nslaym) { 
-    lmin <- textcls(msand,mclay) 
-    
-    fsand <- texdat[1,lmin]
-    fclay <- texdat[3,lmin]
-    carfrac <- carfrac + fclay * hsoi[kk]
-    texfact <- texfact + fsand * hsoi[kk]
-  }
-  
-  carfrac <- carfrac * rdepth
-  texfact <- texfact * rdepth
-  
-  fbpom <- 0.50
+  # fbpom = min(max(0.3, carfrac/0.4 * 0.7),0.7)
+    fbpom <- 0.50
   
   # ------------------------------------------------------------------------
   # total soil carbon initialized to 0 at beginning of model run
@@ -835,6 +805,8 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
     # microbial flux and nmineralization rate will be applied
     # --------------------------------------------------------------------------
     # calculate daily co2 flux due to microbial decomposition
+    
+    print(paste(tco2mic,totcbegin,totcin,totcend,cleach))
     tco2mic <- totcbegin + totcin - totcend - cleach
     
     # convert co2 flux from kg C / day  (seconds in a daily timestep) to mol - C/s
