@@ -225,8 +225,9 @@ GeneralModel <- function(simVars = NULL) {
     simVars$deltat   <- point$deltat   #SCV/Jair - remover
    
 
-    # TODO: Variáveis de culturas específicas? Se sim, remover daqui.
-    #### Variables without input files ####
+
+      # SCV/Jair - Remover daqui, colocar o valor default dentro da cultura, caso não seja lido do arquivo.
+
     simVars$fertmaize  <- matrix(5.76626, nrow = 1, ncol = 51)           #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao
     simVars$fertsgc    <- simVars$fertmaize * 2                          #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao
     simVars$fertsoy    <- matrix(2.24803, nrow = 1, ncol = 51)           #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao  
