@@ -1,5 +1,5 @@
 
-ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath) {
+ConfigSimulationFromFile <- function(configFilePath, paramsPath, perfilSolo, stationDataPath) {
   
   
   # TODO: Decidir se simConfigs fica uma lista ou um ambiente
@@ -140,6 +140,8 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     
 
     ReadDailyStationData(stationDataPath, simInstances[[id]]$point$coord$lat, simInstances[[id]]$point$coord$lon,  simInstances[[id]])
+    
+    assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])
     
     # Henrique & Leandro: irrigation feature [2020-11-06]
     assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])
