@@ -60,8 +60,8 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, perfilSolo, sta
       # when there isn't explicitily values for the initial conditions
       simInstances[[id]]$ic <- data.frame(
         SimIDic = rep(id, simInstances[[id]]$nsoilay),
-        SWic    = simInstances[[id]]$layers$SDUL,       # Soi water arbitrarily starting at field capacity (sfield) aka drained upper limit (DUL)
-        STic    = rep(20, simInstances[[id]]$nsoilay) ) # Soil temp arbitrarily set as 20 ºC
+        SWic    = simInstances[[id]]$SOIL.profile$SDUL,       # Soil water arbitrarily starting at field capacity (sfield) aka drained upper limit (DUL)
+        STic    = rep(20, simInstances[[id]]$nsoilay) )       # Soil temp arbitrarily set as 20 ºC
     }
 
     simInstances[[id]][["tsoi"]]     <- numeric(simInstances[[id]]$nsoilay)
@@ -138,7 +138,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, perfilSolo, sta
     # This variable controls the end of the cycle
     simInstances[[id]]$endCycle <- F
     
-
+print(paste(stationDataPath, simInstances[[id]]$point$coord$lat, simInstances[[id]]$point$coord$lon,  simInstances[[id]],sep=" | "))
     ReadDailyStationData(stationDataPath, simInstances[[id]]$point$coord$lat, simInstances[[id]]$point$coord$lon,  simInstances[[id]])
     
     assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])

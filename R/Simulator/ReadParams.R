@@ -91,7 +91,7 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
   }
   
   
-  # assign("nslaym", as.numeric(data[48,][2]), envir = envToSet) # TODO: Leandro, retirar dos parametros globias:
+   assign("nslaym", as.numeric(data[48,][2]), envir = envToSet) # TODO: Leandro, retirar dos parametros globias:
   assign("bperm", as.numeric(data[49,][2]), envir = envToSet)
   assign("wpudmax", as.numeric(data[50,][2]), envir = envToSet)
   assign("zwpmax", as.numeric(data[51,][2]), envir = envToSet)
