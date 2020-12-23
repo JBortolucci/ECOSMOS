@@ -90,7 +90,8 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
     simDataVars$hsoi[i-1] <- as.numeric(data[47,][i])
   }
   
-  assign("nslaym", as.numeric(data[48,][2]), envir = envToSet)
+  
+  # assign("nslaym", as.numeric(data[48,][2]), envir = envToSet) # TODO: Leandro, retirar dos parametros globias:
   assign("bperm", as.numeric(data[49,][2]), envir = envToSet)
   assign("wpudmax", as.numeric(data[50,][2]), envir = envToSet)
   assign("zwpmax", as.numeric(data[51,][2]), envir = envToSet)
@@ -98,24 +99,24 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
   assign("nsoi", as.numeric(data[52,][2]), envir = envToSet)
   assign("ndat", as.numeric(data[53,][2]), envir = envToSet)
   
-  simDataVars$texdat     <- matrix(0, 3, simDataVars$ndat)
-  simDataVars$porosdat   <- numeric(simDataVars$ndat)
-  simDataVars$sfielddat  <- numeric(simDataVars$ndat)
-  simDataVars$swiltdat   <- numeric(simDataVars$ndat)
-  simDataVars$bexdat     <- numeric(simDataVars$ndat)
-  simDataVars$suctiondat <- numeric(simDataVars$ndat)
-  simDataVars$hydrauldat <- numeric(simDataVars$ndat)
+  simDataVars$texdat     <- matrix(0, 3, simDataVars$ndat) # TODO: Leandro, retirar dos parametros globias:
+  simDataVars$porosdat   <- numeric(simDataVars$ndat)      # TODO: Leandro, retirar dos parametros globias:
+  simDataVars$sfielddat  <- numeric(simDataVars$ndat)      # TODO: Leandro, retirar dos parametros globias:
+  simDataVars$swiltdat   <- numeric(simDataVars$ndat)      # TODO: Leandro, retirar dos parametros globias:
+  simDataVars$bexdat     <- numeric(simDataVars$ndat)      # TODO: Leandro, retirar dos parametros globias:
+  simDataVars$suctiondat <- numeric(simDataVars$ndat)      # TODO: Leandro, retirar dos parametros globias:
+  simDataVars$hydrauldat <- numeric(simDataVars$ndat)      # TODO: Leandro, retirar dos parametros globias:
   
   for(i in 2:(simDataVars$ndat+1)) {
-    simDataVars$texdat[1, i-1]  <- as.numeric(data[54,][i])
-    simDataVars$texdat[2, i-1]  <- as.numeric(data[55,][i])
-    simDataVars$texdat[3, i-1]  <- as.numeric(data[56,][i])
-    simDataVars$porosdat[i-1]   <- as.numeric(data[57,][i])
-    simDataVars$sfielddat[i-1]  <- as.numeric(data[58,][i])
-    simDataVars$swiltdat[i-1]   <- as.numeric(data[59,][i])
-    simDataVars$bexdat[i-1]     <- as.numeric(data[60,][i])
-    simDataVars$suctiondat[i-1] <- as.numeric(data[61,][i])
-    simDataVars$hydrauldat[i-1] <- as.numeric(data[62,][i])
+    simDataVars$texdat[1, i-1]  <- as.numeric(data[54,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$texdat[2, i-1]  <- as.numeric(data[55,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$texdat[3, i-1]  <- as.numeric(data[56,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$porosdat[i-1]   <- as.numeric(data[57,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$sfielddat[i-1]  <- as.numeric(data[58,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$swiltdat[i-1]   <- as.numeric(data[59,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$bexdat[i-1]     <- as.numeric(data[60,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$suctiondat[i-1] <- as.numeric(data[61,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$hydrauldat[i-1] <- as.numeric(data[62,][i])# TODO: Leandro, depois que retirar dos parametros globias:
   }
   
   assign("lig_frac",  as.numeric(data[63,][2]), envir = envToSet)

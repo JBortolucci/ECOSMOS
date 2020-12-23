@@ -41,18 +41,18 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, perfilSolo, sta
     simInstances[[id]][["asuri"]]  <- numeric(simInstances[[id]]$nband)
     
     #browser()
-    tab.DSSAT <- read.csv('inst/input/perfil_solo_ecosmos_UPDATE.csv',sep = ",")
+    tab.SOIL <- read.csv('inst/input/SOIL.csv',sep = ",")
     if(!is.na(simConfigs[[i]]$soilId)) {
-      simInstances[[id]]$layers    <- subset(tab.DSSAT, SID == simConfigs[[i]]$soilId)
-      simInstances[[id]]$nsoilay <- length(simInstances[[id]]$layers$SID)
-    } else {
-      print('SOILID not defined in the Template or found in the soil file')
+      simInstances[[id]]$SOIL.profile <- subset(tab.SOIL, SOILID == simConfigs[[i]]$soilId)
+      simInstances[[id]]$nsoilay  <- length(simInstances[[id]]$SOIL.profile$SOILID)
+    }else{
+      print('SID not defined in the Simulation Template or not found in the SOIL.csv')
       stop()
     }
     
     # Henrique & Leandro: including initial conditions (IC) [2020-11-04]
-    tab.IC <- read.csv(perfilSolo,sep = ",")
     if(simConfigs[[i]]$soilic == 1) {
+      tab.IC <- read.csv('inst/input/initial_conditions.csv',sep = ",")
       # when the user insert the initial conditions (nsoilay MUST be equal in both tab's [DSSAT & IC])
       simInstances[[id]]$ic  <- subset(tab.IC, SimIDic == id)
       #simInstances[[id]]$nsoilay <- length(simInstances[[id]]$ic$SimIDic) #it seems to be unnecessary here
@@ -77,8 +77,6 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, perfilSolo, sta
     simInstances[[id]][["rhosoi"]]   <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["poros"]]    <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["porosflo"]] <- numeric(simInstances[[id]]$nsoilay)
-    simInstances[[id]][["sand"]]     <- numeric(simInstances[[id]]$nsoilay)
-    simInstances[[id]][["clay"]]     <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["stressl"]]  <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["stressu"]]  <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["upsoiu"]]   <- numeric(simInstances[[id]]$nsoilay)
