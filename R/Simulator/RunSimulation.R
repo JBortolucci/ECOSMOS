@@ -472,6 +472,8 @@ GeneralModel <- function(simVars = NULL) {
         
         for(step in seq(1, simVars$niter)) {
           
+          simVars$step<-step
+          
           time <- (step - 1) * simVars$dtime
           
           if ( (year == simVars$imetyear && simVars$jday >= simVars$dmetyear) || 
@@ -521,7 +523,7 @@ GeneralModel <- function(simVars = NULL) {
           # writeLines(output_hourly, simVars$out_tower_hourly)
           # 
           if(!is.null(simVars$OnEndHourlyStep))
-            simVars$OnEndHourlyStep(simVars,step)
+            simVars$OnEndHourlyStep(simVars)
           
           
         } # FIM DO LOOP HORÁRIO
