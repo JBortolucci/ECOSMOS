@@ -1,5 +1,5 @@
 
-ConfigSimulationFromFile <- function(configFilePath, paramsPath, perfilSolo, stationDataPath) {
+ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath) {
   
   
   # TODO: Decidir se simConfigs fica uma lista ou um ambiente
@@ -138,7 +138,6 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, perfilSolo, sta
     # This variable controls the end of the cycle
     simInstances[[id]]$endCycle <- F
     
-print(paste(stationDataPath, simInstances[[id]]$point$coord$lat, simInstances[[id]]$point$coord$lon,  simInstances[[id]],sep=" | "))
     ReadDailyStationData(stationDataPath, simInstances[[id]]$point$coord$lat, simInstances[[id]]$point$coord$lon,  simInstances[[id]])
     
     assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])

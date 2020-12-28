@@ -135,7 +135,7 @@ inisoil <- function() {
     csoi[k]   <- 870.0 * (1.0 - forganic) + 1920.0 * forganic
 
     # added for Green-Ampt
-    cpwf[k]   <- cpwfdat[lmin]
+    cpwf[k]   <- cpwfdat[3]
     swater[k] <- 0.000001
     sice[k]   <- 0
 
@@ -203,7 +203,7 @@ inisoil <- function() {
   
   
   # surface parameters
-  assign("albsav",  fracsand[ ,1] * 0.120 + fracsilt[,1] * 0.085 + fracclay[,1] * 0.050, envir = env)
+  assign("albsav",  fracsand[1] * 0.120 + fracsilt[1] * 0.085 + fracclay[1] * 0.050, envir = env)
   assign("albsan",  2.0 * albsav, envir = env)
   
 
