@@ -166,8 +166,8 @@ EucaliptoModel <- function(year, month, day, index) {
     
     if(nslaym < depth[1]){
       
-      sumfroot[1, 1] <- sum(froot[1:1, 1])
-      sumfroot[1, 2] <- sum(froot[1:1, 2])
+      sumfroot[1, 1] <- sum(froot[1:k, 1])
+      sumfroot[1, 2] <- sum(froot[1:k, 2])
       
     } else if(depth[k] <= nslaym){
       
