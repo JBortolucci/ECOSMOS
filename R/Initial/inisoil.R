@@ -29,7 +29,7 @@ inisoil <- function() {
   
   assign("wisoi", matrix(0, 1, nsoilay), envir = env)
   assign("tsoi", matrix(278.13, 1, nsoilay), envir = env)
-  
+
   assign("adwsoilay", matrix(0.5, 1, nsoilay), envir = env)
   assign("adwisoilay", matrix(0, 1, nsoilay) , envir = env)
   assign("adtsoilay", matrix(278.13, 1, nsoilay) , envir = env)
@@ -120,7 +120,7 @@ inisoil <- function() {
       suction[k] <- swilt[k]*1.5
       bex[k]     <- tab.DSSAT$BEXP[k]
       soilbase[k]<- tab.DSSAT$SLB[k]
-      
+      depth[k]   <- hsoi[k] * 100
       # SRGF[k] <- tab.DSSAT$SRGF[k]
       # assign("SRGF", SRGF, envir = env)
       
@@ -268,6 +268,7 @@ inisoil <- function() {
   assign("swater",  swater, envir = env)
   assign("sice",  sice, envir = env)
   assign("hsoi",  hsoi, envir = env)
+  assign("depth",depth ,envir = env)
   
   # surface parameters
   assign("albsav",  fracsand[ ,1] * 0.120 + fracsilt[,1] * 0.085 + fracclay[,1] * 0.050, envir = env)
