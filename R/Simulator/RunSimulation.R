@@ -136,6 +136,8 @@ GeneralModel <- function(simVars = NULL) {
     #' Output provisorio Michel #
     ############################
     
+    simVars$outputHourly <-  file(paste0("output/outputHourly",config$id,".dat"), "w")
+    
     # simVars$out_tower_hourly <-  file(paste0("output/outputHourly",config$id,".dat"), "w")
     # varNames                  <- paste("ano","DOY","hora","NEE_S",  sep=",")
     
@@ -147,6 +149,7 @@ GeneralModel <- function(simVars = NULL) {
     
     
     # outputDailyFileName <- paste0("output/out_daily_tower_", config$id,".dat")
+    simVars$dailyOutput<- paste0("output/out_daily_tower_", config$id,".dat")
     
     simVars$absStep <- 1
     
