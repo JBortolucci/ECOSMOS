@@ -587,7 +587,12 @@ iniveg <- function (isimveg) {
   
   for(k in 1: nsoilay) {
     
-    if(depth[k] <= nslaym){
+    if(nslaym < depth[1]){
+      
+      sumfroot[1, 1] <- sum(froot[1:1, 1])
+      sumfroot[1, 2] <- sum(froot[1:1, 2])
+      
+    } else if(depth[k] <= nslaym){
       
       sumfroot[1, 1] <- sum(froot[1:k, 1])
       sumfroot[1, 2] <- sum(froot[1:k, 2])
