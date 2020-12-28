@@ -40,9 +40,9 @@ SugarcaneModel <- function(year, month, day, index) {
     }
     
   }
-  ###----------------------------------------------------
   
   assign("froot", froot, envir = env)
   assign("sumfroot", sumfroot, envir = env)
+  ###----------------------------------------------------
   
 }

@@ -16,7 +16,7 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     fallrsgc[2] <- max( fallrsgc[2] - fallrsgc[1] * (1 / 90) , 0) 
     #remove all old root in 60 days after harvest
     if(fallrsgc[2] > 0) fallr <- fallr + fallrsgc[1] * (1 / 90)   
-    fallr <- fallr + fallrsgc[3] 
+    fallr <- fallr + fallrsgc[3] * sumfroot[1,2] # Michel: 28-Dez
     
   }  #decay today 
   
@@ -132,13 +132,13 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     
     if(j == j && cropy <= nratoon) {
 
-      fallr <- fallr + cbior[j] * 0.30
+      fallr <- fallr + cbior[j] * 0.30 * sumfroot[1,2] # Michel: 28-Dez
       
       fallrsgc[1] <- cbior[j] * 0.70
       fallrsgc[2] <- cbior[j] * 0.70
       
     } else if(j == j) {     # plant again 
-      fallr <- fallr + cbior[j] 
+      fallr <- fallr + cbior[j] * sumfroot[1,2] # Michel: 28-Dez
       fallrsgc[1] <- cbior[j] * 0
       fallrsgc[2] <- cbior[j] * 0
     }
