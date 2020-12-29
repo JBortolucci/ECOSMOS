@@ -57,7 +57,7 @@ UpperPheno <- function(jday, i) {
   # if offset has occured then determine leaf display
   if (offflagu) {
     # tempu <- max (0., tempu - ddfac)
-    temp[i] <- max (0., temp[í] - ddfac)
+    temp[i] <- max (0., temp[i] - ddfac)
   }
   
   assign("temp", temp, envir = env)

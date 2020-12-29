@@ -39,8 +39,8 @@ SetCompiledFunctions <- function(){
   fwetcal   <- fwetcalCpp
   solset    <- solsetCpp
   solsur    <- solsurR
-  solalb    <- solalbCpp
-  solarf    <- solarfCpp
+  # solalb    <- solalbCpp
+ # solarf    <- solarfCpp
   irrad     <- irradCpp
   cascade   <- cascadeCpp
   canini    <- caniniCpp
@@ -50,7 +50,7 @@ SetCompiledFunctions <- function(){
   cascad2   <- cascad2Cpp
   noveg     <- novegCpp
   diurnalmet<- diurnalmetCpp
-  diurnal   <- diurnalCpp
+ # diurnal   <- diurnalCpp
   
   assign("setsoi", setsoi, envir = globalenv())
   assign("fwetcal", fwetcal, envir = globalenv())

@@ -78,7 +78,6 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   # ---------------------------------------------------------------------- 
   
   # calculate the latitude in radians
-  jj <- latindex
   xlat <- latscale * pi / 180
   
   # calculate the cosine of the solar zenith angle
@@ -88,36 +87,12 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   daylength <- (180 / pi) * ((2 * 60) / 15) * (acos((coszen -  
                                                        (sin(xlat) * sin(xdecl))) / (cos(xlat) * cos(xdecl))))
   
-  if(is.nan(daylength)) {
-    daylength <- 0
-  }
+  if(is.nan(daylength)) { print("daylength = 0.0")
+                               stop()  }
+  
   
   # calculate the solar transmission through the atmosphere
-  # using simple linear function of tranmission and cloud cover
-  #
-  # note that the 'cloud cover' data is typically obtained from
-  # sunshine hours -- not direct cloud observations
-  #
-  # where, cloud cover <- 1 - sunshine fraction 
-  #
-  # different authors present different values for the slope and 
-  # intercept terms of this equation
-  #
-  # Friend, A: Parameterization of a global daily weather generator for
-  # terrestrial ecosystem and biogeochemical modelling, Ecological 
-  # Modelling
-  #
-  # Spitters et al., 1986: Separating the diffuse and direct component
-  # of global radiation and its implications for modeling canopy
-  # photosynthesis, Part I: Components of incoming radiation,
-  # Agricultural and Forest Meteorology, 38, 217 - 229
-  #
-  # A. Friend       : trans <- 0.251 + 0.509 * (1 - cloud[i])
-  # Spitters et al. : trans <- 0.200 + 0.560 * (1 - cloud[i])
-  #
-  # we are using the values from A. Friend
-  
-  
+
   if(time == 0) {
     ij <- ((24 * 3600 / dtime) - 1)
     
@@ -127,22 +102,15 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
                          cos(xlat) * cos(xdecl) *  
                          cos( (2 * pi * (j - 12) / 24) )))
       
-      trans <- 0.251 + 0.509 # * (1 - cloud[i]) - make trans <- 1 to calculate the maximum hipotetical radiation.
+      trans <- 1. #SVC, trans <- 1 to calculate the maximum hipotetical radiation.
       
       dailyrad <- dailyrad + (sw * cosz * trans) * (3600 / 10 ** 6)   
     }
+
+    trans <- stinrad/dailyrad # 0.251 + 0.509 * (1 - cloud)    
     
-    if(stinrad >= 0) {
-      cloud <- 0.76 * (1 - (stinrad / dailyrad)) / 0.509  #invert the original equation for trans
-      cloud <- max(0,min(cloud,1))
-      if(jday == 1)
-        print(paste0('be sure that is reading solar radiation (MJ / m2day) stinrad'))
-    }
-    
-    dailyrad <- 0
   }
   
-  trans <- 0.251 + 0.509 * (1 - cloud) 
   
   # calculate the fraction of indirect (diffuse) solar radiation
   # based upon the cloud cover
@@ -173,8 +141,6 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
     
     solai[ib] <- sw * coszen * fracw * trans * fdiffuse
   }
-  
-  
   
   # ---------------------------------------------------------------------- 
   # *  *  * temperature calculations *  * *
@@ -340,9 +306,9 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   
   
   daylength[is.nan(daylength)] <- 0
+  assign("trans", trans, envir = env)
   assign("coszen", coszen, envir = env)
   assign("daylength", daylength, envir = env)
-  assign("cloud", cloud, envir = env)
   assign("solad", solad, envir = env)
   assign("solai", solai, envir = env)
   assign("ta", ta, envir = env)

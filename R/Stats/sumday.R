@@ -232,8 +232,7 @@ sumday <- function (istep, plens, iyear, jday) {
   
   # calculate daily total co2 respiration from soil
   adco2soi <- adco2root + adco2mic
-  print(paste0(adco2mic, ' / ', tco2mic))
-  
+
   # calculate daily ratio of total root to total co2 respiration
   if(adco2soi > 0) {
     adco2ratio <- adco2root/ adco2soi

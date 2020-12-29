@@ -43,6 +43,8 @@
 
 # to do: Santiago e Jair, essa rotina de atualizacao deve ser generica, independente se é uma cultura agricola
 
+# TO DO 2012: SVC e Jair, verificar se essa rotina esta' sendo chamada 
+
 Cropupdate <- function (jday) {
   
   
@@ -117,6 +119,7 @@ Cropupdate <- function (jday) {
   fl <- max(0.025, min(0.975, fl))
   lai[1] <- avglail / fl
 
+  print(paste("Cropupdate",lai[1],avglail, fl,sep = " / "))
   
   # fu <- totlaiu / 1  
   # fu <- max(0.025, min(0.975, fu))
@@ -140,7 +143,12 @@ Cropupdate <- function (jday) {
     if(!plantList[[j]]$active) next
     if(plantList[[j]]$type == CROPS & plantList[[j]]$canopy == LOWER)
         greenfracl <- greenfracl + frac[j] * greenfrac[j]
+    
+    print(paste("cropupdate ",j,greenfracl , frac[j] , greenfrac[j],sep = " / "))
+    
+    
   }
+  
   
   
   totbiol <- 0

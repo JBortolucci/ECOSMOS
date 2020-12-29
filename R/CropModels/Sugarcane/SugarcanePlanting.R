@@ -82,7 +82,7 @@ SugarcanePlanting <- function(year0, year, month, day, jday, ffact, index) {
         cropy          <- 1
         
         gddmaturity[j]  <- min (gddsgcp, hybgdd[j])
-        print(paste('Plant SugarCane in ',year, month, jday, hybgdd[j], gddmaturity[j],sep=" / "))
+        print(paste('Plant SugarCane in ',year, month, jday," GDD " ,gddsgcp, hybgdd[j], gddmaturity[j],sep=" / "))
         
       }
       #####################################################################

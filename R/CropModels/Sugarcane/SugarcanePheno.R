@@ -30,7 +30,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
     
     huileaf <- array(0, npft)             # heat unit index needed to attain leaf emergence after planting 
     huigrain <- array(0, npft)            # heat unit index needed to reach vegetative maturity 
-    laidecl <- matrix(0, 1, npft)  # decline in leaf area for crop 
     # phenology for additional leaf drop - if drought related or temperature related at 
     # end of growing season  
     
@@ -86,18 +85,14 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         
         greenfrac[j] <- 1.0  
         
-        # calculate fraction allocated to leaf (from J. Norman allocation curve)
-        # bfact and fleafi are set in params.crp
-        fleaf[j] <- fleafi[j] * (exp(-bfact[j]) - exp(-bfact[j] * gddplant[j] / huigrain[j])) / (exp(-bfact[j]) - 1)  
-        
+ 
         # calculate accumulated growing degree days since planting (gddplant) 
         # determine if growing degree days calculated from top layer soil temperature
         # are enough for leaf emergence to occur 
         hui[j] <- gddplant[j] 
         leafout[j]   <- gddplant[j]
         
-        laidecl[j] <- 0.0
-        
+
         idpp[j] <- idpp[j] + 1
         
         if (leafout[j] >= huileaf[j])   idpe[j] <- idpe[j] + 1
@@ -106,7 +101,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         # crop phenology from leaf emergence to start of leaf decline   
         
         if (leafout[j] < huileaf[j]) {
-          gddemerg    <- 0.0
+          gddemerg    <- gddplant[j]
           awood[j]    <- 0.0
           aroot[j]    <- 0.0
           aerial[j]   <- 0.0
@@ -127,6 +122,8 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           arepr[j]  <- 0.00001
           
           rm <- min(100., 100. * (gddplant[j] - gddemerg) / gddmaturity[j] )
+          
+
           
           # scheme based on CANEGRO model (Singels et al. 2005) 
           # if sugarcane is planted, it takes long to construct the 
@@ -192,17 +189,14 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           arepr[j] <- min(aerial[j] - aleaf[j], arepr[j] )
           astem[j] <- astem[j] - (arepr[j] - ccf5)
           
-          ############################################################
-          # STAR of leaf adjust  -> adjust aleaf; check for LAI max 
-          # and apply the leaf turn over
-          ############################################################
-          
-          # calculate actual lai increase based on npp and allocation rules in ibis 
-          # only increment lai if it hasn't reached maximum allowable value 
+ ############################################################
+ # STAR of leaf adjust  -> adjust aleaf; check for LAI max 
+ # calculate actual lai increase based on npp and allocation rules  
+ # only increment lai if it hasn't reached maximum allowable value 
           
           leaftemp <- aleaf[j]
           
-          tlai[j] <- plai[j] + (specla[j] * aleaf[j] * max(0.0, adnpp[j]))
+          tlai[j] <- plai[j] + (specla[j] * aleaf[j] * max(0.0, adnpp[j])) - ((cbiol[j] * specla[j])/ tauleaf[j])
           
           
           if (tlai[j] >= laimx[j]) {
@@ -219,36 +213,68 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           aleaf[j] <- max(0.0, aleaf[j])
           astem[j] <- max(0.0, astem[j])
           arepr[j] <- max(0.0, arepr[j])
+
+############ END of leaf adjusts ###########
+############################################
           
-          # keep day of year that sucrose (grain fill) begins
-          if(arepr[j] > 0.001 && grainday[j] > 999)
-            grainday[j] <- min(grainday[j], jday)
-          
-          templai[j] <- (cbiol[j] * specla[j])
-          
-          plai[j] <- (cbiol[j] * specla[j]) - (cbiol[j] * specla[j]) * ( (1. / tauleaf[j]) )
-          
-          #  test the APSIM (parametrization) - lai declines linear for temp lower than 10C till zero if td = 0C
-          if(td <= 278.16 && td >= 268.16) {
-            print(paste0('td[i] <    5 C',year,jday,i,td - 273.16,plai[j]))
-            plai[j] <- plai[j]* max(0.4,min(1.,0.5 + ((td - 268.16) / 20.) )) # let at least 10%
-            print(paste0('plai reduction',year,jday,1,max(0.4,min(1.,0.5 + ((td - 268.16) / 20.))),plai[j]))
-          } else if(td < 268.16) {
-            plai[j] <- 0.01
-            print(paste0('temp < -5, sugarcane die (from APSIM) ',year,jday,1))
-          }
-          
-          plai[j] <- max(0.01,plai[j])
-          
-          # calculate decrease in lai for purpose of updating 
-          # aboveground biomass pools
-          laidecl[j] <- max(0.0, templai[j] - plai[j])
-          
-          ############################################
-          ############ END of leaf adjusts ###########
-          ############################################
+        }# END ALLOCATION
+        
+        
+ 
+ 
+        
+        # update carbon reservoirs using an analytical solution
+        # to the original carbon balance differential equation
+        
+        cbiol[j] <- cbiol[j] + aleaf[j] * max (0.0, adnpp[j]) - (cbiol[j]/ tauleaf[j])
+        
+        cbiog[j] <- cbiog[j] + arepr[j] * max (0.0, adnpp[j])
+        
+        cbios[j] <- cbios[j] + astem[j] * max (0.0, adnpp[j])
+        
+        fallrsgc[3] <- cbior[j] + aroot[j] * max(0.0,adnpp[j])
+        
+        cbior[j] <- cbior[j] * exp(-1.0 / tauroot[j]) + 
+          aroot[j] * tauroot[j] * max(0.0,adnpp[j]) * (1.0 - exp(-1.0 / tauroot[j]))
+        
+        fallrsgc[3] <- fallrsgc[3] - cbior[j]
+        
+        
+        # update vegetation's physical characteristics
+        plai[j] <- cbiol[j] * specla[j]
+        
+        
+  #  self-shade, TODO: Michel, improve it based on LAI declined 
+        if( rm >= 10) {
+          plai[j] <- cbiol[j] * specla[j] + (aylprod[j]- cbiol[j] ) * specla[j] * 0.15 
+          greenfrac[j] <- cbiol[j] * specla[j] / plai[j] 
+        }else{ greenfrac[j] <- 1.0 }
+        
+        
+        
+        #  test the APSIM (parametrization) - lai declines linear for temp lower than 10C till zero if td = 0C
+        if(td <= 278.16 && td >= 268.16) {
+          print(paste0('td[i] <    5 C',year,jday,i,td - 273.16,plai[j]))
+          plai[j] <- plai[j]* max(0.4,min(1.,0.5 + ((td - 268.16) / 20.) )) # let at least 10%
+          print(paste0('plai reduction',year,jday,1,max(0.4,min(1.,0.5 + ((td - 268.16) / 20.))),plai[j]))
+        } else if(td < 268.16) {
+          plai[j] <- 0.01
+          print(paste0('temp < -5, sugarcane die (from APSIM) ',year,jday,1))
         }
         
+        
+        plai[j] <- max(0.01,plai[j])
+        cbiow[j] <- max(0.0, cbiow[j]) 
+        cbior[j] <- max(0.0, cbior[j]) 
+        cbiol[j] <- max(plai[j] / specla[j], cbiol[j])
+        cbios[j] <- max(0.0, cbios[j])
+        cbiog[j] <- max(0.0, cbiog[j]) 
+        
+        
+        biomass[j] <- cbiol[j] + cbiog[j] + cbior[j] + cbios[j] + cbiow[j]
+        
+        # keep track of aboveground annual npp 
+        ayanpp[j] <- (aleaf[j] + arepr[j] + astem[j] + awood[j]) * adnpp[j] + ayanpp[j]
         
         # keep track of total biomass production for the entire year, and the
         aybprod[j] <- aybprod[j] + 
@@ -275,44 +301,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         aylprod[j] <- aylprod[j] + 
           aleaf[j] * max (0.0, adnpp[j])
         
-        cbiow[j] <- max(0.0, cbiow[j]) 
-        cbior[j] <- max(0.0, cbior[j]) 
-        cbiol[j] <- max(0.0, cbiol[j])
-        cbios[j] <- max(0.0, cbios[j])
-        cbiog[j] <- max(0.0, cbiog[j])  
-        
-        # update carbon reservoirs using an analytical solution
-        # to the original carbon balance differential equation
-        
-        cbiol[j] <- cbiol[j] + aleaf[j] * max (0.0, adnpp[j]) -
-          (laidecl[j] / specla[j])
-        
-        cbiog[j] <- cbiog[j] + arepr[j] * max (0.0, adnpp[j])
-        
-        cbios[j] <- cbios[j] + astem[j] * max (0.0, adnpp[j])
-        
-        fallrsgc[3] <- cbior[j] + aroot[j] * max(0.0,adnpp[j])
-        
-        cbior[j] <- cbior[j] * exp(-1.0 / tauroot[j]) + 
-          aroot[j] * tauroot[j] * max(0.0,adnpp[j]) * (1.0 - exp(-1.0 / tauroot[j]))
-        
-        fallrsgc[3] <- fallrsgc[3] - cbior[j]
-        
-        
-        # update vegetation's physical characteristics
-        plai[j] <- cbiol[j] * specla[j]
-        
-        
-        # sencon try as function of GDD, age and self-shade
-        if( rm > 1) {
-          plai[j] <- cbiol[j] * specla[j] + (aylprod[j]- cbiol[j] ) * specla[j] * 0.15 
-          greenfrac[j] <- cbiol[j] * specla[j] / plai[j] 
-        }
-        
-        biomass[j] <- cbiol[j] + cbiog[j] + cbior[j] + cbios[j] + cbiow[j]
-        
-        # keep track of aboveground annual npp 
-        ayanpp[j] <- (aleaf[j] + arepr[j] + astem[j] + awood[j]) * adnpp[j] + ayanpp[j]
         
         
         #####################################################################
@@ -379,6 +367,9 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   
     ztopPft[j] <- ztopmxPft[j] * min(1,(rm / 50))* (min(plaimx[j] / (laimx[j]), 1)) ** 2
     
+    print(paste("SugarcanePheno",year,jday,rm,j, plai[j],greenfrac[j],sep = " | "))
+    
+    
   }
   
   assign("endCycle", endCycle, envir = env)
@@ -387,7 +378,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   assign("gddplant", gddplant, envir = env)
   assign("gddtsoi", gddtsoi, envir = env)
   assign("aplantn", aplantn, envir = env)
-  assign("fleafi", fleafi, envir = env)
   assign("mxgddgf", mxgddgf, envir = env)
   assign("mxmat", mxmat, envir = env)
   assign("greenfrac", greenfrac, envir = env)
@@ -407,7 +397,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   assign("astemi", astemi, envir = env)
   assign("aleafi", aleafi, envir = env)
   assign("dpgf", dpgf, envir = env)
-  assign("grainday", grainday, envir = env)
   assign("thrlai", thrlai, envir = env)
   assign("templai", templai, envir = env)
   assign("gddemerg", gddemerg, envir = env)

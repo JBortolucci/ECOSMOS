@@ -23,7 +23,7 @@ CropPhenoUpdate <- function() {
     }
   }
   
-  avglail <- max(avglail, 0.025)
+  avglail <- max(avglail, 0.01)
   avglaiu <- max(avglaiu, epsilon)
   
   for(j in 1:npft) {
@@ -40,6 +40,9 @@ CropPhenoUpdate <- function() {
     if(!plantList[[i]]$active) next
     if(plantList[[i]]$canopy == LOWER) {
       greenfracl <- greenfracl + frac[j] * greenfrac[j]
+      
+      print(paste("CropPhenoUpdate  ",year,jday,j,greenfracl , frac[j] , greenfrac[j],lai[1],lai[2],sep = " / "))
+      
     }
   }
   

@@ -196,7 +196,6 @@ StomataC3Grass <- function(i) {
     # day - time conditions, use current scaling coefficient
     if(toppar > 10) {
       scale <- (1 - exp( - pxail)) / plail  #csant - for example  - if lai <- 4, scale is +- 0.2
-      #sant	if(i == 1) print(paste0('sai[i,1],lai[i,1],extpar',sai[i,1],lai[i,1],scale ))
       # update 10 - day running mean of scale, weighted by light levels
       a10scalparaml <- zweight * a10scalparaml + (1 - zweight) * scale  * toppar
       a10daylightl <- zweight * a10daylightl +  (1 - zweight) * toppar
@@ -254,7 +253,6 @@ StomataC3Grass <- function(i) {
   # multiply canopy photosynthesis by wet fraction -- this calculation is
   # done here and not earlier to avoid using within canopy conductance
   
-  #	print(paste0(fwetl[i]))
   rwork <- 1 - fwet
   
   # PFT_UPDATE:

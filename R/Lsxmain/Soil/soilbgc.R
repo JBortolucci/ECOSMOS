@@ -806,7 +806,8 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
     # --------------------------------------------------------------------------
     # calculate daily co2 flux due to microbial decomposition
     
-    print(paste(tco2mic,totcbegin,totcin,totcend,cleach))
+    # print(paste(tco2mic,totcbegin,totcin,totcend,cleach))
+    
     tco2mic <- totcbegin + totcin - totcend - cleach
     
     # convert co2 flux from kg C / day  (seconds in a daily timestep) to mol - C/s
