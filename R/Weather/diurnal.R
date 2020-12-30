@@ -65,6 +65,9 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
     0.002697 * cos(3 * orbit) +
     0.001480 * sin(3 * orbit)
   
+  
+  
+  
   # calculate the effective solar constant, including effects of eccentricity
   # ref: global physical climatology, hartmann, appendix a
   sw <- 1370 * (1.000110 +
@@ -83,14 +86,7 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   # calculate the cosine of the solar zenith angle
   coszen <- max (0, (sin(xlat) * sin(xdecl) + cos(xlat) * cos(xdecl) * cos(angle)))
   
-  # find daylength to be used in pheno subroutine
-  daylength <- (180 / pi) * ((2 * 60) / 15) * (acos((coszen -  
-                                                       (sin(xlat) * sin(xdecl))) / (cos(xlat) * cos(xdecl))))
-  
-  if(is.nan(daylength)) { print("daylength = 0.0")
-                               stop()  }
-  
-  
+
   # calculate the solar transmission through the atmosphere
 
   if(time == 0) {
@@ -107,7 +103,21 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
       dailyrad <- dailyrad + (sw * cosz * trans) * (3600 / 10 ** 6)   
     }
 
-    trans <- stinrad/dailyrad # 0.251 + 0.509 * (1 - cloud)    
+    trans <- stinrad/dailyrad # 0.251 + 0.509 * (1 - cloud)  
+    
+    
+    # find daylength to be used in pheno subroutine
+    
+    #Valores estavam errados
+    #SVC daylength <- (180 / pi) * ((2 * 60) / 15) * (acos((coszen -  (sin(xlat) * sin(xdecl))) / (cos(xlat) * cos(xdecl))))
+    
+    # SVC Solar Declination in degrees  
+    SD <- 23.45*sin((pi/180)*(360/365)*(284+jday))
+    H <- acos(-tan(xlat)*tan(SD*(pi/180)))
+    daylength <- (2/15)*( 0.83+(H*180/pi ) )
+    
+    if(is.nan(daylength)) { print("daylength = 0.0")
+      stop()  }
     
   }
   

@@ -21,32 +21,36 @@
 
 UseDailyStationData <- function(day, month, year) {
   
-  useDay <- day
-  if((year < 1980 || year > 2020) && month == 2 && day == 29) {
-    useDay <- 28
-  }
-  # Henrique: e em situações em que no dia 29 (anos bissextos) tiver uma chuva e/ou irrigação expressiva???
+ 
+                                      useYear <-   year
+  if (year < min(data_station$year)) {useYear <-  min(data_station$year)}
+  if (year > max(data_station$year)) {useYear <-  max(data_station$year)}
   
-  #### Retrieve variable value for current time from file ####
+ useDay <- day
+  if((year < min(data_station$year) || year > max(data_station$year)) && month == 2 && day == 29) {   useDay <- 28  } #Aplicável somente para os anos onde não temos dados de clima
+
   
-  useYear <- ifelse(year >= 1980 && year <= 2020, year, 2015) # Henrique: useDay & useYear alterados de 2015 p/ 2018 ou 2020 para ler os dados medidos nas estações dos exp da soja (25/9/2020)
+  
+  TN <- data_station$TMIN[which(data_station$day == useDay &  data_station$month == month  & data_station$year == useYear)]
+  TX <- data_station$TMAX[which(data_station$day == useDay &  data_station$month == month  & data_station$year == useYear)]
+  PR <- data_station$RAIN[which(data_station$day == useDay &  data_station$month == month  & data_station$year == useYear)]
+  RS <- data_station$SRAD[which(data_station$day == useDay &  data_station$month == month  & data_station$year == useYear)]
+  RH <- data_station$RHUM[which(data_station$day == useDay &  data_station$month == month  & data_station$year == useYear)]
+  U2 <- data_station$WIND[which(data_station$day == useDay &  data_station$month == month  & data_station$year == useYear)]
   
   
-  TN <- intmin[which(intmin$day == useDay &  intmin$month == month & intmin$year == useYear),]
-  TX <- intmax[which(intmax$day == useDay & intmax$month == month  & intmax$year == useYear),]
-  PR <- inprec[which(inprec$day == useDay & inprec$month == month  & inprec$year == useYear),]
-  RS <- insrad[which(insrad$day == useDay & insrad$month == month  & insrad$year == useYear),]
-  RH <- inrh[which(inrh$day == useDay     & inrh$month == month    & inrh$year == useYear),]
-  U2 <- inu2[which(inu2$day == useDay     & inu2$month == month    & inu2$year == useYear),]
+  if( is.na(TN)==T |  is.na(TX)==T | is.na(PR)==T | is.na(RS)==T | is.na(RH)==T | is.na(U2)==T ) { 
+            print(paste0("No daily weather file ",day,"/",month,"/",year))
+              stop()  }
   
   #### Set variable value for current point ####
-  tmax    <- TX$var + 273.16
-  tmin    <- TN$var + 273.16
+  tmax    <- TX + 273.16
+  tmin    <- TN + 273.16
   td      <- (tmax + tmin) / 2 
-  precip  <- PR$var
-  stinrad <- RS$var  
-  ud      <- U2$var
-  qd     <-  min (0.99,max (0.05, RH$var/100))
+  precip  <- PR
+  stinrad <- RS  
+  ud      <- U2
+  qd     <-  min (0.99,max (0.05, RH/100))
   
   # convert from relative humidity to specific humidity at
   # daily mean temperature

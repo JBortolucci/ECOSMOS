@@ -94,6 +94,9 @@
 # ywm       # woody metabolic litter decomposition
 # yws       # woody structural litter decomposition
 
+
+#TO DO: 2021, Precisamos rever todo o fluxo e C e N 
+
 soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinmax) {
   # Local arrays declaration
   outclm   <- 0
@@ -743,11 +746,12 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
   # along with the amount of root respiration contributing to the flux from
   # calculations performed in stats.f
   # --------------------------------------------------------------------------
-  if(spin == spinmax) { 
+  
+  if(spin == spinmax) {
     # only count the last cycle in the spin - up for co2soi
     # when the iyear is less than the nspinsoil value...otherwise
     # an amount of CO2 respired will be about 10 times the actual
-    # value because this routine is called articially 10 extra times
+    # value because this routine is called artificially 10 extra times
     # each time step to spin up the soil carbon
     #
     # add n - deposition due to rainfall once each day, and
@@ -765,15 +769,9 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
     #           deposn[i] <- (0.21 + 0.0028 * (precip[i] * 0.1)) * 1e-3
     #           fixsoin[i] <- ( - 0.18 + 0.14 * (precip[i] * 0.1)) * 1e-3
     #
+    
     deposn <- (0.0005753 + 0.0028 * (precip * 0.1)) * 1e-3
-    #
-    # 7 - 06 - 05 CJK : modify rates for the US based on Simon's dataset that adjusts
-    # the rates each year (from actual data - 1940 - 1999)
-    ndepfact<- array(0.5,60)
-    if (iyear >= 1940 && iyear <= 1999) deposn <- deposn * ndepfact[iyear + 1-1940] 
-    
-    if (iyear > 1999) deposn <- deposn * ndepfact[60] 
-    
+
     fixsoin <- ( - 0.0004932 + 0.14 * (precip * 0.1)) * 1e-3
     
     # From Landsberg and Gower, 1997
@@ -813,6 +811,7 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
     # convert co2 flux from kg C / day  (seconds in a daily timestep) to mol - C/s
     # based on .012 Kg C / mol
     tco2mic <- tco2mic / (86400 * 0.012)
+    
   }
   
   

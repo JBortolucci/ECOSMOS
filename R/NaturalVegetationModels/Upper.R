@@ -43,8 +43,8 @@ UpperPheno <- function(jday, i) {
   
   # if onset has occured then determine leaf display
   if (onflagu) {
-    # tempu <- min (1., tempu + ddfac)
-    temp[i] <- min (1., temp[i] + ddfac)
+    # tempu[i] <- min (1., tempu + ddfac)
+    temp[i] <- min (1., temp[i] + ddfac) #TO DO, SVC/Jair: Verificar
   }
   
   if (onflagu & jday >= 243) {
