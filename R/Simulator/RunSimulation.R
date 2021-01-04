@@ -149,7 +149,8 @@ GeneralModel <- function(simVars = NULL) {
     
     
     # outputDailyFileName <- paste0("output/out_daily_tower_", config$id,".dat")
-    simVars$dailyOutput<- paste0("output/out_daily_tower_", config$id,".dat")
+    
+    simVars$dailyOutput<- file(paste0("output/out_daily_tower_", config$id,".dat"), "w")
     
     simVars$absStep <- 1
     
