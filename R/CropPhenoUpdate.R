@@ -40,9 +40,6 @@ CropPhenoUpdate <- function() {
     if(!plantList[[i]]$active) next
     if(plantList[[i]]$canopy == LOWER) {
       greenfracl <- greenfracl + frac[j] * greenfrac[j]
-      
-      print(paste("CropPhenoUpdate  ",year,jday,j,greenfracl , frac[j] , greenfrac[j],lai[1],lai[2],sep = " / "))
-      
     }
   }
   

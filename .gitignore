@@ -44,3 +44,7 @@ output/dailyOutput_IRA_1.dat
 output/outputHourly_IRA_1.dat
 output/out_daily_tower_simFAYS.dat
 output/outputHourlysimFAYS.dat
+output/out_daily_tower_simUSR.dat
+inst/Template_Simulation_Control_ECOSMOS_CANA.csv
+inst/input_1d/USR_Santiago_104_2005_140_2007_Input.txt
+inst/Template_Simulation_Control_ECOSMOS_CANA.csv

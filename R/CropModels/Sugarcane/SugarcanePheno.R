@@ -367,9 +367,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   
     ztopPft[j] <- ztopmxPft[j] * min(1,(rm / 50))* (min(plaimx[j] / (laimx[j]), 1)) ** 2
     
-    print(paste("SugarcanePheno",year,jday,rm,j, plai[j],greenfrac[j],sep = " | "))
-    
-    
   }
   
   assign("endCycle", endCycle, envir = env)
