@@ -15,11 +15,13 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
   # to do: Jair, verificar se essa inicializacao e necessaria
   
   stinrad   <- c() # daily Station Solar Radiation (MJ/m2/day)
+
   
   latc <-  lat + 0.125
   lonc <-  lon - 0.125
   
   lons<-substr(lonc*1000,2,5)
+  
   
   if(latc*1000>0){
     if(latc*1000<1000){lats<-paste0("N0",substr(latc*1000,1,2))}else{lats<-paste0("N",substr(latc*1000,1,3)) }}else{
@@ -29,14 +31,12 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
   wth<- as.character(sprintf("%4s%4s",lats,lons))
   wth<-gsub(' ','0',wth)
   
-  file_in<- paste0(path,wth,".csv")
+  file_in <- paste0(path, wth,".csv")
   
 
   #### Read csv file for current coordinate ####
   
   data_station<-read.csv(file_in, header = T, sep = ",", stringsAsFactors = F, dec = ".")
-  
-  
   
   DOYtoDate=function(DATE)
   {
@@ -48,7 +48,6 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
     return(DATE)
   }
   
-  
   data_station$mydate   <- DOYtoDate(data_station$DATE)
   data_station$mydate   <- as.Date(data_station$mydate)
   data_station$year     <- year(data_station$mydate)
@@ -56,8 +55,7 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
   data_station$day      <- mday(data_station$mydate)
   data_station$jday     <- yday(data_station$mydate)
   
-  
-  
+
   assign("data_station", data_station, envir = instanceEnv)
   
 }

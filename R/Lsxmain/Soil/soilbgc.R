@@ -275,8 +275,48 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
   # ---------------------------------------------------------------------
   
   # fbpom = min(max(0.3, carfrac/0.4 * 0.7),0.7)
-    fbpom <- 0.50
+  # fbpom <- 0.50
+
+  #
+  ### Michel: Updated - its is calculated only once in the "inisoil" routine using the soil database information
+
+  # rdepth <- 0
+  # for(kk in 1: nslaym) {
+  #   rdepth <- rdepth + hsoi[kk]
+  # }
+  # rdepth <- 1 / rdepth
+  # carfrac <- 0
+  # texfact <- 0
+  # 
+  # for(k in 1: nslaym) {
+  #   if(k <= 6) {
+  #     msand <- round(sand[k])
+  #     mclay <- round(clay[k])
+  #   } else {
+  #     msand <- round(sand[6])
+  #     mclay <- round(clay[6])
+  #   }
+  # }
+  # 
+  # # top 1 m of soil -- 8 layers
+  # for(kk in 1: nslaym) {
+  #   lmin <- textcls(msand,mclay)
+  # 
+  #   fsand <- texdat[1,lmin]
+  #   fclay <- texdat[3,lmin]
+  #   carfrac <- carfrac + fclay * hsoi[kk]
+  #   texfact <- texfact + fsand * hsoi[kk]
+  # }
+  # 
+  # carfrac <- carfrac * rdepth
+  # texfact <- texfact * rdepth
+
+  fbpom <- 0.50
+
+  # ------------------------------------------------------------------------
+  # ------------------------------------------------------------------------
   
+ 
   # ------------------------------------------------------------------------
   # total soil carbon initialized to 0 at beginning of model run
   # used in calculation of soil co2 respiration from microbial decomposition 

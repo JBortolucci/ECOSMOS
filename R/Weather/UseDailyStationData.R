@@ -26,7 +26,7 @@ UseDailyStationData <- function(day, month, year) {
   if (year < min(data_station$year)) {useYear <-  min(data_station$year)}
   if (year > max(data_station$year)) {useYear <-  max(data_station$year)}
   
- useDay <- day
+  useDay <- day
   if((year < min(data_station$year) || year > max(data_station$year)) && month == 2 && day == 29) {   useDay <- 28  } #Aplicável somente para os anos onde não temos dados de clima
 
   
@@ -50,7 +50,8 @@ UseDailyStationData <- function(day, month, year) {
   precip  <- PR
   stinrad <- RS  
   ud      <- U2
-  qd     <-  min (0.99,max (0.05, RH/100))
+  qd      <-  min (0.99,max (0.05, RH/100))
+
   
   # convert from relative humidity to specific humidity at
   # daily mean temperature

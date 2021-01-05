@@ -16,7 +16,7 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     fallrsgc[2] <- max( fallrsgc[2] - fallrsgc[1] * (1 / 90) , 0) 
     #remove all old root in 60 days after harvest
     if(fallrsgc[2] > 0) fallr <- fallr + fallrsgc[1] * (1 / 90)   
-    fallr <- fallr + fallrsgc[3] 
+    fallr <- fallr + fallrsgc[3] * sumfroot[1,2] # Michel: 28-Dez
     
   }  #decay today 
   
@@ -37,10 +37,9 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
   # across two consecutive calendar years   
   
   if(exist[j] == 1 && harvdate[j] == jday) {
-    
-    pdate[j] <- idop[j]
+    pdate[j]   <- idop[j]
     idppout[j] <- idpp[j]
-    hdate[j] <- harvdate[j]
+    hdate[j]   <- harvdate[j]
     
     ayabprod[j] <- max(cbiol[j], ayabprod[j])
     
@@ -66,7 +65,7 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     
     if(j == j) {
       dmyield[j] <- dmyield[j] * fyield[j] 
-      dmstem[j] <- dmstem[j] * fyield[j]
+      dmstem[j]  <- dmstem[j] * fyield[j]
     }
     
     # calculate above ground residue dry matter (Mg / ha) at harvest
@@ -90,9 +89,9 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     
     # assign leaf, stem, root, and grain nitrogen concentrations
     # to new variables (in percent)
-    nconcl[j] <- fnleaf[j] * 100
-    nconcs[j] <- fnstem[j] * 100
-    nconcr[j] <- fnroot[j] * 100
+    nconcl[j] <- fnleaf[j]  * 100
+    nconcs[j] <- fnstem[j]  * 100
+    nconcr[j] <- fnroot[j]  * 100
     nconcg[j] <- fngrain[j] * 100
     
     # assign total nitrogen plant uptake to new variable for
@@ -132,15 +131,17 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     }
     
     if(j == j && cropy <= nratoon) {
-      fallr <- fallr + cbior[j] * 0.30
+
+      fallr <- fallr + cbior[j] * 0.30 * sumfroot[1,2] # Michel: 28-Dez
       
       fallrsgc[1] <- cbior[j] * 0.70
       fallrsgc[2] <- cbior[j] * 0.70
+      
     } else if(j == j) {     # plant again 
-      fallr <- fallr + cbior[j] 
+      fallr <- fallr + cbior[j] * sumfroot[1,2] # Michel: 28-Dez
       fallrsgc[1] <- cbior[j] * 0
       fallrsgc[2] <- cbior[j] * 0
-    } 
+    }
     
     # 
     # # re-initialize crop variables
@@ -191,7 +192,7 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     ########################################################
     ################### sugarcane ratoon ###################
     
-    if(j == j && cropy == 1) { 
+    if(j == j && cropy == 1) {
       gddsgcp <- (gddsgcp + gddmaturity[j]) / 2  
     }
     if(j == j && cropy > 1)  { 
@@ -200,7 +201,6 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     
     
     if(j == j && cropy <= nratoon) {
-      
       cropy <- cropy + 1	
       croplive[j] <- 1   
       
@@ -214,28 +214,32 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
       
       ##### Check if cycle was complete #####
       #ccdays - temperature has fallen below freeze 
-      if(ccdays[j] >= 1  && cropy == 2  && idppout[j] < mxmat[j] - 90) {  
+      if(ccdays[j] >= 1  && cropy == 2  && idppout[j] < mxmat[j] - 90) {
         croplive[j] <- 0    
-        idop[j] <- 999
-        cropy <- 0     
+        idop[j]     <- 999
+        cropy       <- 0     
         print(paste0('sugarcane planted didnt get the minimum of development, start to planting again'))
       } else if(ccdays[j] >= 1  && cropy > 2  && idppout[j] <= 300) {
         croplive[j] <- 0    
-        idop[j] <- 999
-        cropy <- 0 
+        idop[j]     <- 999
+        cropy       <- 0 
         print(paste0('ratoon didt get the minimum days to development, start to planting again'))
       }
       
-    } else if (j == j && cropy == nratoon) {
+    } else if (j == j && cropy > nratoon) {
+    # } else if (j == j && cropy == nratoon) {
       croplive[j] <- 0    
-      idop[j] <- 999
-      cropy <- 0 
+      idop[j]     <- 999
+      cropy       <- 0
+      endCycle    <- T
+      # print("TERMINOU!")
     }  # sugarcane ratoon
     
   }  # harvest <- jday
-  
+
   # }
-  
+
+  assign("endCycle", endCycle, envir = env)
 
   assign("falll", falll, envir = env)
   assign("fallw", fallw, envir = env)

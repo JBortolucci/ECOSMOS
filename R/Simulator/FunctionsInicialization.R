@@ -164,5 +164,7 @@ source("R/Simulator/ReadParams.R")
 # ReadPlantParamsFromFile  = cmpfun(ReadPlantParamsFromFile)
 # ReadGlobalParamsFromFile = cmpfun(ReadGlobalParamsFromFile)
 
+source("R/Simulator/GetNearestCoord.R")
+
 # source("R/Simulator/Interface/SetValue.R")
 # lsxmain = cmpfun(lsxmain)
