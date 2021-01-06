@@ -19,7 +19,7 @@ source("R/CropModels/Maize/MaizeCropresidue.R")
 # TODO: remover index depois, passar as variáveis automaticamente.
 MaizeModel <- function(year, month, day, index) {
   
-  
+  cat('\r',paste(year, sprintf('%02d', month), sprintf('%02d', day), sep = '-'))
   
   # TODO: Verificar se há uma maneira de fazer isso automaticamente para funções do usuário.
   # Se for possível setar o environment fora da função, é possível fazer isso por meio de uma função

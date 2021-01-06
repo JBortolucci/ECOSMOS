@@ -38,6 +38,9 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
                 'grain' = 0.49) # g-CH2O g-DM⁻¹
   
   rgrowth <- 0.30
+  G2 <- 675 # kernels ear⁻¹
+  G5 <- 8.7 # mg day⁻¹
+  efftrans <- 0.26 # Efficiency of carbon translocation from leaves/stem to grain filling
   ##################
   
   greenfrac[i] < -1.0
@@ -65,9 +68,21 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       leafwb <- 0.0
       sumgdd8 <- 0.0
       
+      ndaysS3 <- 0.0
+      sumP <- 0.0
+      fcbios <- 0.0
+      fcbiol <- 0.0
+      
     }
     
     sen <- list()
+    
+    fr <- 1.0 / (1.0 - rgrowth)
+    
+    adnppl <- adnpp[i] * fr / (1 + fresp$leaf)
+    adnpps <- adnpp[i] * fr / (1 + fresp$stem)
+    adnppr <- adnpp[i] * fr / (1 + fresp$root)
+    adnppg <- adnpp[i] * fr / (1 + fresp$grain)
     
     dtt8     <- calc_dtt(idpp[i], jday,  8, 34)
     dtt10    <- calc_dtt(idpp[i], jday, 10, 34)
@@ -80,7 +95,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     }
     
     tmean  <- (tmax + tmin) / 2.0
-    fr <- 1.0 / (1.0 - rgrowth)
   
     if (cumPh < 5.0) {
       pc <- 0.66 + 0.068 * cumPh
@@ -108,8 +122,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       # STAGE 1: from emergence to ´tassel initiation
       
-      print(c('rGDD8' = gdd8 / (gdd8 + P3), 'rGDD10' = gdd10 / gdds))
-      
       tlno <- (gdd8 / (phyl * 0.5)) + 6
       P3 <- (tlno - 2.0) * phyl + 96 - gdd8
       
@@ -134,8 +146,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       aroot <- max(0.0, min(0.5, arooti - (ds * (arooti / dsstop))))
       aleaf <- max(0.0, 1.0 - aroot)
       
-      cbiorg <- max(0.0, aroot * adnpp[i] * fr / (1.0 + fresp$root))
-      cbiolg <- max(0.0, aleaf * adnpp[i] * fr / (1.0 + fresp$leaf))
+      cbiorg <- max(0.0, aroot * adnppr * fr / (1.0 + fresp$root))
+      cbiolg <- max(0.0, aleaf * adnppl * fr / (1.0 + fresp$leaf))
       
       cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot)
       cbiol[i] <- cbiol[i] + cbiolg * fsen
@@ -181,9 +193,9 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       aleaf <- max(0.0, (1.0 - aroot) * (leafwg / (leafwg + stemwg)))
       astem <- max(0.0, 1.0 - aroot - aleaf)
       
-      cbiorg <- max(0.0, aroot * adnpp[i] * fr / (1 + fresp$root))
-      cbiolg <- max(0.0, aleaf * adnpp[i] * fr / (1 + fresp$leaf))
-      cbiosg <- max(0.0, astem * adnpp[i] * fr / (1 + fresp$stem))
+      cbiorg <- max(0.0, aroot * adnppr * fr / (1 + fresp$root))
+      cbiolg <- max(0.0, aleaf * adnppl * fr / (1 + fresp$leaf))
+      cbiosg <- max(0.0, astem * adnpps * fr / (1 + fresp$stem))
       
       cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot[i])
       cbiol[i] <- cbiol[i] + cbiolg * fsen
@@ -210,9 +222,11 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       acob  <- max(0.0, cobwg * (1.0 - aroot) / (cobwg + stemwg))
       astem <- max(0.0, 1.0 - aroot - acob)
       
-      cbiorg <- max(0.0, aroot * adnpp[i] * fr / (1 + fresp$root))
-      cbiocg <- max(0.0, acob  * adnpp[i] * fr / (1 + fresp$grain))
-      cbiosg <- max(0.0, astem * adnpp[i] * fr / (1 + fresp$stem))
+      cbiorg <- max(0.0, aroot * adnppr * fr / (1 + fresp$root))
+      cbiocg <- max(0.0, acob  * adnppg * fr / (1 + fresp$grain))
+      cbiosg <- max(0.0, astem * adnpps * fr / (1 + fresp$stem))
+      
+      sumP <- sumP + cbiorg + cbiocg + cbiosg
       
       if(cbioc[i] == 0.0) {
         cbioc[i] <- cbios[i] * 0.167
@@ -222,6 +236,13 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot)
       cbioc[i] <- cbioc[i] + cbiocg
       cbios[i] <- cbios[i] + cbiosg
+      # cbiol[i] <- 
+      # TODO (Victor): Implement the senescence biomass fall in stage 3
+      
+      ndaysS3 <- ndaysS3 + 1
+      
+      fcbios <- cbios[i] * 0.60
+      fcbiol <- cbiol[i] * 0.15
       
       # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbioc' = cbioc[i], 'cbios' = cbios[i]))
       
@@ -229,51 +250,65 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       # STAGE 4: from effective grain filling to physiological maturity
       
-      sumgdd8 <- sumgdd8 + (dtt8 / (1 - lsr))
-      sen <- laim * (sumgdd8 / gddf) ^ sg
+      psker <- sumP * 1e3 / ndaysS3 * 3.4 / 5.0
+      gpp <- G2 * (psker - 195) / (1213.2 + psker - 195)
       
-    } else {
+      filleffi <- 1.47 - (0.09 * pden) + (0.0036 * pden^2)
       
+      RGfill <- sum(sapply(X = 1:8, FUN = function(x) {
+        tmfac <- 0.931 + 0.114 * x - 0.0703 * x^2 + 0.0053 * x^3
+        ttmp <- (tmin - 273.15) + tmfac * (tmax - tmin)
+        RGfill <- ifelse(test = ttmp > 6,
+                         yes  = (1.0 - 0.0025 * (ttmp - 26.0)^2) / 8.0,
+                         no   = 0.0)
+        return(RGfill)
+      }))
       
-      endCycle <- T
+      grainwg <- (RGfill * gpp * G5 * filleffi * 0.001) / (1 + fresp$grain)
+      grainwg <- 0.40 * grainwg * pden / 1e3 # convert from g-DM plant⁻¹ day⁻¹ to kg-C m⁻² day⁻¹
+      
+      if (grainwg > adnppg & fcbios >= abs(grainwg - adnppg)) {
+        transs <- abs(grainwg - adnppg * fr / (1 + fresp$grain))
+        grainwg <- grainwg + efftrans * transs
+        fcbios <- fcbios - efftrans * transs
+        cbios[i] <- cbios[i] - transs * efftrans
+      } else {
+        transl <- - min(0.005 * fcbiol, abs(grainwg - adnppg * fr / (1 + fresp$grain)))
+        grainwg <- grainwg + efftrans * transl
+        fcbiol <- fcbiol - efftrans * transl
+        cbiol[i] <- cbiol[i] - transl * efftrans
+      }
+      
+      if (grainwg < adnppg * fr / (1 + fresp$grain)) {
+        fcbiol <- fcbiol + abs(grainwg - adnppg * fr / (1 + fresp$grain))
+        cbiol[i] <- cbiol[i] + abs(grainwg - adnppg * fr / (1 + fresp$grain))
+      }
+      
+      cbiog[i] <- cbiog[i] + grainwg
+      
+      print(c('cbiog' = cbiog[i]))
       
     }
     
-    #    !----------Check sink limitation based on yesterday's growth rates
-    # ! and adapt partitioning of stem-storage organ accordingly
-    # BRYAN TO DO ->  IF (GRAINS) THEN
-    # BRYAN TO DO ->  IF (GGR.GE.(PWRR-WRR)) THEN
-    # BRYAN TO DO ->  FSO = MAX(0.,(PWRR-WRR)/(GCR*FSH))
-    # BRYAN TO DO ->  FST = 1.-FSO-FLV
-    # BRYAN TO DO ->  END IF
-    # BRYAN TO DO ->  END IF
-    
     # update vegetation's physical characteristics
     plai[i] <- max(0.0, cbiol[i] * specla[i])
-    print(c('lai' = plai[i]))
+    # print(c('lai' = plai[i]))
     
     peaklai[i]  <- max(peaklai[i], plai[i])
     
     greenfrac[i] <- 1.0
-    
     
     biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbioc[i]
     
     # keep track of aboveground annual npp
     ayanpp[i] <- ayanpp[i] + adnpp[i]
     
-    
-    #END TEST Maize MODEL FROM ORYZA
-    #____________________________________
-    
-    #_____________________________________________
-    
     # keep track of total biomass production for the entire year, and the
     aybprod[i] <- aybprod[i] +
-      aleaf[i] * max(0.0, adnpp[i] * fr / (1 + fresp$leaf)) +
-      aroot[i] * max(0.0, adnpp[i] * fr / (1 + fresp$root)) +
-      astem[i] * max(0.0, adnpp[i] * fr / (1 + fresp$stem)) +
-      acob[i]  * max(0.0, adnpp[i] * fr / (1 + fresp$grain))
+      aleaf[i] * max(0.0, adnppl * fr / (1 + fresp$leaf)) +
+      aroot[i] * max(0.0, adnppr * fr / (1 + fresp$root)) +
+      astem[i] * max(0.0, adnpps * fr / (1 + fresp$stem)) +
+      acob[i]  * max(0.0, adnppg * fr / (1 + fresp$grain))
     
     # aboveground value to calculate harvest index
     ayabprod[i] <- ayabprod[i] +
@@ -284,13 +319,13 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     # keep track of annual total root production carbon
     ayrprod[i] <- ayrprod[i] +
-      aroot[i] * max(0.0, adnpp[i] * fr / (1 + fresp$root))
+      aroot[i] * max(0.0, adnppr * fr / (1 + fresp$root))
     
     
     # keep track of total carbon allocated to
     # leaves for litterfall calculation
     aylprod[i] <- aylprod[i] +
-      aleaf[i] * max(0.0, adnpp[i] * fr / (1 + fresp$leaf))
+      aleaf[i] * max(0.0, adnppl * fr / (1 + fresp$leaf))
 
     #####################################################################
     # check for climatic and phenological limits on maturity, growth,
@@ -316,24 +351,20 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     #___________________________________________________
     #       Harvest
     
-    fileout=paste("Maize_DAILY.csv")
-    # ID<-simConfigs[[i]]$id
-    if(idpp[i]==1)ID<-paste0(jday,iyear)
-    write(paste( ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS ,
-                 aroot[i],aleaf[i],astem[i],arepr[i],cbior[i],cbiol[i],cbios[i],cbiog[i],cbiop[i],plai[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
+    fileout <- paste("Maize_DAILY.csv")
+    
+    if(idpp[i] == 1) ID <- paste0(jday, iyear)
+    write(x = paste(ID, idpp[i], aroot[i], aleaf[i], astem[i], cbior[i], cbiol[i], cbios[i], cbioc[i], plai[i], sep = ";"),
+          file = fileout,
+          append = TRUE,
+          sep = "\n")
     
     
     
     if(cropy == 1) {
-      
-      if ( DVS >= 2.0 ) { # maximum harvest date
+      if ( gdd10 >= gddt ) { # maximum harvest date
         
-        print(paste('Harvest Maize ',ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai[i],cbiog[i],sep = " ; "    ))
-        
-        fileout=paste("Maize_SEASON.csv")
-        write(paste(ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai,cbiog[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
-        
-        
+        cat('\nMaize harvested! Harvest date:', paste(sprintf('%04d',year), sprintf('%02d', month), sprintf('%02d', day), sep = '-'),'\n')
         
         croplive[i]   <- 0.0
         cropy         <- 0.0
@@ -344,77 +375,60 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         peaklai[i]    <- 0.0
         endCycle      <- T
         
-        ndiasV6       <-0
-        ndiasR0       <-0
-        ndiasR4       <-0
-        ndiasR9       <-0
-        DVS           <-0
-        TMAXC         <-0
-        TMINC         <-0
-        TTSUM         <-0
-        
-        
       }
     } else {
       print('Maize has only one cycle - Stop')
       stop()
     }
     
-    assign('gdd8'    , gdd8    , envir = env)
-    assign('gdd10'   , gdd10   , envir = env)
-    assign('cumPh'   , cumPh   , envir = env)
-    assign('pla'     , pla     , envir = env)
-    assign('leafwb'  , leafwb  , envir = env)
-    assign('dum8'    , dum8    , envir = env)
-    assign('xnti'    , xnti    , envir = env)
-    assign('sumgdd8' , sumgdd8 , envir = env)
-    assign('xn'      , xn      , envir = env)
-    assign('P3'      , P3      , envir = env)
-    assign('tlno'    , tlno    , envir = env)
+    assign('gdd8'   , gdd8   , envir = env)
+    assign('gdd10'  , gdd10  , envir = env)
+    assign('cumPh'  , cumPh  , envir = env)
+    assign('pla'    , pla    , envir = env)
+    assign('leafwb' , leafwb , envir = env)
+    assign('dum8'   , dum8   , envir = env)
+    assign('xnti'   , xnti   , envir = env)
+    assign('sumgdd8', sumgdd8, envir = env)
+    assign('xn'     , xn     , envir = env)
+    assign('P3'     , P3     , envir = env)
+    assign('tlno'   , tlno   , envir = env)
+    assign('ndaysS3', ndaysS3, envir = env)
+    assign('fcbios' , fcbios , envir = env)
+    assign('fcbiol' , fcbiol , envir = env)
+    assign('sumP'   , sumP   , envir = env)
     
   }
   
   #TO DO: Alexandre -
   ztopPft[i] <- (min(plai[i]/5, 1)) * ztopmxPft[i]
 
-  assign("endCycle", endCycle, envir = env)
-  assign("ztopPft", ztopPft, envir = env)
+  assign("endCycle" , endCycle , envir = env)
+  assign("ztopPft"  , ztopPft  , envir = env)
   assign("greenfrac", greenfrac, envir = env)
-  assign("idpp", idpp, envir = env)
-  assign("idpe", idpe, envir = env)
-  assign("aroot", aroot, envir = env)
-  assign("aleaf", aleaf, envir = env)
-  assign("astem", astem, envir = env)
-  assign("arepr", arepr, envir = env)
-  assign("cbiol", cbiol, envir = env)
-  assign("cbiog", cbiog, envir = env)
-  assign('cbioc'   , cbioc   , envir = env)
-  assign("cbiop", cbiop, envir = env)
-  assign("cbios", cbios, envir = env)
-  assign("cbior", cbior, envir = env)
-  assign("plai", plai, envir = env)
-  assign("peaklai", peaklai, envir = env)
-  assign("aerial", aerial, envir = env)
-  assign("aybprod", aybprod, envir = env)
-  assign("ayabprod", ayabprod, envir = env)
-  assign("ayrprod", ayrprod, envir = env)
-  assign("aylprod", aylprod, envir = env)
-  assign("biomass", biomass, envir = env)
-  assign("ayanpp", ayanpp, envir = env)
-  assign("croplive", croplive, envir = env)
-  assign("harvdate", harvdate, envir = env)
-  assign("cropy", cropy, envir = env)
-  assign("DRLVTa",DRLVTa, envir = env)
-  assign("ndiasV6",ndiasV6,envir = env)
-  assign("ndiasR0",ndiasR0,envir = env)
-  assign("ndiasR4",ndiasR4,envir = env)
-  assign("ndiasR9",ndiasR9,envir = env)
-  assign("DVS"    ,DVS    ,envir = env)
-  assign("TMAXC"  ,TMAXC  ,envir = env)
-  assign("TMINC"  ,TMINC  ,envir = env)
-  assign("TTSUM"  ,TTSUM  ,envir = env)
-  assign("ID"  ,ID  ,envir = env)
-  assign("SRCT"  ,SRCT  ,envir = env)
+  assign("idpp"     , idpp     , envir = env)
+  assign("idpe"     , idpe     , envir = env)
+  assign("aroot"    , aroot    , envir = env)
+  assign("aleaf"    , aleaf    , envir = env)
+  assign("astem"    , astem    , envir = env)
+  assign("arepr"    , arepr    , envir = env)
+  assign("cbiol"    , cbiol    , envir = env)
+  assign("cbiog"    , cbiog    , envir = env)
+  assign('cbioc'    , cbioc    , envir = env)
+  assign("cbiop"    , cbiop    , envir = env)
+  assign("cbios"    , cbios    , envir = env)
+  assign("cbior"    , cbior    , envir = env)
+  assign("plai"     , plai     , envir = env)
+  assign("peaklai"  , peaklai  , envir = env)
+  assign("aerial"   , aerial   , envir = env)
+  assign("aybprod"  , aybprod  , envir = env)
+  assign("ayabprod" , ayabprod , envir = env)
+  assign("ayrprod"  , ayrprod  , envir = env)
+  assign("aylprod"  , aylprod  , envir = env)
+  assign("biomass"  , biomass  , envir = env)
+  assign("ayanpp"   , ayanpp   , envir = env)
+  assign("croplive" , croplive , envir = env)
+  assign("harvdate" , harvdate , envir = env)
+  assign("cropy"    , cropy    , envir = env)
   
 }
 
