@@ -8,11 +8,6 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
   
   simDataVars$gridSolved <- F
 
-  coords <- GetCoords(path = stationDataPath)
-  
-  finalLat <- coords[[1]]
-  finalLon <- coords[[2]]
-  
   len <- length(simConfigs)
   for(i in seq(1,len)) {
     
@@ -133,11 +128,6 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
       }
     }
     
-    nearestCoord <- GetNearestCoord(finalLat, finalLon, inputLat = simConfigs[[i]]$coord$lat, inputLon = simConfigs[[i]]$coord$lon)
-    
-    
-    simConfigs[[i]]$coord$lat <- nearestCoord[1]
-    simConfigs[[i]]$coord$lon <- nearestCoord[2]
     
     # Passa a configuração para a instancia da simulação
     simInstances[[id]]$config <- simConfigs[[i]]

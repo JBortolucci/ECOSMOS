@@ -63,6 +63,7 @@ inisoil <- function() {
   swater   <- array(0, nsoilay)
   sice     <- array(0, nsoilay)
   soilbase <- array(0, nsoilay)
+  depth    <- array(0, nsoilay)
   
   cpwfdat <- c(
     0.0495,     # sand
@@ -206,8 +207,8 @@ inisoil <- function() {
   assign("bperm", bperm, envir = env)
   assign("carfrac", carfrac, envir = env)
   assign("texfact", texfact, envir = env)
-  
   assign("soilbase",  soilbase, envir = env)
+  assign("depth",  depth, envir = env)
   
   # surface parameters
   assign("albsav",  fracsand[1] * 0.120 + fracsilt[1] * 0.085 + fracclay[1] * 0.050, envir = env)
