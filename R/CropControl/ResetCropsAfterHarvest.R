@@ -15,6 +15,7 @@ ResetCropsAfterHarvest <- function() {
         peaklai[i] <- 0
         ccdays[i]  <- 0
         cbiol[i]   <- 0
+        cbioc[i]   <- 0
         cbior[i]   <- 0
         cbios[i]   <- 0
         cbiog[i]   <- 0
@@ -75,6 +76,7 @@ ResetCropsAfterHarvest <- function() {
         assign("peaklai", peaklai, envir = env)
         assign("ccdays", ccdays, envir = env)
         assign("cbiol", cbiol, envir = env)
+        assign("cbioc", cbioc, envir = env)
         assign("cbior", cbior, envir = env)
         assign("cbiow", cbiow, envir = env)
         assign("hui", hui, envir = env)

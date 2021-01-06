@@ -17,10 +17,28 @@ simDataVars$SRCT     <- 0
 
 
 MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
-  
+
   environment(calc_dtt) <- env
   
   i <- index
+  
+  # PARAMETERS #####
+  gddf <- 170
+  gddt <- 1500
+  gdds <- (0.41 * gddt) + 145.4
+  laic <- 4
+  pden <- 7 # plants per m⁻²
+  phyl <- 38.9
+  laim <- 0.7
+  dsstop <- 1.15
+  
+  fresp <- list('leaf'  = 0.47, # g-CH2O g-DM⁻¹
+                'root'  = 0.45, # g-CH2O g-DM⁻¹
+                'stem'  = 0.52, # g-CH2O g-DM⁻¹
+                'grain' = 0.49) # g-CH2O g-DM⁻¹
+  
+  rgrowth <- 0.30
+  ##################
   
   greenfrac[i] < -1.0
   
@@ -30,121 +48,194 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     if(idpp[i] == 1) {
       
-      cbiow[i]  <- 0.00
-      cbiob[i]  <- 0.00
-      cbior[i]  <- 0.00
-      cbiol[i]  <- 0.20
-      cbiocr[i] <- 0.01
-      
-      dum8 <- 0.0
       cumPh <- 1.0
       xn <- 3.0
       
-      sumdtt8 <- 0.0
-      sumdtt10 <- 0.0
+      cbios[i]  <- 0.00
+      cbior[i]  <- 0.00
+      cbiol[i]  <- 2.00 * pden * 0.4 * 1e-3
+      cbioc[i]  <- 0.00
+      plai[i]  <- cbiol[i] * specla[i]
+      
+      dum8 <- 0.0
+      
+      gdd8 <- 0.0
+      gdd10 <- 0.0
       pla <- 0.0
       leafwb <- 0.0
-      cumdtt8 <- 0.0
+      sumgdd8 <- 0.0
       
     }
     
-    # PARAMETERS #####
-    dtts <- 400
-    dttf <- 170
-    dttt <- 1200
-    specla[i] <- 400 # cm2 g-1
-    laic <- 10
-    pden <- 7 # plants per m-2
-    phyl <- 38.9
-    ##################
+    sen <- list()
     
-    gdd8     <- calc_dtt(idpp[i], jday,  8, 34)
-    gdd10    <- calc_dtt(idpp[i], jday, 10, 34)
-    sumdtt8  <- sumdtt8  + gdd8
-    sumdtt10 <- sumdtt10 + gdd10
+    dtt8     <- calc_dtt(idpp[i], jday,  8, 34)
+    dtt10    <- calc_dtt(idpp[i], jday, 10, 34)
+    gdd8  <- gdd8  + dtt8
+    gdd10 <- gdd10 + dtt10
+    
+    if (idpp[i] == 1) {
+      tlno <- (gdd8 / (phyl * 0.5)) + 6
+      P3 <- (tlno - 2.0) * phyl + 96 - gdd8
+    }
     
     tmean  <- (tmax + tmin) / 2.0
-    
-    tlno <- (sumdtt8 / 21.0) + 6
-    P3 <- (tlno - 2.0) * phyl + 96 - sumdtt8
-    
+    fr <- 1.0 / (1.0 - rgrowth)
+  
     if (cumPh < 5.0) {
       pc <- 0.66 + 0.068 * cumPh
     } else {
       pc <- 1
     }
     
-    ti <- gdd8 / (phyl * pc)
+    ti <- dtt8 / (phyl * pc)
     cumPh <- cumPh + ti
-    xn <- cumPh + 1
+    xn <- max(xn, cumPh + 1)
     
-    slfc <- ifelse(test = plai[i] < laic, yes = 1.0, no = min(1.0, max(0.0, 1.0 - 0.008 * (plai[i] - laic))))
-    slft <- ifelse(test = tmean > 279.15, yes = 1.0, no = min(1.0, max(0.0, 1.0 - (279.15 - tmean) / 279.15)))
+    slfc <- ifelse(test = plai[i] < laic,
+                   yes  = 1.0,
+                   no   = min(1.0, max(0.0, 1.0 - 0.008 * (plai[i] - laic))))
     
-    lsr <- ifelse(test = slfc <= slft, yes = 1.0 - slfc, no = 1.0 - slft)
+    slft <- ifelse(test = tmean > 279.15,
+                   yes  = 1.0,
+                   no   = min(1.0, max(0.0, 1.0 - (279.15 - tmean) / 279.15)))
     
-    if (sumdtt10 < dtts - P3) {
+    lsr <- ifelse(test = slfc <= slft,
+                  yes  = 1.0 - slfc,
+                  no   = 1.0 - slft)
+    
+    if (gdd8 / (gdd8 + P3) > gdd10 / gdds) {
       
-      # STAGE 1: from emergence to tassel initiation
+      # STAGE 1: from emergence to ´tassel initiation
       
-      if (xn < 4) {
-        plag <- 3 * xn * ti
-      } else {
-        plag <- 3.5 * xn^2 * ti
-      }
+      print(c('rGDD8' = gdd8 / (gdd8 + P3), 'rGDD10' = gdd10 / gdds))
       
+      tlno <- (gdd8 / (phyl * 0.5)) + 6
+      P3 <- (tlno - 2.0) * phyl + 96 - gdd8
+      
+      plag <- ifelse(test = xn < 4,
+                     yes  = 3.0 * xn * ti,
+                     no   = 3.5 * (xn^2) * ti)
+
       pla <- pla + plag
-      leafwt <- pla / specla[i]
+      leafwt <- pla / (specla[i] * 25) # value 25 is a convertion factor for SPECLA (from m²/kg-C to cm²/g-DM)
       leafwg <- leafwt - leafwb
       leafwb <- leafwt
-      
       xnti <- xn
       
-      slan <- sumdtt8 * pla / 1e4
-      plas <- plag * lsr
+      sen$slan <- gdd8 * pla / 1e4
+      sen$plas <- plag * lsr
+      sen <- max(unlist(sen))
+      pla <- pla - sen
+      fsen <- (leafwg - (sen / (specla[i] * 25))) / leafwg # value 25 is a convertion factor for SPECLA (from m²/kg-C to cm²/g-DM)
       
-      plas <- max(plas, slan)
-      cbiol[i] <- cbiol[i] + (leafwg - plas / specla[i]) * pden
+      ds <- max(0.0, min(1.0, gdd10 / gdds))
       
-    } else if (sumdtt10 < dtts) {
+      aroot <- max(0.0, min(0.5, arooti - (ds * (arooti / dsstop))))
+      aleaf <- max(0.0, 1.0 - aroot)
+      
+      cbiorg <- max(0.0, aroot * adnpp[i] * fr / (1.0 + fresp$root))
+      cbiolg <- max(0.0, aleaf * adnpp[i] * fr / (1.0 + fresp$leaf))
+      
+      cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot)
+      cbiol[i] <- cbiol[i] + cbiolg * fsen
+      
+      # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i]))
+      
+    } else if (gdd10 < gdds) {
       
       # STAGE 2: from tassel initiation to silking
       
+      # print(c('xn' = xn, 'tlno' = tlno))
+      
       if (xn <= 12) {
         plag <- 3.5 * xn^2 * ti
+        pla <- pla + plag
         leafwg <- 0.00116 * plag * pla^0.25
-        stemg <- leafwg * 0.0182 * (xn - xnti)^2
+        stemwg <- leafwg * 0.0182 * (xn - xnti)^2
       } else if (xn > 12 & xn <= tlno - 3) {
         plag <- 595 * ti
+        pla <- pla + plag
         leafwg <- 0.00116 * plag * pla^0.25
-        stemg <- leafwg * 0.0182 * (xn - xnti)^2
+        stemwg <- leafwg * 0.0182 * (xn - xnti)^2
       } else if(xn > tlno - 3) {
         plag <- 595 * ti / sqrt(xn + 5 - tlno)
+        pla <- pla + plag
         leafwg <- 0.00116 * plag * pla^0.25
-        stemg <- 10.85 * ti
+        stemwg <- 10.85 * ti
       }
       
-      slan <- pla / 1e3
-      plas <- plag * lsr
+      sen$slan <- pla / 1e3
+      sen$plas <- plag * lsr
       
-      dum8 <- sumdtt8
-      mplai <- plai[i]
+      sen <- max(unlist(sen))
+      pla <- pla - sen
+      fsen <- (leafwg - (sen / (specla[i] * 25))) / leafwg # value 25 is a convertion factor for SPECLA (from m²/kg-C to cm²/g-DM)
       
-      plas <- max(plas, slan)
-      cbiol[i] <- cbiol[i] + (leafwg - plas / specla[i]) * pden 
+      leafwg <- leafwg / (1.0 + fresp$leaf)
+      stemwg <- stemwg / (1.0 + fresp$stem)
       
-    } else if (sumdtt8 < dum8 + dttf) {
+      ds <- max(0.0, min(1.0, gdd10 / gdds))
+      
+      aroot <- max(0.0, min(0.50, arooti - (ds * (arooti / dsstop))))
+      aleaf <- max(0.0, (1.0 - aroot) * (leafwg / (leafwg + stemwg)))
+      astem <- max(0.0, 1.0 - aroot - aleaf)
+      
+      cbiorg <- max(0.0, aroot * adnpp[i] * fr / (1 + fresp$root))
+      cbiolg <- max(0.0, aleaf * adnpp[i] * fr / (1 + fresp$leaf))
+      cbiosg <- max(0.0, astem * adnpp[i] * fr / (1 + fresp$stem))
+      
+      cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot[i])
+      cbiol[i] <- cbiol[i] + cbiolg * fsen
+      cbios[i] <- cbios[i] + cbiosg
+      
+      # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i]))
+      
+      dum8 <- gdd8
+      
+    } else if (gdd8 < dum8 + gddf) {
       
       # STAGE 3: from silking to effective grain filling
       
-      cumdtt8 <- cumdtt8 + (gdd8 / (1 - lsr))
-      slan <- (mplai / peaklai[i]) * (cumdtt8 / dttf) ^ sg
+      sumgdd8 <- sumgdd8 + (dtt8 / (1 - lsr))
+      sen <- laim * (sumgdd8 / gddf) ^ sg
+      pla <- pla - sen
       
-      cbiol[i] <- cbiol[i] - (slan / specla[i]) * pden 
+      stemwg <- 0.220 * dtt8 / (1.0 + fresp$stem)
+      cobwg  <- 0.088 * dtt8 / (1.0 + fresp$grain)
       
-    } else if (sumdtt10 < dttt) {
+      ds <- max(1.0, min(2.0, 1.0 + (gdd10 - gdds)/(gddt - gdds)))
+      
+      aroot <- max(0.0, min(0.50, arooti - (ds * (arooti / dsstop))))
+      acob  <- max(0.0, cobwg * (1.0 - aroot) / (cobwg + stemwg))
+      astem <- max(0.0, 1.0 - aroot - acob)
+      
+      cbiorg <- max(0.0, aroot * adnpp[i] * fr / (1 + fresp$root))
+      cbiocg <- max(0.0, acob  * adnpp[i] * fr / (1 + fresp$grain))
+      cbiosg <- max(0.0, astem * adnpp[i] * fr / (1 + fresp$stem))
+      
+      if(cbioc[i] == 0.0) {
+        cbioc[i] <- cbios[i] * 0.167
+        cbios[i] <- cbios[i] - cbios[i]
+      }
+      
+      cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot)
+      cbioc[i] <- cbioc[i] + cbiocg
+      cbios[i] <- cbios[i] + cbiosg
+      
+      # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbioc' = cbioc[i], 'cbios' = cbios[i]))
+      
+    } else if (gdd10 < gddt) {
       
       # STAGE 4: from effective grain filling to physiological maturity
+      
+      sumgdd8 <- sumgdd8 + (dtt8 / (1 - lsr))
+      sen <- laim * (sumgdd8 / gddf) ^ sg
+      
+    } else {
+      
+      
+      endCycle <- T
       
     }
     
@@ -158,15 +249,15 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     # BRYAN TO DO ->  END IF
     
     # update vegetation's physical characteristics
-    plai[i] <- cbiol[i] * specla[i] / 1e4
-    # print(plai[i])
+    plai[i] <- max(0.0, cbiol[i] * specla[i])
+    print(c('lai' = plai[i]))
     
-    peaklai[i]  <- max(peaklai[i]  ,plai[i])
+    peaklai[i]  <- max(peaklai[i], plai[i])
     
     greenfrac[i] <- 1.0
     
     
-    biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbiop[i]
+    biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbioc[i]
     
     # keep track of aboveground annual npp
     ayanpp[i] <- ayanpp[i] + adnpp[i]
@@ -179,34 +270,28 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     # keep track of total biomass production for the entire year, and the
     aybprod[i] <- aybprod[i] +
-      aleaf[i] * max(0.0,adnpp[i]) +
-      abranch[i] * max(0.0,adnpp[i]) +
-      aroot[i] * max(0.0,adnpp[i]) +
-      awood[i] * max(0.0,adnpp[i]) +
-      acroot[i] * max(0.0,adnpp[i])
+      aleaf[i] * max(0.0, adnpp[i] * fr / (1 + fresp$leaf)) +
+      aroot[i] * max(0.0, adnpp[i] * fr / (1 + fresp$root)) +
+      astem[i] * max(0.0, adnpp[i] * fr / (1 + fresp$stem)) +
+      acob[i]  * max(0.0, adnpp[i] * fr / (1 + fresp$grain))
     
     # aboveground value to calculate harvest index
     ayabprod[i] <- ayabprod[i] +
-      aleaf[i] * max(0.0,adnpp[i]) +
-      abranch[i] * max(0.0,adnpp[i]) +
-      awood[i] * max(0.0,adnpp[i])
+      aleaf[i] * max(0.0, adnpp[i] * fr / (1 + fresp$leaf)) +
+      astem[i] * max(0.0, adnpp[i] * fr / (1 + fresp$stem)) +
+      acob[i]  * max(0.0, adnpp[i] * fr / (1 + fresp$grain))
     
     
     # keep track of annual total root production carbon
     ayrprod[i] <- ayrprod[i] +
-      aroot[i] * max(0.0,adnpp[i]) +
-      acroot[i] * max(0.0,adnpp[i])
+      aroot[i] * max(0.0, adnpp[i] * fr / (1 + fresp$root))
     
     
     # keep track of total carbon allocated to
     # leaves for litterfall calculation
     aylprod[i] <- aylprod[i] +
-      aleaf[i] * max (0.0, adnpp[i])
-    
-    
-    
-    
-    
+      aleaf[i] * max(0.0, adnpp[i] * fr / (1 + fresp$leaf))
+
     #####################################################################
     # check for climatic and phenological limits on maturity, growth,
     # and harvest date
@@ -275,27 +360,25 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       stop()
     }
     
-    assign('sumdtt8' , sumdtt8 , envir = env)
-    assign('sumdtt10', sumdtt10, envir = env)
+    assign('gdd8'    , gdd8    , envir = env)
+    assign('gdd10'   , gdd10   , envir = env)
     assign('cumPh'   , cumPh   , envir = env)
     assign('pla'     , pla     , envir = env)
     assign('leafwb'  , leafwb  , envir = env)
     assign('dum8'    , dum8    , envir = env)
     assign('xnti'    , xnti    , envir = env)
-    assign('cumdtt8' , cumdtt8 , envir = env)
-    try(expr = assign('mplai'   , mplai   , envir = env), silent = T)
+    assign('sumgdd8' , sumgdd8 , envir = env)
+    assign('xn'      , xn      , envir = env)
+    assign('P3'      , P3      , envir = env)
+    assign('tlno'    , tlno    , envir = env)
     
   }
   
   #TO DO: Alexandre -
   ztopPft[i] <- (min(plai[i]/5, 1)) * ztopmxPft[i]
-  
-  
-  
+
   assign("endCycle", endCycle, envir = env)
-  
   assign("ztopPft", ztopPft, envir = env)
-  
   assign("greenfrac", greenfrac, envir = env)
   assign("idpp", idpp, envir = env)
   assign("idpe", idpe, envir = env)
@@ -305,6 +388,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("arepr", arepr, envir = env)
   assign("cbiol", cbiol, envir = env)
   assign("cbiog", cbiog, envir = env)
+  assign('cbioc'   , cbioc   , envir = env)
   assign("cbiop", cbiop, envir = env)
   assign("cbios", cbios, envir = env)
   assign("cbior", cbior, envir = env)
@@ -320,7 +404,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
   assign("cropy", cropy, envir = env)
-  
   assign("DRLVTa",DRLVTa, envir = env)
   assign("ndiasV6",ndiasV6,envir = env)
   assign("ndiasR0",ndiasR0,envir = env)
@@ -331,7 +414,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("TMINC"  ,TMINC  ,envir = env)
   assign("TTSUM"  ,TTSUM  ,envir = env)
   assign("ID"  ,ID  ,envir = env)
-  
   assign("SRCT"  ,SRCT  ,envir = env)
   
 }

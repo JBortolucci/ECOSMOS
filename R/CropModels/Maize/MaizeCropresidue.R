@@ -141,6 +141,7 @@ MaizeCropresidue <- function (year, year0, jday, index) {
     
     cbior[j] <- 0.0
     cbiol[j] <- 0.0
+    cbioc[j] <- 0.0
     cbiog[j] <- 0.0
     cbiop[j] <- 0.0
     cbios[j] <- 0.0
@@ -195,6 +196,7 @@ MaizeCropresidue <- function (year, year0, jday, index) {
   assign("peaklai", peaklai, envir = env)
   assign("ccdays", ccdays, envir = env)
   assign("cbior", cbior, envir = env)
+  assign("cbioc", cbioc, envir = env)
   assign("cbiol", cbiol, envir = env)
   assign("cbiog", cbiog, envir = env)
   assign("cbiop", cbiop, envir = env)

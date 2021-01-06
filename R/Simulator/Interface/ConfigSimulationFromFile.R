@@ -140,7 +140,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     ReadDailyStationData(stationDataPath, simConfigs[[i]]$coord$lat, simConfigs[[i]]$coord$lon,  simInstances[[id]])
     
     # Henrique & Leandro: irrigation feature [2020-11-06]
-    try(ReadDailyIrrigationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)
+    # try(ReadDailyIrrigationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)
   }
   
   # TODO: Nessa prieira versão uma planta roda após a outra, tal como especificado no arquivo de configuração.
