@@ -1,7 +1,4 @@
 
-
-
-
 simDataVars$ndiasV6    <- 0
 simDataVars$ndiasR0    <- 0
 simDataVars$ndiasR4    <- 0
@@ -14,7 +11,30 @@ simDataVars$DRLVTa     <- 0
 simDataVars$ID     <- 0
 simDataVars$SRCT     <- 0
 
-
+simDataVars$cumPh  <-  0
+simDataVars$xn  <-  0
+simDataVars$gdd8  <-  0
+simDataVars$gdd10  <-  0
+simDataVars$sumgdd8  <-  0
+simDataVars$pla  <-  0
+simDataVars$leafwb  <-  0
+simDataVars$dtt8  <-  0
+simDataVars$dtt10  <-  0
+simDataVars$tlno  <-  0
+simDataVars$P3  <-  0
+simDataVars$fr  <-  0
+simDataVars$slfc  <-  0
+simDataVars$slft  <-  0
+simDataVars$lsr  <-  0
+simDataVars$plag  <-  0
+simDataVars$leafwt  <-  0
+simDataVars$leafwg  <-  0
+simDataVars$leafwb  <-  0
+simDataVars$xnti  <-  0
+simDataVars$ds  <-  0
+simDataVars$stemwg  <-  0
+simDataVars$cobwg  <-  0
+  
 
 MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
 
@@ -43,7 +63,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   efftrans <- 0.26 # Efficiency of carbon translocation from leaves/stem to grain filling
   ##################
   
-  greenfrac[i] < -1.0
+  greenfrac[i] < 1.0
   
   if (croplive[i] == 1) {
     
@@ -122,6 +142,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       # STAGE 1: from emergence to ´tassel initiation
       
+      print(c('rGDD8' = gdd8 / (gdd8 + P3), 'rGDD10' = gdd10 / gdds))
       tlno <- (gdd8 / (phyl * 0.5)) + 6
       P3 <- (tlno - 2.0) * phyl + 96 - gdd8
       
@@ -130,7 +151,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
                      no   = 3.5 * (xn^2) * ti)
 
       pla <- pla + plag
-      leafwt <- pla / (specla[i] * 25) # value 25 is a convertion factor for SPECLA (from m²/kg-C to cm²/g-DM)
+      leafwt <- pla / (specla[i] * 10) # 10 (from m²/kg DM to cm²/g DM) | value 25 is a convertion factor for SPECLA (from m²/kg-C to cm²/g-DM)
       leafwg <- leafwt - leafwb
       leafwb <- leafwt
       xnti <- xn
@@ -139,7 +160,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       sen$plas <- plag * lsr
       sen <- max(unlist(sen))
       pla <- pla - sen
-      fsen <- (leafwg - (sen / (specla[i] * 25))) / leafwg # value 25 is a convertion factor for SPECLA (from m²/kg-C to cm²/g-DM)
+      fsen <- (leafwg - (sen / (specla[i] * 10))) / leafwg # value 25 is a convertion factor for SPECLA (from m²/kg-C to cm²/g-DM)
       
       ds <- max(0.0, min(1.0, gdd10 / gdds))
       
@@ -152,13 +173,13 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot)
       cbiol[i] <- cbiol[i] + cbiolg * fsen
       
-      # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i]))
+      print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i]))
       
     } else if (gdd10 < gdds) {
       
       # STAGE 2: from tassel initiation to silking
       
-      # print(c('xn' = xn, 'tlno' = tlno))
+      print(c('xn' = xn, 'tlno' = tlno))
       
       if (xn <= 12) {
         plag <- 3.5 * xn^2 * ti
@@ -182,7 +203,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       sen <- max(unlist(sen))
       pla <- pla - sen
-      fsen <- (leafwg - (sen / (specla[i] * 25))) / leafwg # value 25 is a convertion factor for SPECLA (from m²/kg-C to cm²/g-DM)
+      fsen <- (leafwg - (sen / (specla[i] * 10))) / leafwg # value 25 is a convertion factor for SPECLA (from m²/kg-C to cm²/g-DM)
       
       leafwg <- leafwg / (1.0 + fresp$leaf)
       stemwg <- stemwg / (1.0 + fresp$stem)
@@ -201,7 +222,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       cbiol[i] <- cbiol[i] + cbiolg * fsen
       cbios[i] <- cbios[i] + cbiosg
       
-      # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i]))
+      print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i]))
       
       dum8 <- gdd8
       
@@ -244,7 +265,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       fcbios <- cbios[i] * 0.60
       fcbiol <- cbiol[i] * 0.15
       
-      # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbioc' = cbioc[i], 'cbios' = cbios[i]))
+      print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbioc' = cbioc[i], 'cbios' = cbios[i]))
       
     } else if (gdd10 < gddt) {
       
@@ -291,14 +312,15 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     }
     
     # update vegetation's physical characteristics
-    plai[i] <- max(0.0, cbiol[i] * specla[i])
-    # print(c('lai' = plai[i]))
+    plai[i] <- min(max(0.0, cbiol[i] * specla[i]),5) #TODO check
+    print(c('lai' = plai[i]))
     
     peaklai[i]  <- max(peaklai[i], plai[i])
     
     greenfrac[i] <- 1.0
     
     biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbioc[i]
+    print(c('biomass' = biomass[i]))
     
     # keep track of aboveground annual npp
     ayanpp[i] <- ayanpp[i] + adnpp[i]
@@ -360,10 +382,14 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
           sep = "\n")
     
     
-    
     if(cropy == 1) {
       if ( gdd10 >= gddt ) { # maximum harvest date
         
+        print(paste('Harvest Maize ',ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai[i],cbiog[i],sep = " ; "    ))
+        
+        fileout=paste("Maize_SEASON.csv")
+        write(paste(ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai,cbiog[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
+
         cat('\nMaize harvested! Harvest date:', paste(sprintf('%04d',year), sprintf('%02d', month), sprintf('%02d', day), sep = '-'),'\n')
         
         croplive[i]   <- 0.0

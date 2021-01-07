@@ -1,2 +1,2 @@
 ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,planting day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
-USNEME_Rainfed_2012,41.1649,-96.4701,2012,135,2012,279,IBAFlUSNe3,./inst/input_1d/NES30116.txt,1,0,1,0,0,maize,136,2012,29,76,5.1,139,1,rice1
+USNEME_Irrigated_2003,41.1649,-96.4701,2003,133,2003,297,IBAFlUSNe2,./inst/input_1d/NES20116.txt,0,0,1,0,0,maize,134,2003,7.8,75,5.1,162,1,maize1

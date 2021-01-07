@@ -13,7 +13,7 @@ MaizePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   
   
   if(pstart[i] == cdays && exist[i] == 1 && croplive[i] != 1) {
-    # print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i]," cdays ",cdays,sep=" / "))
+    print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i]," cdays ",cdays,sep=" / "))
   }
   
   
@@ -65,14 +65,16 @@ MaizePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
     
     # Plating block for Soybean, corn, and wheat
     
+    
     if(cropy == 0 && cdays >= pstart[i] && cdays <= (pstart[i]+180)) {
       
       croplive[i]     <- 1        # initialize freeze kill function to 1 - crops living 
       cropplant[i]    <- 1        # initialize freeze kill function to 1 - crops living 
       idop[i]         <- jday    
       cropy            <- 1
+      gddmaturity[i]  <- hybgdd[i]
 
-      # print(paste('1st Plant Maize ', jday, imonth, iyear,hybgdd[i],gddmaturity[i],sep=' / '))
+      print(paste('1st Plant Maize ', jday, imonth, iyear,hybgdd[i],gddmaturity[i],sep=' / '))
       
     }
     
