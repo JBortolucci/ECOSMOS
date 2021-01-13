@@ -322,7 +322,7 @@ sumnow <- function() {
     # TODO: Criar variável (criar acroot e abranch)
     
     if(tnpp[k] > 0 && plantList[[k]]$type == CROPS) {
-      fracgrowresp <- tnpp[k] * rgrowthc[k] * (aroot[k] + acroot[k])
+      # fracgrowresp <- tnpp[k] * rgrowthc[k] * (aroot[k] + acroot[k])
       tnpp[k]      <- tnpp[k] * (1 - rgrowthc[k])
     }
     
@@ -339,7 +339,8 @@ sumnow <- function() {
     #     tco2root <- sum(mcbior[k] +  mcbiocr[k] + fracgrowresp)
     # }
     # 
-    tco2root <- ifelse(plantList[[k]]$active && plantList[[k]]$type == CROPS, sum(mcbior[k] +  mcbiocr[k] + fracgrowresp), tco2root)
+    # tco2root <- ifelse(plantList[[k]]$active && plantList[[k]]$type == CROPS, sum(mcbior[k] +  mcbiocr[k] + fracgrowresp), tco2root)
+    tco2root <- ifelse(plantList[[k]]$active && plantList[[k]]$type == CROPS, sum(mcbior[k] +  mcbiocr[k]), tco2root)
   }
   # ---------------------------------------------------------------------
   # *  *  * calculate instantaneous NEE *  * *

@@ -2,8 +2,6 @@
 
 inisoil <- function() {
   
-  # MICHEL
-  
   # added for Green-Ampt
   assign("fwpudtot", array(0, 1), envir = env)
   assign("wpud", array(0, 1), envir = env)
@@ -84,21 +82,27 @@ inisoil <- function() {
     # Minimum information
     fracclay[k] <- SOIL.profile$SLCL[k]/100               # clay content
     fracsilt[k] <- SOIL.profile$SLSI[k]/100               # silt content
-    fracsand[k] <- 1- fracclay[k] - fracsilt[k]        # sand content 
-    if(k==1) {  hsoi[k]<-SOIL.profile$SLB[k]/100 } 
+    fracsand[k] <- 1- fracclay[k] - fracsilt[k]           # sand content 
     
-    else { 
-      hsoi[k]<-(SOIL.profile$SLB[k]/100)-(SOIL.profile$SLB[k-1]/100)
+    if(k==1) {  
+      
+      hsoi[k]<-SOIL.profile$SLB[k]/100 
+      
+    } else {
+      
+      hsoi[k]<-(SOIL.profile$SLB[k]/100) - (SOIL.profile$SLB[k-1]/100)
+      
     }
     
-    if( (fracclay[k]+fracsilt[k]+fracsand[k])!= 1 | hsoi[k]< 0.01 ){
+    if( (fracclay[k] + fracsilt[k] + fracsand[k])!= 1 | hsoi[k]< 0.01 ){
       print('Check the Texture and soil layers depth in the inst/input/SOIL.csv')
       stop()   }
     
     # Apply Pedotransfer function    
     pedofunct <- 1 # the PTF option
-    
+
     if(pedofunct == 1) {
+      
       poros[k]   <- (50.5 - 3.7 * fracclay[k] - 14.2 * fracsand[k]) / 100 # porosity (fraction):
       sfield[k]  <- 1 / poros[k] * (50.5-3.7*fracclay[k]-14.2*fracsand[k])/100 * (1.157e-9 / hydraul[k])**(1/(2*bex[k]+3))
       swilt[k]   <- 1 / poros[k] * (50.5-3.7*fracclay[k]-14.2*fracsand[k])/100 *((10**(2.17-0.63*fracclay[k]-1.58*fracsand[k])*0.01)/(1500/9.80665))**(1/bex[k])
@@ -106,8 +110,10 @@ inisoil <- function() {
       suction[k] <- 10 ** (2.17 - 0.63 * fracclay[k] - 1.58 * fracsand[k]) * 0.01
       bex[k]     <- 3.10 + 15.7 * fracclay[k] - 0.3 * fracsand[k]
       bperm      <- 0.01
+      
+      print(paste('Calculated Soil Properties',poros[1],sfield[1],swilt[1],hydraul[1],suction[1],bex[1],SRGF[1],bulkd[1],bperm[1],sep=" / "))
+      
     } 
-    
     
     if(!is.na(SOIL.profile$SSAT[k])) {poros[k]    <- SOIL.profile$SSAT[k]                  } # porosity (volume fraction)
     if(!is.na(SOIL.profile$SDUL[k])) {sfield[k]   <- (1 / poros[k]) * SOIL.profile$SDUL[k] } # field capacity as fraction of porosity (volume fraction)
@@ -117,10 +123,9 @@ inisoil <- function() {
     if(!is.na(SOIL.profile$BEXP[k])) {bex[k]      <- SOIL.profile$BEXP[k]                  } # Campbell's 'b' exponent
     if(!is.na(SOIL.profile$SRGF[k])) {SRGF[k]     <- SOIL.profile$SRGF[k]                  } # Root hospitality factor 
     if(!is.na(SOIL.profile$SBDM[k])) {bulkd[k]    <- SOIL.profile$SBDM[k]                  } # Bulk density
-    if(!is.na(SOIL.profile$Bperm[k])){ bperm      <-  SOIL.profile$Bperm[1]}
+    if(!is.na(SOIL.profile$Bperm[k])){bperm       <- SOIL.profile$Bperm[1]}                  # Soil hydraulic diffusivity lower b.c. (units???)
     
     ibex[k]     <- round(bex[k])
-    
     soilbase[k] <- SOIL.profile$SLB[k]
     depth[k]    <- hsoi[k] * 100
     
@@ -158,9 +163,7 @@ inisoil <- function() {
   # }
   
   assign("wsoi", matrix(0.9, 1, nsoilay), envir = env)
-  
-  
-  
+
   #SVC Move carfrac and texfact from soilbgc to here, need to compute only once   
   # Top 1 m of soil 
   rdepth  <- 0

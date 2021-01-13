@@ -374,7 +374,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       Signew <- min(max(Signew,Sigmin), Sigmax)
       Signew <- Signew * (0.5+0.5 * waterfact)
       
-      print(paste(Signew,ztop[1],sep="//"))
+      # print(paste(Signew,ztop[1],sep="//"))
       
       #computation of new LAI from G'DAY  (not using, see bellow that LAI is re-calculated)
       # Deadleaves/Shoot = fraction of leaf mass which turns over; it is assumed that the same fraction of leaf area turns over.
@@ -395,12 +395,12 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       #---------------------
       #C Pool update
       #---------------------
-      cbiow[i] <- cbiow[i] + (awood[i]    * max (0.0, adnpp[i]))  - (deltay * Deadwood      / kg_C_M2_to_T_ha)
-      cbiob[i] <- cbiob[i] + (abranch[i]  * max (0.0, adnpp[i]))  - (deltay * Deadbranch    / kg_C_M2_to_T_ha)
-      cbior[i] <- cbior[i] + (aroot[i]    * max (0.0, adnpp[i]))  - (deltay * Deadfineroots / kg_C_M2_to_T_ha)
-      cbiol[i] <- cbiol[i] + (aleaf[i]    * max (0.0, adnpp[i]))  - (deltay * Deadleaves    / kg_C_M2_to_T_ha)
+      cbiow[i]  <- cbiow[i] + (awood[i]    * max (0.0, adnpp[i]))  - (deltay * Deadwood      / kg_C_M2_to_T_ha)
+      cbiob[i]  <- cbiob[i] + (abranch[i]  * max (0.0, adnpp[i]))  - (deltay * Deadbranch    / kg_C_M2_to_T_ha)
+      cbior[i]  <- cbior[i] + (aroot[i]    * max (0.0, adnpp[i]))  - (deltay * Deadfineroots / kg_C_M2_to_T_ha)
+      cbiol[i]  <- cbiol[i] + (aleaf[i]    * max (0.0, adnpp[i]))  - (deltay * Deadleaves    / kg_C_M2_to_T_ha)
       cbiocr[i] <- cbiocr[i] + (acroot[i] * max (0.0, adnpp[i]))  - (deltay * Deadcoroots   / kg_C_M2_to_T_ha)
-      plai[i] <- max(cbiol[i]*Signew/ Cfracts,0.02)
+      plai[i]   <- max(cbiol[i]*Signew/ Cfracts,0.02)
       
       
       #---------------------
