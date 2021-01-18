@@ -97,6 +97,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       sumP <- 0.0
       fcbios <- 0.0
       fcbiol <- 0.0
+      
+      dm <- list('leaf' = 0.0, 'stem' = 0.0, 'root' = 0.0, 'cob' = 0.0, 'grain' = 0.0)
      
       gddemerg <- gddemerg * pdpt
       
@@ -216,8 +218,11 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot)
         cbiol[i] <- cbiol[i] + cbiolg - (cbiol[i] * fsen)
         
-        cat('\nStage 1\n')
-        print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
+        dm$leaf <- dm$leaf + leafwg - sen / (specla[i] * 10)
+        dm$root <- dm$root + (cbiorg * 1e3 / (pden * 0.40)) - (dm$root / tauroot)
+        
+        # cat('\nStage 1\n')
+        # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
         
       } else if (gdd10 < gdds) {
         
@@ -265,8 +270,12 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         cbiol[i] <- cbiol[i] + cbiolg - (cbiol[i] * fsen)
         cbios[i] <- cbios[i] + cbiosg
         
-        cat('\nStage 2\n')
-        print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
+        dm$leaf <- dm$leaf + leafwg - sen / (specla[i] * 10)
+        dm$root <- dm$root + (cbiorg * 1e3 / (pden * 0.40)) - (dm$root / tauroot)
+        dm$stem <- dm$stem + stemwg
+        
+        # cat('\nStage 2\n')
+        # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
         
         dum8 <- gdd8
         plaf <- pla
@@ -317,8 +326,13 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         fcbios <- cbios[i] * 0.60
         fcbiol <- cbiol[i] * 0.15
         
-        cat('\nStage 3\n')
-        print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
+        dm$leaf <- dm$leaf - sen / (specla[i] * 10)
+        dm$root <- dm$root + (cbiorg * 1e3 / (pden * 0.40)) - (dm$root / tauroot)
+        dm$stem <- dm$stem + stemwg
+        dm$cob  <- dm$cob + cobwg
+        
+        # cat('\nStage 3\n')
+        # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
         
       } else if (gdd10 < gddt) {
         
@@ -342,7 +356,10 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         grainwg <- (RGfill * gpp * G5 * filleffi * 0.001) / (1 + fresp$grain)
         grainwg <- 0.40 * grainwg * pden / 1e3 # convert from g-DM plant⁻¹ day⁻¹ to kg-C m⁻² day⁻¹
-        
+
+        transs <- 0.0
+        transl <- 0.0
+                
         if (grainwg > adnppg & fcbios >= abs(grainwg - adnppg)) {
           transs <- abs(grainwg - adnppg)
           grainwg <- grainwg + efftrans * transs
@@ -361,11 +378,18 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         }
         
           cbiog[i] <- cbiog[i] + grainwg
+          
+          dm$leaf  <- dm$leaf - (efftrans * transl * 1e3 / (pden * 0.40))
+          dm$stem  <- dm$stem - (efftrans * transs * 1e3 / (pden * 0.40))
+          dm$grain <- dm$grain + (grainwg * 1e3 / (pden * 0.40))
         
-          cat('\nStage 4\n')
-          print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
+          # cat('\nStage 4\n')
+          # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
         
       }
+      
+      print('\n')
+      print(unlist(dm, use.names = T))
       
       # update vegetation's physical characteristics
       # plai[i] <- min(max(0.0, cbiol[i] * specla[i]),5) #TODO check
@@ -433,10 +457,11 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       fileout <- paste("Maize_DAILY.csv")
       
       if(idpp[i] == 1) ID <- paste0(jday, iyear)
-      write(x = paste(ID, idpp[i], aroot[i], aleaf[i], astem[i], cbior[i], cbiol[i], cbios[i], cbioc[i], plai[i], sep = ";"),
-            file = fileout,
-            append = TRUE,
-            sep = "\n")
+      write(x = unlist(dm), file = fileout, append = T, sep = '\t')
+      # write(x = paste(ID, idpp[i], aroot[i], aleaf[i], astem[i], cbior[i], cbiol[i], cbios[i], cbioc[i], plai[i], sep = ";"),
+      #       file = fileout,
+      #       append = TRUE,
+      #       sep = "\n")
     
     }
     
@@ -489,6 +514,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign('date_emerg', date_emerg, envir = env)
     assign('date_germ' , date_germ , envir = env)
     assign('plaf'      , plaf      , envir = env)
+    assign('dm'        , dm        , envir = env)
     
   }
   
