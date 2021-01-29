@@ -1,5 +1,4 @@
 # Global Vars:
-# cloud      # cloud fraction
 # coszen     # cosine of solar zenith angle
 # daylength  # length of day (minutes)
 # dtime      # model timestep (seconds)
@@ -96,12 +95,8 @@ diurnalmetR <- function (envi, time, jday, plens, startp, endp,
   #
   # we are using the values from A. Friend
 
-  if(cloud>0){
-    trans <- cloud / (sw * coszen)
-  } else {
-    trans <- 0
-  } #cloud = incidente solar radiation
-  trans <- max(0,min(1,trans))
+  if(sradh > 1 & (sw * coszen) > 1){ trans <- sradh / (sw * coszen) } else { trans <- 1} #sradh = incidente solar radiation
+  trans <- max(0.251,min(trans,0.75)) # 0.251 + 0.509 * (1 - cloud)  
   
   # calculate the fraction of indirect (diffuse) solar radiation
   # based upon the cloud cover
@@ -121,7 +116,7 @@ diurnalmetR <- function (envi, time, jday, plens, startp, endp,
     3.5227 * trans ** 2+ 
     2.6313 * trans ** 3
 
-    if (trans > 0.75) fdiffuse <- 0.166
+  fdiffuse <- max(0.166,min(fdiffuse,0.95))
   
   
   # do for each waveband
@@ -130,8 +125,8 @@ diurnalmetR <- function (envi, time, jday, plens, startp, endp,
     wfrac <- 0.46 + 0.08 * (ib - 1)  #visible 0.46 and NIR 0.54
     
     # calculate the direct and indirect solar radiation
-    solad[ib] <- wfrac * cloud * (1 - fdiffuse)
-    solai[ib] <- wfrac * cloud * fdiffuse
+    solad[ib] <- wfrac * sradh * (1 - fdiffuse)
+    solai[ib] <- wfrac * sradh * fdiffuse
   }
   
   # ---------------------------------------------------------------------- 
@@ -201,7 +196,7 @@ diurnalmetR <- function (envi, time, jday, plens, startp, endp,
   #
   # (1) clear sky contribution to downward ir radiation flux
   # (2) cloud contribution to downward ir radiation flux
-  truecloud <- 1 - ((trans - 0.251) / 0.509) 
+  truecloud <- max(0, min(1 - ((trans - 0.251) / 0.509),1)) 
   fira <- (1 - truecloud) * ea * stef * (ta - dtair  ) ** 4 + truecloud * ec * stef * (ta - dtcloud) ** 4
   
   # ---------------------------------------------------------------------- 

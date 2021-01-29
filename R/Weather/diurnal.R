@@ -103,8 +103,7 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
       dailyrad <- dailyrad + (sw * cosz * trans) * (3600 / 10 ** 6)   
     }
 
-    trans <- stinrad/dailyrad # 0.251 + 0.509 * (1 - cloud)  
-    
+    trans <- max(0.251,min(stinrad/dailyrad,0.75)) # 0.251 + 0.509 * (1 - cloud)  
     
     # find daylength to be used in pheno subroutine
     
@@ -139,7 +138,7 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   
   fdiffuse <- 1.0045 + 0.0435 * trans - 3.5227 * trans ** 2 + 2.6313 * trans ** 3
   
-  if (trans > 0.75) fdiffuse <- 0.166
+  fdiffuse <- max(0.166,min(fdiffuse,0.95))
   
   # do for each waveband
   for(ib in 1: nband) { 
@@ -234,7 +233,26 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   #
   # (1) clear sky contribution to downward ir radiation flux
   # (2) cloud contribution to downward ir radiation flux
-  fira <- (1 - cloud) * ea * stef * (ta - dtair  ) ** 4 + cloud * ec * stef * (ta - dtcloud) ** 4
+  
+  #SCV - Invert c Friend, A: Parameterization of a global daily weather generator for
+  #SCV - Invert c terrestrial ecosystem and biogeochemical modelling, Ecological 
+  #SCV - Invert c Modelling
+  #SCV - Invert c
+  #SCV - Invert c Spitters et al., 1986: Separating the diffuse and direct component
+  #SCV - Invert c of global radiation and its implications for modeling canopy
+  #SCV - Invert c photosynthesis, Part I: Components of incoming radiation,
+  #SCV - Invert c Agricultural and Forest Meteorology, 38, 217-229.
+  #SCV - Invert c
+  #SCV - Invert c A. Friend       : trans = 0.251 + 0.509 * (1.0 - cloud(i))
+  #SCV - Invert c Spitters et al. : trans = 0.200 + 0.560 * (1.0 - cloud(i))
+  #SCV - Invert c
+  #SCV - Invert c we are using the values from A. Friend
+  #SCV - Invert c
+  #SCV - Invert c trans = 0.251 + 0.509 * (1.0 - cloud(i))
+  
+  
+  truecloud <- max(0, min(1 - ((trans - 0.251) / 0.509),1)) 
+  fira <- (1 - truecloud) * ea * stef * (ta - dtair  ) ** 4 + truecloud * ec * stef * (ta - dtcloud) ** 4
   
   # ---------------------------------------------------------------------- 
   # *  *  * snow and rain calculations *  * *

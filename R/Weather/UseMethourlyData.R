@@ -39,7 +39,7 @@ UseMethourlyData <- function(year, jday, time) {
   assign("ta", array(me_current$TAIR + 273.16, 1), envir = env)
   
   # solar radiation
-  assign("cloud", array(max(me_current$SRAD, 0), 1), envir = env)
+  assign("sradh", array(max(me_current$SRAD, 0), 1), envir = env)
   
   # specific humidity
   assign("qd", array(me_current$RHUM / 100 * qsat(esat(me_current$TAIR + 273.16), psurf[1]), 1), envir = env)

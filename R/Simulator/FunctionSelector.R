@@ -49,7 +49,7 @@ SetCompiledFunctions <- function(){
   turvap    <- turvapCpp
   cascad2   <- cascad2Cpp
   noveg     <- novegCpp
-  diurnalmet<- diurnalmetCpp
+ # diurnalmet<- diurnalmetCpp
  # diurnal   <- diurnalCpp
   
   assign("setsoi", setsoi, envir = globalenv())
