@@ -260,8 +260,11 @@ GeneralModel <- function(simVars = NULL) {
     environment(PhenoUpdate)      <- simVars
     
     
-    if(config$stationID != "" & !is.na(config$stationID)) {
-      ReadMethourlyData(path = config$stationID) 
+    config$stationIDH=""
+    if(file.exists(paste0("inst/input/",config$stationID,"H.csv"))==T) config$stationIDH=paste0("inst/input/",config$stationID,"H.csv")
+    
+    if(config$stationIDH != "" ) {
+      ReadMethourlyData(path = config$stationIDH) 
     } else {
       simVars$imetyear <- -999
       simVars$dmetyear <- -999

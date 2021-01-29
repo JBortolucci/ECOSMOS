@@ -139,7 +139,39 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     # This variable controls the end of the cycle
     simInstances[[id]]$endCycle <- F
     
-    ReadDailyStationData(stationDataPath, simInstances[[id]]$point$coord$lat, simInstances[[id]]$point$coord$lon,  simInstances[[id]])
+    
+    # READ DAILY STATION DATA
+    
+    if(file.exists(paste0("inst/input/",simConfigs[[i]]$stationID,".csv"))==T){
+      
+      pathw <- paste0("inst/input/",simConfigs[[i]]$stationID,".csv")
+      
+    }else{
+      
+      latc <-  simInstances[[id]]$point$coord$lat + 0.125
+      lonc <-  simInstances[[id]]$point$coord$lon - 0.125
+      lons<-substr(lonc*1000,2,5)
+      
+      if(latc*1000>0){
+        if(latc*1000<1000){lats<-paste0("N0",substr(latc*1000,1,2))}else{lats<-paste0("N",substr(latc*1000,1,3)) }}else{
+          if(latc*1000>(-10*1000)){lats<-paste0("0",substr(latc*1000,2,4))}else{lats<-substr(latc*1000,2,5)}
+        }
+      
+      wth<- as.character(sprintf("%4s%4s",lats,lons))
+      wth<-gsub(' ','0',wth)
+      
+      pathw<- paste0(stationDataPath,wth,".csv")
+      if(file.exists(pathw)==F){print(paste0('FILE ',pathw ,'DOES NOT EXIST'))
+        stop()}
+      
+      
+    }
+    
+
+    ReadDailyStationData(pathw, simInstances[[id]]$point$coord$lat, simInstances[[id]]$point$coord$lon,  simInstances[[id]])
+    
+
+    
     
     assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])
     
