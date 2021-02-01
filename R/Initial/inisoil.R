@@ -155,14 +155,24 @@ inisoil <- function() {
   }
   
   # Henrique & Leandro: including initial conditions (IC) [2020-11-04]
-  # for (k in 1:nsoilay) {
-  #   wsoi[k] <- (1 / poros[k]) * ic$SWic[k] # soil water (relative to poros)
-  #   tsoi[k] <- ic$STic[k] + 273.15 # soil temperature (K)
-  #   
-  #   print(paste('Initial Soil Water Fraction ',poros[k],ic$SWic[k],wsoi[k],sep=" / "))
-  # }
+
+  if(soilic == 1) {
+
+    for (k in 1:nsoilay) {
+      wsoi[k] <- (1 / poros[k]) * swic[k]  # soil water (relative to poros)
+      
+      # TO DO: Fazer a media com base no mes de inicio da simulacao
+      # tsoi[k] <-  mean((data_station$TMAX+data_station$TMIN)/2)+ 273.15  # ic$STic[k] + 273.15 # soil temperature (K)
+      
+      print(paste('Initial Soil Water Fraction ',poros[k],swic[k],wsoi[k],tsoi[k],sep=" / "))
+      
+      if(is.na(swic[k])==T) {
+        print('No Soil Water Initial condition') 
+        stop()}
+      
+    }
+  }else { wsoi[k] <- sfield[k]*poros[k]*0.75 }
   
-  assign("wsoi", matrix(0.9, 1, nsoilay), envir = env)
 
   #SVC Move carfrac and texfact from soilbgc to here, need to compute only once   
   # Top 1 m of soil 

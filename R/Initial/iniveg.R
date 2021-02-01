@@ -465,15 +465,14 @@ iniveg <- function (isimveg) {
   #}else  {                  chiflz <-  0.0}
   #chifuz <- 0
   
-  if(iwheat > 0) {
-    chiflz <- 0.65 
-  } else {
-    chiflz <-  -0.5        # leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
-  }
-  # CJK chiflz <- 0        ! leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
-  
-  chifuz <- 0
-  
+ # if(iwheat > 0) {
+ #   chiflz <- 0.65 
+ # } else {
+ #   chiflz <-  -0.5        # leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
+ # }
+ # # CJK chiflz <- 0        ! leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
+ # chifuz <- 0
+
   
   oriev[1] <- max ( - chiflz, 0)
   oriev[2] <- max ( - chifuz, 0)

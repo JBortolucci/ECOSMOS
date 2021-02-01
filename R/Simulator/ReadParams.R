@@ -305,7 +305,10 @@ ReadPlantParamsFromFile <- function(path = "") {
       envToSet$rratio[indexOfPlant] <-as.numeric(data[68,column])
       envToSet$fnopt[indexOfPlant] <- as.numeric(data[69,column])
       envToSet$fngrain[indexOfPlant] <- as.numeric(data[70,column])
+      envToSet$chiflz[indexOfPlant] <- as.numeric(data[71,column])
+      envToSet$chifuz[indexOfPlant] <- as.numeric(data[72,column])
       
+            
       # TODO: Estava calculando assim nas versões anteriores. Mantém fazendo esse calculo?
       # envToSet$pcm[indexOfPlant] <- as.integer((((envToSet$pmmin[indexOfPlant] + envToSet$mxmat[indexOfPlant]/30)-1) %% 12) + 1)
       # envToSet$pcd[indexOfPlant] <- envToSet$pdmin[indexOfPlant]

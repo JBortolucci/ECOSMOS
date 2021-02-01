@@ -51,18 +51,14 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     }
     
     # Henrique & Leandro: including initial conditions (IC) [2020-11-04]
+    simInstances[[id]]$soilic <- simConfigs[[i]]$soilic
     if(simConfigs[[i]]$soilic == 1) {
       tab.IC <- read.csv('inst/input/initial_conditions.csv',sep = ",")
       # when the user insert the initial conditions (nsoilay MUST be equal in both tab's [DSSAT & IC])
-      simInstances[[id]]$ic  <- subset(tab.IC, SimIDic == id)
-      #simInstances[[id]]$nsoilay <- length(simInstances[[id]]$ic$SimIDic) #it seems to be unnecessary here
-    } else {
-      # when there isn't explicitily values for the initial conditions
-      simInstances[[id]]$ic <- data.frame(
-        SimIDic = rep(id, simInstances[[id]]$nsoilay),
-        SWic    = simInstances[[id]]$SOIL.profile$SDUL,       # Soil water arbitrarily starting at field capacity (sfield) aka drained upper limit (DUL)
-        STic    = rep(20, simInstances[[id]]$nsoilay) )       # Soil temp arbitrarily set as 20 ºC
+      simInstances[[id]]$swic  <- tab.IC$SWic[tab.IC$SimIDic == id]
+      
     }
+    
 
     simInstances[[id]][["tsoi"]]     <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["wsoi"]]     <- numeric(simInstances[[id]]$nsoilay)

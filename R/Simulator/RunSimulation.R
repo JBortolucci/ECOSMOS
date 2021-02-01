@@ -302,6 +302,7 @@ GeneralModel <- function(simVars = NULL) {
     
     simVars$year <- year
     
+    
     # TODO: Colocar em outro local, pois se a planta n inicia o ano crescendo e é colhida no meio do ano a próxima não é plantada.
     # Ativa planta caso esteja no ano de plantar (input da planilha de controle)
     if(simVars$currentPlant <= length(simVars$plantList)) {
