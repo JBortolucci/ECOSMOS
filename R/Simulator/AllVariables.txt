@@ -314,7 +314,6 @@ xirrig 0
 xirriga 0 
 totirrig 0 
 df 0 
-vf 0 
 pmask 0 
 cumvd 0 
 hdidx 0 
@@ -333,7 +332,6 @@ pcm vector npft 0
 pcd vector npft 0
 gddsgcp 0 
 gddsgcr 0 
-idop vector npft 0
 iavepdate vector npft 0
 harvdate vector npft 0
 corndop vector 2100 0
@@ -344,7 +342,6 @@ cnroot vector npft 0
 croplive vector npft 0
 grnfraccrop vector npft 0
 gddplant vector npft 0
-gddtsoi vector npft 0
 gddmaturity vector npft 0
 thrlai vector npft 0
 peaklai vector npft 0
@@ -363,8 +360,6 @@ tnplant vector npft 0
 grainn vector npft 0
 cumlvs vector npft 0
 idpp vector npft 0
-idpe vector npft 0
-dpgf vector npft 0
 cropyld vector npft 0
 dmleaf vector npft 0
 dmstem vector npft 0
@@ -383,13 +378,11 @@ croplaimx vector npft 0
 residuen vector  npft 0
 dmroot vector npft 0
 dmwood vector npft 0
-hdate vector npft 0
 pdate vector npft 0
 crmclim vector npft 0
 crmact vector npft 0
 crmplant vector npft 0
 ccdays vector npft 0
-grainday vector npft 0
 fertinput vector npft 0
 avehybrid vector npft 0
 idppout vector npft 0

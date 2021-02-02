@@ -26,10 +26,7 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
   
   if(exist[j] == 1 & harvdate[j] == jday) {
     
-    pdate[j] <- idop[j]
-    idppout[j] <- idpp[j]
-    hdate[j] <- harvdate[j]
-    
+
     ayabprod[j] <- max(cbiol[j], ayabprod[j])
     
     # added so division by zero doesn't take place in those places where
@@ -42,38 +39,7 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
     # add excess (i.e. pod of soybeans) to stem storage pool of plant 
     cbios[j] <- max(0, cbios[j] + (dumg - cbiog[j]))
     
-    # impose upper limit on harvest index as per JMN suggestion 
-    # if harvest index is > allowable, put excess to stem which will add to more
-    # litterfall and adjust the grain accordingly
-    # might have to revisit logic with respect to what actually get harvested, versus
-    # what is left in the field after harvest as litter input to the soil 
-    
-    # to do: Santiago, verificar essa bloco                
-    harvidx[j] <- cbios[j] / ayabprod[j]
-    
-    croplaimx[j] <- plaimx[j]
-    
-    #  if(harvidx[j] > maxhi[j]) {
-    #    harvidx[j] <- maxhi[j] 
-    #    dumg <- cbiocr[j] 
-    #    cbiocr[j] <- maxhi[j] * ayabprod[j]
-    #    
-    #    # add excess to stem of plant
-    #    cbiob[j] <- cbiob[j] + (dumg - cbiocr[j])
-    #  }
-    
-    
-    # calculate n in grain[kg / ha]
-    grainn[j] <- (cbiog[j] / cfrac[j]) * fngrain[j] * 1e+04
-    
-    # to do: Santiago, inserir um parametro inserido no params.crp 
-    #      que represente o conteudo de agua no material colhido   
-    
-    # calculate crop fresh yield  t / ha of fresh weight
-    cropyld[j] <- cbiog[j]  * 1.13 * 10 * (1 / cgrain[j])
-    
-    
-    
+
     # calculate dry matter material (Mg / ha); yield in Mg / ha dry matter (sucrose carbon)
     dmyield[j] <- cbiog[j] * 10 / cgrain[j]  
     dmstem[j]  <- cbios[j] * 10 / cgrain[j]   
@@ -167,20 +133,9 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
   assign("falll", falll, envir = env)
   assign("fallw", fallw, envir = env)
   assign("fallr", fallr, envir = env)
-  assign("fallrsgc", fallrsgc, envir = env)
-  assign("crmclim", crmclim, envir = env)
-  assign("crmact", crmact, envir = env)
-  assign("crmplant", crmplant, envir = env)
-  assign("pdate", pdate, envir = env)
-  assign("idppout", idppout, envir = env)
-  assign("hdate", hdate, envir = env)
   assign("ayabprod", ayabprod, envir = env)
   assign("cbiocr", cbiocr, envir = env)
   assign("cbiob", cbiob, envir = env)
-  assign("harvidx", harvidx, envir = env)
-  assign("croplaimx", croplaimx, envir = env)
-  assign("grainn", grainn, envir = env)
-  assign("cropyld", cropyld, envir = env)
   assign("dmyield", dmyield, envir = env)
   assign("dmstem", dmstem, envir = env)
   assign("dmleaf", dmleaf, envir = env)
@@ -197,50 +152,13 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
   assign("cntops", cntops, envir = env)
   assign("cnroot", cnroot, envir = env)
   assign("plai", plai, envir = env)
-  assign("thrlai", thrlai, envir = env)
-  assign("peaklai", peaklai, envir = env)
-  assign("ccdays", ccdays, envir = env)
   assign("cbior", cbior, envir = env)
   assign("cbiol", cbiol, envir = env)
   assign("cbiog", cbiog, envir = env)
   assign("cbiop", cbiop, envir = env)
   assign("cbios", cbios, envir = env)
-  assign("hui", hui, envir = env)
-  assign("aybprod", aybprod, envir = env)
-  assign("ayrprod", ayrprod, envir = env)
-  assign("aylprod", aylprod, envir = env)
-  assign("leafout", leafout, envir = env)
-  assign("htmx", htmx, envir = env)
-  assign("cumlvs", cumlvs, envir = env)
-  assign("plaimx", plaimx, envir = env)
-  assign("dpgf", dpgf, envir = env)
-  assign("biomass", biomass, envir = env)
-  assign("totnuptake", totnuptake, envir = env)
-  assign("tnplant", tnplant, envir = env)
-  assign("totnfix", totnfix, envir = env)
-  assign("idpp", idpp, envir = env)
-  assign("idpe", idpe, envir = env)
-  assign("gddplant", gddplant, envir = env)
-  assign("gddtsoi", gddtsoi, envir = env)
-  assign("sai", sai, envir = env)
-  assign("fu", fu, envir = env)
-  assign("lai", lai, envir = env)
-  assign("zbot", zbot, envir = env)
-  assign("ztop", ztop, envir = env)
-  assign("totbiol", totbiol, envir = env)
-  assign("totlail", totlail, envir = env)
-  assign("vf", vf, envir = env)
-  assign("acroot", acroot, envir = env)
-  assign("idop", idop, envir = env)
-  assign("grainday", grainday, envir = env)
-  assign("gddsgcp", gddsgcp, envir = env)
-  assign("gddsgcr", gddsgcr, envir = env)
-  assign("hybgdd"  ,hybgdd  , envir = env)  
-  # assign("gddwwh" ,gddwwh , envir = env) 
   assign("cropy", cropy, envir = env)
-  assign("croplive", croplive, envir = env)
-  assign("gddmaturity", gddmaturity, envir = env)
-  assign("avehybrid", avehybrid, envir = env)
+
   
 }
 

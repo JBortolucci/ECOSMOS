@@ -865,41 +865,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       aleaf[i] * max (0.0, adnpp[i])
     
     
-    
-    
-    
-    #####################################################################
-    # check for climatic and phenological limits on maturity, growth,
-    # and harvest date
-    #
-    
-    #    if (tmin <= tkill[i]) {
-    #      ccdays[i] <- ccdays[i] + 1
-    #    } else {
-    #      ccdays[i] <- 0
-    #    }
-    #    
-    #    if (ccdays[i] >= 1 &&
-    #        hui[i] >= 0.6 * gddmaturity[i] &&
-    #        croplive[i] == 1) {
-    #      croplive[i]     <- 0.0
-    #      print(paste0('tkill!!!!!',1,iyear,jday,idpp[i]))
-    #      harvdate[i]     <- jday
-    #    }
-    
-    
-    
-    #___________________________________________________
-    #       Harvest
-    
-    # fileout=paste("RICE_DAILY.csv")
-    # ID<-simConfigs[[i]]$id
-    # if(idpp[i]==1)ID<-paste0(jday,iyear)
-    # write(paste( ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS ,
-    #              aroot[i],aleaf[i],astem[i],arepr[i],cbior[i],cbiol[i],cbios[i],cbiog[i],cbiop[i],plai[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
-    
-    
-    
     if(cropy == 1) {
       
       if ( RSTAGE == 8 | frost ) {
@@ -935,7 +900,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   
   assign("greenfrac", greenfrac, envir = env)
   assign("idpp", idpp, envir = env)
-  assign("idpe", idpe, envir = env)
   assign("aroot", aroot, envir = env)
   assign("aleaf", aleaf, envir = env)
   assign("astem", astem, envir = env)

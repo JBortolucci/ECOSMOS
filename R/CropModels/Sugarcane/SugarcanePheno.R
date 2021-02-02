@@ -85,9 +85,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         
         # accumulate growing degree days for planted crops past planting
         gddplant[j] <- gddplant[j] + max(0, min(td - baset[j], mxtmp[j]))
-        gddtsoi[j]  <- gddtsoi[j] + max(0, min(tsoi[1] - baset[j], mxtmp[j]))
-        
-        
+
         greenfrac[j] <- 1.0  
         
         # calculate fraction allocated to leaf (from J. Norman allocation curve)
@@ -102,8 +100,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         leafout[j] <- gddplant[j]
         laidecl[j] <- 0.0
         idpp[j]    <- idpp[j] + 1
-        
-        if (leafout[j] >= huileaf[j])   idpe[j] <- idpe[j] + 1
         
         #_____________________________________________________________            
         # crop phenology from leaf emergence to start of leaf decline   
@@ -223,10 +219,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
 ############ END of leaf adjusts ###########
 ############################################
 
-          # keep day of year that sucrose (grain fill) begins
-          if(arepr[j] > 0.001 && grainday[j] > 999)
-            grainday[j] <- min(grainday[j], jday)
-          
           templai[j] <- (cbiol[j] * specla[j])
           
           plai[j]    <- (cbiol[j] * specla[j]) - (cbiol[j] * specla[j]) * ( (1. / tauleaf[j]) )
@@ -350,18 +342,10 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         # be damaged/killed.  This function is more for spring freeze events
         # or for early fall freeze events
         
-        if (tmin <= tkill[j]) {
-          ccdays[j] <- ccdays[j] + 1
-        } else {
-          ccdays[j] <- 0
-        }
-        
-        if (ccdays[j] >= 1 && hui[j] >= 0.6 * gddmaturity[j] && croplive[j] == 1) {
-          croplive[j]     <- 0.0
-          print(paste0('tkill!!!!!',1,year,jday,idpp[j]))
-          harvdate[j]     <- jday
-        }
-        
+        if (tmin <= tkill[j]) { pstart[j] <- 0  
+              croplive[j]     <- 0.0
+              print(paste0('tkill!!!!!',1,year,jday,idpp[j]))
+              harvdate[j]     <- jday }
         
         
         #___________________________________________________
@@ -408,7 +392,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   
   assign("ztopPft", ztopPft, envir = env)
   assign("gddplant", gddplant, envir = env)
-  assign("gddtsoi", gddtsoi, envir = env)
   assign("aplantn", aplantn, envir = env)
   assign("mxgddgf", mxgddgf, envir = env)
   assign("mxmat", mxmat, envir = env)
@@ -417,19 +400,15 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   assign("hui", hui, envir = env)
   assign("leafout", leafout, envir = env)
   assign("idpp", idpp, envir = env)
-  assign("idpe", idpe, envir = env)
   assign("awood", awood, envir = env)
   assign("aleaf", aleaf, envir = env)
   assign("arepr", arepr, envir = env)
   assign("aroot", aroot, envir = env)
   assign("astem", astem, envir = env)
   assign("tlai", tlai, envir = env)
-  assign("peaklai", peaklai, envir = env)
   assign("plai", plai, envir = env)
   assign("astemi", astemi, envir = env)
   assign("aleafi", aleafi, envir = env)
-  assign("dpgf", dpgf, envir = env)
-  assign("thrlai", thrlai, envir = env)
   assign("templai", templai, envir = env)
   assign("gddemerg", gddemerg, envir = env)
   assign("aerial", aerial, envir = env)
@@ -452,7 +431,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   assign("cbiow", cbiow, envir = env)
   assign("biomass", biomass, envir = env)
   assign("ayanpp", ayanpp, envir = env)
-  assign("ccdays", ccdays, envir = env)
   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
   assign("Deadwood",Deadwood      , envir = env)

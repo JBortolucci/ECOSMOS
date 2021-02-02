@@ -7,13 +7,12 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   # in order to only allow a crop to be planted once each year
   # initialize cropplant = 0, but hold it = 1 through the end of the year
   
-  if (iday == pdmin[i] && imonth == pmmin[i] && croplive[i] != 1 &&  exist[i] == 1 ) {
-    pstart[i] <- cdays
-  }
+  if (day == pdmin[i] && month == pmmin[i] && croplive[i] != 1 &&  exist[i] == 1){ pstart[i] <- 0             }
+  if (                                        croplive[i] != 1 &&  exist[i] == 1){ pstart[i] <- pstart[i] + 1 }
   
   
-  if(pstart[i] == cdays && exist[i] == 1 && croplive[i] != 1) {
-    print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i]," cdays ",cdays,sep=" / "))
+  if(pstart[i] == 1 && exist[i] == 1 && croplive[i] != 1) {
+    print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i],sep=" / "))
   }
   
   
@@ -31,11 +30,6 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
     
     
     harvdate[i]   <- 999
-    hdate[i]      <- 0
-    harvidx[i]    <- 0
-    croplaimx[i]  <- 0
-    grainn[i]     <- 0
-    cropyld[i]    <- 0
     dmyield[i]    <- 0
     dmleaf[i]     <- 0
     dmstem[i]     <- 0
@@ -52,7 +46,6 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
     cntops[i]     <- 40
     cnroot[i]     <- 60
     fertinput[i]  <- 0
-    idppout[i]    <- 0
   } 
   
   
@@ -66,11 +59,11 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
     # Plating block for Soybean, corn, and wheat
     
     
-    if(cropy == 0 && cdays >= pstart[i] && cdays <= (pstart[i]+180)) {
+    if(cropy == 0 &&  pstart[i] >=1 && pstart[i] <= 180) {
       
       croplive[i]     <- 1        # initialize freeze kill function to 1 - crops living 
       cropplant[i]    <- 1        # initialize freeze kill function to 1 - crops living 
-      idop[i]         <- jday    
+      pdate[i]         <- jday    
       cropy            <- 1
       gddmaturity[i]  <- hybgdd[i]
       
@@ -96,7 +89,7 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
     # is planted this year...otherwise it will zero out the fertilizer
     # values for pfts 13, 14 if going through all pfts through 15 
     
-    if (jday == idop[i] && croplive[i] == 1 && exist[i] == 1) {
+    if (jday == pdate[i] && croplive[i] == 1 && exist[i] == 1) {
       
       if (iyear < 1950) {
         fertnitro[i] <- 0.0009       # sugarcane - kg_n m-2 y-1
@@ -128,11 +121,6 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   assign("cropplant", cropplant, envir = env)
   assign("cropy", cropy, envir = env)
   assign("harvdate", harvdate, envir = env)
-  assign("hdate", hdate, envir = env)
-  assign("harvidx", harvidx, envir = env)
-  assign("croplaimx", croplaimx, envir = env)
-  assign("grainn", grainn, envir = env)
-  assign("cropyld", cropyld, envir = env)
   assign("dmyield", dmyield, envir = env)
   assign("dmleaf", dmleaf, envir = env)
   assign("dmstem", dmstem, envir = env)
@@ -149,9 +137,7 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   assign("cntops", cntops, envir = env)
   assign("cnroot", cnroot, envir = env)
   assign("fertinput", fertinput, envir = env)
-  assign("idppout", idppout, envir = env)
   assign("croplive", croplive, envir = env)
-  assign("idop", idop, envir = env)
   assign("soydop", soydop, envir = env)
   assign("corndop", corndop, envir = env)
   assign("whtdop", whtdop, envir = env)

@@ -8,13 +8,12 @@ SugarcanePlanting <- function(year0, year, month, day, jday, ffact, index) {
     # in order to only allow a crop to be planted once each year
     # initialize cropplant = 0, but hold it = 1 through the end of the year
     
-    if (day == pdmin[j] && month == pmmin[j] && croplive[j] != 1 &&  exist[j] == 1){
-      pstart[j] <- cdays
-    }
+    if (day == pdmin[j] && month == pmmin[j] && croplive[j] != 1 &&  exist[j] == 1){ pstart[j] <- 0             }
+    if (                                        croplive[j] != 1 &&  exist[j] == 1){ pstart[j] <- pstart[j] + 1 }
     
     
-    if(pstart[j] == cdays && exist[j] == 1 && croplive[j] != 1) {
-      print(paste("Start planting  at ",day,month,year," min date is ", pdmin[j], pmmin[j]," cdays ",cdays,sep=" / "))
+    if(pstart[j] == 1 && exist[j] == 1 && croplive[j] != 1) {
+      print(paste("Start planting  at ",day,month,year," min date is ", pdmin[j], pmmin[j],sep=" / "))
     }
     
     
@@ -33,11 +32,6 @@ SugarcanePlanting <- function(year0, year, month, day, jday, ffact, index) {
   
       
       harvdate[j]   <- 999
-      hdate[j]      <- 0
-      harvidx[j]    <- 0
-      croplaimx[j]  <- 0
-      grainn[j]     <- 0
-      cropyld[j]    <- 0
       dmyield[j]    <- 0
       dmleaf[j]     <- 0
       dmstem[j]     <- 0
@@ -54,7 +48,6 @@ SugarcanePlanting <- function(year0, year, month, day, jday, ffact, index) {
       cntops[j]     <- 40
       cnroot[j]     <- 60
       fertinput[j]  <- 0
-      idppout[j]    <- 0
     } 
     
     
@@ -73,12 +66,12 @@ SugarcanePlanting <- function(year0, year, month, day, jday, ffact, index) {
       if(    (cropy == 0 && j == j) &&
              a10td > ptemp[j] &&       # 10-day average soil temperature
              a10tmin > pmintemp[j] &&
-             cdays >= pstart[j] && cdays < (pstart[j]+180) ) { # impose earliest planting date 
+              pstart[j] >=1 && pstart[j] < 180 ) { # impose earliest planting date 
         
         # sant- to avoid that a crop that was killed by a frost be planted again in the same year. 
         croplive[j]     <- 1        # initialize freeze kill function to 1 - crops living 
         cropplant[j]    <- 1        # initialize freeze kill function to 1 - crops living 
-        idop[j]         <- jday    
+        pdate[j]         <- jday    
         cropy          <- 1
         
         gddmaturity[j]  <- min (gddsgcp, hybgdd[j])
@@ -107,7 +100,7 @@ SugarcanePlanting <- function(year0, year, month, day, jday, ffact, index) {
       # is planted this year...otherwise it will zero out the fertilizer
       # values for pfts 13, 14 if going through all pfts through 15 
       
-      if (jday == idop[j] && croplive[j] == 1 && exist[j] == 1) {
+      if (jday == pdate[j] && croplive[j] == 1 && exist[j] == 1) {
         if (year < 1950) {
          
           fertnitro[j] <- 0.0009       # sugarcane - kg_n m-2 y-1
@@ -143,11 +136,6 @@ SugarcanePlanting <- function(year0, year, month, day, jday, ffact, index) {
     assign("cropplant", cropplant, envir = env)
     assign("cropy", cropy, envir = env)
     assign("harvdate", harvdate, envir = env)
-    assign("hdate", hdate, envir = env)
-    assign("harvidx", harvidx, envir = env)
-    assign("croplaimx", croplaimx, envir = env)
-    assign("grainn", grainn, envir = env)
-    assign("cropyld", cropyld, envir = env)
     assign("dmyield", dmyield, envir = env)
     assign("dmleaf", dmleaf, envir = env)
     assign("dmstem", dmstem, envir = env)
@@ -164,9 +152,7 @@ SugarcanePlanting <- function(year0, year, month, day, jday, ffact, index) {
     assign("cntops", cntops, envir = env)
     assign("cnroot", cnroot, envir = env)
     assign("fertinput", fertinput, envir = env)
-    assign("idppout", idppout, envir = env)
     assign("croplive", croplive, envir = env)
-    assign("idop", idop, envir = env)
     assign("soydop", soydop, envir = env)
     assign("corndop", corndop, envir = env)
     assign("whtdop", whtdop, envir = env)

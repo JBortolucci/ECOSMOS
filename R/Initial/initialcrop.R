@@ -23,8 +23,6 @@ initialcrop <- function() {
     if(plantList[[i]]$type == CROPS) {
       plai[i] <- 0.01
       
-      env$thrlai[i] <- 0
-      env$peaklai[i] <- 0
       env$cbiol[i] <- 0
       env$cbios[i] <- 0
       env$cbior[i] <- 0
@@ -42,25 +40,17 @@ initialcrop <- function() {
       env$ayrprod[i] <- 0
       env$ayabprod[i] <- 0
       env$aylprod[i] <- 0
-      env$harvidx[i] <- 0
       env$leafout[i] <- 0
       
-      env$cumlvs[i] <- 0
       env$plaimx[i] <- 0
-      env$dpgf[i] <- 0
       env$biomass[i] <- 0
       env$totnuptake[i] <- 0
       env$tnplant[i] <- 0
       env$totnfix[i] <- 0
       env$idpp[i] <- 0
-      env$idpe[i] <- 0
       env$fixn[i] <- 0
       env$gddplant[i] <- 0
-      env$crmclim[i] <- 0
-      env$crmact[i] <- 0
       env$crmplant[i] <- 0
-      env$grainday[i] <- 9999
-      env$gddtsoi[i] <- 0
       env$fertinput[i] <- 0
       env$pstart[i] <- 999
       env$ik[i] <- 1
@@ -69,8 +59,6 @@ initialcrop <- function() {
   }
   
   assign("htmx", matrix(0, 1, 2), envir = env)
-  assign("cdays", array(0, 1), envir = env)
-  assign("cdays", array(0, 1), envir = env)
   assign("cropy", array(0, 1), envir = env)
   assign("sai", matrix(0, 1, 2), envir = env)
   assign("fu", array(0, 1), envir = env)
@@ -81,6 +69,5 @@ initialcrop <- function() {
   assign("totbiol", array(0, 1), envir = env)
   assign("totlaiu", array(0, 1), envir = env)
   assign("totlail", array(0, 1), envir = env)
-  assign("vf",  array(0, 1), envir = env)
 
 }

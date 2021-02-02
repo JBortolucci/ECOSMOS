@@ -171,15 +171,6 @@ GeneralModel <- function(simVars = NULL) {
     simVars$co2init    <- 0.000380 
     simVars$o2init     <- 0.209000 
     
-    simVars$isoybean   <- 0
-    simVars$imaize     <- 0
-    simVars$iwheat     <- 0
-    simVars$isgc       <- 0
-    simVars$ieuca      <- 1
-    simVars$ipalm      <- 0
-    
-    simVars$ipast      <- 0
-    
     simVars$lat        <- point$coord$lat
     simVars$lon        <- point$coord$lon
     
@@ -259,7 +250,6 @@ GeneralModel <- function(simVars = NULL) {
     
     environment(PhenoUpdate)      <- simVars
     
-    
     config$stationIDH=""
     if(file.exists(paste0("inst/input/",config$stationID,"H.csv"))==T) config$stationIDH=paste0("inst/input/",config$stationID,"H.csv")
     
@@ -301,7 +291,6 @@ GeneralModel <- function(simVars = NULL) {
   for(year in seq(simVars$iy1, simVars$iy2)) {
     
     simVars$year <- year
-    
     
     # TODO: Colocar em outro local, pois se a planta n inicia o ano crescendo e é colhida no meio do ano a próxima não é plantada.
     # Ativa planta caso esteja no ano de plantar (input da planilha de controle)

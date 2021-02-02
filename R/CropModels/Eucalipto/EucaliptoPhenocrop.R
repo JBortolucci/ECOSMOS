@@ -91,8 +91,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       # accumulate growing degree days for planted crops past planting
       gddplant[i] <- gddplant[i] + max(0, min(td - baset[i], mxtmp[i]))
-      gddtsoi[i]  <- gddtsoi[i] + max(0, min(tsoi[1] - baset[i], mxtmp[i]))
-      
+
       greenfrac[i] <- 1.0
       
       # calculate fraction allocated to leaf (from i. Norman allocation curve)
@@ -106,8 +105,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       leafout[i] <- gddplant[i]
       laidecl[i] <- 0.0
       idpp[i]    <- idpp[i] + 1
-      
-      if (leafout[i] >= huileaf[i])   idpe[i] <- idpe[i] + 1
       
       # crop phenology from leaf emergence to start of leaf decline
       
@@ -440,15 +437,8 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       # is determined in crops.f - is a more elaborate function of
       # cold hardening of the plant
       
-      if (tmin <= tkill[i]) {
-        ccdays[i] <- ccdays[i] + 1
-      } else {
-        ccdays[i] <- 0
-      }
-      
-      if (ccdays[i] >= 1 &&
-          hui[i] >= 0.6 * gddmaturity[i] &&
-          croplive[i] == 1) {
+      if (tmin <= tkill[i]) {  
+        pstart[j] <- 0     
         croplive[i]     <- 0.0
         print(paste0('tkill!!!!!',1,iyear,jday,idpp[i]))
         harvdate[i]     <- jday
@@ -497,7 +487,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("ztopPft", ztopPft, envir = env)
   assign("sapfrac", sapfrac, envir = env)
   assign("gddplant", gddplant, envir = env)
-  assign("gddtsoi", gddtsoi, envir = env)
   assign("aplantn", aplantn, envir = env)
   assign("fleafi", fleafi, envir = env)
   assign("mxgddgf", mxgddgf, envir = env)
@@ -507,7 +496,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("hui", hui, envir = env)
   assign("leafout", leafout, envir = env)
   assign("idpp", idpp, envir = env)
-  assign("idpe", idpe, envir = env)
   assign("awood", awood, envir = env)
   assign("aleaf", aleaf, envir = env)
   assign("acroot", acroot, envir = env)
@@ -518,9 +506,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("plai", plai, envir = env)
   assign("astemi", astemi, envir = env)
   assign("aleafi", aleafi, envir = env)
-  assign("dpgf", dpgf, envir = env)
-  assign("grainday", grainday, envir = env)
-  assign("thrlai", thrlai, envir = env)
   assign("templai", templai, envir = env)
   assign("gddemerg", gddemerg, envir = env)
   assign("aerial", aerial, envir = env)
@@ -543,7 +528,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("cbiow", cbiow, envir = env)
   assign("biomass", biomass, envir = env)
   assign("ayanpp", ayanpp, envir = env)
-  assign("ccdays", ccdays, envir = env)
   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
   assign("Deadwood",Deadwood      , envir = env)
