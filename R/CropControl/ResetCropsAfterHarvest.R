@@ -22,12 +22,10 @@ ResetCropsAfterHarvest <- function() {
         cbiocr[i] <- 0
         cbiob[i]  <- 0
         
-        hui[i]     <- 0
         aybprod[i] <- 0
         ayrprod[i]  <- 0
         ayabprod[i] <- 0
         aylprod[i] <- 0
-        leafout[i]    <- 0
         htmx[1]       <- 0      # ou 2
         plaimx[i]     <- 0
         biomass[i]    <- 0
@@ -64,11 +62,9 @@ ResetCropsAfterHarvest <- function() {
         assign("cbiol", cbiol, envir = env)
         assign("cbior", cbior, envir = env)
         assign("cbiow", cbiow, envir = env)
-        assign("hui", hui, envir = env)
         assign("aybprod", aybprod, envir = env)
         assign("ayrprod", ayrprod, envir = env)
         assign("aylprod", aylprod, envir = env)
-        assign("leafout", leafout, envir = env)
         assign("htmx", htmx, envir = env)
         assign("plaimx", plaimx, envir = env)
         assign("biomass", biomass, envir = env)

@@ -128,18 +128,10 @@ EucaliptoCropresidue <- function (year, year0, jday, index) {
   fallw <- as.vector(fallw )
   
   
-  # assign("cnleaf", cnleaf, envir = env)
-  # assign("cnfroot", cnfroot, envir = env)
-  # assign("totts", totts, envir = env)
-  
   assign("falll", falll, envir = env)
   assign("fallw", fallw, envir = env)
   assign("fallr", fallr, envir = env)
-  assign("crmplant", crmplant, envir = env)
-  assign("pdate", pdate, envir = env)
   assign("ayabprod", ayabprod, envir = env)
-  assign("cbiocr", cbiocr, envir = env)
-  assign("cbiob", cbiob, envir = env)
   assign("dmyield", dmyield, envir = env)
   assign("dmstem", dmstem, envir = env)
   assign("dmleaf", dmleaf, envir = env)
@@ -155,10 +147,8 @@ EucaliptoCropresidue <- function (year, year0, jday, index) {
   assign("cropfixn", cropfixn, envir = env)
   assign("cntops", cntops, envir = env)
   assign("cnroot", cnroot, envir = env)
-  assign("cbiol", cbiol, envir = env)
-  assign("cbior", cbior, envir = env)
-  assign("cbiow", cbiow, envir = env)
-  assign("acroot", acroot, envir = env)
   assign("cropy", cropy, envir = env)
+  assign("crmplant", crmplant, envir = env)
+  
 
 }

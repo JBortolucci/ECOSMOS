@@ -173,17 +173,11 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
 
   # }
 
-  assign("endCycle", endCycle, envir = env)
 
   assign("falll", falll, envir = env)
   assign("fallw", fallw, envir = env)
   assign("fallr", fallr, envir = env)
-  assign("fallrsgc", fallrsgc, envir = env)
-  assign("crmplant", crmplant, envir = env)
-  assign("pdate", pdate, envir = env)
   assign("ayabprod", ayabprod, envir = env)
-  assign("cbiog", cbiog, envir = env)
-  assign("cbios", cbios, envir = env)
   assign("dmyield", dmyield, envir = env)
   assign("dmstem", dmstem, envir = env)
   assign("dmleaf", dmleaf, envir = env)
@@ -199,13 +193,13 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
   assign("cropfixn", cropfixn, envir = env)
   assign("cntops", cntops, envir = env)
   assign("cnroot", cnroot, envir = env)
-  assign("cbiol", cbiol, envir = env)
-  assign("cbior", cbior, envir = env)
-  assign("cbiow", cbiow, envir = env)
+  assign("cropy", cropy, envir = env)  
+  assign("endCycle", endCycle, envir = env)
+  assign("croplive", croplive, envir = env)
   assign("gddsgcp", gddsgcp, envir = env)
   assign("gddsgcr", gddsgcr, envir = env)
-  assign("cropy", cropy, envir = env)
-  assign("croplive", croplive, envir = env)
   assign("gddmaturity", gddmaturity, envir = env)
+  assign("fallrsgc", fallrsgc, envir = env)
+  assign("crmplant", crmplant, envir = env)
 
 }

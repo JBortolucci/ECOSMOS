@@ -29,28 +29,8 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
     
     
     huileaf  <- array(0, npft)      # heat unit index needed to attain leaf emergence after planting 
-    huigrain <- array(0, npft)      # heat unit index needed to reach vegetative maturity 
-    laidecl  <- matrix(0, 1, npft)  # decline in leaf area for crop 
-    # phenology for additional leaf drop - if drought related or temperature related at 
-    # end of growing season  
-    
-    ddays      <- 7.0            #inp 
-    ddfac      <- 1.0 / ddays    #inp 
-    tthreshold <- 273.16         #par 
-    
-    # number of corn plants per square meter 
-    # this is only important if using the leaf expansion equations 
-    # of Ritchie, that is temperature dependent.  Our standard procedure 
-    # here however is to use the allocation of C to leaf (aleaf) and 
-    # specific leaf area (specla) to accumulate LAI during the season 
-    
-    nplants <- 7                #inp
-    
-    # vernalization(year, month, day, jday)
-    
-    # begin global grid
-    
-    
+
+# available inorganic nitrogen in soil profile for plant growth (kg_n m-2 y-1) 
     aplantn <- 0.0
     
     for(k in 1:nsoilay) {
@@ -68,43 +48,22 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         if(cropy == 1) {
           
           huileaf[j]  <- lfemerg[j]  * gddmaturity[j]
-          # huileaf[j]  <- lfemerg[j]  * gddmaturity[j] / 10
-          
+
         } else {
           
           huileaf[j]  <- lfemerg[j] * (1. / 6.)* gddmaturity[j]
-          # huileaf[j]  <- lfemerg[j] * (1 / 10)* gddmaturity[j]
-          
-        }
-        
-        crmsgc      <- max(73., min((gddmaturity[j]+ 53.683) / 13.882,135))
-        huigrain[j] <- -0.002  * (crmsgc - 73.) + grnfill[j]
-        huigrain[j] <- min(max(huigrain[j],grnfill[j] - 0.1), grnfill[j]) 
-        huigrain[j] <- huigrain[j]   * gddmaturity[j]  # from Cabelguenne et al. 1999
-        
-        
-        # accumulate growing degree days for planted crops past planting
-        gddplant[j] <- gddplant[j] + max(0, min(td - baset[j], mxtmp[j]))
 
-        greenfrac[j] <- 1.0  
-        
-        # calculate fraction allocated to leaf (from J. Norman allocation curve)
-        # bfact and fleafi are set in params.crp
-        fleaf[j] <- fleafi[j] * (exp(-bfact[j]) - exp(-bfact[j] * gddplant[j] / huigrain[j])) / (exp(-bfact[j]) - 1)
- 
+        }
         # calculate accumulated growing degree days since planting (gddplant) 
         # determine if growing degree days calculated from top layer soil temperature
         # are enough for leaf emergence to occur 
-
-        hui[j]     <- gddplant[j] 
-        leafout[j] <- gddplant[j]
-        laidecl[j] <- 0.0
+        gddplant[j] <- gddplant[j] + max(0, min(td - baset[j], mxtmp[j]))
         idpp[j]    <- idpp[j] + 1
         
         #_____________________________________________________________            
         # crop phenology from leaf emergence to start of leaf decline   
         
-        if (leafout[j] < huileaf[j]) {
+        if (gddplant[j] < huileaf[j]) {
           gddemerg    <- gddplant[j]
           awood[j]    <- 0.0
           aroot[j]    <- 0.0
@@ -113,17 +72,11 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           astem[j]    <- 0.0
           arepr[j]    <- 0.0
           rm          <- 0.0 
-        } else if (leafout[j] >= huileaf[j]) {
+          greenfrac[j] <- 1.0  
+          
+        } else if (gddplant[j] >= huileaf[j]) {
           
           # Phase 1 completed: Emergence
-          
-          
-          awood[j]  <- 0.0
-          aroot[j]  <- 0.00001
-          aerial[j] <- 0.00001
-          aleaf[j]  <- 0.00001
-          astem[j]  <- 0.00001
-          arepr[j]  <- 0.00001
           
           rm <- min(100., 100. * (gddplant[j] - gddemerg) / gddmaturity[j] )
           
@@ -149,7 +102,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           aleaf[j] <- aerial[j] - astem[j]
           
           ################ leaf / Stalk allocation ################
-          # Adjust the leaf / Stalk allocation in function os 
+          # Adjust the leaf / Stalk allocation in function of 
           # Temperature (physiological effect)
           #      astem[j] <- astem[j] + 
           #        min(aleaf[j], 
@@ -165,8 +118,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           }
           
           aleaf[j]   <- aerial[j] - 0.95*astem[j]
-          
-          #        print(paste(year,jday,idpp[j],rm,aleaf[j],aerial[j],astem[j],plai[j],sep=" / "))        
           
           ################ leaf / Stalk allocation ################
           
@@ -237,24 +188,19 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           
           plai[j] <- max(0.01,plai[j])
           
-          # calculate decrease in lai for purpose of updating 
-          # aboveground biomass pools
-          laidecl[j] <- max(0.0, templai[j] - plai[j])
-          
+     
           ############################################
           ############ END of leaf adjusts ###########
           ############################################
         }
 
-        
-        
- 
- 
-        
+  
         # update carbon reservoirs using an analytical solution
         # to the original carbon balance differential equation
         
         cbiol[j] <- cbiol[j] + aleaf[j] * max (0.0, adnpp[j]) - (cbiol[j]/ tauleaf[j])
+        
+        if(rm<=1){cbiol[j] <- max(cbiol[j],0.02/specla[j])  } #assign a minimum cbiol
         
         cbiog[j] <- cbiog[j] + arepr[j] * max (0.0, adnpp[j])
         
@@ -265,20 +211,19 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         cbior[j] <- cbior[j] * exp(-1.0 / tauroot[j]) + 
           aroot[j] * tauroot[j] * max(0.0,adnpp[j]) * (1.0 - exp(-1.0 / tauroot[j]))
         
+#        if(rm<=1){cbiol[j] <- max(cbiol[j],????)  } #assign a minimum for cbior
+        
         fallrsgc[3] <- fallrsgc[3] - cbior[j]
         
         
         # update vegetation's physical characteristics
-        plai[j] <- cbiol[j] * specla[j]
-        
-        
+        plai[j] <- max(cbiol[j] * specla[j] , 0.01)
 
         # sencon try as function of GDD, age and self-shade
-        if( rm > 1) {
-          plai[j]  <- cbiol[j] * specla[j] + (aylprod[j]- cbiol[j] ) * specla[j] * 0.15 
-
-          greenfrac[j] <- cbiol[j] * specla[j] / plai[j] 
-        }else{ greenfrac[j] <- 1.0 }
+        if( rm <= 50 ) { greenfrac[j] <- 1.0 }else{ 
+                            f_dead_leaves <- 0.15 # 0.15 because dead leaves does note have the
+                            dead_leaves_inpact <- cbiol[j] * specla[j] + (aylprod[j]- cbiol[j] ) * specla[j] * f_dead_leaves 
+                         greenfrac[j] <- plai[j]/ dead_leaves_inpact }
         
         
         
@@ -293,7 +238,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         }
         
         
-        plai[j] <- max(0.01,plai[j])
+        plai[j]  <- max(0.01,plai[j])
         cbiow[j] <- max(0.0, cbiow[j]) 
         cbior[j] <- max(0.0, cbior[j]) 
         cbiol[j] <- max(plai[j] / specla[j], cbiol[j])
@@ -353,8 +298,8 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         
         # planted
         if(cropy == 1) {
-          #          if ( (hui[j] >= gddmaturity[j]) && (idpp[j] >= mxmat[j] - 15) || 
-          if ( (hui[j] >= gddmaturity[j]) && (idpp[j] >= mxmat[j] - 15) || 
+          #          if ( (gddplant[j] >= gddmaturity[j]) && (idpp[j] >= mxmat[j] - 15) || 
+          if ( (gddplant[j] >= gddmaturity[j]) && (idpp[j] >= mxmat[j] - 15) || 
                ( idpp[j] >= mxmat[j] + 15)){# ||
                # year == 2016 && jday == 303   ) { # maximum harvest date
             # year == 2016 && jday == 290   ) { # maximum harvest date
@@ -364,12 +309,12 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
             greenfrac[j]    <- 0.0 # turn all vegetation to brown
             if (harvdate[j] == 999) harvdate[j] <- jday 
             plai[j]         <- 0.25 # simulates remaining stubble/mulch
-            print(paste('Sug.Cane - 1st cycle = ',cropy, year, jday, idpp[j], hui[j], gddmaturity[j]))
+            print(paste('Sug.Cane - 1st cycle = ',cropy, year, jday, idpp[j], gddplant[j], gddmaturity[j]))
           }
           
         } else {
           # ratoon
-          if(((hui[j] >= gddmaturity[j]) && (idpp[j] >= 365) ) ||  year==2017 && jday== 242 ||
+          if(((gddplant[j] >= gddmaturity[j]) && (idpp[j] >= 365) ) ||  year==2017 && jday== 242 ||
              idpp[j] >= 395 ||
              ((idpp[j] >= 335) &&
               (day == pdmin[j] && month == ((pmmin[j] + (mxmat[j] / 30.) - 1)%%12 + 1)))) { # maximum harvest date
@@ -380,7 +325,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
             if(harvdate[j] == 999) harvdate[j] <- jday 
             plai[j]       <- 0.25 # simulates remaining stubble/mulch
             
-            print(paste0('Sug.Cane - ratoon = ',cropy,year,jday,idpp[j],hui[j],gddmaturity[j]))
+            print(paste0('Sug.Cane - ratoon = ',cropy,year,jday,idpp[j],gddplant[j],gddmaturity[j]))
           }
         }
       }
@@ -396,9 +341,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   assign("mxgddgf", mxgddgf, envir = env)
   assign("mxmat", mxmat, envir = env)
   assign("greenfrac", greenfrac, envir = env)
-  assign("fleaf", fleaf, envir = env)
-  assign("hui", hui, envir = env)
-  assign("leafout", leafout, envir = env)
   assign("idpp", idpp, envir = env)
   assign("awood", awood, envir = env)
   assign("aleaf", aleaf, envir = env)
@@ -433,19 +375,5 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   assign("ayanpp", ayanpp, envir = env)
   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
-  assign("Deadwood",Deadwood      , envir = env)
-  assign("Deadbranch",Deadbranch    , envir = env)
-  assign("DBranch",DBranch    , envir = env)  
-  assign("Deadfineroots",Deadfineroots , envir = env)
-  assign("Deadleaves",Deadleaves    , envir = env)
-  # assign("Deadcoroots",Deadcoroots   , envir = env)
-  
-  assign("cbiold",cbiold, envir = env)
-  assign("cbiols",cbiols, envir = env)
-  # assign("plmaleafmat",plmaleafmat, envir = env)
-  
-  # assign("Sapwood",Sapwood  , envir = env)
-  # assign("Heartwood",Heartwood, envir = env)
-
 
 }

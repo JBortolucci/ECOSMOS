@@ -28,8 +28,7 @@ initialcrop <- function() {
       env$cbior[i] <- 0
       env$cbiow[i] <- 0
       env$cbiog[i] <- 0
-      env$hui[i] <- 0
-      
+
       env$aleaf[i] <- 0
       env$aroot[i] <- 0
       env$astem[i] <- 0
@@ -40,8 +39,7 @@ initialcrop <- function() {
       env$ayrprod[i] <- 0
       env$ayabprod[i] <- 0
       env$aylprod[i] <- 0
-      env$leafout[i] <- 0
-      
+
       env$plaimx[i] <- 0
       env$biomass[i] <- 0
       env$totnuptake[i] <- 0

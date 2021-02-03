@@ -53,24 +53,8 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   if (croplive[i]==1) {
     
     
-    huileaf  <- array(0, npft)           # heat unit index needed to attain leaf emergence after planting
-    huigrain <- array(0, npft)           # heat unit index needed to reach vegetative maturity
-    laidecl  <- matrix(0, 1, npft)       # decline in leaf area for crop
-    # phenology for additional leaf drop - if drought related or temperature related at
-    # end of growing season
-    
-    ddays      <- 7.0            #inp
-    ddfac      <- 1.0 / ddays    #inp
-    tthreshold <- 273.16         #par
-    
-    # number of corn plants per square meter
-    # this is only important if using the leaf expansion equations
-    # of Ritchie, that is temperature dependent.  Our standard procedure
-    # here however is to use the allocation of C to leaf (aleaf) and
-    # specific leaf area (specla) to accumulate LAI during the season
-    
-    nplants <- 7                #inp
-    
+
+#! available inorganic nitrogen in soil profile for plant growth (kg_n m-2 y-1)     
     aplantn <- 0.0
     
     for(k in 1:nsoilay) {
@@ -82,32 +66,15 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     if (croplive[i] == 1.0) {
       
-      huileaf[i]  <- lfemerg[i]  * gddmaturity[i]  # typically between 3 - 7% in wheat
-      crmeuca     <- max(73., min((gddmaturity[i]+ 53.683) / 13.882,135.))
-      huigrain[i] <- -0.002  * (crmeuca - 73.) + grnfill[i]
-      huigrain[i] <- min(max(huigrain[i],grnfill[i] - 0.1), grnfill[i])
-      huigrain[i] <- huigrain[i]   * gddmaturity[i]  # from Cabelguenne et al. 1999
-      
-      
+
       # accumulate growing degree days for planted crops past planting
       gddplant[i] <- gddplant[i] + max(0, min(td - baset[i], mxtmp[i]))
 
       greenfrac[i] <- 1.0
       
-      # calculate fraction allocated to leaf (from i. Norman allocation curve)
-      # bfact and fleafi are set in params.crp
-      fleaf[i] <- fleafi[i] * (exp(-bfact[i]) - exp(-bfact[i] * gddplant[i] / huigrain[i])) / (exp(-bfact[i]) - 1)
-      
-      # calculate accumulated growing degree days since planting (gddplant)
-      # determine if growing degree days calculated from top layer soil temperature
-      # are enough for leaf emergence to occur
-      hui[i]     <- gddplant[i]
-      leafout[i] <- gddplant[i]
-      laidecl[i] <- 0.0
       idpp[i]    <- idpp[i] + 1
       
-      # crop phenology from leaf emergence to start of leaf decline
-      
+
       ######################################################################
       ########## Start Allocation to Perenial (Eucalyptus) crops ############
       ######################################################################
@@ -487,46 +454,24 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("ztopPft", ztopPft, envir = env)
   assign("sapfrac", sapfrac, envir = env)
   assign("gddplant", gddplant, envir = env)
-  assign("aplantn", aplantn, envir = env)
-  assign("fleafi", fleafi, envir = env)
-  assign("mxgddgf", mxgddgf, envir = env)
-  assign("mxmat", mxmat, envir = env)
   assign("greenfrac", greenfrac, envir = env)
-  assign("fleaf", fleaf, envir = env)
-  assign("hui", hui, envir = env)
-  assign("leafout", leafout, envir = env)
   assign("idpp", idpp, envir = env)
   assign("awood", awood, envir = env)
   assign("aleaf", aleaf, envir = env)
   assign("acroot", acroot, envir = env)
   assign("aroot", aroot, envir = env)
   assign("abranch", abranch, envir = env)
-  assign("tlai", tlai, envir = env)
-  assign("peaklai", peaklai, envir = env)
   assign("plai", plai, envir = env)
-  assign("astemi", astemi, envir = env)
-  assign("aleafi", aleafi, envir = env)
-  assign("templai", templai, envir = env)
-  assign("gddemerg", gddemerg, envir = env)
-  assign("aerial", aerial, envir = env)
-  assign("rm", rm, envir = env)
-  assign("af1", af1, envir = env)
-  assign("af2", af2, envir = env)
-  assign("af3", af3, envir = env)
-  assign("af4", af4, envir = env)
-  assign("af5", af5, envir = env)
-  assign("af6", af6, envir = env)
+  assign("cbiol", cbiol, envir = env)
+  assign("cbiocr", cbiocr, envir = env)
+  assign("cbiob", cbiob, envir = env)
+  assign("cbior", cbior, envir = env)
+  assign("cbiow", cbiow, envir = env)
+  assign("biomass", biomass, envir = env)
   assign("aybprod", aybprod, envir = env)
   assign("ayabprod", ayabprod, envir = env)
   assign("ayrprod", ayrprod, envir = env)
   assign("aylprod", aylprod, envir = env)
-  assign("cbiol", cbiol, envir = env)
-  assign("cbiocr", cbiocr, envir = env)
-  assign("cbiob", cbiob, envir = env)
-  assign("fallrsgc", fallrsgc, envir = env)
-  assign("cbior", cbior, envir = env)
-  assign("cbiow", cbiow, envir = env)
-  assign("biomass", biomass, envir = env)
   assign("ayanpp", ayanpp, envir = env)
   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
@@ -537,8 +482,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("Deadfineroots",Deadfineroots , envir = env)
   assign("Deadleaves",Deadleaves    , envir = env)
   assign("Deadcoroots",Deadcoroots   , envir = env)
-  assign("cbiold",cbiold, envir = env)
-  assign("cbiols",cbiols, envir = env)
   assign("Sapwood",Sapwood  , envir = env)
   assign("Heartwood",Heartwood, envir = env)
   assign("DBranch_decay",DBranch_decay, envir = env)
