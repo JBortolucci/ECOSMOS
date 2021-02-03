@@ -199,7 +199,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       abranch[i] <-  (0.5 + 0.5 * (1.- (cbiob[i]*kg_C_M2_to_T_ha) / Branchexp ) / Allocsensb )
 
       abranch[i]<-max(min(abranch[i],1),0)
-      
+      # print(paste("alloca",abranch,cbiob[i],sep="//"))
       
       #---------------------
       # Coarse Root C allocation
@@ -215,7 +215,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       #Stem (G'DAY) C allocation or Wood (ECOSMOS)
       #---------------------
       # reduction factor was used to guaranteer the values (Alleaf + Alfineroot + Albran + Alcoroot) were all lower than 1
-      Callocfr    <- 1- (Callocf  + Callocb + Calloccr)
+      Callocfr    <- 1 - (Callocf  + Callocb + Calloccr)
       aroot[i]    <- aroot[i]*Callocfr
       aleaf[i]    <- aleaf[i]*Callocf
       abranch[i]  <- abranch[i]*Callocb
@@ -226,7 +226,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         aroot[i]        <- aroot[i]*reductionfactor
         aleaf[i]        <- aleaf[i]*reductionfactor
         abranch[i]      <- abranch[i]*reductionfactor
-        acroot[i]       <-acroot[i]*reductionfactor
+        acroot[i]       <- acroot[i]*reductionfactor
       }
       
       awood[i] <- 1 - (aroot[i] + aleaf[i] + abranch[i] + acroot[i])
@@ -315,7 +315,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         Deadbranch  <- max(Deadbranch,0)
         
       }
-      
+      print(paste("branch decay",DeadGbranch,Deadbranch,sep="/"))
       # if (rm > 4 ) {
       #   # After 4.5 years, both branch death and branch fall increase considerably ==> empirical correction
       #   # fdec        <- exp(2*log(2)*(rm-4))-1
@@ -399,8 +399,8 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       cbiob[i]  <- cbiob[i] + (abranch[i]  * max (0.0, adnpp[i]))  - (deltay * Deadbranch    / kg_C_M2_to_T_ha)
       cbior[i]  <- cbior[i] + (aroot[i]    * max (0.0, adnpp[i]))  - (deltay * Deadfineroots / kg_C_M2_to_T_ha)
       cbiol[i]  <- cbiol[i] + (aleaf[i]    * max (0.0, adnpp[i]))  - (deltay * Deadleaves    / kg_C_M2_to_T_ha)
-      cbiocr[i] <- cbiocr[i] + (acroot[i] * max (0.0, adnpp[i]))  - (deltay * Deadcoroots   / kg_C_M2_to_T_ha)
-      plai[i]   <- max(cbiol[i]*Signew/ Cfracts,0.02)
+      cbiocr[i] <- cbiocr[i] + (acroot[i]  * max (0.0, adnpp[i]))  - (deltay * Deadcoroots   / kg_C_M2_to_T_ha)
+      plai[i]   <- max(cbiol[i]*Signew / Cfracts,0.02)
       
       
       #---------------------

@@ -16,10 +16,10 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
   
   stinrad   <- c() # daily Station Solar Radiation (MJ/m2/day)
 
-  
+
   latc <-  lat + 0.125
   lonc <-  lon - 0.125
-  
+
   lons<-substr(lonc*1000,2,5)
   
   
@@ -32,7 +32,8 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
   wth<-gsub(' ','0',wth)
   
   file_in <- paste0(path, wth,".csv")
-  
+  # print(paste("Buscando Xavier-Nasa ", file_in,sep="/")) #Michel: Busca nos dados Xavier-NASAPOWER
+  # stop()
 
   #### Read csv file for current coordinate ####
   

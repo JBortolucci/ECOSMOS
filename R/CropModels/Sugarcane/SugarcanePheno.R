@@ -93,11 +93,11 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         # calculate fraction allocated to leaf (from J. Norman allocation curve)
         # bfact and fleafi are set in params.crp
         fleaf[j] <- fleafi[j] * (exp(-bfact[j]) - exp(-bfact[j] * gddplant[j] / huigrain[j])) / (exp(-bfact[j]) - 1)
- 
+        
         # calculate accumulated growing degree days since planting (gddplant) 
         # determine if growing degree days calculated from top layer soil temperature
         # are enough for leaf emergence to occur 
-
+        
         hui[j]     <- gddplant[j] 
         leafout[j] <- gddplant[j]
         laidecl[j] <- 0.0
@@ -131,7 +131,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           
           rm <- min(100., 100. * (gddplant[j] - gddemerg) / gddmaturity[j] )
           
-
+          
           
           # scheme based on CANEGRO model (Singels et al. 2005) 
           # if sugarcane is planted, it takes long to construct the 
@@ -161,9 +161,9 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           #              min(1.,exp(tmld * ecf7) / exp((td - 273.16) * ecf7) ) )
           
           if(plai[j] * greenfrac[j] < 2 && rm < 75 && rm > 10) {
-              #if green lai < 2. then aleaf is equal to 0.5 
+            #if green lai < 2. then aleaf is equal to 0.5 
             astem[j] <- min( max(0.,aerial[j] - 0.5) ,astem[j] ) 
-         
+            
           } else {
             astem[j] <- min( max(0.,aerial[j] - aleaff[j]) ,astem[j] ) 
           }
@@ -197,10 +197,10 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           arepr[j] <- min(aerial[j] - aleaf[j], arepr[j] )
           astem[j] <- astem[j] - (arepr[j] - ccf5)
           
- ############################################################
- # STAR of leaf adjust  -> adjust aleaf; check for LAI max 
- # calculate actual lai increase based on npp and allocation rules  
- # only increment lai if it hasn't reached maximum allowable value 
+          ############################################################
+          # STAR of leaf adjust  -> adjust aleaf; check for LAI max 
+          # calculate actual lai increase based on npp and allocation rules  
+          # only increment lai if it hasn't reached maximum allowable value 
           
           leaftemp <- aleaf[j]
           
@@ -219,10 +219,10 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           aleaf[j] <- max(0.0, aleaf[j])
           astem[j] <- max(0.0, astem[j])
           arepr[j] <- max(0.0, arepr[j])
-
-############ END of leaf adjusts ###########
-############################################
-
+          
+          ############ END of leaf adjusts ###########
+          ############################################
+          
           # keep day of year that sucrose (grain fill) begins
           if(arepr[j] > 0.001 && grainday[j] > 999)
             grainday[j] <- min(grainday[j], jday)
@@ -253,11 +253,11 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           ############ END of leaf adjusts ###########
           ############################################
         }
-
         
         
- 
- 
+        
+        
+        
         
         # update carbon reservoirs using an analytical solution
         # to the original carbon balance differential equation
@@ -280,11 +280,11 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         plai[j] <- cbiol[j] * specla[j]
         
         
-
+        
         # sencon try as function of GDD, age and self-shade
         if( rm > 1) {
           plai[j]  <- cbiol[j] * specla[j] + (aylprod[j]- cbiol[j] ) * specla[j] * 0.15 
-
+          
           greenfrac[j] <- cbiol[j] * specla[j] / plai[j] 
         }else{ greenfrac[j] <- 1.0 }
         
@@ -372,7 +372,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           #          if ( (hui[j] >= gddmaturity[j]) && (idpp[j] >= mxmat[j] - 15) || 
           if ( (hui[j] >= gddmaturity[j]) && (idpp[j] >= mxmat[j] - 15) || 
                ( idpp[j] >= mxmat[j] + 15)){# ||
-               # year == 2016 && jday == 303   ) { # maximum harvest date
+            # year == 2016 && jday == 303   ) { # maximum harvest date
             # year == 2016 && jday == 290   ) { # maximum harvest date
             # year == 2005 && jday == 104   ) { # maximum harvest date
             
@@ -384,12 +384,12 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           }
           
         } else {
-          # ratoon
-          if(((hui[j] >= gddmaturity[j]) && (idpp[j] >= 365) ) ||  year==2017 && jday== 242 ||
-             idpp[j] >= 395 ||
-             ((idpp[j] >= 335) &&
-              (day == pdmin[j] && month == ((pmmin[j] + (mxmat[j] / 30.) - 1)%%12 + 1)))) { # maximum harvest date
-            
+          ### ratoon
+          if(((hui[j] >= gddmaturity[j]) && (idpp[j] >= 365) ) ||#  year==2017 && jday== 242 ||
+            idpp[j] >= 395 ||
+            ((idpp[j] >= 335) &&
+             (day == pdmin[j] && month == ((pmmin[j] + (mxmat[j] / 30.) - 1)%%12 + 1)))) { # maximum harvest date
+
             croplive[j]   <- 0.0
             greenfrac[j]  <- 0.0 # turn all vegetation to brown
             
@@ -468,6 +468,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   
   # assign("Sapwood",Sapwood  , envir = env)
   # assign("Heartwood",Heartwood, envir = env)
-
-
+  
+  
 }

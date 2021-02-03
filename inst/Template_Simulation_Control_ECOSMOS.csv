@@ -1,2 +1,6 @@
-ID,LAT,LON,startYear,endYear,SOILID,StationID,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,cycle length,cycles,params
-sim1,-15.75,-47.75,2014,2014,BRZL000001,,0,1,0,0,soybean,2,2014,116,1,soybean1
+ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
+simMARSDEN,-23.0411,-48.6258,2003,1,2011,365,MARSDEN,inst/input_1d/met_EUCAFLUX_60min.txt,0,0,1,0,0,eucalipto,95,2004,,,,2500,1,eucaliptoMARSDEN
+simVCP,-21.5966,-47.6,2004,1,2010,365,VCP,inst/input_1d/met_EUCAVCP_60min.txt,0,0,1,0,0,eucalipto,50,2004,,,,2500,1,eucaliptoVCP
+simEUCFLUX,-22.967778,-48.727778,2009,1,2016,365,EUCFLUX,inst/input_1d/met_EUCAFLUX_60min.txt,0,0,1,0,0,eucalipto,305,2009,,,,2500,1,eucalipto1
+simFAYS,-21.951667,-47.335278,2015,1,2018,365,FAYS,inst/input_1d/FAYS_279_2015_208_2018_Input_1hora.txt,0,0,1,0,0,sugarcane,244,2015,,,,440,1,sugarcane1
+simUSR,-21.633333,-47.783333,2004,1,2007,365,USR,inst/input_1d/USR_Santiago_104_2005_140_2007_Input.txt,0,0,1,0,0,sugarcane,104,2004,,,,390,1,sugarcane_USR
