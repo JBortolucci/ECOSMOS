@@ -11,42 +11,9 @@ SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   if (                                        croplive[j] != 1 &&  exist[j] == 1){ pstart[j] <- pstart[j] + 1 }
   
   
-  if(pstart[i] >= 1  & exist[i] == 1 & croplive[i] != 1) {
+  if(pstart[i] == 1  & exist[i] == 1 & croplive[i] != 1) {
     print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i],sep=" / "))
   }
-  
-  
-  #_______________________________________________________
-  #   reset variables at the beginning  of crop year   
-  
-  if (iday == pcd[i] & imonth == pcm[i]) {
-    
-    pdate[i]     <- 0
-    
-    
-    if (croplive[i] == 0) {
-      cropplant[i] <- 0
-    } 
-    
-    
-    harvdate[i]   <- 999
-    dmyield[i]    <- 0
-    dmleaf[i]     <- 0
-    dmstem[i]     <- 0
-    dmroot[i]     <- 0
-    dmresidue[i]  <- 0
-    dmcrop[i]     <- 0
-    residuen[i]   <- 0
-    nconcl[i]     <- 0
-    nconcs[i]     <- 0
-    nconcr[i]     <- 0
-    nconcg[i]     <- 0
-    cropn[i]      <- 0
-    cropfixn[i]   <- 0
-    cntops[i]     <- 40
-    cnroot[i]     <- 60
-    fertinput[i]  <- 0
-  } 
   
   
   #_______________________________________________________________    
@@ -55,14 +22,12 @@ SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   
   if (exist[i] == 1 & croplive[i] != 1 & cropplant[i] == 0) {
     
-    
-    # Plating block for Soybean, corn, and wheat
-    
-    
+
     if(cropy == 0 &  pstart[i] >=1 & pstart[i] <= 180) {
       
       croplive[i]     <- 1        # initialize freeze kill function to 1 - crops living 
       cropplant[i]    <- 1        # initialize freeze kill function to 1 - crops living 
+      pdate[i]         <- jday    
       cropy            <- 1
       gddmaturity[i]  <- hybgdd[i]
       
@@ -114,37 +79,18 @@ SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
     
   }
   
- 
-  assign("pstart", pstart, envir = env)
-  assign("pdate", pdate, envir = env)
-  assign("cropplant", cropplant, envir = env)
-  assign("cropy", cropy, envir = env)
-  assign("harvdate", harvdate, envir = env)
-  assign("dmyield", dmyield, envir = env)
-  assign("dmleaf", dmleaf, envir = env)
-  assign("dmstem", dmstem, envir = env)
-  assign("dmroot", dmroot, envir = env)
-  assign("dmresidue", dmresidue, envir = env)
-  assign("dmcrop", dmcrop, envir = env)
-  assign("residuen", residuen, envir = env)
-  assign("nconcl", nconcl, envir = env)
-  assign("nconcs", nconcs, envir = env)
-  assign("nconcr", nconcr, envir = env)
-  assign("nconcg", nconcg, envir = env)
-  assign("cropn", cropn, envir = env)
-  assign("cropfixn", cropfixn, envir = env)
-  assign("cntops", cntops, envir = env)
-  assign("cnroot", cnroot, envir = env)
-  assign("fertinput", fertinput, envir = env)
-  assign("croplive", croplive, envir = env)
-  assign("soydop", soydop, envir = env)
-  assign("corndop", corndop, envir = env)
-  assign("whtdop", whtdop, envir = env)
+
+  
+  assign("pstart", pstart, envir = env)  
+  assign("croplive", croplive, envir = env) 
+  assign("cropplant", cropplant, envir = env) 
+  assign("pdate", pdate, envir = env)    
+  assign("cropy", cropy, envir = env)   
   assign("gddmaturity", gddmaturity, envir = env)
-  assign("avehybrid", avehybrid, envir = env)
   assign("fertnitro", fertnitro, envir = env)
+  assign("fertinput", fertinput, envir = env)
   
 }
-  
-  
-  
+
+
+

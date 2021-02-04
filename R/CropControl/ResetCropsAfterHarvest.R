@@ -11,21 +11,20 @@ ResetCropsAfterHarvest <- function() {
       if(harvdate[i] == jday) {
         
         plai[i]    <- 0.01
-        peaklai[i] <- 0
         cbiol[i]   <- 0
-        cbior[i]   <- 0
         cbios[i]   <- 0
         cbiog[i]   <- 0
         cbiow[i]   <- 0
+        cbiob[i]   <- 0  
+        cbior[i]   <- 0   
+        cbiocr[i]  <- 0
+
+
         
-        # ADICIONADO NOVO
-        cbiocr[i] <- 0
-        cbiob[i]  <- 0
-        
-        aybprod[i] <- 0
-        ayrprod[i]  <- 0
-        ayabprod[i] <- 0
-        aylprod[i] <- 0
+        aybprod[i]    <- 0
+        ayrprod[i]    <- 0
+        ayabprod[i]   <- 0
+        aylprod[i]    <- 0
         htmx[1]       <- 0      # ou 2
         plaimx[i]     <- 0
         biomass[i]    <- 0
@@ -41,27 +40,59 @@ ResetCropsAfterHarvest <- function() {
         ztop[1]       <- 0    # ou 2
         totbiol       <- 0
         totlail       <- 0
-        arepr[i] <- 0
+        arepr[i]      <- 0
         
-        # ADICIONADO NOVO
-        acroot[i] <- 0
-        
-        # JAIR: Não estava resetando a cana por causa do ratoon.
-        harvdate[i] <- 999
+
+# TO DO: Victor, Verificar se essas variaveis sao usadas antes de serem resetadas 
+        harvdate[i]   <- 999
+        dmyield[i]    <- 0
+        dmleaf[i]     <- 0
+        dmstem[i]     <- 0
+        dmroot[i]     <- 0
+        dmresidue[i]  <- 0
+        dmcrop[i]     <- 0
+        residuen[i]   <- 0
+        nconcl[i]     <- 0
+        nconcs[i]     <- 0
+        nconcr[i]     <- 0
+        nconcg[i]     <- 0
+        cropn[i]      <- 0
+        cropfixn[i]   <- 0
+        cntops[i]     <- 40
+        cnroot[i]     <- 60
+        fertinput[i]  <- 0
+
         assign("harvdate", harvdate, envir = env)
+        assign("dmyield", dmyield, envir = env)
+        assign("dmleaf", dmleaf, envir = env)
+        assign("dmstem", dmstem, envir = env)
+        assign("dmroot", dmroot, envir = env)
+        assign("dmresidue", dmresidue, envir = env)
+        assign("dmcrop", dmcrop, envir = env)
+        assign("residuen", residuen, envir = env)
+        assign("nconcl", nconcl, envir = env)
+        assign("nconcs", nconcs, envir = env)
+        assign("nconcr", nconcr, envir = env)
+        assign("nconcg", nconcg, envir = env)
+        assign("cropn", cropn, envir = env)
+        assign("cropfixn", cropfixn, envir = env)
+        assign("cntops", cntops, envir = env)
+        assign("cnroot", cnroot, envir = env)
+
+        # TO DO: Victor Verificar se essas variaveis do bloco acima sao usadas antes de serem resetadas 
         
-        # ADICIONADO NOVO
-        assign("cbiocr", cbiocr, envir = env)
-        assign("cbiob", cbiob, envir = env)
         
-        assign("acroot", acroot, envir = env)
-        assign("ayabprod", ayabprod, envir = env)
+        
+        assign("harvdate", harvdate, envir = env)
+        assign("plai", plai, envir = env)
         assign("cbiog", cbiog, envir = env)
         assign("cbios", cbios, envir = env)
-        assign("plai", plai, envir = env)
         assign("cbiol", cbiol, envir = env)
         assign("cbior", cbior, envir = env)
         assign("cbiow", cbiow, envir = env)
+        assign("cbiocr", cbiocr, envir = env)
+        assign("cbiob", cbiob, envir = env)  
+        assign("ayabprod", ayabprod, envir = env)
         assign("aybprod", aybprod, envir = env)
         assign("ayrprod", ayrprod, envir = env)
         assign("aylprod", aylprod, envir = env)

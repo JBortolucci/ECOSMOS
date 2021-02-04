@@ -344,7 +344,6 @@ grnfraccrop vector npft 0
 gddplant vector npft 0
 gddmaturity vector npft 0
 thrlai vector npft 0
-peaklai vector npft 0
 hui vector npft 0
 phuf vector npft 0
 tlai vector npft 0
@@ -384,7 +383,6 @@ crmact vector npft 0
 crmplant vector npft 0
 ccdays vector npft 0
 fertinput vector npft 0
-avehybrid vector npft 0
 idppout vector npft 0
 aerial vector npft 0
 rm 0 

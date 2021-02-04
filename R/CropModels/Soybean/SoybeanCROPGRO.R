@@ -822,11 +822,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     greenfrac[i] <- 1.0   
     
     
-    peaklai[i]  <- max(peaklai[i]  ,plai[i] )
-    
-    
-    
-    
     biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbiop[i]
     
     # keep track of aboveground annual npp
@@ -878,7 +873,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         greenfrac[i]  <- 0.0 # turn all vegetation to brown
         harvdate[i]   <- jday
         plai[i]       <- 0.01 # simulates remaining stubble/mulch
-        peaklai[i]    <- 0.0
         endCycle      <- T
     
       }
@@ -910,7 +904,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("cbios", cbios, envir = env)
   assign("cbior", cbior, envir = env)
   assign("plai", plai, envir = env)
-  assign("peaklai", peaklai, envir = env)
   assign("aerial", aerial, envir = env)
   assign("aybprod", aybprod, envir = env)
   assign("ayabprod", ayabprod, envir = env)

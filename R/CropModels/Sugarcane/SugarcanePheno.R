@@ -213,7 +213,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         
 #        if(rm<=1){cbiol[j] <- max(cbiol[j],????)  } #assign a minimum for cbior
         
-        fallrsgc[3] <- fallrsgc[3] - cbior[j]
+        fallrsgc[3] <- fallrsgc[3] - cbior[j] #dead roots
         
         
         # update vegetation's physical characteristics

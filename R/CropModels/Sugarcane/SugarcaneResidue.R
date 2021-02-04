@@ -13,10 +13,14 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
   # fallr <- 0
   
   if(croplive[j] == 1) {
-    fallrsgc[2] <- max( fallrsgc[2] - fallrsgc[1] * (1 / 90) , 0) 
-    #remove all old root in 60 days after harvest
-    if(fallrsgc[2] > 0) fallr <- fallr + fallrsgc[1] * (1 / 90)   
+
     fallr <- fallr + fallrsgc[3] * sumfroot[1,2] # Michel: 28-Dez
+        
+    #remove all old root in 60 days after harvest
+    fallrsgc[2] <- max( fallrsgc[2] - fallrsgc[1] * (1 / 90) , 0) 
+    if(fallrsgc[2] > 0) fallr <- fallr + fallrsgc[1] * (1 / 90)
+    
+
     
   }  #decay today 
   
@@ -44,7 +48,6 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     dmleaf[j]  <- cbiol[j] * 10 / cgrain[j]   
     dmroot[j]  <- cbior[j] * 10 / cgrain[j]   
     dmwood[j]  <- cbiow[j] * 10 / cgrain[j]   
-    
     dmcrop[j] <- dmyield[j] + dmstem[j] + dmleaf[j] + dmroot[j]
     
     if(j == j) {
@@ -106,22 +109,21 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     # on a daily basis because biogeochem.f uses the annual total, split
     # between each day of the year equally 
     # carbon returned as residue
-    if(j == j) {
+
       if(firecane  == 1) {
         falll <- falll + (cbios[j] + cbiog[j]) * (1 - fyield[j]) / 2  #meristem 
       } else {
         falll <- falll + aylprod[j] + (cbios[j] + cbiog[j]) * (1 - fyield[j])  #leaf + meristem and base not harvested
       }
-    }
+
     
-    if(j == j && cropy <= nratoon) {
+    if( cropy <= nratoon) {
 
       fallr <- fallr + cbior[j] * 0.30 * sumfroot[1,2] # Michel: 28-Dez
-      
       fallrsgc[1] <- cbior[j] * 0.70
       fallrsgc[2] <- cbior[j] * 0.70
       
-    } else if(j == j) {     # plant again 
+    } else {     # plant again 
       fallr <- fallr + cbior[j] * sumfroot[1,2] # Michel: 28-Dez
       fallrsgc[1] <- cbior[j] * 0
       fallrsgc[2] <- cbior[j] * 0
@@ -131,27 +133,21 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     #______________________________________________________
     #__________ Update GDD ________________________________
     
-    ########################################################
-    ################### sugarcane ratoon ###################
-    
-    if(j == j && cropy == 1) {
+    if( cropy == 1) {
       gddsgcp <- (gddsgcp + gddmaturity[j]) / 2  
     }
-    if(j == j && cropy > 1)  { 
+    if( cropy > 1)  { 
       gddsgcr <- (gddsgcr + gddmaturity[j]) / 2  
     }
     
     
-    if(j == j && cropy <= nratoon) {
+    if( cropy <= nratoon) {
       cropy <- cropy + 1	
       croplive[j] <- 1   
-      
       cbiol[j] <- 0.05/ specla[j]
       plai[j]  <- cbiol[j] * specla[j]
-      
       gddmaturity[j]  <- gddsgcp
       
-      #next day, and it can add fertilizer nitrogen in the next time step
 
       ##### Check if cycle was complete #####
       # temperature has fallen below freeze 
@@ -161,13 +157,11 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
         print(paste0('sugarcane planted didnt get the minimum of development, start to planting again'))
       }
       
-    } else if (j == j && cropy > nratoon) {
-    # } else if (j == j && cropy == nratoon) {
+    } else if ( cropy > nratoon) {
       croplive[j] <- 0    
       cropy       <- 0
       endCycle    <- T
-      # print("TERMINOU!")
-    }  # sugarcane ratoon
+    }  
     
   }  # harvest <- jday
 
