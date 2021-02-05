@@ -4,6 +4,12 @@
 # does initialization for snow model
 inisnow <- function() {
   
+  nsnolay <- 3
+  assign("nsnolay",  nsnolay, envir = env)
+  
+  assign("hsno",  matrix(0, 1, nsnolay), envir = env)
+  assign("tsno",  matrix(273.16, 1, nsnolay), envir = env)
+  
   # rhos is density of snow
   assign("rhos",  0.15 * rhow, envir = env)
   

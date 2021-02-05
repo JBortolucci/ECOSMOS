@@ -136,6 +136,13 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]]$endCycle <- F
     
     
+    # TODO: Nessa prieira versão uma planta roda após a outra, tal como especificado no arquivo de configuração.
+    #       Depois, fazer um jeito de definir plantas rodando ao mesmo tempo.
+    
+    ReadPlantParamsFromFile(path = paramsPath)
+    
+    
+    #___________________________________________    
     # READ DAILY STATION DATA
     
     if(file.exists(paste0("inst/input/",simConfigs[[i]]$stationID,".csv"))==T){
@@ -159,14 +166,17 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
       pathw<- paste0(stationDataPath,wth,".csv")
       if(file.exists(pathw)==F){print(paste0('FILE ',pathw ,'DOES NOT EXIST'))
         stop()}
-      
-      
     }
     
 
     ReadDailyStationData(pathw, simInstances[[id]]$point$coord$lat, simInstances[[id]]$point$coord$lon,  simInstances[[id]])
     
-
+    #___________________________________________    
+    # READ HORLY STATION DATA
+    
+    
+    
+    
     
     
     assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])
@@ -176,12 +186,6 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     if(simConfigs[[i]]$irrigate>0){try(ReadDailyIrrigationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)}
   }
   
-  # TODO: Nessa prieira versão uma planta roda após a outra, tal como especificado no arquivo de configuração.
-  #       Depois, fazer um jeito de definir plantas rodando ao mesmo tempo.
-  
-  ReadPlantParamsFromFile(path = paramsPath)
-  
-  # read daily station data
-  
+
   
 }

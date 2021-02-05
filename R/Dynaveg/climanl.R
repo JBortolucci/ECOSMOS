@@ -71,7 +71,7 @@ climanl <- function() {
   gdd10   <- 0
   gdd12   <- 0
   
-  
+# Agrega os dados de clima para dias me'dios, assim podemos fazer a media de GDD para qualquer periodo
   td_mj <- aggregate(data_station,by=list(jday=data_station$jday), FUN=mean)
   
   i=0

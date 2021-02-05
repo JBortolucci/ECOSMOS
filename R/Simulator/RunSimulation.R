@@ -186,9 +186,6 @@ GeneralModel <- function(simVars = NULL) {
     # TODO: Para testar a planta, por causa dos if's, coloca como 0. Remover essa variável e os if's depois.
     simVars$cropsums <- 1
     
-    # simVars$cropsums <- simVars$imaize + simVars$isoybean + simVars$iwheat + simVars$isgc + simVars$ieuca + simVars$ipalm + simVars$irotation 
-    
-
     simVars$iyrlast <- simVars$year0 - 1
     
     simVars$lonindex <- point$lonIndex
@@ -204,20 +201,17 @@ GeneralModel <- function(simVars = NULL) {
    
 
 
-      # SCV/Jair - Remover daqui, colocar o valor default dentro da cultura, caso não seja lido do arquivo.
-
+      # Henrique e Leandro - Remover, colocar o valor default dentro da cultura, caso não seja lido do arquivo.
     simVars$fertmaize  <- matrix(5.76626, nrow = 1, ncol = 51)           #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao
     simVars$fertsgc    <- simVars$fertmaize * 2                          #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao
     simVars$fertsoy    <- matrix(2.24803, nrow = 1, ncol = 51)           #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao  
-    # simVars$fertwheat  <- matrix(3.15461, nrow = simVars$1, ncol = 51) #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao
 
     simVars$co2conc    <- simVars$co2init
     simVars$o2conc     <- simVars$o2init
     
     simVars$precip <- numeric(1)
     
-    simVars$cdays    <- 0    #SCV/Jair - SVC remover o calendario agricola 
-    simVars$pstart[] <- 999  #SCV/Jair - SVC remover o calendario agricola
+    simVars$pstart[] <- 999  # Jair, essa, e as demais variávies, não deveria ser criadas dentro de um arquivo separado de inicializacao?
     
     simVars$soilType <- config$soilId # as.character(ptos.sim[ii,]$SOIL_BR) # Soil type information from database
     
@@ -347,18 +341,6 @@ GeneralModel <- function(simVars = NULL) {
         
         simVars$jday <- simVars$jday + 1
         
-        
-        for(j in seq(1,simVars$npft)) {
-          if(!simVars$plantList[[j]]$active) next
-          if(simVars$plantList[[j]]$type == simVars$CROPS) {
-            if(day == simVars$pcd[j] && month == simVars$pcm[j] && simVars$exist[j] == 1) {
-              simVars$cdays     <- 0   
-              simVars$pstart[j] <- 999   
-            }
-          }
-        }  
-        
-        simVars$cdays <- simVars$cdays + 1
         
         UseDailyStationData(day, month, year)
         

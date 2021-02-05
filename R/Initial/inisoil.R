@@ -2,9 +2,7 @@
 
 inisoil <- function() {
   
-  # added for Green-Ampt
-  assign("fwpudtot", array(0, 1), envir = env)
-  assign("wpud", array(0, 1), envir = env)
+
   
   
   # set sand/silt/clay vectors (xdat,ydat,zdat) for 11 data points
@@ -12,25 +10,30 @@ inisoil <- function() {
   assign("ydat", texdat[2, 1:ndat], envir = env)
   assign("zdat", texdat[3, 1:ndat], envir = env)
   
-  # initialization and normalization constant for puddle model (kg m-2)
-  assign("wipud", array(0, 1), envir = env)
-  
+
   # set physical parameters of soil
   assign("z0soi", array(0.005, 1), envir = env)
   
   # initialize soil water and soil temperature fields
   # also initialize daily average fields for crops
   
-  # TODO: Leandro. Mudei de 0.9 pra 0.5
-  assign("wsoi", matrix(0.5, 1, nsoilay), envir = env)
-  # assign("wsoi", matrix(0.5, 1, nsoilay), envir = env)
-  
-  assign("wisoi", matrix(0, 1, nsoilay), envir = env)
-  assign("tsoi", matrix(278.13, 1, nsoilay), envir = env)
-  
   assign("adwsoilay", matrix(0.5, 1, nsoilay), envir = env)
   assign("adwisoilay", matrix(0, 1, nsoilay) , envir = env)
   assign("adtsoilay", matrix(278.13, 1, nsoilay) , envir = env)
+  
+
+  
+  assign("wsoi",  matrix(0.5   , 1, nsoilay), envir = env)
+  assign("tsoi",  matrix(Tavgann+273.16, 1, nsoilay), envir = env)
+  assign("wisoi", matrix(0     , 1, nsoilay), envir = env)
+  assign("fi",  array(0, 1), envir = env)
+  assign("wipud", array(0, 1), envir = env)
+  
+  
+  
+  # added for Green-Ampt
+  assign("fwpudtot", array(0, 1), envir = env)
+  assign("wpud", array(0, 1), envir = env)
   
   # initialize total irrigation
   assign("totirrig", array(0, 1), envir = env)
@@ -154,24 +157,7 @@ inisoil <- function() {
     
   }
   
-  # Henrique & Leandro: including initial conditions (IC) [2020-11-04]
 
-  if(soilic == 1) {
-
-    for (k in 1:nsoilay) {
-      wsoi[k] <- (1 / poros[k]) * swic[k]  # soil water (relative to poros)
-      
-      # TO DO: Fazer a media com base no mes de inicio da simulacao
-      # tsoi[k] <-  mean((data_station$TMAX+data_station$TMIN)/2)+ 273.15  # ic$STic[k] + 273.15 # soil temperature (K)
-      
-      print(paste('Initial Soil Water Fraction ',poros[k],swic[k],wsoi[k],tsoi[k],sep=" / "))
-      
-      if(is.na(swic[k])==T) {
-        print('No Soil Water Initial condition') 
-        stop()}
-      
-    }
-  }else { wsoi[k] <- sfield[k]*poros[k]*0.75 }
   
 
   #SVC Move carfrac and texfact from soilbgc to here, need to compute only once   
@@ -195,7 +181,6 @@ inisoil <- function() {
   
   
   
-  assign("wsoi",  wsoi  , envir = env)
   assign("hsoi", hsoi, envir = env)
   assign("tsoi",  tsoi, envir = env)
   assign("rhosoi",  rhosoi, envir = env)
