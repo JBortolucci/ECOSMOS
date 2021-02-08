@@ -18,16 +18,19 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
   assign("cimax", as.numeric(data[4,][2]), envir = envToSet)
   assign("woodnorm", as.numeric(data[5,][2]), envir = envToSet) 
   
+  # TO DO - Remover (nband e' sempre igual a 2 no nosso modelo)
   assign("nband", as.numeric(data[6,][2]), envir = envToSet) 
   
+  # TO DO - Remover - esta' no final do Global_params 
   rhoveg <- matrix(0, simDataVars$nband, 2)
-  rhoveg[1,] <- c( as.numeric(data[7,][2]),  as.numeric(data[7,][3]))
-  rhoveg[2,] <- c( as.numeric(data[8,][2]),  as.numeric(data[8,][3]))
+  rhoveg[1,] <- c( as.numeric(data[7,][2]),  as.numeric(data[7,][3]))  # vis leaf reflectance, lower story
+  rhoveg[2,] <- c( as.numeric(data[8,][2]),  as.numeric(data[8,][3]))  # vis leaf reflectance, upper story
   assign("rhoveg", rhoveg, envir = envToSet) 
+  # TO DO - Remover 
   
   tauveg <- matrix(0, simDataVars$nband, 2)
-  tauveg[1,] <- c( as.numeric(data[9,][2]),  as.numeric(data[9,][3]))
-  tauveg[2,] <- c( as.numeric(data[10,][2]),  as.numeric(data[10,][3]))
+  tauveg[1,] <- c( as.numeric(data[9,][2]),  as.numeric(data[9,][3]))   # vis leaf transmittance, lower story
+  tauveg[2,] <- c( as.numeric(data[10,][2]),  as.numeric(data[10,][3])) # vis leaf transmittance, upper story
   assign("tauveg", tauveg, envir = envToSet) 
   
   dleaf <- c( as.numeric(data[11,][2]),  as.numeric(data[11,][3]))
@@ -167,6 +170,20 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
   assign("ysb", as.numeric(data[99,][2]), envir = envToSet)
   assign("ypb", as.numeric(data[100,][2]), envir = envToSet)
   assign("ynb", as.numeric(data[101,][2]), envir = envToSet)
+  assign("za",  as.numeric(data[102,][2]), envir = envToSet)
+  
+  assign("rhovegvlg",  as.numeric(data[103,][2]), envir = envToSet)
+  assign("rhovegvlb",  as.numeric(data[104,][2]), envir = envToSet)
+  assign("rhovegvu",   as.numeric(data[105,][2]), envir = envToSet)
+  assign("rhovegirlg", as.numeric(data[106,][2]), envir = envToSet)
+  assign("rhovegirlb", as.numeric(data[107,][2]), envir = envToSet)
+  assign("rhovegiru",  as.numeric(data[108,][2]), envir = envToSet)
+  assign("tauvegvlg",  as.numeric(data[109,][2]), envir = envToSet)
+  assign("tauvegvlb",  as.numeric(data[110,][2]), envir = envToSet)
+  assign("tauvegvu",   as.numeric(data[111,][2]), envir = envToSet)
+  assign("tauvegirlg", as.numeric(data[112,][2]), envir = envToSet)
+  assign("tauvegirlb", as.numeric(data[113,][2]), envir = envToSet)
+  assign("tauvegiru",  as.numeric(data[114,][2]), envir = envToSet)
   
   
 }

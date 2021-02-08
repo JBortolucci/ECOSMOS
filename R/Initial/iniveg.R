@@ -392,9 +392,7 @@ iniveg <- function (isimveg) {
   lai[1] <- totlail / fl
   lai[2] <- totlaiu / fu
   
-  #sant	inital atmosphere height, after first time step it is updated in canopy.f / subroutine canini(jday)
-  za <- 60
-  
+
   # specify canopy height parameters
   # calculated as a function of only the vegetative fraction of each grid cell
   # TET changed 6 / 26 / 02, CSANT changed 2011
@@ -406,74 +404,9 @@ iniveg <- function (isimveg) {
   zbot[2] <- ztop[1] + 1 
   ztop[2] <- max (zbot[2] + 1, 2.50 * totbiou / fu * 0.75)
   
-  # for(ij in 1:npft) { 
-  #   print(paste0('point ',0,' | PFT = ',ij,'  exist <- ',exist[ij],'  initial LAI = ',plai[ij]))
-  # }
-  # print(paste('initial canopy LAI  ',lai[1],lai[2],sep = ' / '	))
-  # print(paste('initial canopy height ',zbot[1],ztop[1],zbot[2],ztop[2],sep = ' / '	))
-  
-  # } else {
-  #   
-  #   #sant. for crops ztop is calculated in crops.f 
-  #   zbot[1] <- 0.01
-  #   ztop[1] <- 0.50
-  #   #to do: Santiago, read the flux tower hight 
-  #   ztop[2] <- 5  #to match the tower, wind
-  #   zbot[2] <- 4.5  #to match the tower, wind
-  #   
-  #   # PFT_UPDATE (Santiago): Pq para a cana faz essa verificação?
-  #   # for(i in 1:npft) {
-  #   #   if(zbot[2] <= ztopmxPft[i]) {
-  #   #     print(paste0('upper canopy botton cannot be lower than maximum crop height'))
-  #   #     stop()
-  #   #   }
-  #   # }
-  # }
-  
-  # ************************************************************************
-  # assign some physical properties of vegetation
-  # ************************************************************************
-  #
-  # leaf optical properties were taken from Sellers et al., 1996
-  # and Bonan, 1995
-  #
-  #      rhoveg[1,1] <- 0.10     # vis leaf reflectance, lower story
-  #      rhoveg[1,2] <- 0.10     # vis leaf reflectance, upper story 
-  #
-  #      rhoveg[2,1] <- 0.60     # nir leaf reflectance, lower story
-  #      rhoveg[2,2] <- 0.40     # nir leaf reflectance, upper story
-  #
-  #      tauveg[1,1] <- 0.07     # vis leaf transmittance, lower story
-  #      tauveg[1,2] <- 0.05     # vis leaf transmittance, upper story
-  #
-  #      tauveg[2,1] <- 0.25     # nir leaf transmittance, lower story
-  #      tauveg[2,2] <- 0.20     # nir leaf transmittance, upper story
-  
-  #SANT - for the global crop model,have to be specified for each culture..
-  
-  #to do: Jair, colocar esses valores na tabela params.can na coluna final onde ha "vmax_pft"
-  # depois fazer um for e atribuir em funcando do exist, como esta abaixo
-  #inserir tambem no planting, de forma que apos o plantio esse valor seja atualizado
-  # ler como chif[j] e atribuir aqui em funcao da exist
-  
-  #if(exist[13] == 1) { chiflz <-  0.65 
-  #}else if(exist[14] == 1) { chiflz <- -0.25
-  #}else if(exist[15] == 1) { chiflz <- -0.5
-  #}else if(exist[16] == 1) { chiflz <- -0.5
-  #}else if(exist[17] == 1) { chiflz <-  0.5
-  #}else if(exist[18] == 1) { chiflz <-  0.7
-  #}else  {                  chiflz <-  0.0}
-  #chifuz <- 0
-  
- # if(iwheat > 0) {
- #   chiflz <- 0.65 
- # } else {
- #   chiflz <-  -0.5        # leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
- # }
- # # CJK chiflz <- 0        ! leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
- # chifuz <- 0
+ 
+# leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
 
-  
   oriev[1] <- max ( - chiflz, 0)
   oriev[2] <- max ( - chifuz, 0)
   
@@ -582,6 +515,8 @@ iniveg <- function (isimveg) {
   
   ###----------------------------------------------------
   ### Michel: Fraction of root in the first 30 (nslaym is in the global params) cm from top soil
+  # sumfroot is used to consider only the root C input in the upper 30 cm in the Century model
+  
   sumfroot <- matrix(nrow = 1, ncol = 2)
   
   for(k in 1: nsoilay) {
@@ -652,12 +587,9 @@ iniveg <- function (isimveg) {
   assign("fu", fu, envir = env)
   assign("fl", fl, envir = env)
   assign("lai", lai, envir = env)
-  assign("za", za, envir = env)
   assign("zbot", zbot, envir = env)
   assign("ztop", ztop, envir = env)
   assign("exist", exist, envir = env)
-  assign("oriev", oriev, envir = env)
-  assign("orieh", orieh, envir = env)
   assign("froot", froot, envir = env)
   assign("sumfroot", sumfroot, envir = env)
   

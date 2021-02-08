@@ -342,21 +342,21 @@ twoset <- function(omega, betad, betai, avmu, gdir, coszen, iv, ib) {
   # of the spectrum is used, what part of the canopy is used (lower or upper),
   # and whether the leaves are green or brown
   
-  rhovegvlg <- 0.10      # vis leaf reflectance, lower story, green leaves
-  rhovegvlb <- 0.36      # vis leaf reflectance, lower story, brown leaves
-  rhovegvu <- 0.10       # vis leaf reflectance, upper story, green leaves
-  
-  rhovegirlg <- 0.48     # nir leaf reflectance, lower story, green leaves
-  rhovegirlb <- 0.58     # nir leaf reflectance, lower story, brown leaves
-  rhovegiru <- 0.40      # nir leaf reflectance, upper story, green leaves
-  
-  tauvegvlg <- 0.07      # vis leaf transmittance, lower story, green leaves
-  tauvegvlb <- 0.22      # vis leaf transmittance, lower story, brown leaves
-  tauvegvu <- 0.05       # vis leaf transmittance, upper story, green leaves
-  
-  tauvegirlg <- 0.25     # nir leaf transmittance, lower story, green leaves
-  tauvegirlb <- 0.38     # nir leaf transmittance, lower story, brown leaves
-  tauvegiru <- 0.20      # nir leaf transmittance, upper story, green leaves
+  #SVC 2021 (global params) - rhovegvlg <- 0.10      # vis leaf reflectance, lower story, green leaves
+  #SVC 2021 (global params) - rhovegvlb <- 0.36      # vis leaf reflectance, lower story, brown leaves
+  #SVC 2021 (global params) - rhovegvu  <- 0.10       # vis leaf reflectance, upper story, green leaves
+  #SVC 2021 (global params) - 
+  #SVC 2021 (global params) - rhovegirlg <- 0.48     # nir leaf reflectance, lower story, green leaves
+  #SVC 2021 (global params) - rhovegirlb <- 0.58     # nir leaf reflectance, lower story, brown leaves
+  #SVC 2021 (global params) - rhovegiru  <- 0.40      # nir leaf reflectance, upper story, green leaves
+  #SVC 2021 (global params) - 
+  #SVC 2021 (global params) - tauvegvlg <- 0.07      # vis leaf transmittance, lower story, green leaves
+  #SVC 2021 (global params) - tauvegvlb <- 0.22      # vis leaf transmittance, lower story, brown leaves
+  #SVC 2021 (global params) - tauvegvu  <- 0.05       # vis leaf transmittance, upper story, green leaves
+  #SVC 2021 (global params) - 
+  #SVC 2021 (global params) - tauvegirlg <- 0.25     # nir leaf transmittance, lower story, green leaves
+  #SVC 2021 (global params) - tauvegirlb <- 0.38     # nir leaf transmittance, lower story, brown leaves
+  #SVC 2021 (global params) - tauvegiru  <- 0.20      # nir leaf transmittance, upper story, green leaves
   
   
   # set two-stream parameters omega, betad, betai, gdir and avmu

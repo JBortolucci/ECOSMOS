@@ -39,11 +39,11 @@ SetCompiledFunctions <- function(){
   fwetcal   <- fwetcalCpp
   solset    <- solsetCpp
   solsur    <- solsurR
-  # solalb    <- solalbCpp
- # solarf    <- solarfCpp
+#  solalb    <- solalbCpp
+  solarf    <- solarfCpp
   irrad     <- irradCpp
   cascade   <- cascadeCpp
-  canini    <- caniniCpp
+#  canini    <- caniniCpp
   drystress <- drystressCpp
   turcof    <- turcofCpp
   turvap    <- turvapCpp
