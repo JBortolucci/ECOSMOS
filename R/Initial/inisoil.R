@@ -63,10 +63,13 @@ inisoil <- function() {
   swater   <- matrix(0, nrow = 1, ncol = nsoilay)
   sice     <- matrix(0, nrow = 1, ncol = nsoilay)
 
+<<<<<<< HEAD
   sand<- array(0, nsoilay)
   clay<- array(0, nsoilay)
   
   
+=======
+>>>>>>> Perennial_Forage
   # Henrique: Commented on 2020-11-04
   #fclay    <- 0
   #fsilt    <- 0
@@ -269,8 +272,12 @@ inisoil <- function() {
   assign("cpwf",  cpwf, envir = env)
   assign("swater",  swater, envir = env)
   assign("sice",  sice, envir = env)
+<<<<<<< HEAD
   assign("sand",  sand, envir = env)
   assign("clay",  clay, envir = env)
+=======
+
+>>>>>>> Perennial_Forage
   # surface parameters
   assign("albsav",  fracsand[ ,1] * 0.120 + fracsilt[,1] * 0.085 + fracclay[,1] * 0.050, envir = env)
   assign("albsan",  2.0 * albsav, envir = env)

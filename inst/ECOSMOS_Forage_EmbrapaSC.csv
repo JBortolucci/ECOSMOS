@@ -1,0 +1,3 @@
+ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,planting day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
+BRSPSC_Irrigated_2011-2012,-21.97,-47.9,2011,48,2012,201,EP00000001,,0,0,1,0,0,forage,49,2011,225,2,2,,1,B.brizantha1
+BRSPSC_Rainfed_2011-2012,-21.97,-47.9,2011,48,2012,201,EP00000001,,0,0,1,0,0,forage,49,2011,225,2,2,,1,B.brizantha1

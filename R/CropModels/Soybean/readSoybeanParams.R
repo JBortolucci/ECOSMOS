@@ -92,4 +92,3 @@ readSoybeanParams <-function(pathExcel = "a",filePath = "SBGRO047", simInstances
   simInstances[[simId]]$plantList[[i]]$params[["OPTBI"]]   <- as.numeric(data[which(data$`VAR#` %in% column)[1],39])
   simInstances[[simId]]$plantList[[i]]$params[["SLOBI"]]   <- as.numeric(data[which(data$`VAR#` %in% column)[1],40])
 }
-

@@ -1,0 +1,2 @@
+ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,planting day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
+BRSPPI_MARANDU_28D_Irrigated,-22.708,-47.633,2011,1,2013,106,EBPI080100,,1,0,1,0,0,forage,1,2011,999,2,2,,1,B.brizantha1

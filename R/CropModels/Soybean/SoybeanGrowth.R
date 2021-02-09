@@ -1,7 +1,10 @@
 simDataVars$TGRO     <- rep(1.,24)
 
 #------------------GROW VARS---------------------
+<<<<<<< HEAD
 simDataVars$WDOT  <-  0
+=======
+>>>>>>> Perennial_Forage
 simDataVars$SWIDOT  <-  0 #input/output
 simDataVars$WLFDOT  <-  0 #input/output
 simDataVars$WSHIDT  <-  0 #input/output
@@ -397,9 +400,15 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   params <- plantList$soybean$params
   
     #  Nitrogen
+<<<<<<< HEAD
   N <- 1
   
   YRDOY  <- paste0(iyear,sprintf("%03d", jday))
+=======
+  N = 1
+  
+  YRDOY <- paste0(iyear,sprintf("%03d", jday))
+>>>>>>> Perennial_Forage
   
   PLME   <- 'S' # equivalente ao [.SBX] *PLANTING DETAILS: PLME  
   IHARI  <- 'M' # TODO VERIFICAR (provável que pertença ao '[.SBX] *HARVEST DETAILS')
@@ -408,7 +417,11 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   ROWSPC <- config$plant1$rowSpacing / 100 # 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
   
   
+<<<<<<< HEAD
   SDWTPL <- -99 # equivalente ao [.SBX] *PLANTING DETAILS: PLDS
+=======
+  SDWTPL <- -99 # equivalente ao [.SBX] *PLANTING DETAILS: PLWT
+>>>>>>> Perennial_Forage
   
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
@@ -479,7 +492,11 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   NLAYR <- nsoilay
   
   # danos por pestes...
+<<<<<<< HEAD
   DISLA  <- 0 #TODO VERIFICAR PEST.for (Diseased leaf area (cm2[leaf]/m2[ground]/d))
+=======
+  DISLA  <- 1 #TODO VERIFICAR PEST.for (Diseased leaf area (cm2[leaf]/m2[ground]/d))
+>>>>>>> Perennial_Forage
   PPLTD  <- 0 #TODO VERIFICAR PEST.for (Percent plants destroyed (%/m2/d))
   NPLTD  <- 0 #TODO VERIFICAR PEST.for (Number of plants destroyed (#/m2/d))
   WRIDOT <- 0 #TODO VERIFICAR PEST.for & ROOTDM.for (Daily pest damage to root mass (g/m2/day))
@@ -508,15 +525,22 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       # ROWSPC = ROWSPC / 100.
       
       if (ROWSPC * PLTPOP > 1.E-4) {
+<<<<<<< HEAD
         BETN <- 1 / (ROWSPC*PLTPOP)
       } else {
         BETN <- 0
+=======
+        BETN = 1 / (ROWSPC*PLTPOP)
+      } else {
+        BETN = 0
+>>>>>>> Perennial_Forage
       }
       
       #-----------------------------------------------------------------------
       #     Newest version of CROPGRO has variable seed N, oil, CH2O,
       #     which may make this tougher
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       CPFLF  <- 30./44.*(PLIPLF*1.720 + PLIGLF*0.659 + POALF*(-0.011) + PMINLF*RMIN + PCARLF*0.170)
       CPFSTM <- 30./44.*(PLIPST*1.720 + PLIGST*0.659 + POAST*(-0.011) + PMINST*RMIN + PCARST*0.170)
       CPFRT  <- 30./44.*(PLIPRT*1.720 + PLIGRT*0.659 + POART*(-0.011) + PMINRT*RMIN + PCARRT*0.170)
@@ -565,6 +589,56 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     SenWt  <-  rep(0,20)
     SenLig <-  rep(0,20)
     SenE   <- matrix(0,NL,NELEM)
+=======
+      CPFLF  = 30./44.*(PLIPLF*1.720 + PLIGLF*0.659 + POALF*(-0.011) + PMINLF*RMIN + PCARLF*0.170)
+      CPFSTM = 30./44.*(PLIPST*1.720 + PLIGST*0.659 + POAST*(-0.011) + PMINST*RMIN + PCARST*0.170)
+      CPFRT  = 30./44.*(PLIPRT*1.720 + PLIGRT*0.659 + POART*(-0.011) + PMINRT*RMIN + PCARRT*0.170)
+      CPFNOD = 30./44.*(PLIPNO*1.720 + PLIGNO*0.659 + POANO*(-0.011) + PMINNO*RMIN + PCARNO*0.170)
+      CPFSH1 = 30./44.*(PLIPSH*1.720 + PLIGSH*0.659 + POASH*(-0.011) + PMINSH*0.073 + PCARSH*0.170)
+      CPFSD1 = 30./44.*(PMINSD*0.073 + PLIGSD*0.659 + POASD*(-0.011) + (SDLIP*1.720 + PCARSD*0.170)*(1. - SDPROR))
+      #-----------------------------------------------------------------------
+      #     CALCULATE PERCENT NITROGEN IN LEAVES AT END OF SEASON
+      PCNMIN = PROLFF * 16.0            #Moved from INCOMP
+      #-----------------------------------------------------------------------
+    }
+    
+    ALFDOT = 0.0
+    AREALF = 0.0
+    AREAH  = 0.0
+    CANWAA = 0.0
+    CANNAA = 0.0
+    GROWTH = 0.0
+    GRWRES = 0.0
+    LAIMX  = 0.0
+    NLDOT  = 0.0
+    NSDOT  = 0.0
+    NRDOT  = 0.0
+    NSDDOT = 0.0
+    NSHDOT = 0.0
+    NTOVR  = 0.0
+    PCCSD  = 0.0
+    PCLSD  = 0.0
+    PCNL   = 0.0
+    PCNRT  = 0.0
+    PCNSD  = 0.0
+    PCNSH  = 0.0
+    PCNST  = 0.0
+    PODWT  = 0.0
+    RHOL   = 0.0
+    RHOR   = 0.0
+    RHOS   = 0.0
+    RHOSH  = 0.0
+    RTWT   = 0.0
+    SDRATE = 0.0
+    SDWT   = 0.0
+    SDWTAM = 0.0
+    SEEDNI = 0.0
+    SEEDNO = 0.0
+    
+    SenWt  <-  rep(0,20)
+    SenLig <-  rep(0,20)
+    SenE <- matrix(0,NL,NELEM)
+>>>>>>> Perennial_Forage
     
     #TODO: sera usado no cropResidue  
     simDataVars$SENESCE_ResWt   <-  rep(0,20)
@@ -572,6 +646,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     simDataVars$SENESCE_ResE    <-  matrix(0,20,3)
     simDataVars$SENESCE_CumResE <-  c()
     
+<<<<<<< HEAD
     SHELWT <- 0.0
     SLAAD  <- 0.0
     STMWT  <- 0.0
@@ -637,12 +712,83 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     PUNDOT  <- 0.0    #CHP - not used
     
     NLPEST  <- 0.0    #CHP - N loss due to pest damage
+=======
+    SHELWT = 0.0
+    SLAAD  = 0.0
+    STMWT  = 0.0
+    TGROW  = 0.0
+    TOPWT  = 0.0
+    TOTWT  = 0.0
+    WCRLF  = 0.0
+    WCRRT  = 0.0
+    WCRSH  = 0.0
+    WCRST  = 0.0
+    WNRLF  = 0.0
+    WNRRT  = 0.0
+    WNRSH  = 0.0
+    WNRST  = 0.0
+    WSDDOT = 0.0
+    WSHDOT = 0.0
+    WTCO   = 0.0
+    WTCSD  = 0.0
+    WTLF   = 0.0
+    WTLO   = 0.0
+    WTLSD  = 0.0
+    WTMAIN = 0.0
+    WTNCAN = 0.0
+    WTNLA  = 0.0
+    WTNLF  = 0.0
+    WTNLO  = 0.0
+    WTNMOB = 0.0
+    WTNNA  = 0.0
+    WTNNAG = 0.0
+    WTNNO  = 0.0
+    WTNNOD = 0.0
+    WTNOO  = 0.0
+    WTNRA  = 0.0
+    WTNRO  = 0.0
+    WTNRT  = 0.0
+    WTNSA  = 0.0
+    WTNSD  = 0.0
+    WTNSDA = 0.0
+    WTNSDO = 0.0
+    WTNSH  = 0.0
+    WTNSHA = 0.0
+    WTNSHO = 0.0
+    WTNSO  = 0.0
+    WTNST  = 0.0
+    WTNTOT = 0.0
+    WTNUP  = 0.0
+    WTRO   = 0.0
+    WTSDO  = 0.0
+    WTSHO  = 0.0
+    WTSO   = 0.0
+    XLAI   = 0.0
+    XHLAI  = 0.0
+    XPOD   = 0.0
+    
+    CLW = 0.0   #Cumulative leaf growth
+    CSW = 0.0   #Cumulative stem growth
+    
+    ShutMob = 0.0
+    RootMob = 0.0
+    ShelMob = 0.0
+    
+    SDPDOT = 0.0    #CHP - not used
+    PUNDOT = 0.0    #CHP - not used
+    
+    NLPEST = 0.0    #CHP - N loss due to pest damage
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     # KJB 02/12/03 Set SLA to zero until emergence
     # JWJ 09/16/03 Set SLA to -99 until emergence
     # CHP 09/17/03 Do this for output only - SLA is used in calculations!
+<<<<<<< HEAD
     SLA <- 0.0
+=======
+    SLA = 0.0
+>>>>>>> Perennial_Forage
     #     Need to get initial value of F from DEMAND first  chp 9/14/98
     #      if (CROP != 'FA') {
     #        SLA    = F                 
@@ -656,6 +802,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   } else if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
     #     Net growth rates
+<<<<<<< HEAD
     WLDOT  <- 0.0
     WSDOT  <- 0.0
     WRDOT  <- 0.0
@@ -692,6 +839,44 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     WCRLF  <- ALPHL * WTLF
     WCRST  <- ALPHS * STMWT
     WCRRT  <- ALPHR * RTWT
+=======
+    WLDOT  = 0.0
+    WSDOT  = 0.0
+    WRDOT  = 0.0
+    WNDOT  = 0.0
+    WPDOT  = 0.0
+    WLFDOT = 0.0
+    
+    #     Initial seedling or transplant weight
+    SDRATE  = WTPSD * PLTPOP / 0.8 * 10
+    
+    if (PLME != 'T') {
+      WTNEW  = WTFSD * WTPSD
+      TOTWT  = WTNEW * PLTPOP
+    } else {
+      TOTWT = SDWTPL / 10.
+      WTNEW = TOTWT / PLTPOP
+    }
+    
+    #     Initial mass of plant components
+    WTLF  = FRLF * TOTWT
+    STMWT = FRSTM * TOTWT
+    TOPWT = WTLF + STMWT
+    RTWT  = TOTWT - TOPWT
+    
+    WLFI   = WTLF
+    WSTI   = STMWT
+    WRTI   = RTWT
+    
+    #     Initialize cumulative variables
+    CLW   = WTLF
+    CSW   = STMWT
+    
+    #     CH2O reserves
+    WCRLF = ALPHL * WTLF
+    WCRST = ALPHS * STMWT
+    WCRRT = ALPHR * RTWT
+>>>>>>> Perennial_Forage
     
     #     Initialize cumulative C variables
     #      WCRLA = WCRLF
@@ -699,6 +884,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #      WCRRA = WCRRT
     
     #     Carbohydrate composition of plant components (fraction)
+<<<<<<< HEAD
     RHOL   <- ALPHL
     RHOR   <- ALPHR
     RHOS   <- ALPHS
@@ -741,6 +927,50 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     SLAAD  <- AREALF / (WTLF - WCRLF)
     XLAI   <- AREALF / 10000.
     XHLAI  <- XLAI
+=======
+    RHOL   = ALPHL
+    RHOR   = ALPHR
+    RHOS   = ALPHS
+    RHOSH  = ALPHSH
+    
+    #     Net carbon addition variables
+    WRCLDT = 0.0
+    WRCSDT = 0.0
+    WRCRDT = 0.0
+    WRCSHD = 0.0
+    
+    #     Compute N in plant components
+    WTNLF  = WLFI * PROLFI * 0.16
+    WTNST  = WSTI * PROSTI * 0.16
+    WTNRT  = WRTI * PRORTI * 0.16
+    WTNSH  = 0.0
+    WTNSD  = 0.0
+    WTNTOT = WTNLF + WTNST + WTNRT + WTNSH + WTNSD
+    
+    #     Seed or transplant N at planting
+    SDNPL  = WTPSD * SDPRO * 0.16 * 0.75 * PLTPOP - (WTNLF + WTNST + WTNRT)
+    SDNPL  = max(SDNPL,0.0)
+    SEEDNI = WTNLF + WTNST + WTNRT + SDNPL
+    
+    #     Initialize cumulative N variables
+    WTNLA  = WTNLF
+    WTNSA  = WTNST
+    WTNRA  = WTNRT
+    
+    #     Percent N in plant components
+    PCNL   = WTNLF / WLFI * 100.
+    RNITP  = PCNL
+    PCNST  = WTNST / WSTI * 100.
+    PCNRT  = WTNRT / WRTI * 100.
+    
+    #     Intialize leaf area.  Value of F initialized in DEMAND.
+    AREALF = WTLF * Fnew  #*** Fnew is 'F' in the original file. Changed because F is logical in R. ***
+    AREAH  = AREALF
+    SLA    = AREALF / WTLF
+    SLAAD  = AREALF / (WTLF - WCRLF)
+    XLAI   = AREALF / 10000.
+    XHLAI  = XLAI
+>>>>>>> Perennial_Forage
     
     #***********************************************************************
     #***********************************************************************
@@ -748,11 +978,19 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #***********************************************************************
   } else if (DYNAMIC == 'INTEGR') {
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NLPEST <- 0.0    #CHP - N loss due to pest damage
     
     GROWTH <- WLDOTN + WSDOTN + WRDOTN + WSHDTN + WSDDTN + NODGR
     
     GRWRES <- WLDOTN*CPFLF + WSDOTN*CPFSTM + WRDOTN*CPFRT + NODGR*CPFNOD + WSHDTN*CPFSH1 + WSDDTN*CPFSD1 + 30./44 *(TRNO3U/0.16 * 1.798 + TRNH4U/0.16 * 0.462 + NFIXN/0.16 * 1.798)
+=======
+    NLPEST = 0.0    #CHP - N loss due to pest damage
+    
+    GROWTH = WLDOTN + WSDOTN + WRDOTN + WSHDTN + WSDDTN + NODGR
+    
+    GRWRES = WLDOTN*CPFLF + WSDOTN*CPFSTM + WRDOTN*CPFRT + NODGR*CPFNOD + WSHDTN*CPFSH1 + WSDDTN*CPFSD1 + 30./44 *(TRNO3U/0.16 * 1.798 + TRNH4U/0.16 * 0.462 + NFIXN/0.16 * 1.798)
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #    Use 1982 Penning de Vries book, p. 125, composition of tissue,
@@ -765,6 +1003,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #-----------------------------------------------------------------------
     #       WLDOT = Net leaf growth rate
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WLDOT <- WLDOTN - SLDOT - WLIDOT - WLFDOT - NRUSLF/0.16 - CRUSLF
     
     #     ShutMob is amount of leaf mass lost due to N and C mobilization
@@ -780,11 +1019,29 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     }
     if (WLDOT < 0.0) {
       WLDOT   <- max(WLDOT, -WTLF)
+=======
+    WLDOT = WLDOTN - SLDOT - WLIDOT - WLFDOT - NRUSLF/0.16 - CRUSLF
+    
+    #     ShutMob is amount of leaf mass lost due to N and C mobilization
+    #     A positive value represents leaf mass lost. (kg/ha)
+    ShutMob = (NRUSLF/0.16 + CRUSLF) * 10.      #kg/ha
+    
+    if (WTLF > 1.E-4) {
+      WLDOT = WLDOT + (CADLF+NADLF/0.16) * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
+      ADD = (CADLF+NADLF/0.16) * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
+      ShutMob = ShutMob - ADD * 10.             #kg/ha
+    } else {
+      ADD = 0.0
+    }
+    if (WLDOT < 0.0) {
+      WLDOT = max(WLDOT, -WTLF)
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
     #       WSDOT = Net stem growth rate
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WSDOT   <- WSDOTN - SSDOT - WSIDOT - NRUSST / 0.16 - CRUSST
     ShutMob <- ShutMob + (NRUSST / 0.16 + CRUSST) * 10.      #kg/ha
     
@@ -797,10 +1054,25 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     }
     if (WSDOT < 0.0) {
       WSDOT <- max(WSDOT, -STMWT)
+=======
+    WSDOT = WSDOTN - SSDOT - WSIDOT - NRUSST / 0.16 - CRUSST
+    ShutMob = ShutMob + (NRUSST / 0.16 + CRUSST) * 10.      #kg/ha
+    
+    if (STMWT > 1.E-4) {
+      WSDOT = WSDOT + (CADST+NADST/0.16) * (1. - min(1.0,(SSDOT+WSIDOT)/STMWT))
+      ADD = (CADST+NADST/0.16) * (1. - min(1.0,(SSDOT+WSIDOT)/STMWT))
+      ShutMob = ShutMob - ADD * 10.                         #kg/ha
+    } else {
+      ADD = 0.
+    }
+    if (WSDOT < 0.0) {
+      WSDOT = max(WSDOT, -STMWT)
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #     Net root growth rate
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WRDOT   <- WRDOTN - SRDOT - NRUSRT/0.16 - CRUSRT - WRIDOT
     RootMob <- (NRUSRT/0.16 + CRUSRT) * 10.      #kg/ha
     
@@ -814,43 +1086,89 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     
     if (WRDOT < 0.0) {
       WRDOT <- max(WRDOT, -RTWT)
+=======
+    WRDOT = WRDOTN - SRDOT - NRUSRT/0.16 - CRUSRT - WRIDOT
+    RootMob = (NRUSRT/0.16 + CRUSRT) * 10.      #kg/ha
+    
+    if (RTWT > 1.E-4) {
+      WRDOT = WRDOT + (NADRT/0.16) * (1. - min(1.0,(SRDOT+WRIDOT)/RTWT))
+      ADD = (NADRT/0.16) * (1. - min(1.0,(SRDOT+WRIDOT)/RTWT))
+      RootMob = RootMob - ADD * 10.             #kg/ha
+    } else {
+      ADD = 0.0
+    }
+    
+    if (WRDOT < 0.0) {
+      WRDOT = max(WRDOT, -RTWT)
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #     Net shell growth rate
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WSHIDT  <- min(WSHIDT,SHELWT)     # pest damage to shells
     WSHDOT  <- WSHDTN - WSHIDT - WTABRT - NRUSSH / 0.16 - CRUSSH
     ShelMob <- (NRUSSH / 0.16 + CRUSSH) * 10.    #kg/ha
+=======
+    WSHIDT = min(WSHIDT,SHELWT)     # pest damage to shells
+    WSHDOT = WSHDTN - WSHIDT - WTABRT - NRUSSH / 0.16 - CRUSSH
+    ShelMob = (NRUSSH / 0.16 + CRUSSH) * 10.    #kg/ha
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Net seed growth rate
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     SWIDOT <- min(SWIDOT,SDWT)       # pest damage to seeds
     WSDDOT <- WSDDTN - SWIDOT        
     WTLSD  <- WTLSD + WSDDOT * POTLIP    #lipids in seed
     WTCSD  <- WTCSD + WSDDOT * POTCAR    #carbohydrates in seed
+=======
+    SWIDOT = min(SWIDOT,SDWT)       # pest damage to seeds
+    WSDDOT = WSDDTN - SWIDOT        
+    WTLSD  = WTLSD + WSDDOT * POTLIP    #lipids in seed
+    WTCSD  = WTCSD + WSDDOT * POTCAR    #carbohydrates in seed
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Net nodule growth rate
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WNDOT  <- NODGR - NDTH            
+=======
+    WNDOT  = NODGR - NDTH            
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Net pod growth rate
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WPDOT <- WSHDOT + WSDDOT          
+=======
+    WPDOT = WSHDOT + WSDDOT          
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Total Net plant growth rate
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WDOT <- WLDOT + WSDOT + WRDOT + WPDOT + WNDOT 
+=======
+    WDOT = WLDOT + WSDOT + WRDOT + WPDOT + WNDOT 
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     if (GROWTH > 1.E-4) {
       if (XPODF == 'PD') {
+<<<<<<< HEAD
         XPOD <- 0.17 * (WSDDTN+WSHDTN)/GROWTH + 0.83 * XPOD
       } else if (XPODF == 'SD') {
         XPOD <- 0.17 * (WSDDTN)/GROWTH + 0.83 * XPOD
+=======
+        XPOD = 0.17 * (WSDDTN+WSHDTN)/GROWTH + 0.83 * XPOD
+      } else if (XPODF == 'SD') {
+        XPOD = 0.17 * (WSDDTN)/GROWTH + 0.83 * XPOD
+>>>>>>> Perennial_Forage
       } else {
         #TODO: Mostrar mensagem de erro 
         print(paste("Erro"))
@@ -859,6 +1177,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #-----------------------------------------------------------------------
     #    Integration, Add Today's Net Growth to Existing Weights
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     TOTWT  <- TOTWT  + WDOT
     TOPWT  <- TOPWT  + WSDOT + WLDOT + WPDOT
     WTLF   <- WTLF   + WLDOT
@@ -869,26 +1188,54 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     PODWT  <- PODWT  + WPDOT
     DWNOD  <- DWNOD  + WNDOT
     TGROW  <- TGROW  + GROWTH
+=======
+    TOTWT  = TOTWT  + WDOT
+    TOPWT  = TOPWT  + WSDOT + WLDOT + WPDOT
+    WTLF   = WTLF   + WLDOT
+    STMWT  = STMWT  + WSDOT
+    SDWT   = SDWT   + WSDDOT
+    SHELWT = SHELWT + WSHDOT
+    RTWT   = RTWT   + WRDOT
+    PODWT  = PODWT  + WPDOT
+    DWNOD  = DWNOD  + WNDOT
+    TGROW  = TGROW  + GROWTH
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Cumulative leaf and stem growth
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CLW <- CLW + WLDOTN      
     CSW <- CSW + WSDOTN      
+=======
+    CLW = CLW + WLDOTN      
+    CSW = CSW + WSDOTN      
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Store values of TOPWT at flowering and SDWT at maturity
     #-----------------------------------------------------------------------
     if (YRDOY == YRNR1) {
+<<<<<<< HEAD
       CANWAA <- TOPWT
     } else if (YRDOY == MDATE) {
       SDWTAM <- SDWT
+=======
+      CANWAA = TOPWT
+    } else if (YRDOY == MDATE) {
+      SDWTAM = SDWT
+>>>>>>> Perennial_Forage
     }
     #---------------------------------------------------------------------
     #     Compute Seed Weight for Which there is Maintenance Costs.
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WSDMAN <- min(SDWT,SHELWT)
     WTMAIN <- TOTWT - SDWT + WSDMAN
+=======
+    WSDMAN = min(SDWT,SHELWT)
+    WTMAIN = TOTWT - SDWT + WSDMAN
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Carbon Reserves:  Net Growth Rates for Mobile Carbohydrates
@@ -898,6 +1245,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #     get increase in tissue N composition when tissue is aborted.  Need
     #     to account for mass, N and C lost this way in sections below
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WRCLDT <- ALPHL * WLDOTN - CRUSLF - RHOL*(SLNDOT+WLIDOT+WLFDOT)
     if (WTLF > 1.E-4) {
       WRCLDT <- WRCLDT + CADLF * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
@@ -922,10 +1270,37 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     if (WCRST <= 1.0E-30) WCRST <- 0.0
     if (WCRRT <= 1.0E-30) WCRRT <- 0.0
     if (WCRSH <= 1.0E-30) WCRSH <- 0.0
+=======
+    WRCLDT = ALPHL * WLDOTN - CRUSLF - RHOL*(SLNDOT+WLIDOT+WLFDOT)
+    if (WTLF > 1.E-4) {
+      WRCLDT = WRCLDT + CADLF * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
+    }
+    
+    WRCSDT = ALPHS * WSDOT - CRUSST - RHOS * SSNDOT
+    if (STMWT > 1.E-4) {
+      WRCSDT = WRCSDT + CADST * (1. - min(1.0,(SSDOT+WSIDOT)/STMWT))
+    }
+    
+    WRCRDT = ALPHR * WRDOT - CRUSRT - RHOR * SRDOT
+    WRCSHD = ALPHSH * WSHDOT - CRUSSH - RHOSH*(WTABRT+WTSHMT+WSHIDT)
+    #-----------------------------------------------------------------------
+    #     Update C Storage, Concentrations in Leaves, Stems, Roots, and Shells
+    #-----------------------------------------------------------------------
+    WCRLF = WCRLF + WRCLDT
+    WCRST = WCRST + WRCSDT
+    WCRRT = WCRRT + WRCRDT
+    WCRSH = WCRSH + WRCSHD
+    
+    if (WCRLF <= 1.0E-30) WCRLF = 0.0
+    if (WCRST <= 1.0E-30) WCRST = 0.0
+    if (WCRRT <= 1.0E-30) WCRRT = 0.0
+    if (WCRSH <= 1.0E-30) WCRSH = 0.0
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Compute Cumulative C loss During Season
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WTLO  <- WTLO  + SLDOT  + WLIDOT + WLFDOT
     WTSO  <- WTSO  + SSDOT  + WSIDOT
     WTRO  <- WTRO  + SRDOT  + WRIDOT
@@ -933,11 +1308,21 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     WTSDO <- WTSDO + SWIDOT
     WTNOO <- WTNOO + NDTH
     WTCO  <- WTLO  + WTSO   + WTSHO  + WTSDO
+=======
+    WTLO  = WTLO  + SLDOT  + WLIDOT + WLFDOT
+    WTSO  = WTSO  + SSDOT  + WSIDOT
+    WTRO  = WTRO  + SRDOT  + WRIDOT
+    WTSHO = WTSHO + WTABRT + WSHIDT
+    WTSDO = WTSDO + SWIDOT
+    WTNOO = WTNOO + NDTH
+    WTCO  = WTLO  + WTSO   + WTSHO  + WTSDO
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Compute CH20 fractions
     #-----------------------------------------------------------------------
     if (WTLF > 0.0001) {
+<<<<<<< HEAD
       RHOL <-  WCRLF/WTLF
     } else {
       RHOL <- 0.0
@@ -959,6 +1344,29 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       RHOSH <-  WCRSH/SHELWT
     } else {
       RHOSH <- 0.0
+=======
+      RHOL =  WCRLF/WTLF
+    } else {
+      RHOL = 0.0
+    }
+    
+    if (STMWT > 0.0001) {
+      RHOS =  WCRST/STMWT
+    } else {
+      RHOS = 0.0
+    }
+    
+    if (RTWT > 0.0001) {
+      RHOR =  WCRRT/RTWT
+    } else {
+      RHOR = 0.0
+    }
+    
+    if (SHELWT > 0.0001) {
+      RHOSH =  WCRSH/SHELWT
+    } else {
+      RHOSH = 0.0
+>>>>>>> Perennial_Forage
     }
     
     #=======================================================================
@@ -974,82 +1382,143 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #     Leaf nitrogen senescence and pest damage loss
     #-----------------------------------------------------------------------
     #              senesc. + pest   + freeze  
+<<<<<<< HEAD
     NLOFF  <- (SLNDOT + WLIDOT + WLFDOT) * (PCNL/100.) + (SLDOT-SLNDOT) * PROLFF * 0.16
     NLPEST <- NLPEST + WLIDOT * PCNL/100.
     
     # ALTERADO: .LT. to <
     if (NLOFF < 0.0) {
       NLOFF <- 0.0
+=======
+    NLOFF  = (SLNDOT + WLIDOT + WLFDOT) * (PCNL/100.) + (SLDOT-SLNDOT) * PROLFF * 0.16
+    NLPEST = NLPEST + WLIDOT * PCNL/100.
+    
+    # ALTERADO: .LT. to <
+    if (NLOFF < 0.0) {
+      NLOFF = 0.0
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
     #     Net growth rate of nitrogen in the leaves
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NLDOT <- NGRLF - NLOFF - NRUSLF
     if (WTLF > 1.E-4) {
       NLDOT <- NLDOT + NADLF * (1. - min(1.0,(SLDOT + WLIDOT + WLFDOT) / WTLF))
+=======
+    NLDOT = NGRLF - NLOFF - NRUSLF
+    if (WTLF > 1.E-4) {
+      NLDOT = NLDOT + NADLF * (1. - min(1.0,(SLDOT + WLIDOT + WLFDOT) / WTLF))
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
     #     Stem nitrogen senescence and pest damage loss
     #-----------------------------------------------------------------------
     #              senesce + pest
+<<<<<<< HEAD
     NSOFF  <- (SSNDOT + WSIDOT) * (PCNST/100.) + (SSDOT - SSNDOT) * PROSTF * 0.16
     NLPEST <- NLPEST + WSIDOT * PCNST/100.
     if (NSOFF < 0.0) {
       NSOFF <- 0.0
+=======
+    NSOFF  = (SSNDOT + WSIDOT) * (PCNST/100.) + (SSDOT - SSNDOT) * PROSTF * 0.16
+    NLPEST = NLPEST + WSIDOT * PCNST/100.
+    if (NSOFF < 0.0) {
+      NSOFF = 0.0
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
     #     Net growth rate of nitrogen in the stems
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NSDOT <- NGRST - NSOFF - NRUSST
     if (STMWT > 1.E-4) {
       NSDOT <- NSDOT + NADST * (1. - min(1.0,(SSDOT + WSIDOT) / STMWT))
+=======
+    NSDOT = NGRST - NSOFF - NRUSST
+    if (STMWT > 1.E-4) {
+      NSDOT = NSDOT + NADST * (1. - min(1.0,(SSDOT + WSIDOT) / STMWT))
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
     #     Root nitrogen senescence and pest damage loss
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NROFF  <- (SRDOT+WRIDOT) * (PCNRT/100.)
     if (NROFF < 0.0) {
       NROFF <- 0.0
+=======
+    NROFF  = (SRDOT+WRIDOT) * (PCNRT/100.)
+    if (NROFF < 0.0) {
+      NROFF = 0.0
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
     #     Net growth rate of nitrogen in the roots
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NRDOT <- NGRRT - NROFF - NRUSRT
     if (RTWT > 1.E-4) {
       NRDOT <- NRDOT + NADRT * (1. - min(1.0,(SRDOT + WRIDOT) / RTWT))
+=======
+    NRDOT = NGRRT - NROFF - NRUSRT
+    if (RTWT > 1.E-4) {
+      NRDOT = NRDOT + NADRT * (1. - min(1.0,(SRDOT + WRIDOT) / RTWT))
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
     #     Shell nitrogen senescence, abortion and pest damage loss
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NSHOFF <- (WTABRT+WSHIDT) * (PCNSH/100.)
     NLPEST <- NLPEST + WSHIDT * PCNSH/100.
     if (NSHOFF < 0.0) {
       NSHOFF <- 0.0
+=======
+    NSHOFF = (WTABRT+WSHIDT) * (PCNSH/100.)
+    NLPEST = NLPEST + WSHIDT * PCNSH/100.
+    if (NSHOFF < 0.0) {
+      NSHOFF = 0.0
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
     #     Net growth rate of nitrogen in shells
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NSHDOT <- NGRSH - NSHOFF - NRUSSH
+=======
+    NSHDOT = NGRSH - NSHOFF - NRUSSH
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Seed nitrogen senescence, abortion and pest damage loss
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NSDOFF <- SWIDOT * PCNSD/100.
     if (NSDOFF < 0.0) {
       NSDOFF <- 0.0
+=======
+    NSDOFF = SWIDOT * PCNSD/100.
+    if (NSDOFF < 0.0) {
+      NSDOFF = 0.0
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
     #     Net growth rate of nitrogen in seeds
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NSDDOT <- NGRSD - NSDOFF
+=======
+    NSDDOT = NGRSD - NSDOFF
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #   Integration, Update N in Each Component by Adding Today's Growth
@@ -1060,63 +1529,110 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #-----------------------------------------------------------------------
     # ALTERADO: ABS to abs(). Se repetia, mas só comentei aqui pra não duplicar.
     if ((NLDOT < 0.0) & (abs(NLDOT) > WTNLF)) {
+<<<<<<< HEAD
       NLDOT <- - WTNLF
     }
     WTNLF <- WTNLF + NLDOT
+=======
+      NLDOT = - WTNLF
+    }
+    WTNLF = WTNLF + NLDOT
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the stems
     #-----------------------------------------------------------------------
     if ((NSDOT < 0.0) & (abs(NSDOT) > WTNST)) {
+<<<<<<< HEAD
       NSDOT <- - WTNST
     }
     WTNST <- WTNST + NSDOT
+=======
+      NSDOT = - WTNST
+    }
+    WTNST = WTNST + NSDOT
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the roots
     #-----------------------------------------------------------------------
     if ((NRDOT < 0.0) & (abs(NRDOT) > WTNRT)) {
+<<<<<<< HEAD
       NRDOT <- - WTNRT
     }
     WTNRT <- WTNRT + NRDOT
+=======
+      NRDOT = - WTNRT
+    }
+    WTNRT = WTNRT + NRDOT
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the nodules
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WTNNOD <- DWNOD * 0.16 * PRONOD
+=======
+    WTNNOD = DWNOD * 0.16 * PRONOD
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the shells
     #-----------------------------------------------------------------------
     if ((NSHDOT < 0.0) & (abs(NSHDOT) > WTNSH)) {
+<<<<<<< HEAD
       NSHDOT <- - WTNSH
     }
     WTNSH <- WTNSH + NSHDOT
     
     if ((NSDDOT < 0.0) & (abs(NSDDOT) > WTNSD)) {
       NSDDOT <- - WTNSD
+=======
+      NSHDOT = - WTNSH
+    }
+    WTNSH = WTNSH + NSHDOT
+    
+    if ((NSDDOT < 0.0) & (abs(NSDDOT) > WTNSD)) {
+      NSDDOT = - WTNSD
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the seed
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WTNSD <- WTNSD + NSDDOT
+=======
+    WTNSD = WTNSD + NSDDOT
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the plant
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WTNTOT <- WTNLF + WTNST + WTNRT + WTNSH + WTNSD + WTNNOD
+=======
+    WTNTOT = WTNLF + WTNST + WTNRT + WTNSH + WTNSD + WTNNOD
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Total nitrogen in the canopy (all above ground components)
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WTNCAN <- WTNLF + WTNST + WTNSH + WTNSD
+=======
+    WTNCAN = WTNLF + WTNST + WTNSH + WTNSD
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Save total nitrogen in the canopy at the start of flowering
     #-----------------------------------------------------------------------
     if (YRDOY == YRNR1) {
+<<<<<<< HEAD
       CANNAA <- WTNCAN
+=======
+      CANNAA = WTNCAN
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
@@ -1133,6 +1649,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #     matches 'Seed N' plus 'N2 fixed' plus 'N uptake'.  Why???
     
     #     Leaf
+<<<<<<< HEAD
     NLALL <- NGRLF - NRUSLF 
     if (WTLF > 1.E-4) {
       NLALL <- NLALL + NADLF * (1. - min(1.0,(SLDOT + WLIDOT + WLFDOT) / WTLF))
@@ -1159,17 +1676,52 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     WTNRA  <- WTNRA + NRALL
     WTNSHA <- WTNSHA + NSHALL
     WTNSDA <- WTNSDA + NSDALL
+=======
+    NLALL = NGRLF - NRUSLF 
+    if (WTLF > 1.E-4) {
+      NLALL = NLALL + NADLF * (1. - min(1.0,(SLDOT + WLIDOT + WLFDOT) / WTLF))
+    }
+    
+    #     Stem
+    NSALL = NGRST - NRUSST 
+    if (STMWT > 1.E-4) {
+      NSALL = NSALL + NADST * (1. - min(1.0,(SSDOT + WSIDOT) / STMWT))
+    }
+    
+    #     Root
+    NRALL = NGRRT - NRUSRT
+    if (RTWT > 1.E-4) {
+      NRALL = NRALL + NADRT * (1. - min(1.0,(SRDOT + WRIDOT) / RTWT))
+    }
+    
+    #     Shell and seed
+    NSHALL = NGRSH - NRUSSH
+    NSDALL = NGRSD
+    
+    WTNLA = WTNLA + NLALL
+    WTNSA = WTNSA + NSALL
+    WTNRA = WTNRA + NRALL
+    WTNSHA = WTNSHA + NSHALL
+    WTNSDA = WTNSDA + NSDALL
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #    Nodules
     #-----------------------------------------------------------------------
     if (ISWNIT == 'Y' & ISWSYM == 'Y') {
+<<<<<<< HEAD
       DWNODA <- DWNODA + NODGR
       WTNFX  <- WTNFX + NFIXN + (NODGR * 0.16 * PRONOD) - NTOVR
       WTNNAG <- DWNODA * 0.16 * PRONOD
+=======
+      DWNODA = DWNODA + NODGR
+      WTNFX = WTNFX + NFIXN + (NODGR * 0.16 * PRONOD) - NTOVR
+      WTNNAG = DWNODA * 0.16 * PRONOD
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #     Compute Cumulative N loss During Season
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WTNLO  <- WTNLO  + NLOFF
     WTNSO  <- WTNSO  + NSOFF
     WTNRO  <- WTNRO  + NROFF
@@ -1178,17 +1730,34 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     if (ISWNIT == 'Y' & ISWSYM == 'Y') {
       NNOFF  <- NDTH * 0.16 * PRONOD
       WTNNO  <- WTNNO  + NNOFF
+=======
+    WTNLO  = WTNLO  + NLOFF
+    WTNSO  = WTNSO  + NSOFF
+    WTNRO  = WTNRO  + NROFF
+    WTNSHO = WTNSHO + NSHOFF
+    WTNSDO = WTNSDO + NSDOFF
+    if (ISWNIT == 'Y' & ISWSYM == 'Y') {
+      NNOFF  = NDTH * 0.16 * PRONOD
+      WTNNO  = WTNNO  + NNOFF
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #     N Balance Components for Mobilized, Uptake, and Fixed N
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     WTNMOB <- WTNMOB + NMINEA
     WTNUP  <- WTNUP + TRNU
     WTNNA  <- WTNNOD + WTNNO
+=======
+    WTNMOB = WTNMOB + NMINEA
+    WTNUP = WTNUP + TRNU
+    WTNNA = WTNNOD + WTNNO
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #     Compute Percentage N in each Plant Component
     #-----------------------------------------------------------------------
     if ((WTLF > 1.E-4) & (WTLF > WTNLF) & (WTNLF > 1.E-5)) {
+<<<<<<< HEAD
       PCNL <- WTNLF / WTLF * 100.0
     } else {
       PCNL <- 0.0
@@ -1210,11 +1779,35 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       PCNSH <- WTNSH / SHELWT * 100.0
     } else {
       PCNSH <- 0.0
+=======
+      PCNL = WTNLF / WTLF * 100.0
+    } else {
+      PCNL = 0.0
+    }
+    
+    if ((STMWT > 1.E-4) & (WTNST > 1.E-5)) {
+      PCNST = WTNST / STMWT * 100.0
+    } else {
+      PCNST = 0.0
+    }
+    
+    if ((RTWT > 1.E-4) & (WTNRT > 1.E-5)) {
+      PCNRT = WTNRT / RTWT * 100.0
+    } else {
+      PCNRT = 0.0
+    }
+    
+    if ((SHELWT > 1.E-4) & (WTNSH > 1.E-5)) {
+      PCNSH = WTNSH / SHELWT * 100.0
+    } else {
+      PCNSH = 0.0
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #     Compute Percentage Seed Composition
     #-----------------------------------------------------------------------
     if (SDWT > 0.01) {
+<<<<<<< HEAD
       PCNSD <- WTNSD / SDWT * 100.0
       PCLSD <- WTLSD / SDWT * 100.0
       PCCSD <- WTCSD / SDWT * 100.0
@@ -1222,21 +1815,37 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       PCNSD <- 0.0
       PCLSD <- 0.0
       PCCSD <- 0.0
+=======
+      PCNSD = WTNSD / SDWT * 100.0
+      PCLSD = WTLSD / SDWT * 100.0
+      PCCSD = WTCSD / SDWT * 100.0
+    } else {
+      PCNSD = 0.0
+      PCLSD = 0.0
+      PCCSD = 0.0
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #    Calculate true nitrogen concentration in leaf tissue for
     #     photosynthesis reduction.
     #-----------------------------------------------------------------------
     if ((WTLF - WCRLF) > 1.E-4) {
+<<<<<<< HEAD
       RNITP <- 100.*WTNLF/(WTLF-WCRLF)
     } else {
       RNITP <- PCNMIN
+=======
+      RNITP = 100.*WTNLF/(WTLF-WCRLF)
+    } else {
+      RNITP = PCNMIN
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #     Calculate Remaining N in Shells, Leaves, Stems, and Roots
     #     That can be Mined (Plant N-Balance).
     #-----------------------------------------------------------------------
     if ((WTLF - WCRLF) > 1.E-4) {
+<<<<<<< HEAD
       WNRLF <- max(WTNLF - PROLFF * 0.16 * (WTLF-WCRLF), 0.0)
     } else {
       WNRLF <- 0.0
@@ -1258,6 +1867,29 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       WNRSH <- max(WTNSH - PROSHF * 0.16 * SHELWT, 0.0)
     } else {
       WNRSH <- 0.0
+=======
+      WNRLF = max(WTNLF - PROLFF * 0.16 * (WTLF-WCRLF), 0.0)
+    } else {
+      WNRLF = 0.0
+    }
+    
+    if ((STMWT - WCRST) > 1.E-4) {
+      WNRST = max(WTNST - PROSTF * 0.16 * (STMWT-WCRST), 0.0)
+    } else {
+      WNRST = 0.0
+    }
+    
+    if (RTWT > 1.E-4) {
+      WNRRT = max(WTNRT - PRORTF * 0.16 * RTWT, 0.0)
+    } else {
+      WNRRT = 0.0
+    }
+    
+    if (SHELWT > 1.E-4) {
+      WNRSH = max(WTNSH - PROSHF * 0.16 * SHELWT, 0.0)
+    } else {
+      WNRSH = 0.0
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
@@ -1270,18 +1902,30 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #       At this time, the model does not senesce seed.   
     #     Convert from biomass to C with a factor 0.40.   
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     SenWt[1] <- (SLDOT + WLFDOT + SSDOT + WTABRT)
     #     Convert from g/m2 to kg/ha with a factor of 10.
     SenWt[1] <- max(SenWt[1], 0.) * 10.0    #kg[dry matter]/ha
+=======
+    SenWt[1] = (SLDOT + WLFDOT + SSDOT + WTABRT)
+    #     Convert from g/m2 to kg/ha with a factor of 10.
+    SenWt[1] = max(SenWt[1], 0.) * 10.0    #kg[dry matter]/ha
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Surface nitrogen includes nitrogen losses computed above minus the
     #       pest damage components. 
     #-----------------------------------------------------------------------
     # VERIFICAR: SenE é uma variável? Se sim, deve usar []c, verificar posicoes SenE
+<<<<<<< HEAD
     SenE[1,2] <- NLOFF + NSOFF + NSHOFF - NLPEST  
     #     Convert from g/m2 to kg/ha with a factor of 10.
     SenE[1,2] <- max(SenE[1,2],0.) * 10.0             #kg[N]/ha
+=======
+    SenE[1,2] = NLOFF + NSOFF + NSHOFF - NLPEST  
+    #     Convert from g/m2 to kg/ha with a factor of 10.
+    SenE[1,2] = max(SenE[1,2],0.) * 10.0             #kg[N]/ha
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Surface phosphorus senescence.  - do this is P routine
@@ -1292,26 +1936,42 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #     Contribution of lignin to surface litter from senesced and frozen 
     #       plant matter
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     SenLig[1] <- (SLDOT + WLFDOT) * PLIGLF + SSDOT * PLIGST + WTABRT * PLIGSH
     #     Convert from g/m2 to kg/ha with a factor of 10.
     SenLig[1] <- max(SenLig[1],0.) * 10.0             #kg[lig]/ha
+=======
+    SenLig[1] = (SLDOT + WLFDOT) * PLIGLF + SSDOT * PLIGST + WTABRT * PLIGSH
+    #     Convert from g/m2 to kg/ha with a factor of 10.
+    SenLig[1] = max(SenLig[1],0.) * 10.0             #kg[lig]/ha
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Senescence of roots and nodules (kg/ha)
     #-----------------------------------------------------------------------
     for (L in 1:NLAYR) {
+<<<<<<< HEAD
       SenWt[L]  <- SENRT[L] + SENNOD[L]            #kg[dry matter]/ha
       SenLig[L] <- SENRT[L] * PLIGRT + SENNOD[L] * PLIGNO   #kg[lig]/ha\
       
       #SenE(L,1) = (SENRT[L]* PRORTF + SENNOD[L] * PRONOD) * 0.16 
       #       01/19/2006 CHP Root senescence at current N% (per KJB and JWJ)
       SenE[L,1] <- SENRT[L] * PCNRT / 100. + SENNOD[L] * PRONOD * 0.16 
+=======
+      SenWt[L]  = SENRT[L] + SENNOD[L]            #kg[dry matter]/ha
+      SenLig[L] = SENRT[L] * PLIGRT + SENNOD[L] * PLIGNO   #kg[lig]/ha\
+      
+      #SenE(L,1) = (SENRT[L]* PRORTF + SENNOD[L] * PRONOD) * 0.16 
+      #       01/19/2006 CHP Root senescence at current N% (per KJB and JWJ)
+      SenE[L,1] = SENRT[L] * PCNRT / 100. + SENNOD[L] * PRONOD * 0.16 
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
     #     Leaf Area, Specific Leaf Area Calculations
     #     Calculate Area Growth rate and Update Leaf Area (AREALF, XLAI)
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     ALFDOT <- WLDOTN*Fnew - (SLDOT+WLIDOT+WLFDOT+NRUSLF/0.16)*SLA
     if (WTLF > 1.E-4) {
       ALFDOT <- ALFDOT + SLA * (NADLF/0.16) * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
@@ -1323,16 +1983,34 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
       SLAAD  <- AREALF / (WTLF - WCRLF)
       if (SLA > 999.) SLA <- 0.0
       if (SLAAD > 999.) SLAAD <- -99.
+=======
+    ALFDOT = WLDOTN*Fnew - (SLDOT+WLIDOT+WLFDOT+NRUSLF/0.16)*SLA
+    if (WTLF > 1.E-4) {
+      ALFDOT = ALFDOT + SLA * (NADLF/0.16) * (1. - min(1.0,(SLDOT+WLIDOT+WLFDOT)/WTLF))
+    }
+    AREALF = AREALF + ALFDOT
+    XLAI   = AREALF / 10000.
+    if (AREALF > 0.00001 & WTLF > 1.E-4) {
+      SLA    = AREALF / WTLF
+      SLAAD  = AREALF / (WTLF - WCRLF)
+      if (SLA > 999.) SLA = 0.0
+      if (SLAAD > 999.) SLAAD = -99.
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #     Remember XLAI
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     LAIMX <- max(XLAI,LAIMX)
+=======
+    LAIMX = max(XLAI,LAIMX)
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #     Calculate "Healthy" or Non-Diseased Leaf Area Index
     #-----------------------------------------------------------------------
     #     AREAH  = AREALF - 2. * DISLA
     #     KJB Remove 2. factor
+<<<<<<< HEAD
     AREAH  <- AREALF - DISLA
     AREAH  <- max(0.,AREAH)
     XHLAI  <- AREAH / 10000.
@@ -1342,22 +2020,47 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     PUNCSD <- PUNCSD + SDPDOT           #chp not used
     SEEDNO <- SEEDNO - SDIDOT
     PUNCTR <- PUNCTR + PUNDOT           #chp not used
+=======
+    AREAH  = AREALF - DISLA
+    AREAH  = max(0.,AREAH)
+    XHLAI  = AREAH / 10000.
+    #-----------------------------------------------------------------------
+    #     Integrate Pest Damage to Seeds
+    #-----------------------------------------------------------------------
+    PUNCSD = PUNCSD + SDPDOT           #chp not used
+    SEEDNO = SEEDNO - SDIDOT
+    PUNCTR = PUNCTR + PUNDOT           #chp not used
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #     Loss in Plants due to Pests, Adjust Plant Spacing Also
     #-----------------------------------------------------------------------
     if (NPLTD > 1.E-5) {
+<<<<<<< HEAD
       PLTPOP <- PLTPOP - NPLTD
       PLTPOP <- max(0.,PLTPOP)
       if (PLTPOP*ROWSPC > 1.E-4) {
         BETN <- 1.0/(ROWSPC*PLTPOP)
+=======
+      PLTPOP = PLTPOP - NPLTD
+      PLTPOP = max(0.,PLTPOP)
+      if (PLTPOP*ROWSPC > 1.E-4) {
+        BETN = 1.0/(ROWSPC*PLTPOP)
+>>>>>>> Perennial_Forage
       }
     }
     
     if (PPLTD > 1.E-4) {
+<<<<<<< HEAD
       PLTPOP <- PLTPOP - PPLTD*PLTPOP/100.
       PLTPOP <- max(0.,PLTPOP)
       if(PLTPOP*ROWSPC > 1.E-4) {
         BETN <- 1.0/(ROWSPC*PLTPOP)
+=======
+      PLTPOP = PLTPOP - PPLTD*PLTPOP/100.
+      PLTPOP = max(0.,PLTPOP)
+      if(PLTPOP*ROWSPC > 1.E-4) {
+        BETN = 1.0/(ROWSPC*PLTPOP)
+>>>>>>> Perennial_Forage
       }
     }
     
@@ -1520,7 +2223,10 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   assign("PUNDOT",PUNDOT , envir = env)
   assign("NLPEST",NLPEST , envir = env)
   # assign("ROWSPC",ROWSPC , envir = env)
+<<<<<<< HEAD
   assign("WDOT",WDOT , envir = env) # for growth resp calc
+=======
+>>>>>>> Perennial_Forage
   
   return()
 }   
@@ -1530,6 +2236,7 @@ STRESS <- function(AGEFAC, iyear,jday) {
   #-----------------------------------------------------------------------
   #     Set Ending Plant Weights, Dates of Stages if Plants Died
   #-----------------------------------------------------------------------
+<<<<<<< HEAD
   TOTWT  <- max(0.,TOTWT)
   TOPWT  <- max(0.,TOPWT)
   WTLF   <- max(0.,WTLF)
@@ -1539,12 +2246,27 @@ STRESS <- function(AGEFAC, iyear,jday) {
   RTWT   <- max(0.,RTWT)
   PODWT  <- max(0.,PODWT)
   DWNOD  <- max(0.,DWNOD)
+=======
+  TOTWT  = max(0.,TOTWT)
+  TOPWT  = max(0.,TOPWT)
+  WTLF   = max(0.,WTLF)
+  STMWT  = max(0.,STMWT)
+  SDWT   = max(0.,SDWT)
+  SHELWT = max(0.,SHELWT)
+  RTWT   = max(0.,RTWT)
+  PODWT  = max(0.,PODWT)
+  DWNOD  = max(0.,DWNOD)
+>>>>>>> Perennial_Forage
   
   YRDOY <- paste0(iyear,sprintf("%03d", jday))
   
   if (MDATE < 0) {
     #        NR8   = max(0,TIMDIF(YRSIM,YRDOY))
+<<<<<<< HEAD
     MDATE <- YRDOY
+=======
+    MDATE = YRDOY
+>>>>>>> Perennial_Forage
   }
   
   #DAP = idpp
@@ -1578,7 +2300,11 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
   YRTFAC <- params$YRTFAC  #c(2.50, 2.50, 2.60, 2.60)
   RTWTMIN <- params$RTWTMIN  #0.0 #Soybean - Sempre ZERO
   
+<<<<<<< HEAD
   NL       <- 20  #!Maximum number of soil layers 
+=======
+  NL       = 20  #!Maximum number of soil layers 
+>>>>>>> Perennial_Forage
   
   RLV_WS <- rep(0, NL)
   
@@ -1588,6 +2314,7 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #---------------------------------------------------------------------
+<<<<<<< HEAD
     SRDOT  <- 0.0       
     RLV    <- 0.0
     RTDEP  <- 0.0       
@@ -1595,16 +2322,32 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     SUMEX  <- 0.0
     SUMRL  <- 0.0
     SATFAC <- 0.0
+=======
+    SRDOT = 0.0       
+    RLV   = 0.0
+    RTDEP = 0.0       
+    SENRT = 0.0
+    SUMEX = 0.0
+    SUMRL = 0.0
+    SATFAC = 0.0
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     ROOT DEPTH INCREASE RATE WITH TIME, cm/physiological day
     #-----------------------------------------------------------------------
     # if (CROP != 'FA' & ISWWAT != 'N') {
     if (CROP != 'FA') {
+<<<<<<< HEAD
       RFAC2 <- TABEX(YRTFAC,XRTFAC,0.0,4)
     }
     
     CumRootMass <- 0.0
+=======
+      RFAC2 = TABEX(YRTFAC,XRTFAC,0.0,4)
+    }
+    
+    CumRootMass = 0.0
+>>>>>>> Perennial_Forage
     
     #***********************************************************************
     #***********************************************************************
@@ -1619,6 +2362,7 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     #-----------------------------------------------------------------------
     INROOT(RFAC1)
     
+<<<<<<< HEAD
     RFAC3 <- RFAC1
     
     TRLV <- 0.0
@@ -1628,6 +2372,17 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     }
     
     CumRootMass <- WTNEW * FRRT * PLTPOP * 10. 
+=======
+    RFAC3 = RFAC1
+    
+    TRLV = 0.0
+    
+    for (L in 1:NLAYR) {
+      TRLV = TRLV + RLV[L] * DLAYR[L] # cm[root] / cm2[ground]
+    }
+    
+    CumRootMass = WTNEW * FRRT * PLTPOP * 10. 
+>>>>>>> Perennial_Forage
     #  kg[root]  g[tissue] g[root]    plants   kg/ha
     #   -------- = ----- * --------- * ------ * ----- 
     #      ha      plant   g[tissue]     m2      g/m2
@@ -1641,9 +2396,15 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     #-----------------------------------------------------------------------
     #     Calculate Root Depth Rate of Increase, Physiological Day (RFAC2)
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     RFAC2 <- TABEX(YRTFAC, XRTFAC, VSTAGE, 4)
     RLNEW <- WRDOTN * RFAC1 / 10000.
     CGRRT <- AGRRT * WRDOTN
+=======
+    RFAC2 = TABEX(YRTFAC, XRTFAC, VSTAGE, 4)
+    RLNEW = WRDOTN * RFAC1 / 10000.
+    CGRRT = AGRRT * WRDOTN
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Calculate root length per cm2 soil and initiate growth,
@@ -1658,9 +2419,15 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     RRLF   <- rep(0, NL)
     for (L in 1:NLAYR) {
       # TRTDY = TRTDY + RLV(L) * DLAYR(L) # cm[root] / cm2[ground]
+<<<<<<< HEAD
       RRLF[L]   <- 0.0
       RLSEN[L]  <- 0.0
       RLGRW[L]  <- 0.0
+=======
+      RRLF[L]   = 0.0
+      RLSEN[L]  = 0.0
+      RLGRW[L]  = 0.0
+>>>>>>> Perennial_Forage
       
     }
     
@@ -1669,14 +2436,21 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
       #  RFAC3 = TRTDY * 10000.0 / (RTWT - WRDOTN)
       #  RTWT has not yet been updated today, so use yesterday's
       #  value and don't subtract out today's growth - chp 11/13/00
+<<<<<<< HEAD
       RFAC3 <- TRLV * 10000.0 / RTWT
     } else {
       RFAC3 <- RFAC1
+=======
+      RFAC3 = TRLV * 10000.0 / RTWT
+    } else {
+      RFAC3 = RFAC1
+>>>>>>> Perennial_Forage
     }
     
     # 10/20/2005 Limit RLV decrease due to senscence to 
     #       a minimum resulting root weight 
     if (RTWTMIN > 0.0) {
+<<<<<<< HEAD
       TRLV_MIN <- RTWTMIN * RFAC3 / 1.E4   #same units as TRLV
       # cm/cm2  =  (g/m2) *(cm/g) / (cm2/m2)
     } else {
@@ -1689,6 +2463,20 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     CUMDEP <- 0.0
     SUMEX  <- 0.0
     SUMRL  <- 0.0
+=======
+      TRLV_MIN = RTWTMIN * RFAC3 / 1.E4   #same units as TRLV
+      # cm/cm2  =  (g/m2) *(cm/g) / (cm2/m2)
+    } else {
+      # Set TRLV_MIN to zero -- no minimum root mass
+      TRLV_MIN = 0.0
+    }
+    
+    #-----------------------------------------------------------------------
+    TRLDF  = 0.0
+    CUMDEP = 0.0
+    SUMEX  = 0.0
+    SUMRL  = 0.0
+>>>>>>> Perennial_Forage
     
     #Fortran
     RLV_WS <- rep(0, NL)
@@ -1698,10 +2486,17 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     
     for (L in 1:NLAYR) {
       
+<<<<<<< HEAD
       L1 <- L
       CUMDEP <- CUMDEP + DLAYR[L]
       SWDF <- 1.0
       SWEXF <- 1.0
+=======
+      L1 = L
+      CUMDEP = CUMDEP + DLAYR[L]
+      SWDF = 1.0
+      SWEXF = 1.0
+>>>>>>> Perennial_Forage
       
       #-----------------------------------------------------------------------
       #     2/21/05 - SJR - move conditional call for water stress from CROPGRO 
@@ -1712,6 +2507,7 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
       #-----------------------------------------------------------------------
       if (ISWWAT == 'Y') {
         if (SAT[L]-SW[L] < PORMIN) {
+<<<<<<< HEAD
           SWEXF <- (SAT[L] - SW[L]) / PORMIN
           SWEXF <- min(SWEXF, 1.0)
         }
@@ -1723,16 +2519,34 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
         if (SW[L] - LL[L] < 0.25*ESW[L]) {
           SWDF <- (SW[L] - LL[L]) / (0.25*ESW[L])
           SWDF <- max(SWDF, 0.0)
+=======
+          SWEXF = (SAT[L] - SW[L]) / PORMIN
+          SWEXF = min(SWEXF, 1.0)
+        }
+        
+        SUMEX = SUMEX + DLAYR[L] * RLV[L] * (1.0 - SWEXF)
+        SUMRL = SUMRL + DLAYR[L] * RLV[L]
+        
+        ESW[L] = DUL[L] - LL[L]
+        if (SW[L] - LL[L] < 0.25*ESW[L]) {
+          SWDF = (SW[L] - LL[L]) / (0.25*ESW[L])
+          SWDF = max(SWDF, 0.0)
+>>>>>>> Perennial_Forage
         }
       }
       #-----------------------------------------------------------------------
       
+<<<<<<< HEAD
       RTSURV <- min(1.0,(1.-RTSDF*(1.-SWDF)),(1.-RTEXF*(1.-SWEXF)))
+=======
+      RTSURV = min(1.0,(1.-RTSDF*(1.-SWDF)),(1.-RTEXF*(1.-SWEXF)))
+>>>>>>> Perennial_Forage
       if (RLV[L] > RLDSM & TRLV + RLNEW > TRLV_MIN) {
         # 1/14/2005 CHP Don't subtract water stress senescence 
         #           yet - combine with natural senescence and check to see if 
         #           enough RLV for senescence to occur (TRLV > TRLV_MIN)
         #RLV(L) = RLV(L) * RTSURV
+<<<<<<< HEAD
         RLV_WS[L] <- RLV[L] * (1.0 - RTSURV)
       } else {
         RLV_WS[L] <- 0.0
@@ -1748,6 +2562,23 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
             RTDEP <- RTDEP + DTX * RFAC2
           } else {
             RTDEP <- RTDEP + DTX * RFAC2 * min(SWDF,SWEXF) * (1. + 0.25 * (1. - max(SWFAC,0.40)))
+=======
+        RLV_WS[L] = RLV[L] * (1.0 - RTSURV)
+      } else {
+        RLV_WS[L] = 0.0
+      }
+      
+      #-----------------------------------------------------------------------
+      RLDF[L] = WR[L] * DLAYR[L] * min(SWDF,SWEXF)
+      if (CUMDEP < RTDEP) {
+        TRLDF = TRLDF + RLDF[L]
+      } else {
+        if (WR[L] > 0.0 & RLNEW > 0.0) {
+          if (L == 1) {
+            RTDEP = RTDEP + DTX * RFAC2
+          } else {
+            RTDEP = RTDEP + DTX * RFAC2 * min(SWDF,SWEXF) * (1. + 0.25 * (1. - max(SWFAC,0.40)))
+>>>>>>> Perennial_Forage
             #-----------------------------------------------------------------------
             #-KJB  DO NOT WANT TO DECREASE ROOT DEPTH WITH STRESS.  IF PG TO ROOTS
             # IS LOW BECAUSE OF SEED GROWTH OR IF WATER DEFICIT CAUSES LOW PG TO ROOTS
@@ -1762,6 +2593,7 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
             #-----------------------------------------------------------------------
           }
           # VERIFICAR: DEPMAX estava sendo calculado no RUNINIT
+<<<<<<< HEAD
           DEPMAX <- DS[NLAYR]
           if (RTDEP > DEPMAX) {
             RTDEP <- DEPMAX
@@ -1769,6 +2601,15 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
         }
         RLDF[L] <- RLDF[L] * (1. - (CUMDEP - RTDEP) / DLAYR[L])
         TRLDF <- TRLDF + RLDF[L]
+=======
+          DEPMAX = DS[NLAYR]
+          if (RTDEP > DEPMAX) {
+            RTDEP = DEPMAX
+          }
+        }
+        RLDF[L] = RLDF[L] * (1. - (CUMDEP - RTDEP) / DLAYR[L])
+        TRLDF = TRLDF + RLDF[L]
+>>>>>>> Perennial_Forage
         
         break
       }
@@ -1779,6 +2620,7 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     #-----------------------------------------------------------------------
     
     if (SUMRL > 0.0) {
+<<<<<<< HEAD
       SATFAC <- SUMEX/SUMRL
     } else {
       SATFAC <- 0.0
@@ -1786,13 +2628,28 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     
     SRDOT <- 0.0
     RLSENTOT <- 0.0
+=======
+      SATFAC = SUMEX/SUMRL
+    } else {
+      SATFAC = 0.0
+    }
+    
+    SRDOT = 0.0
+    RLSENTOT = 0.0
+>>>>>>> Perennial_Forage
     
     
     for (L in 1:L1) {
       if (TRLDF < 0.00001) {
+<<<<<<< HEAD
         RRLF[L] <- 1.0
       } else {
         RRLF[L] <- RLDF[L]/TRLDF
+=======
+        RRLF[L] = 1.0
+      } else {
+        RRLF[L] = RLDF[L]/TRLDF
+>>>>>>> Perennial_Forage
       }
       #-----------------------------------------------------------------------
       #       MRESPR, GRESPR, and RESPS are not used anywhere
@@ -1802,17 +2659,30 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
       # GRESPR[L] = RRLF[L] * (CGRRT-WRDOTN) * 44.0 /30.0
       # RESPS[L] = MRESPR[L] + GRESPR[L]
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       RLGRW[L] <- RRLF[L] * RLNEW / DLAYR[L] #cm[root]/cm3[ground]
       
       if (TRLV + RLNEW > TRLV_MIN) {
         RLSEN[L] <- RLV[L] * RTSEN * DTX
       } else {
         RLSEN[L] <- 0.0
+=======
+      RLGRW[L] = RRLF[L] * RLNEW / DLAYR[L] #cm[root]/cm3[ground]
+      
+      if (TRLV + RLNEW > TRLV_MIN) {
+        RLSEN[L] = RLV[L] * RTSEN * DTX
+      } else {
+        RLSEN[L] = 0.0
+>>>>>>> Perennial_Forage
       }
       
       # Limit total senescence in each layer to existing RLV
       if (RLV[L] - RLSEN[L] - RLV_WS[L] + RLGRW[L] < 0.0) {
+<<<<<<< HEAD
         RLSEN[L] <- RLV[L] + RLGRW[L] - RLV_WS[L]
+=======
+        RLSEN[L] = RLV[L] + RLGRW[L] - RLV_WS[L]
+>>>>>>> Perennial_Forage
       } 
       
       # RLSENTOT is profile senescence, water stress and natural cm/cm2
@@ -1822,6 +2692,7 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     # If senescence too high (results in TRLV < TRLV_MIN) then
     # reduce senescence in each layer by factor.
     if (RLSENTOT > 1.E-6 & TRLV + RLNEW - RLSENTOT < TRLV_MIN){
+<<<<<<< HEAD
       FACTOR <- (TRLV + RLNEW - TRLV_MIN) / RLSENTOT
       FACTOR <- max(0.0, min(1.0, FACTOR))
       RLSEN  <- RLSEN  * FACTOR
@@ -1833,17 +2704,39 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     for (L in 1:NLAYR) {
       RLV[L] <- RLV[L] + RLGRW[L] - RLSEN[L] - RLV_WS[L]
       TRLV <- TRLV + RLV[L] * DLAYR[L]
+=======
+      FACTOR = (TRLV + RLNEW - TRLV_MIN) / RLSENTOT
+      FACTOR = max(0.0, min(1.0, FACTOR))
+      RLSEN  = RLSEN  * FACTOR
+      RLV_WS = RLV_WS * FACTOR
+    }
+    
+    # Update RLV and TRLV based on today's growth and senescence
+    TRLV = 0.0
+    for (L in 1:NLAYR) {
+      RLV[L] = RLV[L] + RLGRW[L] - RLSEN[L] - RLV_WS[L]
+      TRLV = TRLV + RLV[L] * DLAYR[L]
+>>>>>>> Perennial_Forage
       
       # Keep senescence in each layer for adding C and N to soil
       #SENRT(L) = RLSEN(L) * DLAYR(L) / RFAC1 * 10000. * 10. #kg/ha
       # 1/14/2005 CHP - water stress senesence needs to be inlcuded.
+<<<<<<< HEAD
       SENRT[L] <- (RLSEN[L] + RLV_WS[L]) * DLAYR[L] / RFAC3 * 1.E5 
+=======
+      SENRT[L] = (RLSEN[L] + RLV_WS[L]) * DLAYR[L] / RFAC3 * 1.E5 
+>>>>>>> Perennial_Forage
       #           cm[root]              g[root]   1000 cm2   10(kg/ha)
       # kg/ha  =  -------- * cm[soil] * ------- * -------- * ---------
       #          cm3[soil]             cm[root]     m2         (g/m2)
       
+<<<<<<< HEAD
       SENRT[L] <- max(SENRT[L], 0.0)
       SRDOT <- SRDOT + SENRT[L]/10.        #g/m2
+=======
+      SENRT[L] = max(SENRT[L], 0.0)
+      SRDOT = SRDOT + SENRT[L]/10.        #g/m2
+>>>>>>> Perennial_Forage
       
       # Not used:
       #TRLGRW = TRLGRW + RLGRW(L) * DLAYR(L)
@@ -1856,14 +2749,24 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     # Total root senescence = water stress + natural senescence
     # 10/3/2005 SJR
     # SRDOT = (TRTDY + RLNEW - TRLV) * 10000.0 / RFAC3    #g/m2
+<<<<<<< HEAD
     SRDOT <- max(SRDOT, 0.0)
     
     TotRootMass <- TRLV / RFAC3 * 1.E5
+=======
+    SRDOT = max(SRDOT, 0.0)
+    
+    TotRootMass = TRLV / RFAC3 * 1.E5
+>>>>>>> Perennial_Forage
     #          cm[root]   g[root]   10000 cm2   10(kg/ha)
     # kg/ha  = -------- * ------- * -------- * ---------
     #         cm2[soil]   cm[root]     m2         (g/m2)
     
+<<<<<<< HEAD
     CumRootMass <- CumRootMass + WRDOTN * 10. - SRDOT * 10. 
+=======
+    CumRootMass = CumRootMass + WRDOTN * 10. - SRDOT * 10. 
+>>>>>>> Perennial_Forage
     
     #***********************************************************************
     #***********************************************************************
@@ -1886,7 +2789,11 @@ INROOT <- function (RFAC1){
   
   params <- plantList$soybean$params
  
+<<<<<<< HEAD
   NL       <- 20  #!Maximum number of soil layers 
+=======
+  NL       = 20  #!Maximum number of soil layers 
+>>>>>>> Perennial_Forage
   
   #!*ROOT PARAMETERS
   RTDEPI  <- params$RTDEPI # 20.0
@@ -1896,11 +2803,16 @@ INROOT <- function (RFAC1){
   #***********************************************************************
   #     INITIALIZE ROOT DEPTH AT EMERGENCE
   #-----------------------------------------------------------------------
+<<<<<<< HEAD
   RTDEP <- RTDEPI
+=======
+  RTDEP = RTDEPI
+>>>>>>> Perennial_Forage
   #-----------------------------------------------------------------------
   #     DISTRIBUTE ROOT LENGTH EVENLY IN ALL LAYERS TO A DEPTH OF
   #     RTDEPTI (ROOT DEPTH AT EMERGENCE)
   #-----------------------------------------------------------------------
+<<<<<<< HEAD
   CUMDEP <- 0.
   
   for (L in 1:NLAYR) {
@@ -1910,12 +2822,28 @@ INROOT <- function (RFAC1){
   for (L in 1:NLAYR) {
     DEP <- min(RTDEP - CUMDEP, DLAYR[L])
     RLINIT <- WTNEW * FRRT * PLTPOP * RFAC1 * DEP / ( RTDEP * 10000 )
+=======
+  CUMDEP = 0.
+  
+  for (L in 1:NLAYR) {
+    RLV[L] = 0.0
+  }
+  
+  for (L in 1:NLAYR) {
+    DEP = min(RTDEP - CUMDEP, DLAYR[L])
+    RLINIT = WTNEW * FRRT * PLTPOP * RFAC1 * DEP / ( RTDEP * 10000 )
+>>>>>>> Perennial_Forage
     #        cm[root]   g[root]    plants  cm[root]   m2
     #        -------- = -------- * ------ * ------- * ---
     #      cm2[ground]   plant       m2     g[root]   cm2
     
+<<<<<<< HEAD
     CUMDEP <- CUMDEP + DEP
     RLV[L] <- RLINIT / DLAYR[L]
+=======
+    CUMDEP = CUMDEP + DEP
+    RLV[L] = RLINIT / DLAYR[L]
+>>>>>>> Perennial_Forage
     if (CUMDEP >= RTDEP) {
       break()
     }
@@ -2022,6 +2950,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CDMSDR <- 0.0
     GDMSDR <- 0.0
     FNINSD <- 0.0
@@ -2040,11 +2969,32 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     
     RPRPUN <- 1.0 
     TMPFAC <- 1.0
+=======
+    CDMSDR = 0.0
+    GDMSDR = 0.0
+    FNINSD = 0.0
+    NDMNEW = 0.0
+    NDMREP = 0.0
+    NDMSD  = 0.0
+    NDMSH  = 0.0
+    NDMSDR = 0.0
+    NDMVEG = 0.0
+    NMOBR  = 0.0
+    SDGR   = 0.0
+    FNINL  = 0.0
+    FNINS  = 0.0
+    FNINR  = 0.0
+    NMINEP = 0.0
+    
+    RPRPUN = 1.0 
+    TMPFAC = 1.0
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     SET VARIETY SPECIFIC LEAF PARAMETERS
     #-----------------------------------------------------------------------
     if (CROP != 'FA') {
+<<<<<<< HEAD
       DUMFAC <- SLAVAR / SLAREF
       Fnew   <- DUMFAC * FINREF 
       FVEG   <- DUMFAC * SLAMAX
@@ -2055,14 +3005,32 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
       
       for (I in 1:6){
         YVGROW[I] <- SIZRAT * YVREF[I]
+=======
+      DUMFAC = SLAVAR / SLAREF
+      Fnew   = DUMFAC * FINREF 
+      FVEG   = DUMFAC * SLAMAX
+      SLAMN  = DUMFAC * SLAMIN
+      SLAMX  = DUMFAC * SLAMAX
+      GROMAX = 0.0
+      SIZRAT = SIZELF / SIZREF
+      
+      for (I in 1:6){
+        YVGROW[I] = SIZRAT * YVREF[I]
+>>>>>>> Perennial_Forage
       }
       
       #-----------------------------------------------------------------------
       #     INITIALIZE PARTITIONING PARAMETERS
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       FRLF <- TABEX(YLEAF,XLEAF,0.0,8)
       FRSTM <- TABEX(YSTEM,XLEAF,0.0,8)
       FRRT <- 1.0 - FRLF - FRSTM
+=======
+      FRLF = TABEX(YLEAF,XLEAF,0.0,8)
+      FRSTM = TABEX(YSTEM,XLEAF,0.0,8)
+      FRRT = 1.0 - FRLF - FRSTM
+>>>>>>> Perennial_Forage
       
     }
     
@@ -2073,6 +3041,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #***********************************************************************
   } else if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     XFRT   <- XFRUIT
     ADDSHL <- 0.0
     TURXFR <- 0.0
@@ -2092,6 +3061,27 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     FNINL  <- PROLFI * 0.16  
     FNINS  <- PROSTI * 0.16  
     FNINR  <- PRORTI * 0.16  
+=======
+    XFRT   = XFRUIT
+    ADDSHL = 0.0
+    TURXFR = 0.0
+    GDMSD  = 0.0
+    CDMSD  = 0.0
+    NDMSD  = 0.0
+    GDMSDR = 0.0
+    CDMSDR = 0.0
+    NDMSDR = 0.0
+    CDMREP = 0.0
+    NAGE   = 0
+    for (NPP in 1:NCOHORTS) {
+      PHTIM[NPP] = 0.
+      PNTIM[NPP] = 0.
+    }
+    FNINSD = SDPRO * 0.16   
+    FNINL  = PROLFI * 0.16  
+    FNINS  = PROSTI * 0.16  
+    FNINR  = PRORTI * 0.16  
+>>>>>>> Perennial_Forage
     
     #***********************************************************************
     #***********************************************************************
@@ -2111,11 +3101,19 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #     I DON'T REALLY WANT THAT, LATE IN CYCLE.  KJB
     #     NOW, DXR57 HITS CLOSE TO 1 AT MATURITY AND PREVENTS THAT
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NMOBR  <- NVSMOB * NMOBMX * TDUMX
     if (DAS > NR5) {
       NMOBR <- NMOBMX * TDUMX2 * (1.0 + 0.5*(1.0 - SWFAC)) * (1.0 + 0.3*(1.0 - NSTRES)) * (NVSMOB + (1. - NVSMOB) * max(XPOD,DXR57^2.))
     }
     NMINEP <- NMOBR * (WNRLF + WNRST + WNRRT + WNRSH)
+=======
+    NMOBR  = NVSMOB * NMOBMX * TDUMX
+    if (DAS > NR5) {
+      NMOBR = NMOBMX * TDUMX2 * (1.0 + 0.5*(1.0 - SWFAC)) * (1.0 + 0.3*(1.0 - NSTRES)) * (NVSMOB + (1. - NVSMOB) * max(XPOD,DXR57^2.))
+    }
+    NMINEP = NMOBR * (WNRLF + WNRST + WNRRT + WNRSH)
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     if (DAS >= NR1) {
@@ -2125,6 +3123,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
       
       # VERIFICAR: Nao seria DAS <= NR1 ? Pois caso DAS seja menor, a linha a seguir dara erro por ser indice negativo.
       if (DAS == NR1) {
+<<<<<<< HEAD
         PNTIM[1] <- 0.0
       } else {
         PNTIM[DAS - NR1 + 1] <- PNTIM[DAS - NR1] + TDUMX
@@ -2134,22 +3133,46 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
         PHTIM[1] <- 0.0
       } else {
         PHTIM[DAS - NR2 + 1] <- PHTIM[DAS - NR2] + TDUMX
+=======
+        PNTIM[1] = 0.0
+      } else {
+        PNTIM[DAS - NR1 + 1] = PNTIM[DAS - NR1] + TDUMX
+      }
+      
+      if (DAS <= NR2) {
+        PHTIM[1] = 0.0
+      } else {
+        PHTIM[DAS - NR2 + 1] = PHTIM[DAS - NR2] + TDUMX
+>>>>>>> Perennial_Forage
       }
       
       #-----------------------------------------------------------------------
       #     Calculate function for modifying seed growth rate with temperature
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       TMPFAC <- 0
       TMPFCS <- 0
+=======
+      TMPFAC = 0
+      TMPFCS = 0
+>>>>>>> Perennial_Forage
       for (I in 1:TS) {
         # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
         # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
         
+<<<<<<< HEAD
         TMPFAC <- CURV(TYPSDT,FNSDT[1], FNSDT[2], FNSDT[3], FNSDT[4], TGRO[I])
         TMPFCS <- TMPFCS + TMPFAC
       }
       
       TMPFAC <- TMPFCS / TS
+=======
+        TMPFAC = CURV(TYPSDT,FNSDT[1], FNSDT[2], FNSDT[3], FNSDT[4], TGRO[I])
+        TMPFCS = TMPFCS + TMPFAC
+      }
+      
+      TMPFAC = TMPFCS / TS
+>>>>>>> Perennial_Forage
       
       # 24 changed to TS on 3Jul17 by Bruce Kimball
       
@@ -2157,30 +3180,54 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
       #       Calculate reduction in seed growth due to insect punctures
       #-----------------------------------------------------------------------
       if (PUNCSD > 0.001) {
+<<<<<<< HEAD
         REDPUN <- 1.0 - (PUNCTR/PUNCSD) * RPRPUN
         REDPUN <- max(0.0,REDPUN)
       } else {
         REDPUN <- 1.0
+=======
+        REDPUN = 1.0 - (PUNCTR/PUNCSD) * RPRPUN
+        REDPUN = max(0.0,REDPUN)
+      } else {
+        REDPUN = 1.0
+>>>>>>> Perennial_Forage
       }
       #-----------------------------------------------------------------------
       #       Water stress factor (TURADD) effect on reproductive growth and
       #       pod addition.  Stress is defined to INCREASE growth and addition.
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       TURADD <- TABEX (YTRFAC,XTRFAC,TURFAC,4)
       #-----------------------------------------------------------------------
       #     Calculate maximum growth per seed based on temp and seed punctures
       #-----------------------------------------------------------------------
       SDGR <- SDVAR * TMPFAC * REDPUN * (1.-(1.-DRPP)*SRMAX) * (1. + TURADD)
+=======
+      TURADD = TABEX (YTRFAC,XTRFAC,TURFAC,4)
+      #-----------------------------------------------------------------------
+      #     Calculate maximum growth per seed based on temp and seed punctures
+      #-----------------------------------------------------------------------
+      SDGR = SDVAR * TMPFAC * REDPUN * (1.-(1.-DRPP)*SRMAX) * (1. + TURADD)
+>>>>>>> Perennial_Forage
       #-----------------------------------------------------------------------
       #     Initialize Seed Growth Demands and CH2O and N required for seed
       #       growth
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       GDMSD  <- 0.0
       CDMSD  <- 0.0
       NDMSD  <- 0.0
       GDMSDR <- 0.0
       CDMSDR <- 0.0
       NDMSDR <- 0.0
+=======
+      GDMSD  = 0.0
+      CDMSD  = 0.0
+      NDMSD  = 0.0
+      GDMSDR = 0.0
+      CDMSDR = 0.0
+      NDMSDR = 0.0
+>>>>>>> Perennial_Forage
       #-----------------------------------------------------------------------
       if (DAS > NR2) {
         for (NPP in 1:(DAS - NR2)) { 
@@ -2188,12 +3235,17 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
           #     Calculate physiol age of seed cohort.  Do not allow seed to grow
           #     until shells are greater than LAGSD physiol age.
           #-----------------------------------------------------------------------
+<<<<<<< HEAD
           PAGE <- PHTIM[DAS - NR2 + 1] - PHTIM[NPP]
+=======
+          PAGE = PHTIM[DAS - NR2 + 1] - PHTIM[NPP]
+>>>>>>> Perennial_Forage
           if (PAGE >= LAGSD) {
             #-----------------------------------------------------------------------
             #     Allow cohort growth until threshing limit (seed wt./pod wt) occurs
             #     taking into account damage by pests to seed and shells
             #-----------------------------------------------------------------------
+<<<<<<< HEAD
             REDSHL <- 0
             if (SDDES[NPP] > 0) {
               REDSHL <- WTSHE[NPP] * SDDES[NPP] / (SDDES[NPP] + SDNO[NPP])
@@ -2204,6 +3256,18 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
             #     Compute Seed Growth Demand, GDMSD, and N required for seed, NDMSD
             #-----------------------------------------------------------------------
             GDMSD  <- GDMSD  + min(SDGR * SDNO[NPP] * REDPUN, SDMAX)
+=======
+            REDSHL = 0
+            if (SDDES[NPP] > 0) {
+              REDSHL = WTSHE[NPP] * SDDES[NPP] / (SDDES[NPP] + SDNO[NPP])
+            }
+            SDMAX = (WTSHE[NPP] - REDSHL) * THRESH / (100 - THRESH) - WTSD[NPP]
+            SDMAX = max(0, SDMAX)
+            #-----------------------------------------------------------------------
+            #     Compute Seed Growth Demand, GDMSD, and N required for seed, NDMSD
+            #-----------------------------------------------------------------------
+            GDMSD  = GDMSD  + min(SDGR * SDNO[NPP] * REDPUN, SDMAX)
+>>>>>>> Perennial_Forage
           }
         }
         #-----------------------------------------------------------------------
@@ -2211,13 +3275,18 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
         #-----------------------------------------------------------------------
         SDCOMP(TAVG)
         
+<<<<<<< HEAD
         NDMSD  <- FNINSD * GDMSD
+=======
+        NDMSD  = FNINSD * GDMSD
+>>>>>>> Perennial_Forage
         #-----------------------------------------------------------------------
         #     Calculate Amount of Mobilized N Which Can be Used for Seed Growth,
         #     NDMSDR, potential seed growth from this source of N, GDMSDR,
         #     and CH2O required for this seed growth from mobilized N, CDMSDR
         #-----------------------------------------------------------------------
         if (NDMSD > NMINEP) {
+<<<<<<< HEAD
           NDMSDR <- NMINEP
         } else {
           NDMSDR <- NDMSD
@@ -2228,11 +3297,24 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
         #    Compute Total CH2O Demand to Grow GDMSD g Tissue
         #-----------------------------------------------------------------------
         CDMSD <- (max(0, (GDMSD - GDMSDR))) * AGRSD2 + CDMSDR
+=======
+          NDMSDR = NMINEP
+        } else {
+          NDMSDR = NDMSD
+        }
+        GDMSDR = NDMSDR / FNINSD
+        CDMSDR = GDMSDR * (AGRSD1 + FNINSD * 6.25 * RPRO)
+        #-----------------------------------------------------------------------
+        #    Compute Total CH2O Demand to Grow GDMSD g Tissue
+        #-----------------------------------------------------------------------
+        CDMSD = (max(0, (GDMSD - GDMSDR))) * AGRSD2 + CDMSDR
+>>>>>>> Perennial_Forage
       }
     }
     #-----------------------------------------------------------------------
     #     Compute max growth per shell, depending on temp, daylength
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     GRRAT1 <- SHVAR * TMPFAC * (1- (1-DRPP) * SRMAX) * (1.0 + TURADD)
     #-----------------------------------------------------------------------
     #     Initialize Shell Growth Demand, N (NDMSH) and C (CDMSH) needed for growth
@@ -2240,12 +3322,22 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     GDMSH <- 0.0
     NDMSH <- 0.0
     CDMSH <- 0.0
+=======
+    GRRAT1 = SHVAR * TMPFAC * (1- (1-DRPP) * SRMAX) * (1.0 + TURADD)
+    #-----------------------------------------------------------------------
+    #     Initialize Shell Growth Demand, N (NDMSH) and C (CDMSH) needed for growth
+    #-----------------------------------------------------------------------
+    GDMSH = 0.0
+    NDMSH = 0.0
+    CDMSH = 0.0
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #     Compute growth demand for shells, GDMSH, allowing slow growth
     #     until LNGPEG age, then potential growth until LNGSH
     #-----------------------------------------------------------------------
     if (DAS > NR2) {
       for (NPP in 1:(DAS - NR2)) {  
+<<<<<<< HEAD
         NAGE <- DAS - NR2 + 1 - NPP  #NAGE not used - chp
         PAGE <- PHTIM[DAS - NR2 + 1] - PHTIM[NPP]
         if (PAGE <= LNGSH & SHELN[NPP] >= 0.001 & GRRAT1 >= 0.001) {
@@ -2258,51 +3350,98 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
           }
         }
         GDMSH  <- GDMSH + ADDSHL
+=======
+        NAGE = DAS - NR2 + 1 - NPP  #NAGE not used - chp
+        PAGE = PHTIM[DAS - NR2 + 1] - PHTIM[NPP]
+        if (PAGE <= LNGSH & SHELN[NPP] >= 0.001 & GRRAT1 >= 0.001) {
+          if (PAGE >= LNGPEG) {
+            #Shells between LNGPEG and LNGSH
+            ADDSHL = GRRAT1 * SHELN[NPP]
+          } else {
+            #Shells < LNGPEG
+            ADDSHL = GRRAT1 * SHELN[NPP] * SHLAG
+          }
+        }
+        GDMSH  = GDMSH + ADDSHL
+>>>>>>> Perennial_Forage
       }
       #-----------------------------------------------------------------------
       #     Compute CH2O required for the potential shell growth
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       CDMSH <- GDMSH * AGRSH2
+=======
+      CDMSH = GDMSH * AGRSH2
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #     Compute TEMXFR, the temp effect on partitioning to pods
     #     High temp would increase fraction growth to vegetative tissue
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     TEMXFR <- 0.
+=======
+    TEMXFR = 0.
+>>>>>>> Perennial_Forage
     for (I in 1:TS) {
       # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
+<<<<<<< HEAD
       TEMXFR <- TEMXFR + TABEX(YXFTEM,XXFTEM,TGRO[I],6)
     }
     TEMXFR <- TEMXFR/TS
+=======
+      TEMXFR = TEMXFR + TABEX(YXFTEM,XXFTEM,TGRO[I],6)
+    }
+    TEMXFR = TEMXFR/TS
+>>>>>>> Perennial_Forage
     # 24 changed to TS by Bruce Kimball on 3Jul17
     
     #-----------------------------------------------------------------------
     #     Partitioning to pods is increased under drought stress conditions
     #        depending on XFRMAX, an input parameter
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     TURXFR <- XFRMAX * (1 - TURFAC)
     TURXFR <- min(TURXFR, 1)
     TURXFR <- max(TURXFR, 0)
+=======
+    TURXFR = XFRMAX * (1 - TURFAC)
+    TURXFR = min(TURXFR, 1)
+    TURXFR = max(TURXFR, 0)
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #     Night length and temperature are multiplicative
     #     but turgor effect adds to the partitioning
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     XFRT <- XFRUIT * TEMXFR + XFRUIT * TURXFR
     #     XFRT = XFRUIT * RNIT * TEMXFR   #NEED TO FIX FOR DAYLENGTH EFFECT
     XFRT <- min(XFRT,1.0)
     XFRT <- max(XFRT,0.0)
+=======
+    XFRT = XFRUIT * TEMXFR + XFRUIT * TURXFR
+    #     XFRT = XFRUIT * RNIT * TEMXFR   #NEED TO FIX FOR DAYLENGTH EFFECT
+    XFRT = min(XFRT,1.0)
+    XFRT = max(XFRT,0.0)
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #    Total Potential Available CH2O for Reprod Growth (CAVTOT)
     #    and total CH2O needed for potential reproductive growth (CDMREP)
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CAVTOT <- PGAVL * XFRT
     CDMREP <- CDMSH + CDMSD
+=======
+    CAVTOT = PGAVL * XFRT
+    CDMREP = CDMSH + CDMSD
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #    Adjust C-Demand for New Growth if C-Available is Less than C Demand
     #    Also adjust tissue growth demand for seeds and shells
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     GDMSDO <- GDMSD
     if (CDMREP > CAVTOT) {
       if (CDMSD > CAVTOT) {
@@ -2319,13 +3458,37 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
         GDMSH <- CDMSH/AGRSH2
       }
       CDMREP <- CDMSD + CDMSH
+=======
+    GDMSDO = GDMSD
+    if (CDMREP > CAVTOT) {
+      if (CDMSD > CAVTOT) {
+        CDMSH = 0.0
+        GDMSH = 0.0
+        CDMSD = CAVTOT
+        if (CDMSDR > CAVTOT) {
+          CDMSDR = CAVTOT
+        }
+        GDMSD = (max(0.0,(CDMSD-CDMSDR)))/ AGRSD2 + CDMSDR / (AGRSD1 + FNINSD * 6.25 * RPRO)
+        NDMSDR = GDMSDR * FNINSD
+      } else {
+        CDMSH = CAVTOT - CDMSD
+        GDMSH = CDMSH/AGRSH2
+      }
+      CDMREP = CDMSD + CDMSH
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #     Compute N demand for seed, shell, and total reproductive growth
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NDMSD  <- GDMSD * FNINSD
     NDMSH  <- GDMSH * FNINSH
     NDMREP <- NDMSD + NDMSH
+=======
+    NDMSD  = GDMSD * FNINSD
+    NDMSH  = GDMSH * FNINSH
+    NDMREP = NDMSD + NDMSH
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Vegetative partitioning factors and demand for C and N for new
@@ -2335,9 +3498,15 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #-----------------------------------------------------------------------
     #     Check to See if New Vegetative Tissue Can Be Grown, Using PGAVL
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CDMVEG <- max(0.0,(1.-XFRT)*PGAVL)
     NDMVEG <- 0.0
     CDMVEG <- (PGAVL * XFRT - CDMREP) + CDMVEG
+=======
+    CDMVEG = max(0.0,(1.-XFRT)*PGAVL)
+    NDMVEG = 0.0
+    CDMVEG = (PGAVL * XFRT - CDMREP) + CDMVEG
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #       This is from documentation:  check no longer needed?? chp
@@ -2354,28 +3523,48 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
       #     Fraction of growth going to leaves and roots decreases
       #     linearly between R1 and NDLEAF.
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       FRLFM  <- TABEX (YLEAF, XLEAF, VSTAGE, 8)
       FRSTMM <- TABEX (YSTEM, XLEAF, VSTAGE, 8)
       YY <- FRLFM - FRLFF 
       XX <- FRSTMM - FRSTMF
+=======
+      FRLFM  = TABEX (YLEAF, XLEAF, VSTAGE, 8)
+      FRSTMM = TABEX (YSTEM, XLEAF, VSTAGE, 8)
+      YY = FRLFM - FRLFF 
+      XX = FRSTMM - FRSTMF
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     if (DAS < NR1) {
       #-----------------------------------------------------------------------
       #     Calculate Pattern of Vegetative Partitioning, a function of V-STAGE
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       FRLF  <- TABEX(YLEAF,XLEAF,VSTAGE,8)
       FRSTM <- TABEX(YSTEM,XLEAF,VSTAGE,8)
+=======
+      FRLF  = TABEX(YLEAF,XLEAF,VSTAGE,8)
+      FRSTM = TABEX(YSTEM,XLEAF,VSTAGE,8)
+>>>>>>> Perennial_Forage
     } else {
       #-----------------------------------------------------------------------
       #     Partitioning between vegetative tissues depends on development
       #     as expressed by FRACDN, the relative development between R1 and NDLEAF
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       FRLF <- FRLFM - YY * FRACDN
       FRSTM <- FRSTMM - XX * FRACDN
       if ( DAS >= NDLEAF) {
         FRLF <- FRLFF
         FRSTM <- FRSTMF
+=======
+      FRLF = FRLFM - YY * FRACDN
+      FRSTM = FRSTMM - XX * FRACDN
+      if ( DAS >= NDLEAF) {
+        FRLF = FRLFF
+        FRSTM = FRSTMF
+>>>>>>> Perennial_Forage
       }
     }
     
@@ -2383,16 +3572,25 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #     check units### fraction vs percentage
     #     FRLF = FRLF - FRLF/(FRLF+FRSTM) * (extra root value)
     #     FRSTM= FRSTM - FRSTM/(FRLF+FRSTM) * (extra root value)
+<<<<<<< HEAD
     FRRT <- 1 - FRLF - FRSTM
+=======
+    FRRT = 1 - FRLF - FRSTM
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Compute F, specific leaf area for new leaf weight
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     TPHFAC <- 0
+=======
+    TPHFAC = 0
+>>>>>>> Perennial_Forage
     for (I in 1:TS){
       # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
+<<<<<<< HEAD
       TPHFAC <- TPHFAC + TABEX (YSLATM,XSLATM,TGRO[I],5)
     }
     TPHFAC <- TPHFAC/TS
@@ -2401,22 +3599,43 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #-----------------------------------------------------------------------
     PARSLA <- (SLAMN+(SLAMX-SLAMN) * exp(SLAPAR*PAR)) / SLAMX
     TURFSL <- max(0.1, (1.0 - (1.0 - TURFAC)*TURSLA))
+=======
+      TPHFAC = TPHFAC + TABEX (YSLATM,XSLATM,TGRO[I],5)
+    }
+    TPHFAC = TPHFAC/TS
+    # 24 changed to TS by Bruce Kimball on 3Jul17
+    
+    #-----------------------------------------------------------------------
+    PARSLA = (SLAMN+(SLAMX-SLAMN) * exp(SLAPAR*PAR)) / SLAMX
+    TURFSL = max(0.1, (1.0 - (1.0 - TURFAC)*TURSLA))
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #     Compute overall effect of TMP, PAR, water stress on SLA (F), first
     #     for veg stages, then transition to rep stage from R1 to end leaf
     #     effect of PAR on SLA, COX PEANUT SCI. 5:27, 1978
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     FFVEG <- FVEG * TPHFAC * PARSLA * TURFSL
     Fnew <- FFVEG 
     if (XFRT*FRACDN >= 0.05) { 
       Fnew <- FFVEG * (1.0 - XFRT * FRACDN) 
+=======
+    FFVEG = FVEG * TPHFAC * PARSLA * TURFSL
+    Fnew = FFVEG 
+    if (XFRT*FRACDN >= 0.05) { 
+      Fnew = FFVEG * (1.0 - XFRT * FRACDN) 
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #     For determinate plants (XFRUIT=1.) leaf expansion stops at NDLEAF
     #-----------------------------------------------------------------------
     # VERIFICAR: F novamente. Mudar
     if (XFRUIT > 0.9999 & DAS >= NDLEAF) { 
+<<<<<<< HEAD
       Few <- 0.0 
+=======
+      Few = 0.0 
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
@@ -2428,40 +3647,67 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #     of C is partitioned to FRSTM and FRRT  (JWJ 4/1/96)
     #-----------------------------------------------------------------------
     if (VSTAGE < VSSINK) {
+<<<<<<< HEAD
       GROYES <- GROMAX
       GROMAX <- TABEX(YVGROW,XVGROW,VSTAGE,6) * SIZELF/SIZREF
       GAINNW <- (GROMAX - GROYES) * PLTPOP
+=======
+      GROYES = GROMAX
+      GROMAX = TABEX(YVGROW,XVGROW,VSTAGE,6) * SIZELF/SIZREF
+      GAINNW = (GROMAX - GROYES) * PLTPOP
+>>>>>>> Perennial_Forage
       #-----------------------------------------------------------------------
       #     CALCULATE MINIMUM WEIGHT NEEDED TO ADD GAINNW LEAF AREA/M2,
       #     AND AMOUNT OF LEAF WEIGHT WHICH CAN BE GROWN WITH PG AVAILABLE
       #-----------------------------------------------------------------------
       if (Fnew > 1.E-5) {
+<<<<<<< HEAD
         GAINWT <- GAINNW/Fnew
       } else {
         GAINWT <- 0.0
+=======
+        GAINWT = GAINNW/Fnew
+      } else {
+        GAINWT = 0.0
+>>>>>>> Perennial_Forage
       }
       #-----------------------------------------------------------------------
       #     Compute fraction of C partitioned to leaves, based on F, VSSINK
       #     Limit leaf pertitioning to FRLFMX (i.e., FRLFMX = 0.7)
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       FRLF <- (AGRLF*GAINWT)/(CDMVEG + 0.0001)
       if (FRLF > FRLFMX) {
         GAINWT <- (CDMVEG/AGRLF) * FRLFMX
         # VERIFICAR: F novamente. Mudar
         GAINNW <- GAINWT * Fnew
         FRLF <- FRLFMX
+=======
+      FRLF = (AGRLF*GAINWT)/(CDMVEG + 0.0001)
+      if (FRLF > FRLFMX) {
+        GAINWT = (CDMVEG/AGRLF) * FRLFMX
+        # VERIFICAR: F novamente. Mudar
+        GAINNW = GAINWT * Fnew
+        FRLF = FRLFMX
+>>>>>>> Perennial_Forage
       }
       #-----------------------------------------------------------------------
       #     Recompute FRSTM and FRRT based on FRLF
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       FRSTM <- (1. - FRLF) * FRSTM / (FRSTM + FRRT)
       FRRT  <- 1. - FRLF - FRSTM
+=======
+      FRSTM = (1. - FRLF) * FRSTM / (FRSTM + FRRT)
+      FRRT  = 1. - FRLF - FRSTM
+>>>>>>> Perennial_Forage
       #-----------------------------------------------------------------------
     }
     #-----------------------------------------------------------------------
     #     Compute CH2O cost per g of tissue, excluding cost for protein (AGRVG)
     #     and total CH2O cost per g of veg tissue (AGRVG2)
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     AGRVG <- AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
     AGRVG2 <- AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RPROAV
     #-----------------------------------------------------------------------
@@ -2469,16 +3715,31 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
     #-----------------------------------------------------------------------
     NDMVEG <- (CDMVEG/AGRVG2) * (FRLF*FNINL+FRSTM*FNINS+ FRRT*FNINR)
     NDMNEW <- NDMREP + NDMVEG
+=======
+    AGRVG = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
+    AGRVG2 = AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RPROAV
+    #-----------------------------------------------------------------------
+    #    Compute N Demand for New Tissue, including reproductive and vegetative
+    #-----------------------------------------------------------------------
+    NDMVEG = (CDMVEG/AGRVG2) * (FRLF*FNINL+FRSTM*FNINS+ FRRT*FNINR)
+    NDMNEW = NDMREP + NDMVEG
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #    Check to See if Any C is Left After Reproductive Growth for
     #    Reducing N to Re-Fill Old Tissue, if N Can Be Taken up by Roots
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CNOLD <- max(0.0,PGAVL-CDMREP)
     NDMOLD <- 0.0
+=======
+    CNOLD = max(0.0,PGAVL-CDMREP)
+    NDMOLD = 0.0
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #    Nitrogen Demand for Old Tissue
     #-----------------------------------------------------------------------
     if (DAS > NVEG0 & DAS < NR7 & CNOLD > 0.0) {
+<<<<<<< HEAD
       NVSTL <- FNINL
       NVSTS <- FNINS
       NVSTR <- FNINR
@@ -2491,18 +3752,41 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
       NDMOLD <- (WTLF  - WCRLF) * max(0.0,(NVSTL - PCNL /100.)) + (STMWT - WCRST) * max(0.0,(NVSTS - PCNST/100.)) + (RTWT  - WCRRT) * max(0.0,(NVSTR - PCNRT/100.))
       if (NDMOLD > (CNOLD/RNO3C*0.16)) {
         NDMOLD <- CNOLD/RNO3C*0.16
+=======
+      NVSTL = FNINL
+      NVSTS = FNINS
+      NVSTR = FNINR
+      if (DXR57 > 0.0) {
+        FRNLFT = (NRCVR + (1. - NRCVR) * (1. - DXR57^2))
+        NVSTL = PROLFF*0.16 + (FNINL-PROLFF*0.16) * FRNLFT
+        NVSTS = PROSTF*0.16 + (FNINS-PROSTF*0.16) * FRNLFT
+        NVSTR = PRORTF*0.16 + (FNINR-PRORTF*0.16) * FRNLFT
+      }
+      NDMOLD = (WTLF  - WCRLF) * max(0.0,(NVSTL - PCNL /100.)) + (STMWT - WCRST) * max(0.0,(NVSTS - PCNST/100.)) + (RTWT  - WCRRT) * max(0.0,(NVSTR - PCNRT/100.))
+      if (NDMOLD > (CNOLD/RNO3C*0.16)) {
+        NDMOLD = CNOLD/RNO3C*0.16
+>>>>>>> Perennial_Forage
       }
     }
     #-----------------------------------------------------------------------
     #    Total N Demand
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NDMTOT <- NDMREP + NDMVEG + NDMOLD
+=======
+    NDMTOT = NDMREP + NDMVEG + NDMOLD
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #    Compute Total Demand for C, and Max. C that Could be Mined
     #     CDMTOT not used - chp
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CDMTOT <- CDMREP + CDMVEG + NDMOLD*RNO3C/0.16 
     GDMSD <- GDMSDO
+=======
+    CDMTOT = CDMREP + CDMVEG + NDMOLD*RNO3C/0.16 
+    GDMSD = GDMSDO
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #    At this point, PGAVL will be used entirely, assuming that N can be
     #    made available in the ratio described.
@@ -2609,6 +3893,7 @@ SDCOMP <- function (TAVG) {
   #     The quadratic plateau for predicting percentage lipids
   #-----------------------------------------------------------------------
   if (TAVG >= LIPOPT) {
+<<<<<<< HEAD
     LIPTEM <- 1.0
   } else if ((TAVG < LIPOPT) & (TAVG > LIPTB)) {
     LIPTEM <- 1.0 - ((LIPOPT - TAVG) / (LIPOPT - LIPTB))^2
@@ -2616,19 +3901,36 @@ SDCOMP <- function (TAVG) {
     LIPTEM <- 0.0
   }
   POTLIP <- SDLIP * LIPTEM
+=======
+    LIPTEM= 1.0
+  } else if ((TAVG < LIPOPT) & (TAVG > LIPTB)) {
+    LIPTEM = 1.0 - ((LIPOPT - TAVG) / (LIPOPT - LIPTB))^2
+  } else {
+    LIPTEM= 0.0
+  }
+  POTLIP = SDLIP * LIPTEM
+>>>>>>> Perennial_Forage
   
   
   #-----------------------------------------------------------------------
   #     Determination of protein percentage
   #-----------------------------------------------------------------------
+<<<<<<< HEAD
   GENSUM <- (SDPRO*100.0) + (SDLIP*100.0) * (1.0 - (((LIPOPT - 25.) / (LIPOPT - LIPTB))^2))
   SUMTEM <- 1.0 + SLOSUM * (TAVG - 25.0)
   PSUMSD <- GENSUM * SUMTEM / 100.0
   POTPRO <- PSUMSD - POTLIP
+=======
+  GENSUM = (SDPRO*100.0) + (SDLIP*100.0) * (1.0 - (((LIPOPT - 25.) / (LIPOPT - LIPTB))^2))
+  SUMTEM = 1.0 + SLOSUM * (TAVG - 25.0)
+  PSUMSD = GENSUM * SUMTEM / 100.0
+  POTPRO = PSUMSD - POTLIP
+>>>>>>> Perennial_Forage
   
   #-----------------------------------------------------------------------
   #     Determination of carbohydrate percentage
   #-----------------------------------------------------------------------
+<<<<<<< HEAD
   POTCAR <- 1.0 - POTLIP - POTPRO
   if (POTCAR < CARMIN) {
     POTCAR <-  CARMIN
@@ -2640,10 +3942,24 @@ SDCOMP <- function (TAVG) {
     POTPRO <- POTPRO / TOTAL
     POTLIP <- POTLIP / TOTAL
     POTCAR <- POTCAR / TOTAL
+=======
+  POTCAR = 1.0 - POTLIP - POTPRO
+  if (POTCAR < CARMIN) {
+    POTCAR =  CARMIN
+  }
+  
+  TOTAL  = POTLIP + POTPRO + POTCAR
+  #      IF (TOTAL .NE. 1.0) THEN
+  if (abs(TOTAL) - 1.0 > 0.0005) {
+    POTPRO = POTPRO / TOTAL
+    POTLIP = POTLIP / TOTAL
+    POTCAR = POTCAR / TOTAL
+>>>>>>> Perennial_Forage
     #        Note:  POTCAR will fall below CARMIN again, if adusted.
     #        Should only POTPRO and POTLIP be adusted here? -chp
     #        Check logic - GH
     #        Check PODDETACH - GH
+<<<<<<< HEAD
     TOTAL  <- POTLIP + POTPRO + POTCAR
   }
   
@@ -2651,6 +3967,15 @@ SDCOMP <- function (TAVG) {
   AGRSD1 <- PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + POTLIP*RLIP + POTCAR*RCH2O
   AGRSD2 <- AGRSD1 + RNO3C*POTPRO
   FNINSD <- POTPRO / 6.25
+=======
+    TOTAL  = POTLIP + POTPRO + POTCAR
+  }
+  
+  POTCAR = POTCAR - PMINSD - POASD - PLIGSD
+  AGRSD1 = PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + POTLIP*RLIP + POTCAR*RCH2O
+  AGRSD2 = AGRSD1 + RNO3C*POTPRO
+  FNINSD = POTPRO / 6.25
+>>>>>>> Perennial_Forage
   
   assign("AGRSD1", AGRSD1, envir = env)
   assign("AGRSD2", AGRSD2, envir = env)
@@ -3022,8 +4347,13 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
         #-----------------------------------------------------------------------
         #     Soil water factor (SWADD1), and Water stress factor (SWADD2)
         #-----------------------------------------------------------------------
+<<<<<<< HEAD
         SWADD1 <- TABEX(YSWBAR,XSWBAR,SWBAR,5)
         SWADD2 <- TABEX(YSWFAC,XSWFAC,SWFAC,4)
+=======
+        SWADD1 <- TABEX (YSWBAR,XSWBAR,SWBAR,5)
+        SWADD2 <- TABEX (YSWFAC,XSWFAC,SWFAC,4)
+>>>>>>> Perennial_Forage
         #-----------------------------------------------------------------------
         SHMAXG <- SHVAR
         #-----------------------------------------------------------------------
@@ -3072,8 +4402,13 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
               #-----------------------------------------------------------------------
               WSHDTN <- WSHDTN + ADDSHL
               NGRSH <- NGRSH + ADDSHL * PROSHI * 0.16 * CNSTRES^0.5
+<<<<<<< HEAD
               if (PGLEFT < 1.0E-6) PGLEFT <- 0.0          #NBP
               if (ADDSHL < 1.0E-6) ADDSHL <- 0.0          #NBP
+=======
+              if (PGLEFT < 1.0E-6) PGLEFT=0.0          #NBP
+              if (ADDSHL < 1.0E-6) ADDSHL=0.0          #NBP
+>>>>>>> Perennial_Forage
               PGLEFT <- max(0.0,(PGLEFT - ADDSHL * AGRSH1))
               NLEFT  <- max(0.0,(NLEFT - ADDSHL * (FNINSH*CNSTRES^0.5)))
             }
@@ -3180,7 +4515,11 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
           RNITPD <- max(0.1,RNITPD)
           PODADD <- PMAX * TEMPOD * (DRPP^1.3) * min(SWADD1,SWADD2,RNITPD) * max((1.0 - ACCAGE),0.0)
           #    &       * max((1.0 - ACCAGE),0.0) * (1.0 + TURADD)
+<<<<<<< HEAD
           SHELN[NR2TIM + 1] <- min(PODADD, PGNPOD/(SHMAXG*AGRSH1), FLADD, NAVPOD/(SHMAXG*(FNINSH*CNSTRES^0.5)))
+=======
+          SHELN[NR2TIM + 1] = min(PODADD, PGNPOD/(SHMAXG*AGRSH1), FLADD, NAVPOD/(SHMAXG*(FNINSH*CNSTRES^0.5)))
+>>>>>>> Perennial_Forage
           #-----------------------------------------------------------------------
           #    KJB ADDED 1/27/96.  2 CONDITIONS: NDSET AND TRIGGER (CUMSIG >.98)
           #    MUST BE MET TO STOP POD ADDITION.  THUS, IF WE ARE THRU THE WINDOW
@@ -3607,7 +4946,11 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   
   #-----------------------------------------------------------------------
   
+<<<<<<< HEAD
   YRDOY   <- paste0(iyear,sprintf("%03d", jday))
+=======
+  YRDOY   = paste0(iyear,sprintf("%03d", jday))
+>>>>>>> Perennial_Forage
   
   ROWSPC <- config$plant1$rowSpacing / 100 #0.50 
   
@@ -3649,6 +4992,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #-----------------------------------------------------------------------
     # CANOPY(DYNAMIC,DAS, PAR, TGRO)
     
+<<<<<<< HEAD
     CADLF  <- 0.0  
     CADST  <- 0.0  
     CMINEA <- 0.0  
@@ -3674,6 +5018,33 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     WLDOTN <- 0.0  
     WRDOTN <- 0.0  
     WSDOTN <- 0.0  
+=======
+    CADLF  = 0.0  
+    CADST  = 0.0  
+    CMINEA = 0.0  
+    CRUSLF = 0.0  
+    CRUSRT = 0.0  
+    CRUSST = 0.0  
+    CUMTUR = 1.0  
+    EXCESS = 1.0  
+    FNINLG = 0.0  
+    FNINRG = 0.0  
+    FNINSG = 0.0  
+    NADLF  = 0.0  
+    NADRT  = 0.0  
+    NADST  = 0.0  
+    NGRLF  = 0.0  
+    NGRRT  = 0.0  
+    NGRST  = 0.0  
+    NSTRES = 1.0  
+    PGLEFT = 0.0
+    SUPPN  = 0.0
+    TNLEAK = 0.0  
+    VGRDEM = 0.0
+    WLDOTN = 0.0  
+    WRDOTN = 0.0  
+    WSDOTN = 0.0  
+>>>>>>> Perennial_Forage
     
     CANOPY(DYNAMIC,DAS, PAR, TGRO)
     
@@ -3684,10 +5055,17 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #***********************************************************************
   } else if (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     FNINLG <- PROLFG * 0.16   
     FNINRG <- PRORTG * 0.16   
     FNINSG <- PROSTG * 0.16   
     CUMTUR <- 1.0             
+=======
+    FNINLG = PROLFG * 0.16   
+    FNINRG = PRORTG * 0.16   
+    FNINSG = PROSTG * 0.16   
+    CUMTUR = 1.0             
+>>>>>>> Perennial_Forage
     
     CANOPY(DYNAMIC,DAS, PAR, TGRO)
     
@@ -3700,40 +5078,65 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #-----------------------------------------------------------------------
     #     Partitioning is modified by water stress and nitrogen stress
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     SUPPN <- NFIXN + TRNU + NMINEA
+=======
+    SUPPN = NFIXN + TRNU + NMINEA
+>>>>>>> Perennial_Forage
     #    chp added check for YRDOY = YREMRG, but on the next day, it still
     #     shows N stress because there is little supply.  Force a lag time?
     #      if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0.) {
     
     
     if (SUPPN < 0.70 * NDMNEW & NDMNEW > 0. & YRDOY != YREMRG) {
+<<<<<<< HEAD
       NSTRES <- min(1.0,SUPPN/(NDMNEW * 0.70))
     } else {
       NSTRES <- 1.0
+=======
+      NSTRES = min(1.0,SUPPN/(NDMNEW * 0.70))
+    } else {
+      NSTRES = 1.0
+>>>>>>> Perennial_Forage
     }
     
     
     #      FRRT  = ATOP * (1.0 - (min(TURFAC,NSTRES)))*(1.0-FRRT) + FRRT
+<<<<<<< HEAD
     FRRT  <- ATOP * (1.0 - (min(TURFAC, NSTRES, PStres2))) * (1.0 - FRRT) + FRRT
+=======
+    FRRT  = ATOP * (1.0 - (min(TURFAC, NSTRES, PStres2))) * (1.0 - FRRT) + FRRT
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #     Cumulative turgor factor that remembers veg drought stress
     #     to shift partitioning between leaf and stem toward leaf,
     #     especially after drought is released.
     #     Sort of 20-day rolling average
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CUMTUR <- 0.95*CUMTUR + 0.05*TURFAC
+=======
+    CUMTUR = 0.95*CUMTUR + 0.05*TURFAC
+>>>>>>> Perennial_Forage
     if (CUMTUR < 1.E-7) {CUMTUR = 0.0}    #prevent underflow
     #-----------------------------------------------------------------------
     #     0.6 IS A SCALAR, COULD BE LESS, was once 0.8 and 0.7
     #     0.7 appears to be too much for peanut, but not for soybean.
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     FRLF  <- (1.0 + 0.6*(1.0-CUMTUR))*(1.-FRRT)*FRLF/(FRLF + FRSTM)
     FRLF <- min(FRLF, 0.90*(1. - FRRT))
     FRSTM <- 1.0 - FRRT - FRLF
+=======
+    FRLF  = (1.0 + 0.6*(1.0-CUMTUR))*(1.-FRRT)*FRLF/(FRLF + FRSTM)
+    FRLF = min(FRLF, 0.90*(1. - FRRT))
+    FRSTM = 1.0 - FRRT - FRLF
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #     To prevent negative partitioning to root and limit leaf plus
     #     stem to a maximum of 98 % of the vegetative partitioning
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     FRLF  <- min(FRLF,FRLF*0.98/(max(0.001,FRLF+FRSTM)))
     FRSTM <- min(FRSTM,FRSTM*0.98/(max(0.001,FRLF+FRSTM)))
     FRRT  <- 1.0 - FRLF - FRSTM
@@ -3764,12 +5167,45 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     NGRVGG <- NGRLFG + NGRSTG + NGRRTG
     
     NRATIO <- 1.0
+=======
+    FRLF  = min(FRLF,FRLF*0.98/(max(0.001,FRLF+FRSTM)))
+    FRSTM = min(FRSTM,FRSTM*0.98/(max(0.001,FRLF+FRSTM)))
+    FRRT  = 1.0 - FRLF - FRSTM
+    #-----------------------------------------------------------------------
+    #     Calculate weighted PHI + GR = 1/E = AGRVG for veg. growth
+    #-----------------------------------------------------------------------
+    AGRVG = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
+    #-----------------------------------------------------------------------
+    #     Calculate New Growth Rate of Leaves, Stems, and Roots
+    #-----------------------------------------------------------------------
+    VGRDEM = PGAVL / AGRVG
+    WLDOTN = FRLF * VGRDEM
+    WSDOTN = FRSTM * VGRDEM
+    WRDOTN = FRRT * VGRDEM
+    #-----------------------------------------------------------------------
+    #     Compute maximum N required for tissue growth
+    #-----------------------------------------------------------------------
+    NGRLF  = WLDOTN * FNINL
+    NGRST  = WSDOTN * FNINS
+    NGRRT  = WRDOTN * FNINR
+    NGRVEG = NGRLF + NGRST + NGRRT
+    #-----------------------------------------------------------------------
+    #     Compute minimum N required for tissue growth
+    #-----------------------------------------------------------------------
+    NGRLFG = WLDOTN * FNINLG
+    NGRSTG = WSDOTN * FNINSG
+    NGRRTG = WRDOTN * FNINRG
+    NGRVGG = NGRLFG + NGRSTG + NGRRTG
+    
+    NRATIO = 1.0
+>>>>>>> Perennial_Forage
     if (NAVL < NGRVGG) {
       #-----------------------------------------------------------------------
       #     Compute ratio for reducing leaf growth to prevent N conc of
       #       new tissue from being below the minimum for growth
       #-----------------------------------------------------------------------
       if (NGRVGG > 0.0) {
+<<<<<<< HEAD
         NRATIO <- NAVL / NGRVGG
         WLDOTN <- WLDOTN * NRATIO
         WSDOTN <- WSDOTN * NRATIO
@@ -3777,12 +5213,25 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
         NGRLF  <- NGRLFG * NRATIO
         NGRST  <- NGRSTG * NRATIO
         NGRRT  <- NGRRTG * NRATIO
+=======
+        NRATIO = NAVL / NGRVGG
+        WLDOTN = WLDOTN * NRATIO
+        WSDOTN = WSDOTN * NRATIO
+        WRDOTN = WRDOTN * NRATIO
+        NGRLF  = NGRLFG * NRATIO
+        NGRST  = NGRSTG * NRATIO
+        NGRRT  = NGRRTG * NRATIO
+>>>>>>> Perennial_Forage
         
         #-----------------------------------------------------------------------
         #     Adjust conversion costs to account for composition of tissue at
         #       lower N concentration
         #-----------------------------------------------------------------------
+<<<<<<< HEAD
         AGRVG <- AGRLF * FRLF * (1.0 - (PROLFG - PROLFI)/(1.0 - PROLFI) )+ AGRRT * FRRT * (1.0 - (PRORTG - PRORTI)/(1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTG - PROSTI)/ (1.0 - PROSTI))
+=======
+        AGRVG = AGRLF * FRLF * (1.0 - (PROLFG - PROLFI)/(1.0 - PROLFI) )+ AGRRT * FRRT * (1.0 - (PRORTG - PRORTI)/(1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTG - PROSTI)/ (1.0 - PROSTI))
+>>>>>>> Perennial_Forage
       }
     } else {
       #-----------------------------------------------------------------------
@@ -3790,14 +5239,21 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
       #       leaf expansion occurs as normal, but N concentration is reduced
       #-----------------------------------------------------------------------
       if (NGRVEG > 0.0 & NAVL < NGRVEG) {
+<<<<<<< HEAD
         NGRLF <- min(NAVL * NGRLF / NGRVEG, NGRLF)
         NGRST <- min(NAVL * NGRST / NGRVEG, NGRST)
         NGRRT <- min(NAVL * NGRRT / NGRVEG, NGRRT)
+=======
+        NGRLF = min(NAVL * NGRLF / NGRVEG, NGRLF)
+        NGRST = min(NAVL * NGRST / NGRVEG, NGRST)
+        NGRRT = min(NAVL * NGRRT / NGRVEG, NGRRT)
+>>>>>>> Perennial_Forage
       }
       #-----------------------------------------------------------------------
       #     Compute protein fraction of new vegetative tissue growth
       #-----------------------------------------------------------------------
       if (WLDOTN > 0.0) {
+<<<<<<< HEAD
         PROLFT <- NGRLF * (100./16.)/WLDOTN
       } else {
         PROLFT <- 0.0
@@ -3811,17 +5267,40 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
         PRORTT <- NGRRT * (100./16.)/WRDOTN
       } else {
         PRORTT <- 0.0
+=======
+        PROLFT = NGRLF * (100./16.)/WLDOTN
+      } else {
+        PROLFT = 0.0
+      }
+      if (WSDOTN > 0.0) {
+        PROSTT = NGRST * (100./16.)/WSDOTN
+      } else {
+        PROSTT = 0.0
+      }
+      if (WRDOTN > 0.0) {
+        PRORTT = NGRRT * (100./16.)/WRDOTN
+      } else {
+        PRORTT = 0.0
+>>>>>>> Perennial_Forage
       }
       #-----------------------------------------------------------------------
       #     Recompute respiration costs if expansion occurs at low N-conc.,
       #       allow N dilution during growth of leaves, stems, and roots
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       AGRVG <- AGRLF * FRLF * (1.0 - (PROLFT - PROLFI)/ (1.0-PROLFI)) + AGRRT * FRRT * (1.0 - (PRORTT - PRORTI)/ (1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTT - PROSTI)/(1.0 - PROSTI))
+=======
+      AGRVG = AGRLF * FRLF * (1.0 - (PROLFT - PROLFI)/ (1.0-PROLFI)) + AGRRT * FRRT * (1.0 - (PRORTT - PRORTI)/ (1.0 - PRORTI)) + AGRSTM * FRSTM * (1.0 - (PROSTT - PROSTI)/(1.0 - PROSTI))
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #     Compute C and N remaining to add to reserves
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     PGLEFT <- max(0.0,PGAVL - ((WLDOTN + WSDOTN + WRDOTN) * AGRVG))
+=======
+    PGLEFT = max(0.0,PGAVL - ((WLDOTN + WSDOTN + WRDOTN) * AGRVG))
+>>>>>>> Perennial_Forage
     if (PGLEFT < 1.E-5) {PGLEFT = 0.0}
     #-----------------------------------------------------------------------
     #     Scales to 1.0 if PGLEFT is small fraction, and to 0.2 if large
@@ -3834,6 +5313,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #     stimulation of photosynthesis and the sq root works differently.
     #-----------------------------------------------------------------------
     if (PG > 0.0001 & PGLEFT > 0.00001) {
+<<<<<<< HEAD
       EXCESS <-  (1.20 - min(1.0, max(PGLEFT/PG,0.20)) )^0.5
     } else {
       EXCESS <- 1.00
@@ -3846,6 +5326,20 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     CRUSST <- 0.0
     CRUSRT <- 0.0
     CRUSSH <- 0.0
+=======
+      EXCESS =  (1.20 - min(1.0, max(PGLEFT/PG,0.20)) )^0.5
+    } else {
+      EXCESS = 1.00
+    }
+    
+    CADST  = 0.0
+    CADLF  = 0.0
+    CMINEA = 0.0
+    CRUSLF = 0.0
+    CRUSST = 0.0
+    CRUSRT = 0.0
+    CRUSSH = 0.0
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #    Calculate Increase in Remobilizable C due to N shortage and
     #      add to Carbon Pool.  Distribute to Leaves and Stems.
@@ -3853,6 +5347,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #    Want half as much accumulation in stem in veg phae
     #-----------------------------------------------------------------------
     if (DAS < NR1) {
+<<<<<<< HEAD
       LSTR <- (1.-0.6*CADSTF)/(0.6*CADSTF)
     } else {
       LSTR <- (1.-CADSTF)/CADSTF
@@ -3863,6 +5358,18 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     if (PGLEFT >= CMINEP) {
       CADLF <- (PGLEFT-CMINEP)/PCH2O * LSTR
       CADST <- (PGLEFT-CMINEP) * (1. - LSTR) / PCH2O
+=======
+      LSTR = (1.-0.6*CADSTF)/(0.6*CADSTF)
+    } else {
+      LSTR = (1.-CADSTF)/CADSTF
+    }
+    if (STMWT+WTLF > 0.0) {
+      LSTR = LSTR * WTLF/(STMWT+WTLF*LSTR)
+    }
+    if (PGLEFT >= CMINEP) {
+      CADLF = (PGLEFT-CMINEP)/PCH2O * LSTR
+      CADST = (PGLEFT-CMINEP) * (1. - LSTR) / PCH2O
+>>>>>>> Perennial_Forage
     } else {
       
       #-----------------------------------------------------------------------
@@ -3875,6 +5382,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
       #
       #-----------------------------------------------------------------------
       if (CMINEP > 0) {
+<<<<<<< HEAD
         CMINEA <- CMINEP - PGLEFT
         CRUSLF <- CMINEA / CMINEP * CMOBMX * WCRLF * (DTX + DXR57)
         CRUSST <- CMINEA / CMINEP * CMOBMX * WCRST * (DTX + DXR57)
@@ -3884,11 +5392,23 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     }
     CADLF <- CADLF + CSAVEV/PCH2O * LSTR
     CADST <- CADST + CSAVEV * (1. - LSTR)/PCH2O
+=======
+        CMINEA = CMINEP - PGLEFT
+        CRUSLF = CMINEA / CMINEP * CMOBMX * WCRLF * (DTX + DXR57)
+        CRUSST = CMINEA / CMINEP * CMOBMX * WCRST * (DTX + DXR57)
+        CRUSRT = CMINEA / CMINEP * CMOBMX * WCRRT * (DTX + DXR57)
+        CRUSSH = CMINEA / CMINEP * CMOBMX * WCRSH * (DTX + DXR57)
+      }
+    }
+    CADLF = CADLF + CSAVEV/PCH2O * LSTR
+    CADST = CADST + CSAVEV * (1. - LSTR)/PCH2O
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #    Calculate Increase in Remobilizable N Due to a C shortage,
     #      add to Nitrogen pool
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NLEFT  <-  max(0.0,NAVL  -  (NGRLF  + NGRST  + NGRRT))
     
     if (NLEFT > 0.0) {
@@ -3908,6 +5428,27 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
       NADST  <- 0.0
       NADLF  <- 0.0
       NADRT  <- 0.0
+=======
+    NLEFT  = max(0.0,NAVL  -  (NGRLF  + NGRST  + NGRRT))
+    
+    if (NLEFT > 0.0) {
+      if (NLEFT > NDMOLD) {
+        NLEAK  = NLEFT  - NDMOLD
+        TNLEAK = TNLEAK + NLEAK
+        NLEFT  = NLEFT  - NLEAK
+      } else {
+        NLEAK = 0.0
+      }
+      NADRAT = NLEFT / (FRLF*FNINL+FRSTM*FNINS+FRRT*FNINR)
+      NADLF  = NADRAT * FRLF * FNINL
+      NADST  = NADRAT * FRSTM * FNINS
+      NADRT  = NADRAT * FRRT * FNINR
+    } else {
+      NADRAT = 0.0
+      NADST  = 0.0
+      NADLF  = 0.0
+      NADRT  = 0.0
+>>>>>>> Perennial_Forage
     }
     
     #-----------------------------------------------------------------------
@@ -3990,8 +5531,13 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CANHT <- 0.0
     CANWH <- 0.0
+=======
+    CANHT = 0.0
+    CANWH = 0.0
+>>>>>>> Perennial_Forage
     
     #***********************************************************************
     #***********************************************************************
@@ -4000,8 +5546,13 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
     #***********************************************************************
   } else if  (DYNAMIC == 'EMERG') {
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CANHT  <- TABEX(YVSHT,XVSHT,VSTAGE,10)       
     CANWH  <- TABEX(YVSWH,XVSHT,VSTAGE,10)       
+=======
+    CANHT  = TABEX(YVSHT,XVSHT,VSTAGE,10)       
+    CANWH  = TABEX(YVSWH,XVSHT,VSTAGE,10)       
+>>>>>>> Perennial_Forage
     
     #***********************************************************************
     #***********************************************************************
@@ -4011,14 +5562,24 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
     #-----------------------------------------------------------------------
     #     Calculate effect of temperature on canopy expansion, HWTEM
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     HWTEM <- 0.0
+=======
+    HWTEM = 0.0
+>>>>>>> Perennial_Forage
     for (I in 1:TS) {
       # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
+<<<<<<< HEAD
       HWTEM <- HWTEM + TABEX(YHWTEM,XHWTEM,TGRO[I],5)
     }
     HWTEM <- HWTEM /TS
+=======
+      HWTEM = HWTEM + TABEX(YHWTEM,XHWTEM,TGRO[I],5)
+    }
+    HWTEM = HWTEM /TS
+>>>>>>> Perennial_Forage
     #       24 changed to TS on 5 July 2017 by Bruce Kimball
     
     #-----------------------------------------------------------------------
@@ -4032,6 +5593,7 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
     #        PARNOD = PAR
     #     }
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     PARNOD <- PAR * exp(-KCAN*(0.3*XLAI))
     HPAR <- TABEX(YHWPAR,XHWPAR,PARNOD,8)
     WPAR <- TABEX(YHWPAR,XHWPAR,PAR,8)
@@ -4043,6 +5605,19 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
     
     #     Set minimum Canopy height based on lookup function
     CANHT <- max(CANHT, TABEX(YVSHT,XVSHT, 0.0, 10))
+=======
+    PARNOD = PAR * exp(-KCAN*(0.3*XLAI))
+    HPAR = TABEX(YHWPAR,XHWPAR,PARNOD,8)
+    WPAR = TABEX(YHWPAR,XHWPAR,PAR,8)
+    #-----------------------------------------------------------------------
+    #     Calculate rate of increase in canopy height and update height, CANHT
+    #-----------------------------------------------------------------------
+    RCANHT= RVSTGE * TABEX(YVSHT,XVSHT,VSTAGE,10) * HWTEM * TURFAC * HPAR * RHGHT
+    CANHT = CANHT + RCANHT
+    
+    #     Set minimum Canopy height based on lookup function
+    CANHT = max(CANHT, TABEX(YVSHT,XVSHT, 0.0, 10))
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     Calculate rate of increase in canopy width and update width, CANWH
@@ -4051,12 +5626,21 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
     #     1/22/03 KJB - Don't allow reduction in vstage to reduce canopy
     #       width.
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     RCANWH <- max(0.0,RVSTGE) * TABEX(YVSWH,XVSHT,VSTAGE,10) * HWTEM * TURFAC * WPAR * RWIDTH
     CANWH  <- CANWH + RCANWH
     
     #     Set minimum Canopy width based on lookup function
     CANWH <- max(CANWH, TABEX(YVSWH, XVSHT, 0.0, 10))  
     CANWH <- min(CANWH,ROWSPC)
+=======
+    RCANWH = max(0.0,RVSTGE) * TABEX(YVSWH,XVSHT,VSTAGE,10) * HWTEM * TURFAC * WPAR * RWIDTH
+    CANWH  = CANWH + RCANWH
+    
+    #     Set minimum Canopy width based on lookup function
+    CANWH = max(CANWH, TABEX(YVSWH, XVSHT, 0.0, 10))  
+    CANWH = min(CANWH,ROWSPC)
+>>>>>>> Perennial_Forage
     
     #***********************************************************************
     #***********************************************************************
@@ -4110,12 +5694,21 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
     #-----------------------------------------------------------------------
     # ALTERADO: Provavelmente esse número é como o fortran referencia até onde o loop vai repetir.
     for (I in 1:NCOHORTS) {
+<<<<<<< HEAD
       DTC[I]   <- 0.0
       MSHELN[I]<- 0.0
       WPODY[I] <- 0.0
       DAYS[I]  <- 0.0
     }
     PODWTD  <- 0.0
+=======
+      DTC[I]   = 0.0
+      MSHELN[I]= 0.0
+      WPODY[I] = 0.0
+      DAYS[I]  = 0.0
+    }
+    PODWTD = 0.0
+>>>>>>> Perennial_Forage
     
     #***********************************************************************
     #***********************************************************************
@@ -4126,26 +5719,41 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
     #     Compute thermal time using hourly predicted air temperature
     #     based on observed max and min temperature.
     #--------------------------------------------------------------------
+<<<<<<< HEAD
     FT <- 0.0
+=======
+    FT = 0.0
+>>>>>>> Perennial_Forage
     for (I in 1:TS) {
       # TGRO[I] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==I]
       # TGRO[I] <- tl_h[I] - 273.15         # TGRO[I] <- ta_h[I] - 273.15
       
+<<<<<<< HEAD
       FTHR <- CURV('LIN',TB[3],TO1[3],TO2[3],TM[3],TGRO[I])
       FT <- FT + FTHR/TS
+=======
+      FTHR = CURV('LIN',TB[3],TO1[3],TO2[3],TM[3],TGRO[I])
+      FT = FT + FTHR/TS
+>>>>>>> Perennial_Forage
     }
     #      24 changed to TS on 5 July 2017 by Bruce Kimball
     # -------------------------------------------------------------------
     #  Compute ratio of leaf area per pod cm2/pod
     #  and leaf mass per pod mass g/g
     # -------------------------------------------------------------------
+<<<<<<< HEAD
     TPODM <-  0.0
     RLMPM <-  1.0
+=======
+    TPODM = 0.0
+    RLMPM = 1.0
+>>>>>>> Perennial_Forage
     
     # -------------------------------------------------------------------
     #      Compute 10 day running average of leaf mass and PGAVL
     # -------------------------------------------------------------------
     for (I in seq(10, 2)) { 
+<<<<<<< HEAD
       TDLM[I]<- TDLM[I-1]
     }
     TDLM[1] <- WTLF
@@ -4153,6 +5761,15 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
     #     Compute slope of leaf mass curve
     # -------------------------------------------------------------------
     SL10 <- (TDLM[1] - TDLM[10])/ 10.0
+=======
+      TDLM[I]= TDLM[I-1]
+    }
+    TDLM[1] = WTLF
+    # -------------------------------------------------------------------
+    #     Compute slope of leaf mass curve
+    # -------------------------------------------------------------------
+    SL10 = (TDLM[1] - TDLM[10])/ 10.0
+>>>>>>> Perennial_Forage
     
     #---------------------------------------------------------------------
     
@@ -4168,10 +5785,17 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
       #---------------------------------------------------------------------
       # ALTERADO: Sempre usar parenteses no for
       for (NPP in 1:(yrdoy - yrnr2))  { 
+<<<<<<< HEAD
         TPODM <- TPODM + WTSHE[NPP] + WTSD[NPP]
       }
       
       if (TPODM > 10.0) RLMPM <- WTLF / TPODM
+=======
+        TPODM = TPODM + WTSHE[NPP] + WTSD[NPP]
+      }
+      
+      if (TPODM > 10.0) RLMPM = WTLF / TPODM
+>>>>>>> Perennial_Forage
       #-------------------------------------------------------------------
       #     Main loop that cycles through detachment model
       #--------------------------------------------------------------------
@@ -4181,6 +5805,7 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
         #     days without carbohydrate on a cohort basis
         #--------------------------------------------------------------------
         if (SHELN[NPP] > MSHELN[NPP]) {
+<<<<<<< HEAD
           MSHELN[NPP] <- SHELN[NPP]
         }
         if (WTSD[NPP] + WTSHE[NPP] >= 0.01) {
@@ -4190,6 +5815,17 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
           
           if (WTSD[NPP] + WTSHE[NPP] > WPODY[NPP]) {
             DAYS[NPP] <- 0
+=======
+          MSHELN[NPP] = SHELN[NPP]
+        }
+        if (WTSD[NPP] + WTSHE[NPP] >= 0.01) {
+          if (WTSD[NPP] + WTSHE[NPP] <= WPODY[NPP] &  WTSD[NPP] > 0.0) {
+            DAYS[NPP] = DAYS[NPP] + 1.
+          }
+          
+          if (WTSD[NPP] + WTSHE[NPP] > WPODY[NPP]) {
+            DAYS[NPP] = 0
+>>>>>>> Perennial_Forage
           }
           
           #-----------------------------------------------------------------------
@@ -4199,13 +5835,21 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
           #           if (RLMPM > PR1DET | SL10 > PR2DET) GOTO 700
           if (RLMPM <= PR1DET & SL10 <= PR2DET) {
             if ((SL10 <= PR2DET) | DAYS[NPP] > DWC | WTLF <= 10.) {
+<<<<<<< HEAD
               DTC[NPP] <- DTC[NPP] + FT
+=======
+              DTC[NPP] = DTC[NPP] + FT
+>>>>>>> Perennial_Forage
             }
           } else {
             #           Accumulate DTC based on days without carbon before RLMPM < PR1DET
             #           and SL10 < PR2DET
             if (DAYS[NPP] > DWC | WTLF <= 10.) {
+<<<<<<< HEAD
               DTC[NPP] <- DTC[NPP] + FT
+=======
+              DTC[NPP] = DTC[NPP] + FT
+>>>>>>> Perennial_Forage
             }
           }
           #-----------------------------------------------------------------------
@@ -4219,6 +5863,7 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
         if (DTC[NPP] > 0) {
           
           # ALTERADO: EXP por exp
+<<<<<<< HEAD
           XPD <- MSHELN[NPP] * (1.0 - XP1DET * exp(XP2DET*DTC[NPP])/100)
           XPD <- max(0.0,XPD)
           if (SHELN[NPP] > XPD) {
@@ -4261,6 +5906,50 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
       for (NPP in 1:(yrdoy - yrnr2))  { 
         SUMSD <- SUMSD + WTSD[NPP]
         SUMSH <- SUMSH + WTSHE[NPP]
+=======
+          XPD = MSHELN[NPP] * (1.0 - XP1DET * exp(XP2DET*DTC[NPP])/100)
+          XPD = max(0.0,XPD)
+          if (SHELN[NPP] > XPD) {
+            if (SHELN[NPP] >= 0.01 & DTC[NPP] <= 34.) {
+              PDET[NPP] = SHELN[NPP] - XPD
+              PDET[NPP] = max(0.0,PDET[NPP])
+              PODWTD = PODWTD + (WTSHE[NPP] + WTSD[NPP])*PDET[NPP] / SHELN[NPP]
+              
+              SDDAM =  WTSD[NPP] * PDET[NPP] / SHELN[NPP]
+              if (SDDAM > WTSD[NPP]) {
+                SWIDOT = SWIDOT + WTSD[NPP]
+              } else {
+                SWIDOT = SWIDOT + SDDAM
+              }
+              
+              SHDAM = WTSHE[NPP] * PDET[NPP] / SHELN[NPP]
+              if (SHDAM > WTSHE[NPP]) {
+                WSHIDT = WSHIDT + WTSHE[NPP]
+              } else {
+                WSHIDT = WSHIDT + SHDAM
+              }
+              
+              WTSD[NPP]  = WTSD[NPP] * (1. - PDET[NPP] / SHELN[NPP])
+              SDNO[NPP]  = SDNO[NPP] * (1. - PDET[NPP] / SHELN[NPP])
+              WTSHE[NPP] = WTSHE[NPP]* (1. - PDET[NPP] / SHELN[NPP])
+              SHELN[NPP] = SHELN[NPP]* (1. - PDET[NPP] / SHELN[NPP])
+              
+              WTSHE[NPP] = max(0.0,WTSHE[NPP])
+              SHELN[NPP] = max(0.0,SHELN[NPP])
+              WTSD[NPP]  = max(0.0,WTSD[NPP])
+              SDNO[NPP]  = max(0.0,SDNO[NPP])
+            }
+          }
+        }
+        WPODY[NPP] = WTSD[NPP] + WTSHE[NPP]
+      }
+      
+      SUMSD = 0.0
+      SUMSH = 0.0
+      for (NPP in 1:(yrdoy - yrnr2))  { 
+        SUMSD = SUMSD + WTSD[NPP]
+        SUMSH = SUMSH + WTSHE[NPP]
+>>>>>>> Perennial_Forage
       }
     }
   
@@ -4314,10 +6003,17 @@ SENES <- function (DYNAMIC,DAS,PAR) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     SSDOT  <- 0.0
     SLDOT  <- 0.0
     SLNDOT <- 0.0
     SSNDOT <- 0.0
+=======
+    SSDOT  = 0.0
+    SLDOT  = 0.0
+    SLNDOT = 0.0
+    SSNDOT = 0.0
+>>>>>>> Perennial_Forage
     # RATTP  = 1.0
     
     # for (I in 1:5) {
@@ -4337,6 +6033,7 @@ SENES <- function (DYNAMIC,DAS,PAR) {
     
     # ALTERADO: NSWAB, 2, -1 to seq(NSWAV, 2)
     for (I in seq(NSWAB,2)) { 
+<<<<<<< HEAD
       SWFCAB[I]  <-  SWFCAB[I-1]
     }
     SWFCAB[1] <-  SWFAC
@@ -4346,6 +6043,17 @@ SENES <- function (DYNAMIC,DAS,PAR) {
     SLDOT  <- 0.0
     SLNDOT <- 0.0
     SSNDOT <- 0.0
+=======
+      SWFCAB[I] = SWFCAB[I-1]
+    }
+    SWFCAB[1] = SWFAC
+    RATTP = SWFCAB[NSWAB]
+    
+    SSDOT  = 0.0
+    SLDOT  = 0.0
+    SLNDOT = 0.0
+    SSNDOT = 0.0
+>>>>>>> Perennial_Forage
     
     if (DAS <= NR7 & VSTAGE >= 1.0) {
       #-----------------------------------------------------------------------
@@ -4353,9 +6061,15 @@ SENES <- function (DYNAMIC,DAS,PAR) {
       #     beginning of seed growth
       #-----------------------------------------------------------------------
       if (VSTAGE >= 5.0) {
+<<<<<<< HEAD
         PORLFT <- 1.0 - TABEX(SENPOR,XSTAGE,VSTAGE,4)
         if ((WTLF * ( 1.0 - RHOL)) > CLW*PORLFT) {
           SLDOT <- WTLF * ( 1.0 - RHOL) - CLW * PORLFT
+=======
+        PORLFT = 1.0 - TABEX(SENPOR,XSTAGE,VSTAGE,4)
+        if ((WTLF * ( 1.0 - RHOL)) > CLW*PORLFT) {
+          SLDOT = WTLF * ( 1.0 - RHOL) - CLW * PORLFT
+>>>>>>> Perennial_Forage
         }
       }
       #-----------------------------------------------------------------------
@@ -4365,25 +6079,41 @@ SENES <- function (DYNAMIC,DAS,PAR) {
       #     to contain no more mineable Protein--i.e., N content of senesced
       #     leaves and petioles is different from canopy average.
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       LFSEN <- SENRTE * NRUSLF / 0.16
       LFSEN <- min(WTLF,LFSEN)
       SLDOT <- SLDOT + LFSEN
       SLDOT <- min(WTLF,SLDOT)
+=======
+      LFSEN = SENRTE * NRUSLF / 0.16
+      LFSEN = min(WTLF,LFSEN)
+      SLDOT = SLDOT + LFSEN
+      SLDOT = min(WTLF,SLDOT)
+>>>>>>> Perennial_Forage
       #-----------------------------------------------------------------------
       #     This section calculates senescence due to low light in lower
       #     canopy.  First compute LAI at which light compensation is reached
       #     then allow LAI above this amount to be senesced over TCMP thermal
       #     days.
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       LTSEN <- 0.0
       if (PAR > 0.) {
         LCMP <- -(1. / KCAN) * log(ICMP / PAR)
         LTSEN <- DTX * (XLAI - LCMP) / TCMP
         LTSEN <- max(0.0, LTSEN)
+=======
+      LTSEN = 0.0
+      if (PAR > 0.) {
+        LCMP = -(1. / KCAN) * log(ICMP / PAR)
+        LTSEN = DTX * (XLAI - LCMP) / TCMP
+        LTSEN = max(0.0, LTSEN)
+>>>>>>> Perennial_Forage
       }
       #-----------------------------------------------------------------------
       #     Convert area loss to biomass(m2 *10000cm2/m2)/(cm2/g)=g/m2
       #-----------------------------------------------------------------------
+<<<<<<< HEAD
       SLDOT <- SLDOT + LTSEN * 10000. / SLAAD
       #-----------------------------------------------------------------------
       #     Calculate senescence due to water stress.
@@ -4400,12 +6130,31 @@ SENES <- function (DYNAMIC,DAS,PAR) {
       SSDOT <- min(SSDOT,0.1*STMWT)
       SSNDOT <- SLNDOT * PORPT
       SSNDOT <- min(SSDOT,SSNDOT)
+=======
+      SLDOT = SLDOT + LTSEN * 10000. / SLAAD
+      #-----------------------------------------------------------------------
+      #     Calculate senescence due to water stress.
+      #-----------------------------------------------------------------------
+      WSLOSS = SENDAY * (1. - RATTP) * WTLF
+      if (WSLOSS > 0.0) {
+        PORLFT = 1.0 - TABEX(SENMAX, XSENMX, VSTAGE, 4)
+        WSLOSS = min(WSLOSS, WTLF - CLW * PORLFT)
+        WSLOSS = max(WSLOSS, 0.0)
+        SLNDOT = WSLOSS
+      }
+      SLDOT = SLDOT + SLNDOT
+      SSDOT = SLDOT * PORPT
+      SSDOT = min(SSDOT,0.1*STMWT)
+      SSNDOT = SLNDOT * PORPT
+      SSNDOT = min(SSDOT,SSNDOT)
+>>>>>>> Perennial_Forage
       #-----------------------------------------------------------------------
       #     This section calculates senescence of leaves and petioles
       #     after R7.
       #-----------------------------------------------------------------------
     } else if (DAS > NR7) {
       if (WTLF > 0.0001) {
+<<<<<<< HEAD
         SLDOT <- WTLF * SENRT2
         SLNDOT <- SLDOT
         SSDOT <- SLDOT * PORPT
@@ -4419,6 +6168,21 @@ SENES <- function (DYNAMIC,DAS,PAR) {
       if (STMWT < 0.0001) {
         SLNDOT <- 0.0
         SSNDOT <- 0.0
+=======
+        SLDOT = WTLF * SENRT2
+        SLNDOT = SLDOT
+        SSDOT = SLDOT * PORPT
+        SSNDOT = SSDOT
+      } else {
+        SLDOT = 0.0
+        SSDOT = 0.0
+        SLNDOT = 0.0
+        SSNDOT = 0.0
+      }
+      if (STMWT < 0.0001) {
+        SLNDOT = 0.0
+        SSNDOT = 0.0
+>>>>>>> Perennial_Forage
       }
     }
     
@@ -4446,18 +6210,32 @@ FREEZE <- function(TMIN, iyear, jday) {
   #!*LEAF SENESCENCE FACTORS
   FREEZ2 <- params$FREEZ2  #-5.00
   
+<<<<<<< HEAD
   YRDOY   <- paste0(iyear,sprintf("%03d", jday))
   YRPLT   <- paste0(iyear,sprintf("%03d", jday))
+=======
+  YRDOY   = paste0(iyear,sprintf("%03d", jday))
+  YRPLT   = paste0(iyear,sprintf("%03d", jday))
+>>>>>>> Perennial_Forage
   
   #-----------------------------------------------------------------------
   #DAP   = max(0,TIMDIF(YRPLT,YRDOY)) 
   #DAP = idpp
+<<<<<<< HEAD
   WLFDOT <- WTLF - SLDOT - NRUSLF/0.16
   
   if (TMIN < FREEZ2) {
     frost <- T #Henrique: criei para encerrar o ciclo devido à geada severa (2020-10-1)
     if (MDATE < 0) {
       MDATE <- YRDOY
+=======
+  WLFDOT = WTLF - SLDOT - NRUSLF/0.16
+  
+  if (TMIN < FREEZ2) {
+    frost = T #Henrique: criei para encerrar o ciclo devido à geada severa (2020-10-1)
+    if (MDATE < 0) {
+      MDATE = YRDOY
+>>>>>>> Perennial_Forage
     }
   }
   
@@ -4543,15 +6321,23 @@ INCOMP <- function(DYNAMIC) {
     #     COMPUTE RESPIRATION COEFFICIENTS BASED ON PLANT COMPOSITION
     #-----------------------------------------------------------------------
     #
+<<<<<<< HEAD
     AGRLF  <- PLIPLF*RLIP + PLIGLF*RLIG + POALF*ROA + PMINLF*RMIN + PCARLF*RCH2O
     AGRSTM <- PLIPST*RLIP + PLIGST*RLIG + POAST*ROA + PMINST*RMIN + PCARST*RCH2O
     AGRRT  <- PLIPRT*RLIP + PLIGRT*RLIG + POART*ROA + PMINRT*RMIN + PCARRT*RCH2O
     AGRNOD <- PLIPNO*RLIP + PLIGNO*RLIG + POANO*ROA + PMINNO*RMIN + PCARNO*RCH2O
+=======
+    AGRLF  =  PLIPLF*RLIP + PLIGLF*RLIG + POALF*ROA + PMINLF*RMIN + PCARLF*RCH2O
+    AGRSTM =  PLIPST*RLIP + PLIGST*RLIG + POAST*ROA + PMINST*RMIN + PCARST*RCH2O
+    AGRRT  =  PLIPRT*RLIP + PLIGRT*RLIG + POART*ROA + PMINRT*RMIN + PCARRT*RCH2O
+    AGRNOD =  PLIPNO*RLIP + PLIGNO*RLIG + POANO*ROA + PMINNO*RMIN + PCARNO*RCH2O
+>>>>>>> Perennial_Forage
     
     #-----------------------------------------------------------------------
     #     AGRVG2, AGRSH2, AGRSD2 include protein component of vegetative 
     #     growth cost
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     AGRVG  <- AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
     AGRVG2 <- AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RNO3C
     
@@ -4563,6 +6349,19 @@ INCOMP <- function(DYNAMIC) {
     SDPROR <- (SDPRO - SDPROS) / ( SDLIP + PCARSD )
     AGRSD1 <- PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + (SDLIP*RLIP + PCARSD*RCH2O)*(1. - SDPROR)
     AGRSD2 <- AGRSD1 + SDPRO*RNO3C 
+=======
+    AGRVG  = AGRLF * FRLF + AGRRT * FRRT + AGRSTM * FRSTM
+    AGRVG2 = AGRVG + (FRLF*PROLFI+FRRT*PRORTI+FRSTM*PROSTI)*RNO3C
+    
+    #-----------------------------------------------------------------------
+    AGRSH1 =  PLIPSH*RLIP + PLIGSH*RLIG + POASH*ROA  + PMINSH*RMIN + PCARSH*RCH2O
+    AGRSH2 =  AGRSH1 + PROSHI*RNO3C 
+    
+    #-----------------------------------------------------------------------
+    SDPROR = (SDPRO - SDPROS) / ( SDLIP + PCARSD )
+    AGRSD1 = PMINSD*RMIN + PLIGSD*RLIG + POASD*ROA + (SDLIP*RLIP + PCARSD*RCH2O)*(1. - SDPROR)
+    AGRSD2 = AGRSD1 + SDPRO*RNO3C 
+>>>>>>> Perennial_Forage
     
     #***********************************************************************
     #***********************************************************************
@@ -4616,18 +6415,31 @@ NUPTAK <- function (DYNAMIC) {
     for(L in 1:NL)
     {
       KG2PPM[L] <- 1.0/(BD[L] * 0.1 * DLAYR[L])
+<<<<<<< HEAD
       SNO3[L] <- INO3[L] / KG2PPM[L]
       SNH4[L] <- INH4[L] / KG2PPM[L]
+=======
+      SNO3[L] = INO3[L] / KG2PPM[L]
+      SNH4[L] = INH4[L] / KG2PPM[L]
+>>>>>>> Perennial_Forage
     }
     #linkar com variavel do ecosmos depois
     # NO3    <- rep(2, NL)    #vem do INSOIL.for
     # NH4    <- rep(2, NL)    #vem do INSOIL.for
     
+<<<<<<< HEAD
     TRNO3U  <-  0.0 
     TRNH4U  <-  0.0 
     TRNU    <-  0.0 
     UNH4    <- rep(0, NLAYR)
     UNO3    <- rep(0, NLAYR)
+=======
+    TRNO3U = 0.0 
+    TRNH4U = 0.0 
+    TRNU   = 0.0 
+    UNH4   <- rep(0, NLAYR)
+    UNO3   <- rep(0, NLAYR)
+>>>>>>> Perennial_Forage
     
     #***********************************************************************
     #***********************************************************************
@@ -4637,6 +6449,7 @@ NUPTAK <- function (DYNAMIC) {
     #-----------------------------------------------------------------------
     #   Initialize variables
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     TRNU    <-  0.0
     TRNO3U  <-  0.0
     TRNH4U  <-  0.0
@@ -4649,17 +6462,36 @@ NUPTAK <- function (DYNAMIC) {
       UNO3[L]  <- 0.0
       SNO3[L]  <- NO3[L] / KG2PPM[L]
       SNH4[L]  <- NH4[L] / KG2PPM[L]
+=======
+    TRNU   = 0.0
+    TRNO3U = 0.0
+    TRNH4U = 0.0
+    NUF    = 0.0
+    XMIN   = 0.0
+    for (L in 1:NLAYR) {
+      RNO3U[L] = 0.0
+      RNH4U[L] = 0.0
+      UNH4[L]  = 0.0
+      UNO3[L]  = 0.0
+      SNO3[L] = NO3[L] / KG2PPM[L]
+      SNH4[L] = NH4[L] / KG2PPM[L]
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #   Determine crop N demand (kg N/ha), after subtracting mobilized N
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     ANDEM <- (NDMTOT - NDMSDR) * 10.0
+=======
+    ANDEM = (NDMTOT - NDMSDR) * 10.0
+>>>>>>> Perennial_Forage
     if (ANDEM > 1.E-9) {
       #-----------------------------------------------------------------------
       #   Calculate potential N uptake in soil layers with roots
       #-----------------------------------------------------------------------
       for (L in 1:NLAYR) {
         if (RLV[L] > 1.E-6) {
+<<<<<<< HEAD
           FNH4 <- 1.0 - exp(-0.08 * NH4[L])
           FNO3 <- 1.0 - exp(-0.08 * NO3[L])
           if (FNO3 < 0.04) { FNO3 <- 0.0 }
@@ -4676,22 +6508,49 @@ NUPTAK <- function (DYNAMIC) {
             SMDFR <- 1.0 - (SW[L] - DUL[L]) / (SAT[L] - DUL[L])
           }
           RFAC <- RLV[L] * SMDFR * SMDFR * DLAYR[L] * 100.0
+=======
+          FNH4 = 1.0 - exp(-0.08 * NH4[L])
+          FNO3 = 1.0 - exp(-0.08 * NO3[L])
+          if (FNO3 < 0.04) { FNO3 = 0.0 }
+          if (FNO3 > 1.0)  { FNO3 = 1.0 }
+          if (FNH4 < 0.04) { FNH4 = 0.0 }
+          if (FNH4 > 1.0)  { FNH4 = 1.0 }
+          
+          SMDFR = (SW[L] - LL[L]) / (DUL[L] - LL[L])
+          if (SMDFR < 0.0) {
+            SMDFR = 0.0
+          }
+          
+          if (SW[L] > DUL[L]) {
+            SMDFR = 1.0 - (SW[L] - DUL[L]) / (SAT[L] - DUL[L])
+          }
+          RFAC = RLV[L] * SMDFR * SMDFR * DLAYR[L] * 100.0
+>>>>>>> Perennial_Forage
           #-----------------------------------------------------------------------
           #  RLV = Rootlength density (cm/cm3);SMDFR = relative drought factor
           #  RTNO3 + RTNH4 = Nitrogen uptake / root length (mg N/cm)
           #  RNO3U + RNH4  = Nitrogen uptake (kg N/ha)
           #-----------------------------------------------------------------------
+<<<<<<< HEAD
           RNO3U[L] <- RFAC * FNO3 * RTNO3
           RNH4U[L] <- RFAC * FNH4 * RTNH4
           RNO3U[L] <- max(0.0,RNO3U[L])
           RNH4U[L] <- max(0.0,RNH4U[L])
           TRNU <- TRNU + RNO3U[L] + RNH4U[L] #kg[N]/ha
+=======
+          RNO3U[L] = RFAC * FNO3 * RTNO3
+          RNH4U[L] = RFAC * FNH4 * RTNH4
+          RNO3U[L] = max(0.0,RNO3U[L])
+          RNH4U[L] = max(0.0,RNH4U[L])
+          TRNU = TRNU + RNO3U[L] + RNH4U[L] #kg[N]/ha
+>>>>>>> Perennial_Forage
         }
       }
       #-----------------------------------------------------------------------
       #   Calculate N uptake in soil layers with roots based on demand (kg/ha)
       #-----------------------------------------------------------------------
       if (ANDEM > TRNU) {
+<<<<<<< HEAD
         ANDEM <- TRNU
       }
       #        IF (TRNU == 0.0) GO TO 600
@@ -4713,6 +6572,29 @@ NUPTAK <- function (DYNAMIC) {
             }
             TRNO3U  <- TRNO3U + UNO3[L]
             TRNH4U  <- TRNH4U + UNH4[L]
+=======
+        ANDEM = TRNU
+      }
+      #        IF (TRNU == 0.0) GO TO 600
+      if (TRNU > 0.001) {
+        NUF = ANDEM / TRNU
+        for (L in 1:NLAYR) {
+          if (RLV[L] > 0.0) {
+            UNO3[L] = RNO3U[L] * NUF
+            UNH4[L] = RNH4U[L] * NUF
+            XMIN    = 0.25 / KG2PPM[L]
+            MXNO3U  = max(0.0,(SNO3[L] - XMIN))
+            if (UNO3[L] > MXNO3U) {
+              UNO3[L] = MXNO3U
+            }
+            XMIN = 0.5 / KG2PPM[L]
+            MXNH4U  = max(0.0,(SNH4[L] - XMIN))
+            if (UNH4[L] > MXNH4U) {
+              UNH4[L] = MXNH4U
+            }
+            TRNO3U  = TRNO3U + UNO3[L]
+            TRNH4U  = TRNH4U + UNH4[L]
+>>>>>>> Perennial_Forage
           }
         }
         #-----------------------------------------------------------------------
@@ -4833,7 +6715,11 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
   NODRGM <- params$NODRGM  #0.170
   DWNODI <- params$DWNODI  #0.014
   SNACTM <- params$SNACTM  #0.045
+<<<<<<< HEAD
   CNODCR <- params$CNODCR  #0.05o
+=======
+  CNODCR <- params$CNODCR  #0.05
+>>>>>>> Perennial_Forage
   #!*RESPIRATION PARAMETERS
   RFIXN  <- params$RFIXN  #2.830
   #!*PLANT COMPOSITION VALUES
@@ -4856,6 +6742,7 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CNOD    <-  0.0
     DWNOD   <-  0.0    
     DWNODA  <-  0.0  
@@ -4867,6 +6754,19 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
     SENNOD  <-  rep(0,20)
     
     DNOD    <-  30.0
+=======
+    CNOD   = 0.0
+    DWNOD  = 0.0    
+    DWNODA = 0.0  
+    NDTH   = 0.0    
+    NFIXN  = 0.0    
+    NODGR  = 0.0    
+    WTNFX  = 0.0    
+    SDWNOD = 0.0
+    SENNOD = rep(0,20)
+    
+    DNOD   = 30.0
+>>>>>>> Perennial_Forage
     
     #***********************************************************************
     #***********************************************************************
@@ -4877,38 +6777,64 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
     #   Set initial nodule mass to DWNODI as read from crop species file
     #-----------------------------------------------------------------------
     if (SDWNOD < 1) {
+<<<<<<< HEAD
       DWNOD   <-  DWNODI * PLTPOP
       SDWNOD  <-  1
       DWNODA  <-  DWNODI * PLTPOP
       WTNFX   <-  DWNODA * 0.16 * PRONOD
       for (J in 1:8) {
         SWMEM[J] <- 1.0
+=======
+      DWNOD  = DWNODI * PLTPOP
+      SDWNOD = 1
+      DWNODA = DWNODI * PLTPOP
+      WTNFX  = DWNODA * 0.16 * PRONOD
+      for (J in 1:8) {
+        SWMEM[J] = 1.0
+>>>>>>> Perennial_Forage
       }
     }
     
     #-----------------------------------------------------------------------
     #   Initialize soil water and temperature factors (top DNOD cm of soil)
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     SWFACT <- 1.0
     FLDACT <- 1.0
     ACSTF  <- 0.0
     ACSTG  <- 0.0
     DSW    <- 0.0
     FLDSUM <- 0.0
+=======
+    SWFACT = 1.0
+    FLDACT = 1.0
+    ACSTF  = 0.0
+    ACSTG  = 0.0
+    DSW    = 0.0
+    FLDSUM = 0.0
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #     Calculate carbon allocated per unit of nodule biomass:
     #     CNODCR = C requirement for nodule respiration (g C/g nodule/d)
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CNFACT <- 1.
     if (DWNOD > 1.E-4) {
       FRCNM <- CTONOD/DWNOD
       if (FRCNM < CNODCR) { CNFACT <- FRCNM / CNODCR }
+=======
+    CNFACT = 1.
+    if (DWNOD > 1.E-4) {
+      FRCNM = CTONOD/DWNOD
+      if (FRCNM < CNODCR) { CNFACT = FRCNM / CNODCR }
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #   Calculate soil water and temperature factors for each layer to DNOD
     #-----------------------------------------------------------------------
     NL <- 20
     LAYERFRAC <- rep(0,NL)
+<<<<<<< HEAD
     DSWP <- 0.0
     DNOD <- 50.0
     for (I in 1:NLAYR) {
@@ -4928,6 +6854,27 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
         LAYERFRAC[I] <- (DSW - DSWP)*FLAYR / DNOD
       }
       DSWP <- DSW
+=======
+    DSWP = 0.0
+    DNOD = 50.0
+    for (I in 1:NLAYR) {
+      FLAYR = 1.0
+      DSW = DSW + DLAYR[I]
+      if (DSW > DNOD) { FLAYR = (DNOD-(DSW-DLAYR[I]))/DLAYR[I] }
+      
+      ACSTF = ACSTF + DLAYR[I] * FLAYR * CURV(TYPFXT,FNFXT[1],FNFXT[2],FNFXT[3],FNFXT[4],ST[I])
+      ACSTG = ACSTG + DLAYR[I] * FLAYR * CURV(TYPNGT,FNNGT[1],FNNGT[2],FNNGT[3],FNNGT[4],ST[I])
+      
+      EPORS = max(SAT[I] - SW[I], 0.0)
+      FLDSUM = FLDSUM + DLAYR[I] * FLAYR * CURV(TYPFXW,FNFXW[1],FNFXW[2],FNFXW[3],FNFXW[4],EPORS)
+      
+      if (I == 1) {
+        LAYERFRAC[1] = DSW / DNOD
+      } else {
+        LAYERFRAC[I] = (DSW - DSWP)*FLAYR / DNOD
+      }
+      DSWP = DSW
+>>>>>>> Perennial_Forage
       if ( FLAYR < 1.0 ) break()
       
     }
@@ -4939,16 +6886,26 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
     #   FLDACT: soil water flooding effect on N2 fixation and nodule growth
     #   NFXAGE: average nodule age effect on nodule growth
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     TNFIX  <- ACSTF / DNOD
     TNGRO  <- ACSTG / DNOD
     FLDACT <- FLDSUM / DNOD
     
     SWFACT <- CURV(TYPFXD,FNFXD[1],FNFXD[2],FNFXD[3],FNFXD[4],TURFAC)
     NFXAGE <- CURV(TYPFXA,FNFXA[1],FNFXA[2],FNFXA[3],FNFXA[4],DXR57)
+=======
+    TNFIX  = ACSTF / DNOD
+    TNGRO  = ACSTG / DNOD
+    FLDACT = FLDSUM / DNOD
+    
+    SWFACT = CURV(TYPFXD,FNFXD[1],FNFXD[2],FNFXD[3],FNFXD[4],TURFAC)
+    NFXAGE = CURV(TYPFXA,FNFXA[1],FNFXA[2],FNFXA[3],FNFXA[4],DXR57)
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     # DETERMINE MEMORY OF PREVIOUS EIGHT DAYS OF SOIL WATER DEFICITS
     #-----------------------------------------------------------------------
     for (J in seq(8, 2)) {  
+<<<<<<< HEAD
       SWMEM[J] <- SWMEM[J-1]
     }
     SWMEM[1] <- SWFACT
@@ -4962,65 +6919,124 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
     #     Reserve CNODMN for nodule growth.  JWH 7/9/95
     #-----------------------------------------------------------------------
     CLEFT <- CTONOD - CNODMN
+=======
+      SWMEM[J] = SWMEM[J-1]
+    }
+    SWMEM[1] = SWFACT
+    
+    SWMEM8 = 0.0
+    for (J in 1:8) {
+      SWMEM8 = SWMEM8 + SWMEM[J]
+    }
+    SWMEM8 = SWMEM8/8
+    #-----------------------------------------------------------------------
+    #     Reserve CNODMN for nodule growth.  JWH 7/9/95
+    #-----------------------------------------------------------------------
+    CLEFT = CTONOD - CNODMN
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #    Compute Specific Nodule Activity taking into account the maximum
     #       activity of the nodules (SNACTM), and strain effects only.
     #    9/27/95 moved temp, water deficit, and soil water flooding effects
     #    below to the primary rate.  We are not getting proper stress effects.
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     SNACT  <- SNACTM  * EFNFIX
+=======
+    SNACT  = SNACTM  * EFNFIX
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #       Compute nodule death rate as function of SW deficit, SW flooding,
     #                               and carbon deficit (chp)
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     RNDTH <- NDTHMX * max((1.-FLDACT),(1.-SWFACT),(1.-CNFACT))
     NDTH <- min(1.0,RNDTH) * DWNOD               #g/m2
     for (I in 1:NLAYR) {
       SENNOD[I] <- NDTH * LAYERFRAC[I] * 10.     #kg/ha
+=======
+    RNDTH = NDTHMX * max((1.-FLDACT),(1.-SWFACT),(1.-CNFACT))
+    NDTH = min(1.0,RNDTH) * DWNOD               #g/m2
+    for (I in 1:NLAYR) {
+      SENNOD[I] = NDTH * LAYERFRAC[I] * 10.     #kg/ha
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #    Compute N-Fixation
     #
     #-----------------------------------------------------------------------
     if (DAS < NR7) {
+<<<<<<< HEAD
       PNFIXN <- min((CLEFT * 0.16 / RFIXN), (DWNOD * SNACT)) * TNFIX
       NFIXN <- PNFIXN * min(SWFACT, SWMEM8, FLDACT)
     } else {
       PNFIXN <- 0.0
       NFIXN <- 0.0
+=======
+      PNFIXN = min((CLEFT * 0.16 / RFIXN), (DWNOD * SNACT)) * TNFIX
+      NFIXN = PNFIXN * min(SWFACT, SWMEM8, FLDACT)
+    } else {
+      PNFIXN = 0.0
+      NFIXN = 0.0
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #    Compute C Used for N-Fixation
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     PCSFIX <- (PNFIXN / 0.16) * RFIXN
     CUSFIX <- (NFIXN  / 0.16) * RFIXN
     CNOFIX <- PCSFIX - CUSFIX
+=======
+    PCSFIX = (PNFIXN / 0.16) * RFIXN
+    CUSFIX = (NFIXN  / 0.16) * RFIXN
+    CNOFIX = PCSFIX - CUSFIX
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #     Compute C Left to Grow New Nodule Mass
     #     Includes minimum reserved for nodule growth (CNODMN) plus any C
     #     left after N fixation.  JWH 7/11/95
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CLEFT <- max(0.0,CLEFT - CUSFIX- 0.9*CNOFIX) + CNODMN
+=======
+    CLEFT = max(0.0,CLEFT - CUSFIX- 0.9*CNOFIX) + CNODMN
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #    Compute Potential Growth of Nodules (Demand)
     #    EFNFIX = strain efficiency
     #    EFINOC = inoculation effectiveness (or rhizobium density factor)
     #-----------------------------------------------------------------------
     if (DAS < NR7) {
+<<<<<<< HEAD
       NODRGR <- NODRGM  * EFNFIX * EFINOC
     } else {
       NODRGR <- 0.0
+=======
+      NODRGR = NODRGM  * EFNFIX * EFINOC
+    } else {
+      NODRGR = 0.0
+>>>>>>> Perennial_Forage
     }
     #-----------------------------------------------------------------------
     #    Compute Nodule Growth, Limiting by Either Supply or Demand for C
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     NODGR <- min(CLEFT/AGRNOD,DWNOD*NODRGR) * TNGRO * min(SWFACT,FLDACT) * NFXAGE
     CNODGR <- NODGR * AGRNOD
+=======
+    NODGR = min(CLEFT/AGRNOD,DWNOD*NODRGR) * TNGRO * min(SWFACT,FLDACT) * NFXAGE
+    CNODGR = NODGR * AGRNOD
+>>>>>>> Perennial_Forage
     #-----------------------------------------------------------------------
     #    Compute C used in N-Fixation and Nodule Growth (Including
     #    Respiration Costs) Today
     #-----------------------------------------------------------------------
+<<<<<<< HEAD
     CNOD <- CUSFIX + CNODGR
+=======
+    CNOD = CUSFIX + CNODGR
+>>>>>>> Perennial_Forage
     
     #***********************************************************************
     #***********************************************************************
@@ -5051,17 +7067,28 @@ RESPIR <- function (DAS, PG) {
   RES30C <- params$RES30C   #3.5E-04
   R30C2  <- params$R30C2   #.0040
   
+<<<<<<< HEAD
   TS <- 24
   TRSFAC <- 0.0
   
   SCLTS <- 24./TS
+=======
+  TS = 24
+  TRSFAC = 0.0
+  
+  SCLTS = 24./TS
+>>>>>>> Perennial_Forage
   
   for (H in 1:TS) {
     
       # TGRO[H] <-TGRO_T$V3[TGRO_T$V1==DAS & TGRO_T$V2==H]
       
     #        TRSFAC = TRSFAC + 0.044+0.0019*TGRO(H)+0.001*TGRO(H)**2
+<<<<<<< HEAD
     TRSFAC <- TRSFAC + (0.044+0.0019*TGRO[H]+0.001*TGRO[H]**2)*SCLTS
+=======
+    TRSFAC = TRSFAC + (0.044+0.0019*TGRO[H]+0.001*TGRO[H]**2)*SCLTS
+>>>>>>> Perennial_Forage
     #         scaling factor of 24/TS added on 4July2017 by Bruce Kimball
   }
   # 24 changed to TS on 3 July 2017 by Bruce Kimball
@@ -5072,13 +7099,32 @@ RESPIR <- function (DAS, PG) {
   #     Convert maintainence respiration to actual temperature. RES30C is
   #     the g CH2O/g DW/hr used in maintenance respiration at 30 C.
   #-----------------------------------------------------------------------
+<<<<<<< HEAD
   RO <- RES30C * TRSFAC
   RP <- R30C2 * TRSFAC
   
   MAINR <- RO*WTMAIN + RP*PG
+=======
+  RO = RES30C * TRSFAC
+  RP = R30C2 * TRSFAC
+  
+  MAINR = RO*WTMAIN + RP*PG
+>>>>>>> Perennial_Forage
   
   assign("MAINR", MAINR, envir = env)
   return()
   
 }
+<<<<<<< HEAD
 #--------------END RESPIR FUNCTION-------------
+=======
+#--------------END RESPIR FUNCTION-------------
+
+
+
+
+
+
+
+
+>>>>>>> Perennial_Forage
