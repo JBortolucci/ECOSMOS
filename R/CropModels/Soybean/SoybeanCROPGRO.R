@@ -17,6 +17,7 @@ simDataVars$DSSATdb <- read.table(file = 'C:/DSSAT47/Soybean/INTEGRACAO_CONTROLE
 # T <- DSSAT/fortran, F <- Ecosmos 
                       # PG  DAYL PAR  TMIN TAVG TGRO TURFAC SWFAC  SW  ST  NO3  NH4
 simDataVars$integr <- c(F  ,F   ,F   ,F   ,F   ,F   ,F     ,F     ,F  ,F  ,F   ,F)
+# simDataVars$integr <- c(T  ,T   ,T   ,T   ,T   ,T   ,T     ,T     ,T  ,T  ,T   ,T)
                       # OK  OK   OK   OK   OK   !   OK      OK
 
 NL <- 20
@@ -230,13 +231,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     #_____________________________________________________________        
     #__________INICIO DAS CHAMADAS do CROPGRO ____________________    
-    
-    TESTE <- 'Y'
-    
-    if (TESTE == 'Y'){ #### Subrotina: PHENOL ####  
-      
-      
-      #_______________________________________________        
+    #_____________________________________________________________        
       # DYNAMIC = 'RUNINIT'
       
       #***********************************************************************
@@ -773,7 +768,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
       }
       #-----------------------------------------------------------------------
-    }
     
     
     # parametros
@@ -785,17 +779,10 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #_________ FIM DAS CHAMADAS DO CROPGRO _______________________
     #_____________________________________________________________    
     
-    
-    
-    
-    
-    
-    
     # aroot<- min(max((1 -    FSHTBa),0),1)
     # aleaf<- min(max((FLVTBa*FSHTBa),0),1)
     # astem<- min(max((FSTTBa*FSHTBa),0),1)
     # arepr<- min(max((FSOTBa*FSHTBa),0),1)
-    
     
     # update carbon reservoirs using an analytical solution
     # to the original carbon balance differential equation
@@ -813,19 +800,18 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     cbiop[i] <- (PODWT - SDWT) * 0.45 * (1/1000)
     
     
-    #    !----------Check sink limitation based on yesterday's growth rates
+    # !----------Check sink limitation based on yesterday's growth rates
     # ! and adapt partitioning of stem-storage organ accordingly
     
     # update vegetation's physical characteristics
     # plai[i] <- cbiol[i] * specla[i] 
     # plai[i]  <- max(XLAI,0.1)
-    greenfrac[i] <- 1.0   
-    
-    
     peaklai[i]  <- max(peaklai[i]  ,plai[i] )
     
-    
-    
+    #TODO Henrique: verify greenfrac parameter approach and effect! [2020-01-11]
+    greenfrac[i] <- ifelse(RSTAGE >= 7,  XLAI/LAIMX, greenfrac[i])
+    #print(greenfrac[i])
+    #greenfrac[i] <- 1
     
     biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbiop[i]
     
@@ -833,7 +819,9 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     ayanpp[i] <- ayanpp[i] + adnpp[i] 
     
     
-    #END TEST RICE MODEL FROM ORYZA    
+    #TODO Henrique: verificar necessidade [2020-01-18]
+    #END TEST RICE MODEL FROM ORYZA
+    { 
     #____________________________________        
     
     #_____________________________________________
@@ -852,54 +840,18 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       abranch[i] * max(0.0,adnpp[i]) +
       awood[i] * max(0.0,adnpp[i])
     
-    
     # keep track of annual total root production carbon
     ayrprod[i] <- ayrprod[i] +
       aroot[i] * max(0.0,adnpp[i]) +
       acroot[i] * max(0.0,adnpp[i])
     
-    
     # keep track of total carbon allocated to
     # leaves for litterfall calculation
     aylprod[i] <- aylprod[i] +
       aleaf[i] * max (0.0, adnpp[i])
+    }
     
-    
-    
-    
-    
-    #####################################################################
-    # check for climatic and phenological limits on maturity, growth,
-    # and harvest date
-    #
-    
-    #    if (tmin <= tkill[i]) {
-    #      ccdays[i] <- ccdays[i] + 1
-    #    } else {
-    #      ccdays[i] <- 0
-    #    }
-    #    
-    #    if (ccdays[i] >= 1 &&
-    #        hui[i] >= 0.6 * gddmaturity[i] &&
-    #        croplive[i] == 1) {
-    #      croplive[i]     <- 0.0
-    #      print(paste0('tkill!!!!!',1,iyear,jday,idpp[i]))
-    #      harvdate[i]     <- jday
-    #    }
-    
-    
-    
-    #___________________________________________________
-    #       Harvest
-    
-    # fileout=paste("RICE_DAILY.csv")
-    # ID<-simConfigs[[i]]$id
-    # if(idpp[i]==1)ID<-paste0(jday,iyear)
-    # write(paste( ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS ,
-    #              aroot[i],aleaf[i],astem[i],arepr[i],cbior[i],cbiol[i],cbios[i],cbiog[i],cbiop[i],plai[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
-    
-    
-    
+    # END SOYBEAN CYCLE
     if(cropy == 1) {
       
       if ( RSTAGE == 8 | frost ) {
@@ -924,15 +876,13 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
   }
   
-  #TO DO: Alexandre - 
+  #TODO Henrique: verificar se isso precisará ser modificado qdo crescendo 2 plantas [2020-01-18]
   ztopPft[i] <- (min(plai[i]/5, 1)) * ztopmxPft[i] 
   
   
   
   assign("endCycle", endCycle, envir = env)
-  
   assign("ztopPft", ztopPft, envir = env)
-  
   assign("greenfrac", greenfrac, envir = env)
   assign("idpp", idpp, envir = env)
   assign("idpe", idpe, envir = env)
@@ -979,7 +929,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("CGRSH", CGRSH, envir = env)
   assign("TURFAC", TURFAC, envir = env)
   assign("SWFAC", SWFAC, envir = env)
-  assign("plotVARAUX", plotVARAUX, envir = env)
+  # assign("plotVARAUX", plotVARAUX, envir = env)
   assign("DAYL", DAYL, envir = env)
 }
 

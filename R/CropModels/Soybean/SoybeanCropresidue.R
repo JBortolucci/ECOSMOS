@@ -1,4 +1,4 @@
-#to do: Santiago, residuo tem que ser indepente se é uma cultura agricola
+#TODO: Santiago, residuo tem que ser indepente se é uma cultura agricola
 # juntar com o residuo dos ecossistemas naturais
 
 SoybeanCropresidue <- function (year, year0, jday, index) {
@@ -66,7 +66,7 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
     # calculate n in grain[kg / ha]
     grainn[j] <- (cbiog[j] / cfrac[j]) * fngrain[j] * 1e+04
     
-    # to do: Santiago, inserir um parametro inserido no params.crp 
+    # TODO: Santiago, inserir um parametro inserido no params.crp 
     #      que represente o conteudo de agua no material colhido   
     
     # calculate crop fresh yield  t / ha of fresh weight
@@ -150,15 +150,12 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
     cbiog[j] <- 0.0
     cbiop[j] <- 0.0
     cbios[j] <- 0.0
-    
-    
-    
+
   }  # harvest <- jday
   
   falll <- as.vector(falll)
   fallr <- as.vector(fallr)
   fallw <- as.vector(fallw)
-  
   
   # assign("cnleaf", cnleaf, envir = env)
   # assign("cnfroot", cnfroot, envir = env)

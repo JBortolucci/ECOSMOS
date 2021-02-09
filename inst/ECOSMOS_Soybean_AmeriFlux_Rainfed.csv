@@ -1,0 +1,8 @@
+ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,planting day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
+USNEME_Rainfed_2002,41.1649,-96.4701,2002,1,2002,286,IBAFlUSNe3,./inst/input_1d/NES30116.txt,1,0,1,0,0,soybean,140,2002,31,76,5.1,,1,soybean5
+USNEME_Rainfed_2004,41.1649,-96.4701,2004,1,2004,289,IBAFlUSNe3,./inst/input_1d/NES30116.txt,1,0,1,0,0,soybean,154,2004,26,76,5.1,,1,soybean6
+USNEME_Rainfed_2006,41.1649,-96.4701,2006,1,2006,285,IBAFlUSNe3,./inst/input_1d/NES30116.txt,1,0,1,0,0,soybean,131,2006,28,76,5.1,,1,soybean7
+USNEME_Rainfed_2008,41.1649,-96.4701,2008,1,2008,286,IBAFlUSNe3,./inst/input_1d/NES30116.txt,1,0,1,0,0,soybean,135,2008,31,76,5.1,,1,soybean7
+USNEME_Rainfed_2010,41.1649,-96.4701,2010,1,2010,283,IBAFlUSNe3,./inst/input_1d/NES30116.txt,1,0,1,0,0,soybean,139,2010,25,76,5.1,,1,soybean7
+USNEME_Rainfed_2012,41.1649,-96.4701,2012,1,2012,279,IBAFlUSNe3,./inst/input_1d/NES30116.txt,1,0,1,0,0,soybean,136,2012,29,76,5.1,,1,soybean8
+USNEME_Rainfed_2014,41.1649,-96.4701,2014,1,2014,285,IBAFlUSNe3,./inst/input_1d/NES30116.txt,1,0,1,0,0,soybean,139,2014,30,76,5.1,,1,soybean9

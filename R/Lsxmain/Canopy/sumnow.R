@@ -83,6 +83,7 @@ sumnow <- function() {
   # rgrowthc <- 0.242  # crop growth respiration for sugarcane from Singles,2002
   # rgrowthc <- 0.17
   rgrowth <- 0.30 # To do: Jair ou Leandro enviar para planilha plantparams
+  #TODO: rgrowth sem efeito nas culturas (crops); rgrowthc no plantparams é oq manda, certo? [Henrique, 2020-01-12]
 
   # 10 - day time averaging factor
   zweight <- exp( - 1 / (10 * 86400 / dtime))
@@ -276,7 +277,7 @@ sumnow <- function() {
 
     mcbior[i]  <- cbior[i]  * (funcb*rroot)
     mcbiog[i]  <- cbiog[i]  *  0.0
-    mcbiop[i]  <- cbiop[i]  *  0.0 # to do : Henrique, rever quanto sao esses valores de respiracao
+    mcbiop[i]  <- cbiop[i]  *  0.0 # TODO: Henrique, rever quanto sao esses valores de respiracao
     mcbiow[i]  <- cbiow[i]  * (sapfrac*rwood*funca)
     mcbios[i]  <- cbios[i]  * (rwood*funca) 
     mcbiob[i]  <- cbiob[i]  * (rwood*funca)

@@ -1,6 +1,2 @@
 ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,planting day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
-USNEME_Rainfed_2012,41.1649,-96.4701,2012,135,2012,279,IBAFlUSNe3,./inst/input_1d/NES30116.txt,1,0,1,0,0,soybean,136,2012,29,76,5.1,139,1,soybean8
-USNEME_Irrigated_2014,41.1649,-96.4701,2014,139,2014,287,IBAFlUSNe2,./inst/input_1d/NES20116.txt,1,0,1,0,0,soybean,140,2014,32,76,5.1,143,1,soybean8
-FROCAZ_Irrigated_2017,43.52,1.508,2017,129,2017,284,FRNC000001,,1,0,1,0,0,soybean,130,2017,45,50,3,,1,soybean10
-FROCAZ_Rainfed_2017,43.52,1.508,2017,129,2017,284,FRNC000001,,1,0,1,0,0,soybean,130,2017,42,50,3,,1,soybean10
-BRSPCI_Rainfed_2018-2019,-21.638,-51.915,2018,323,2019,131,MANEOSFRN1,,0,0,1,0,0,soybean,324,2018,22,50,2.5,130,1,soybean1
+BRDFPL_Early_2017-2018,-15.75,-47.75,2017,312,2018,102,BRZL000001,,1,0,1,0,0,soybean,313,2017,40,50,2.5,,1,soybean1

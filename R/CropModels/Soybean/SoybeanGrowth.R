@@ -1,6 +1,7 @@
 simDataVars$TGRO     <- rep(1.,24)
 
 #------------------GROW VARS---------------------
+simDataVars$WDOT  <-  0
 simDataVars$SWIDOT  <-  0 #input/output
 simDataVars$WLFDOT  <-  0 #input/output
 simDataVars$WSHIDT  <-  0 #input/output
@@ -1519,6 +1520,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   assign("PUNDOT",PUNDOT , envir = env)
   assign("NLPEST",NLPEST , envir = env)
   # assign("ROWSPC",ROWSPC , envir = env)
+  assign("WDOT",WDOT , envir = env) # for growth resp calc
   
   return()
 }   
@@ -5080,11 +5082,3 @@ RESPIR <- function (DAS, PG) {
   
 }
 #--------------END RESPIR FUNCTION-------------
-
-
-
-
-
-
-
-
