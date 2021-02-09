@@ -58,6 +58,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   pdpt <- config$plant1$plantingDepht # sowing depth (cm)
   phyl <- 38.9    #TODO Victor, o que significa esse parametro? vc 'criou' ele? [2020-01-20]
   dsstop <- 1.15  # development stage when root growth stops
+  gddv <- c(ph1 = 47, ph2 = 28)
   
   # daily maintenance respiration parameters maize basic morphological components
   #TODO Victor, confirme se entendi certo, por gentileza [2020-01-20]
@@ -105,6 +106,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       sumP <- 0.0
       fcbios <- 0.0
       fcbiol <- 0.0
+      rest   <- 0.0
+      vphase <- 0.0
       
       dm <- list('leaf' = 0.0, 'stem' = 0.0, 'root' = 0.0, 'cob' = 0.0, 'grain' = 0.0)
      
@@ -171,6 +174,14 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       #     Stage 4: from effective grain filling to physiological maturity.
       
       sen <- list()
+      
+      ph <- ifelse(test = vphase < 10, yes = 1, no = 2)
+      
+      if(rest >= gdd10%%gddv[ph] & gdd10 < gdds) {
+        vphase <- vphase + 1
+      }
+      
+      rest <- gdd10%%gddv[ph]
       
       fr <- 1.0 / (1.0 - rgrowth) #rgrowth comment
       
@@ -401,8 +412,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         cbioc[i] <- cbioc[i] + cbiocg
         cbios[i] <- cbios[i] + cbiosg
         cbiol[i] <- cbiol[i] - cbiol[i] * fsen
-        # cbiol[i] <- 
-        # TODO (Victor): Implement the senescence biomass fall in stage 3
         
         ndaysS3 <- ndaysS3 + 1
         
@@ -417,7 +426,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         # cat('\nStage 3\n')
         # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
-        
+          
       } else if (gdd10 < gddt) {
         
         ###################################################################
@@ -565,14 +574,14 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       #___________________________________________________
       #       Harvest
       
-      #fileout <- paste("Maize_DAILY.csv")
+      fileout <- paste("Maize_DAILY.csv")
       
-      #if(idpp[i] == 1) ID <- paste0(jday, iyear)
-      #write(x = unlist(dm), file = fileout, append = T, sep = '\t')
-      # write(x = paste(ID, idpp[i], aroot[i], aleaf[i], astem[i], cbior[i], cbiol[i], cbios[i], cbioc[i], plai[i], sep = ";"),
-      #       file = fileout,
-      #       append = TRUE,
-      #       sep = "\n")
+      if(idpp[i] == 1) ID <- paste0(jday, iyear)
+      # write(x = unlist(dm), file = fileout, append = T, sep = '\t')
+      write(x = paste(ID, idpp[i], aroot[i], aleaf[i], astem[i], cbior[i], cbiol[i], cbios[i], cbioc[i], cbiog[i], plai[i], sep = ";"),
+            file = fileout,
+            append = TRUE,
+            sep = "\n")
     
     }
     
@@ -632,6 +641,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign('date_emerg', date_emerg, envir = env)
     assign('date_germ' , date_germ , envir = env)
     assign('plaf'      , plaf      , envir = env)
+    assign('vphase'    , vphase    , envir = env)
+    assign('rest'      , rest      , envir = env)
     
     # 
     assign('dm'        , dm        , envir = env)
