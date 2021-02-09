@@ -200,6 +200,9 @@ Cropupdate <- function (jday) {
     }
   }
 
+  
+  #. SVC - Jair, pq não está usando ?
+  
   # UPPER
   # ztop[2] <- 0
   # for(i in 1:npft) {
@@ -228,6 +231,34 @@ Cropupdate <- function (jday) {
     if(plantList[[j]]$type == CROPS)
           ayanpptot <- ayanpptot + ayanpp[j] 
   }
+  
+  
+  
+  
+  
+  # To do: levar para o plant_params e fazer uma media ponderada pelo lai aqui
+ #  rhovegvlg 
+ #  rhovegvlb 
+ #  rhovegvu  
+ #  rhovegirlg
+ #  rhovegirlb
+ #  rhovegiru 
+ #  tauvegvlg 
+ #  tauvegvlb 
+ #  tauvegvu  
+ #  tauvegirlg
+ #  tauvegirlb
+ #  tauvegiru 
+  
+  
+  # oriev[1] <- max ( - chiflz, 0)
+  # oriev[2] <- max ( - chifuz, 0)
+  # 
+  # orieh[1] <- max ( chiflz, 0)
+  # orieh[2] <- max ( chifuz, 0)
+  
+  
+  
   
   
   assign("cbiol", cbiol, envir = env) 

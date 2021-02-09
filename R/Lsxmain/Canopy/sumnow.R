@@ -1,11 +1,4 @@
 # Global Vars:
-# a10ancc3   # 10-day average canopy photosynthesis rate - c3 crops (mol_co2 m-2 s-1)
-# a10ancc4   # 10-day average canopy photosynthesis rate - c4 crops (mol_co2 m-2 s-1)
-# a10ancl3   # 10-day average canopy photosynthesis rate - c3 grasses (mol_co2 m-2 s-1)
-# a10ancl4   # 10-day average canopy photosynthesis rate - c4 grasses (mol_co2 m-2 s-1)
-# a10ancls   # 10-day average canopy photosynthesis rate - shrubs (mol_co2 m-2 s-1)
-# a10ancub   # 10-day average canopy photosynthesis rate - broadleaf (mol_co2 m-2 s-1)
-# a10ancuc   # 10-day average canopy photosynthesis rate - conifer (mol_co2 m-2 s-1)
 # a10td      # 10-day average daily air temperature (K)
 # a10tmin    # 10-day average minimum air temperature (K)
 # a10ts      # 10-day average daily soil temperature in top layer (K)
@@ -368,23 +361,7 @@ sumnow <- function() {
   tsoiavg <- 0.6 * tsoi[1] + 0.4 * tsoi[2]
   a11soiltd <- zweight11 * a11soiltd + (1 - zweight11) * tsoiavg
   
-  # PFT_UPDATE
-  for(i in seq(1,npft)) {
-    # if(!plantList[[i]]$active) next
-    # a10anc[i] <- zweight * a10anc[i] + (1 - zweight) * an[i]
-    a10anc[i] <- ifelse(plantList[[i]]$active, zweight * a10anc[i] + (1 - zweight) * an[i],  a10anc[i])
-  }
-  #
-  # PFT_UPDATE: Transformar em um laço. Cada planta terá uma variável própria
-  # 10 - day canopy photosynthesis rates
-  # a10ancub <- zweight * a10ancub + (1 - zweight) * ancub
-  # a10ancuc <- zweight * a10ancuc + (1 - zweight) * ancuc
-  # a10ancls <- zweight * a10ancls + (1 - zweight) * ancls
-  # a10ancl3 <- zweight * a10ancl3 + (1 - zweight) * ancl3
-  # a10ancl4 <- zweight * a10ancl4 + (1 - zweight) * ancl4
-  # a10ancc3 <- zweight * a10ancc3 + (1 - zweight) * ancc3
-  # a10ancc4 <- zweight * a10ancc4 + (1 - zweight) * ancc4
-  
+
   # 10 - day minimimum daily temperature average -- used to help determine
   # planting dates of crops.  If both the daily average temperature
   # (10 - day mean) > 8 C and the 10 - day minimum temperature average
@@ -417,8 +394,7 @@ sumnow <- function() {
   assign("a3tdmin", a3tdmin, envir = env)
   assign("tsoiavg", tsoiavg, envir = env)
   assign("a11soiltd", a11soiltd, envir = env)
-  
-  assign("a10anc", a10anc, envir = env)
+
   assign("a5tmin", a5tmin, envir = env)
   assign("a10tmin", a10tmin, envir = env)
   

@@ -23,24 +23,30 @@ initialcrop <- function() {
     if(plantList[[i]]$type == CROPS) {
       plai[i] <- 0.01
       
-      env$cbiol[i] <- 0
-      env$cbios[i] <- 0
-      env$cbior[i] <- 0
-      env$cbiow[i] <- 0
-      env$cbiog[i] <- 0
+  
+      env$cbiol[i]   <- 0
+      env$cbios[i]   <- 0
+      env$cbiog[i]   <- 0
+      env$cbiow[i]   <- 0
+      env$cbiob[i]   <- 0 
+      env$cbior[i]   <- 0 
+      env$cbiocr[i]  <- 0
 
-      env$aleaf[i] <- 0
-      env$aroot[i] <- 0
-      env$astem[i] <- 0
-      env$arepr[i] <- 0
-      env$awood[i] <- 0
+      env$aleaf[i]   <- 0
+      env$astem[i]   <- 0
+      env$arepr[i]   <- 0
+      env$awood[i]   <- 0 
+      env$abranch[i] <- 0
+      env$aroot[i]   <- 0
+      env$acroot[i]  <- 0
+
       
       env$aybprod[i] <- 0
       env$ayrprod[i] <- 0
-      env$ayabprod[i] <- 0
+      env$ayabprod[i]<- 0
       env$aylprod[i] <- 0
 
-      env$plaimx[i] <- 0
+      env$plaimx[i]  <- 0
       env$biomass[i] <- 0
       env$totnuptake[i] <- 0
       env$tnplant[i] <- 0
@@ -48,10 +54,9 @@ initialcrop <- function() {
       env$idpp[i] <- 0
       env$fixn[i] <- 0
       env$gddplant[i] <- 0
-      env$crmplant[i] <- 0
       env$fertinput[i] <- 0
       env$pstart[i] <- 999
-      env$ik[i] <- 1
+      
     }
     
   }

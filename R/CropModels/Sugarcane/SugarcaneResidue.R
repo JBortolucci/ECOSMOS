@@ -27,13 +27,8 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
   
   # for(j in scpft:ecpft) {
   
-  # calculate CRM values from Pioneer regression relationships 
 
-  # gddplant gets reinitialized to 0 at maturity date so save value here
-  if(gddplant[j] > 0 && croplive[j] == 1) {
-    crmplant[j] <- max(73, min((gddplant[j] + 53.683) / 13.882,135))
-  }
-  
+
   # only write out values at harvest date, and re-initialize crop variables
   # at this time  - this allows for the same crop (e.g., wheat) to be grown
   # across two consecutive calendar years   
@@ -194,6 +189,5 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
   assign("gddsgcr", gddsgcr, envir = env)
   assign("gddmaturity", gddmaturity, envir = env)
   assign("fallrsgc", fallrsgc, envir = env)
-  assign("crmplant", crmplant, envir = env)
 
 }

@@ -461,9 +461,8 @@ GeneralModel <- function(simVars = NULL) {
           sumnow() # codigo em R
           
           sumday(step, plens, year, simVars$jday)
-          summonth(step, day, month)
-          
-          sumyear(step, day, month)
+          #CSVC summonth(step, day, month)
+          #CSVC sumyear(step, day, month)
           
           nitrostress(step, day, month)
           

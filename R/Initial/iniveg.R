@@ -1,9 +1,4 @@
 # Global Vars:
-# a10ancl3       # 10-day average canopy photosynthesis rate - c3 grasses (mol_co2 m-2 s-1)
-# a10ancl4       # 10-day average canopy photosynthesis rate - c4 grasses (mol_co2 m-2 s-1)
-# a10ancls       # 10-day average canopy photosynthesis rate - shrubs (mol_co2 m-2 s-1)
-# a10ancub       # 10-day average canopy photosynthesis rate - broadleaf (mol_co2 m-2 s-1)
-# a10ancuc       # 10-day average canopy photosynthesis rate - conifer (mol_co2 m-2 s-1)
 # a10daylightl   # 10-day average day-time PAR - lower canopy (micro-Ein m-2 s-1)
 # a10daylightu   # 10-day average day-time PAR - upper canopy (micro-Ein m-2 s-1)
 # a10scalparaml  # 10-day average day-time scaling parameter - lower canopy (dimensionless)
@@ -94,19 +89,7 @@ iniveg <- function (isimveg) {
   stsumu <- 0
   stsuml <- 0
   
-  
-  # initialize running - mean values of canopy photosynthesis rates
-  a10ancub <- 10e-06
-  a10ancuc <- 10e-06
-  a10ancls <- 10e-06
-  a10ancl4 <- 10e-06
-  a10ancl3 <- 10e-06
-  
-  # PFT_UPDATE
-  a10anc[] <- 10e-06
-  assign("a10anc", a10anc, envir = env)
-  
-  
+ 
   # initialize running - mean values of the scaling parameter
   a10scalparamu <- 0.5 * 5
   a10scalparaml <- 0.5 * 5
@@ -557,11 +540,6 @@ iniveg <- function (isimveg) {
   assign("precipsum", precipsum, envir = env)
   assign("stsumu", stsumu, envir = env)
   assign("stsuml", stsuml, envir = env)
-  assign("a10ancub", a10ancub, envir = env)
-  assign("a10ancuc", a10ancuc, envir = env)
-  assign("a10ancls", a10ancls, envir = env)
-  assign("a10ancl4", a10ancl4, envir = env)
-  assign("a10ancl3", a10ancl3, envir = env)
   assign("a10scalparamu", a10scalparamu, envir = env)
   assign("a10scalparaml", a10scalparaml, envir = env)
   assign("a10daylightu", a10daylightu, envir = env)

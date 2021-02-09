@@ -209,10 +209,11 @@ inisoil <- function() {
   assign("depth",  depth, envir = env)
   
   # surface parameters
+  # albsav -> saturated soil surface albedo (visible waveband)
+  # albsan -> saturated soil surface albedo (near-ir waveband)
   assign("albsav",  fracsand[1] * 0.120 + fracsilt[1] * 0.085 + fracclay[1] * 0.050, envir = env)
   assign("albsan",  2.0 * albsav, envir = env)
-  
-  
+
 }
 
 

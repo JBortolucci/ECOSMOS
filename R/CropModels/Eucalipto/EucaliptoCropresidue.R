@@ -18,12 +18,6 @@ EucaliptoCropresidue <- function (year, year0, jday, index) {
   }
 
   
-  # gddplant gets reinitialized to 0 at maturity date so save value here
-  if(gddplant[j] > 0 && croplive[j] == 1) {
-    crmplant[j] <- max(73, min((gddplant[j] + 53.683) / 13.882,135))
-  }
-  
-
   if(exist[j] == 1 && harvdate[j] == jday) {
     
 
@@ -148,7 +142,5 @@ EucaliptoCropresidue <- function (year, year0, jday, index) {
   assign("cntops", cntops, envir = env)
   assign("cnroot", cnroot, envir = env)
   assign("cropy", cropy, envir = env)
-  assign("crmplant", crmplant, envir = env)
-  
 
 }
