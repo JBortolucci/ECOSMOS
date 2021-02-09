@@ -181,11 +181,7 @@ GeneralModel <- function(simVars = NULL) {
     
     simVars$ffact      <- 1.0       
     simVars$isoilay    <- simVars$nsoilay # Henrique: trava qdo é > nsoilay (25/09/2020)        
-<<<<<<< HEAD
-    simVars$co2init    <- 0.000380 
-=======
     simVars$co2init    <- 0.000380 # devem ir para os parâmetros globais
->>>>>>> Perennial_Forage
     simVars$o2init     <- 0.209000 
     
     simVars$isoybean   <- 0
@@ -343,8 +339,7 @@ GeneralModel <- function(simVars = NULL) {
       simVars$simulationEndMonth <- as.numeric(format(as.Date(simVars$endOfSimulation-1, origin = as.Date(paste0(simVars$iy2,"-01-01"))), "%m"))
       simVars$simulationEndDay   <- as.numeric(format(as.Date(simVars$endOfSimulation-1, origin = as.Date(paste0(simVars$iy2,"-01-01"))), "%d"))
     }
-<<<<<<< HEAD
-    
+
     if (simVars$year == simVars$iy1 && !is.na(simVars$startOfSimulation)){
       simVars$simulationStartMonth <- as.numeric(format(as.Date(simVars$startOfSimulation-1, origin = as.Date(paste0(simVars$year,"-01-01"))), "%m"))
       simVars$simulationStartDay   <- as.numeric(format(as.Date(simVars$startOfSimulation-1, origin = as.Date(paste0(simVars$year,"-01-01"))), "%d"))
@@ -358,22 +353,6 @@ GeneralModel <- function(simVars = NULL) {
       
       simVars$month <- month
       
-=======
-    
-    if (simVars$year == simVars$iy1 && !is.na(simVars$startOfSimulation)){
-      simVars$simulationStartMonth <- as.numeric(format(as.Date(simVars$startOfSimulation-1, origin = as.Date(paste0(simVars$year,"-01-01"))), "%m"))
-      simVars$simulationStartDay   <- as.numeric(format(as.Date(simVars$startOfSimulation-1, origin = as.Date(paste0(simVars$year,"-01-01"))), "%d"))
-      simVars$jday <- simVars$startOfSimulation-1
-    }else{
-      simVars$simulationStartMonth <- 1 
-      simVars$simulationStartDay   <- 1
-    }
-    
-    for(month in seq(simVars$simulationStartMonth, 12)) {
-      
-      simVars$month <- month
-      
->>>>>>> Perennial_Forage
       if (!is.na(simVars$startOfSimulation) && year == simVars$iy1 && (month == (simVars$simulationStartMonth + 1) || month == 1)){
         simVars$simulationStartDay <- 1
       }
