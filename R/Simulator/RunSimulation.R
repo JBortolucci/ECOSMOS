@@ -181,7 +181,7 @@ GeneralModel <- function(simVars = NULL) {
     
     simVars$ffact      <- 1.0       
     simVars$isoilay    <- simVars$nsoilay # Henrique: trava qdo é > nsoilay (25/09/2020)        
-    simVars$co2init    <- 0.000380 
+    simVars$co2init    <- 0.000380 # devem ir para os parâmetros globais
     simVars$o2init     <- 0.209000 
     
     simVars$isoybean   <- 0

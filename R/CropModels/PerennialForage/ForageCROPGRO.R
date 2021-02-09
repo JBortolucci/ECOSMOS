@@ -16,8 +16,8 @@ simDataVars$DSSATdb <- read.table(file = 'C:/DSSAT47/Brachiaria/INTEGRACAO_CONTR
 # Ligando/Desligando a conexão com o DSSAT/CROPGRO
 # T <- DSSAT/fortran, F <- Ecosmos 
                       # PG  DAYL PAR  TMIN TAVG TGRO TURFAC SWFAC  SW  ST  NO3  NH4
-simDataVars$integr <- c(T  ,T   ,T   ,T   ,T   ,T   ,T     ,T     ,T  ,T  ,T   ,T)
-#simDataVars$integr <- c(F  ,F   ,F   ,F   ,F   ,F   ,F     ,F     ,F  ,F  ,F   ,F)
+#simDataVars$integr <- c(T  ,T   ,T   ,T   ,T   ,T   ,T     ,T     ,T  ,T  ,T   ,T)
+simDataVars$integr <- c(F  ,F   ,F   ,F   ,F   ,F   ,F     ,F     ,F  ,F  ,F   ,F)
 # OK  OK   OK   OK   OK   !   OK      OK
 
 NL <- 20
@@ -996,7 +996,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         plai[i]  <- max(XLAI,0.1) #TODO Henrique: verificar se aqui seria o lugar ideal dessa atribuição
         
         
-        FHWAH  <- 0.0
+        #FHWAH  <- 0.0
         FHTOTN <- 0.0
         FHLPH  <- 0.0
         #      fhpctn = 0.0
@@ -1005,7 +1005,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         forage_harvest(iday, imonth, iyear, FHTOTN)
         
-        Cumul_FHTOT  <- Cumul_FHTOT  + FHWAH   #TODO Henrique: verificar valores para acumular [2020-11-26]
+        #Cumul_FHTOT  <- Cumul_FHTOT  + FHWAH   #TODO Henrique: verificar valores para acumular [2020-11-26]
         Cumul_FHTOTN <- Cumul_FHTOTN + FHTOTN
         
         assign("Cumul_FHTOT", Cumul_FHTOT, envir = env)

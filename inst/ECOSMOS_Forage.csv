@@ -1,6 +1,7 @@
 ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,planting day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
-BRSPCI_Rainfed_2018-2019,-21.638,-51.915,2018,323,2019,131,MANEOSFRN1,,0,0,1,0,0,forage,324,2018,22,50,2.5,130,1,B.brizantha1
 BRSPPI_MARANDU_28D_Irrigated,-22.708,-47.633,2011,1,2013,106,EBPI080100,,1,0,1,0,0,forage,1,2011,999,2,2,,1,B.brizantha1
 BRSPPI_MARANDU_42D_Irrigated,-22.708,-47.633,2011,1,2013,106,EBPI080100,,1,0,1,0,0,forage,1,2011,999,2,2,,1,B.brizantha1
 BRSPPI_MARANDU_28D_Rainfed,-22.708,-47.633,2011,1,2013,106,EBPI080100,,1,0,1,0,0,forage,1,2011,999,2,2,,1,B.brizantha1
 BRSPPI_MARANDU_42D_Rainfed,-22.708,-47.633,2011,1,2013,106,EBPI080100,,1,0,1,0,0,forage,1,2011,999,2,2,,1,B.brizantha1
+BRSPSC_Irrigated_2011-2012,-21.97,-47.9,2011,48,2012,201,EP00000001,,1,0,1,0,0,forage,49,2011,225,2,2,,1,B.brizantha1
+BRSPSC_Rainfed_2011-2012,-21.97,-47.9,2011,48,2012,201,EP00000001,,1,0,1,0,0,forage,49,2011,225,2,2,,1,B.brizantha1

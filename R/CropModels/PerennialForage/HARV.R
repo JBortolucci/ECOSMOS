@@ -6,6 +6,7 @@ simDataVars$DateMOW    <- c()
 simDataVars$DayMOW     <- c()
 simDataVars$MonthMOW   <- c()
 simDataVars$YearMOW    <- c()
+simDataVars$fhtot      <- 0 # Henrique: added on 2020-12-18
 
 
 forage_harvest <- function(day, month, year, FHTOTN){
@@ -148,6 +149,7 @@ forage_harvest <- function(day, month, year, FHTOTN){
   # assign("FHLEAF",FHLEAF , envir = env)
   # assign("FHSTEM",FHSTEM , envir = env)
   # assign("FHVSTG",FHVSTG , envir = env)
+  assign("fhtot",fhtot , envir = env) # Harvested forage weight (leaf + stem) at forage harvest (kg/ha) (aka HERB in PlantGro.out or FHWAH in FORAGE.out) [2020-12-18]
   return()
 }
 
