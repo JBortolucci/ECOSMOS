@@ -1,5 +1,24 @@
+########################################################################
+# HYBRID-Maize implementation and improvements history
+#
+# SVC, HDB & VHB conceptualized the implementation (Nov 2020)
+# VHB with support of HBD implemented the model (Dec 2020)
+# HBD revised the codes (Jan 2021)
+# HBD took the lead with support of VHB & LEAS (Feb 2021)
+#
+########################################################################
+
+# *** Major improvements to get done ***
+# [ ] Includes crop height (perhaps using the relationship with crop biomass as in APSIM-Sugar) [2021-02-10]
+# [ ] Take the cultivar parameters to plantparams.csv or to an excel spreadsheet as additional traits like for CROPGRO models [2021-02-10]
+# [ ] Revise the growth respiration approach [2021-02-10]
+# [ ] Revise and compare the senesced leaves (attached and fallen) to send to other submodels in ECOSMOS [2021-02-10]
+# [ ] Revise the water uptake approach to get the belowground connected with ECOSMOS [2021-02-10]
+# [ ] Understand and include water and nitrogen limitation on crop growth and development [2021-02-10]
+# [ ] Clean the code and remove unnecessary codes [2021-02-10]
 
 
+#TODO revise
 simDataVars$M2_AS_HA     <- 1/10000 #m2 as ha
 simDataVars$KG_AS_TONNES <- 1/1000 #kg as tonnes
 simDataVars$kg_C_M2_to_T_ha <- 10000/1000 #Tonnes per ha as kg per m2
@@ -8,8 +27,6 @@ simDataVars$Sapwood     <- 0.0001
 simDataVars$Heartwood   <- 0.0001
 simDataVars$Deadcoroots <- 0.0001
 simDataVars$tauleaf_branch <- 365
-
-
 
 source("R/CropModels/Maize/MaizeGrowthPheno.R")
 source("R/CropModels/Maize/MaizePlanting.R")
@@ -79,8 +96,5 @@ MaizeModel <- function(year, month, day, index) {
   MaizeGrowthPheno(year, year0, month, day, jday, index)
   
   MaizeCropresidue(year, year0, jday, index)
-  
  
 }
-
-

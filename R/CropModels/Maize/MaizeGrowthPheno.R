@@ -1,4 +1,4 @@
-
+# building simdatavars
 simDataVars$ndiasV6    <- 0
 simDataVars$ndiasR0    <- 0
 simDataVars$ndiasR4    <- 0
@@ -36,7 +36,11 @@ simDataVars$stemwg  <-  0
 simDataVars$cobwg  <-  0
 
 simDataVars$dm <- list('leaf' = 0.0, 'stem' = 0.0, 'root' = 0.0, 'cob' = 0.0, 'grain' = 0.0)
-  
+simDataVars$date_germ <- 0
+simDataVars$date_emerg <- 0
+simDataVars$coleog <- 0
+simDataVars$vstage <- 0
+simDataVars$rstage <- 0
 
 MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
 
@@ -44,10 +48,11 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   
   i <- index
   
-  # PARAMETERS #####
+  # Crop Parameters
+  #TODO Leandro: levar pro plantparams junto comigo [2021-02-10]
   gddgerm  <- 15  # GDD (base 10ºC) required for germination (default = 15)
-  gddemerg <- 6.0 # GDD (base 10ºC) required for emergence per cm depth (default = 6)
-  #TODO insert the maximum days allowed from sowing to emergence (default = 25)
+  gddemerg <- 6.0 # GDD (base 10ºC) required for emergence per cm depth (default = 6) [we believe this is in cm/day]
+  emerg_limit <- 25 # maximum days allowed from sowing to emergence (default = 25)
   gddf <- 170     # P5 in CERES-MAIZE and in the manual??? GDD (base 8ºC) from silking to physiological maturity
   gddt <- 1600    # GDD (base 10ºC) required from germination to maturity (default = 1500?)
   gdds <- (0.41 * gddt) + 145.4 # GDD (base 10ºC) required from silking to maturity
@@ -56,27 +61,33 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   sg   <- 4.0     # ‘stay-green’ factor, which controls how fast leaf senesces proceeds after silking
   pden <- config$plant1$plantPop # plant population (plants per m⁻²)
   pdpt <- config$plant1$plantingDepht # sowing depth (cm)
-  phyl <- 38.9    #TODO Victor, o que significa esse parametro? vc 'criou' ele? [2020-01-20]
+  phyl <- 38.9    #TODO Victor, o que significa esse parametro? vc 'criou' ele? [2021-01-20]
   dsstop <- 1.15  # development stage when root growth stops
   gddv <- c(ph1 = 47, ph2 = 28)
-  
-  # daily maintenance respiration parameters maize basic morphological components
-  #TODO Victor, confirme se entendi certo, por gentileza [2020-01-20]
-  #TODO Pensar se: 1) inserimos o 'cob' na lista; 2) levamos para plantparams (não vejo necessidade, por hora) [2020-01-20]
-  fresp <- list('leaf'  = 0.47, # g-CH2O g-DM⁻¹
-                'root'  = 0.45, # g-CH2O g-DM⁻¹
-                'stem'  = 0.52, # g-CH2O g-DM⁻¹
-                'grain' = 0.49) # g-CH2O g-DM⁻¹
-  
-  rgrowth <- 0.30 #TODO vamos ter que pensar a respeito desse parâmetro ('rgrowthc' é dos crops)... [2020-01-20]
-
   G2 <- 676 # the potential number of grains per plantkernels ear⁻¹ (default = 676)
   G5 <- 8.7 # the potential grain filling rate (mg d-1 kernel-1) (default = 8.7)
   efftrans <- 0.26 # Efficiency of carbon translocation from leaves/stem to grain filling
   
-  ##################
+  rgrowth <- 0.30 #TODO vamos ter que pensar a respeito desse parâmetro ('rgrowthc' é dos crops)... [2021-01-20]
   
-  greenfrac[i] <- 0.0 #TODO pensar sobre cultura anterior ou setar 0 na initialização do ECOSMOS e não aqui [2020-01-20] 
+  # daily maintenance respiration parameters maize basic morphological components
+  #TODO Pensar levamos para plantparams (não vejo necessidade, por hora) [2021-01-20]
+  fresp <- list('leaf'  = 0.47, # g-CH2O g-DM⁻¹
+                'root'  = 0.45, # g-CH2O g-DM⁻¹
+                'stem'  = 0.52, # g-CH2O g-DM⁻¹
+                'cob'   = 0.52, # g-CH2O g-DM⁻¹ (same as stem at the moment)
+                'grain' = 0.49) # g-CH2O g-DM⁻¹
+  
+  # R stages adjusted proportionally based on the total GDD10 from R1 to R6 (which is basically the gdds parameter).
+  #TODO Pensar levamos para plantparams (não vejo necessidade, por hora) [2021-02-10]
+  p_rstage <- list('1to2' = (gddt-gdds)+gdds*0.13, # R1 (silking) to R2 (blister)
+                   '2to3' = (gddt-gdds)+gdds*0.27, # R2 to R3 (milk)
+                   '3to4' = (gddt-gdds)+gdds*0.42, # R3 to R4 (dough)
+                   '4to5' = (gddt-gdds)+gdds*0.67, # R4 to R5 (dent)
+                   '5to6' = (gddt-gdds)+gdds*1.00) # R5 to R6 (blacklayer, or physiological maturity)
+  
+  # Crop initiation
+  greenfrac[i] <- 0.0 #TODO pensar sobre cultura anterior ou setar 0 na initialização do ECOSMOS e não aqui [2021-01-20] 
   
   if (croplive[i] == 1) {
     
@@ -107,11 +118,12 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       fcbios <- 0.0
       fcbiol <- 0.0
       rest   <- 0.0
-      vphase <- 0.0
+      vstage <- 0.0
+      rstage <- 0
       
       dm <- list('leaf' = 0.0, 'stem' = 0.0, 'root' = 0.0, 'cob' = 0.0, 'grain' = 0.0)
      
-      gddemerg <- gddemerg * pdpt # gddgerm taking into account the sowing depth already here
+      #gddemerg <- gddemerg * pdpt # gddgerm taking into account the sowing depth already here
       
       plaf <- 0.0
        
@@ -121,7 +133,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     # From sowing to germination #
     ##############################
     
-    #TODO Victor, acho que vamos precisar de um contador aqui! [2020-01-20]
+    #TODO Henrique: sugestão abaixo implementada! comparar com dados de Nebraska e talvez calibrar [2021-02-10]
+    # Victor, acho que vamos precisar de um contador aqui! [2021-01-20]
     # Ciclo tem terminado bem antes, mesmo eu subindo o ggdt de 1500 pra 1600
     # Imagino que o gdd10 da germ-emerg é em ºCd por cada cm naquele dia.
     # Ou seja, meu entendimento é que a plântula (coleóptilo e primórdios/1ª folha) pode crescer 1 cm no máximo por dia.
@@ -133,37 +146,52 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     #  - fixar minimo de dias requirido e aplicar a 'tempvmax' pra regular a taxa
     #  - simplesmente usar dias fixos 
     #  - ou ainda usar a data de emerg e não semeadura (mundo ideal é ambos funfando)
-    if (gdd10p <= gddgerm + gddemerg) {
+    if (gdd10p <= gddgerm) {
       
       dtt10p <- calc_dtt(idpp[i], jday, 10, 34)
       gdd10p <- gdd10p + dtt10p
       
-      if (gdd10p <= gddgerm) date_germ <- idpp[i]
-      
-      if (gdd10p > gddgerm) print(paste0('Seeds germinated'))
-      date_emerg <- idpp[i]
-      
-      if (idpp[i] > 25) { # TODO: Parar o ciclo f(maximum days allowed from sowing to emergence) [2020-01-20]
-        print(paste0('Crop failure: plants did not emerge until 25 days after sowing.'))
+      if (gdd10p > gddgerm){
+        date_germ <- idpp[i]
+        print(paste0('Seeds germinated'))
+        # initialize variables for emergence phase
+        coleog <- 0
       }
-    
+
     #################################
     # From germination to emergence #
     #################################
       
-    } else if (idpp[i] == date_emerg +1) {
+    } else if (idpp[i] > date_germ & coleog <= pdpt) {
       
-      print(paste0('Crop emerged'))
-      # Initialize variables at emergence
-      cumPh <- 1.0
-      xn <- 3.0
+      dtt10p <- calc_dtt(idpp[i], jday, 10, 34)
+      # coleodg is the maximum daily growth em cm/day
+      coleodg <- min(dtt10p/gddemerg,1) # limiting to 1 cm per day of coleoptile growth towards the soil surface
+      # coleodg is the cumulated growth in cm
+      coleog <- coleog + coleodg
       
-      cbiol[i]  <- 2.00 * pden * 0.4 * 1e-3
-      plai[i]   <- cbiol[i] * specla[i]
+      # crop failure due to seed reserves exhaustion regardless of breeding brand quality and environmental conditions
+      if (idpp[i] > emerg_limit) {
+        print(paste0('Crop failure: plants did not emerge until 25 days after sowing.'))
+        stop()
+      }
+      
+      if (coleog > pdpt) {
+      
+        date_emerg <- idpp[i]
+        print(paste0('Crop emerged at ',date_emerg,' days after sowing'))
+        
+        # Initialize variables at emergence
+        cumPh <- 1.0
+        xn <- 3.0
+        
+        cbiol[i]  <- 2.00 * pden * 0.4 * 1e-3
+        plai[i]   <- cbiol[i] * specla[i]
+      }
       
     } else {
     
-      # From now on it is similiar to some extent to RATE or INTEGR in CROPGRO models [check affirmation]
+      # From now on it is similiar to some extent to RATE or INTEGR in the CROPGRO models [check affirmation]
       # In term of model structure, the entire maize growth from emergence to physiological maturity is divided into four stages,
       #     following largely CERES-Maize (Jones and Kiniry, 1986),
       #     but with a merger of stages 1 and 2 into one stage.
@@ -175,12 +203,11 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       sen <- list()
       
-      ph <- ifelse(test = vphase < 10, yes = 1, no = 2)
+      ph <- ifelse(test = vstage < 10, yes = 1, no = 2)
       
       if(rest >= gdd10%%gddv[ph] & gdd10 < gdds) {
-        vphase <- vphase + 1
+        vstage <- vstage + 1
       }
-      
       rest <- gdd10%%gddv[ph]
       
       fr <- 1.0 / (1.0 - rgrowth) #rgrowth comment
@@ -203,7 +230,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # P3: "The duration of Stage 2 in terms of GDD equals P3 whose value is determined at the end of Stage 1"
       }
       
-      tmean  <- (tmax + tmin) / 2.0 #TODO talvez usamos do ECOSMOS direto e não precisemos esse passo toda vez [2020-01-20]
+      tmean  <- (tmax + tmin) / 2.0 #TODO talvez usamos do ECOSMOS direto e não precisemos esse passo toda vez [2021-01-20]
     
       # Leaf Growth and Senescence #
       if (cumPh < 5.0) {
@@ -227,7 +254,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
                      yes  = 1.0,
                      no   = min(1.0, max(0.0, 1.0 - 0.008 * (plai[i] - laic))))
       
-      slft <- ifelse(test = tmean > 279.15, #TODO pensar se o limiar de 6º C possa ser um parametro, futuramente. [2020-01-20]
+      slft <- ifelse(test = tmean > 279.15, #TODO pensar se o limiar de 6º C possa ser um parametro, futuramente. [2021-01-20]
                      yes  = 1.0,
                      no   = min(1.0, max(0.0, 1.0 - (279.15 - tmean) / 279.15)))
       
@@ -293,7 +320,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # DM mass-based for model evaluation
         dm$leaf <- dm$leaf + leafwg - sen / (specla[i] * 10)
         dm$root <- dm$root + (cbiorg * 1e3 / (pden * 0.40)) - (dm$root / tauroot)
-        #TODO Victor, a taxa de morte da raiz está sendo considerada via tauroot ? [2020-01-20]
+        #TODO Victor, a taxa de morte da raiz está sendo considerada via tauroot ? [2021-01-20]
         
         # cat('\nStage 1\n')
         # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
@@ -386,7 +413,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         # Stem, Cob and Root Growth #
         stemwg <- 0.220 * dtt8 / (1.0 + fresp$stem)
-        cobwg  <- 0.088 * dtt8 / (1.0 + fresp$grain)
+        cobwg  <- 0.088 * dtt8 / (1.0 + fresp$cob)
         
         # The course of crop development is measured by development stage (DS)
         #   on a scale ranging from 0 to 2, with 1 at silking.
@@ -459,7 +486,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         grainwg <- (RGfill * gpp * G5 * filleffi * 0.001) / (1 + fresp$grain)
         grainwg <- 0.40 * grainwg * pden / 1e3 # convert from g-DM plant⁻¹ day⁻¹ to kg-C m⁻² day⁻¹
-        #TODO Victor, a unidade do 'grain' ainda está bem diferente das demais... [2020-01-21]
+        #TODO Victor, a unidade do 'grain' ainda está bem diferente das demais... [2021-01-21]
         
         transs <- 0.0
         transl <- 0.0
@@ -494,7 +521,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
       }
       
-      #TODO Victor, o que precisamos pensar e eventualmente fazer: [2020-01-20]
+      #TODO Victor, o que precisamos pensar e eventualmente fazer: [2021-01-20]
       # 1) se vamos usar o froot ou vamos adaptar ele pro item 4.2.1. Rooting Depth and Water Uptake Weighting Factor do manual
       #    aqui teria parâmetros novos, como: 
       #    - Depthmax (represents the depth of soil without physical or chemical restrictions to root growth) default = 150 cm 
@@ -507,7 +534,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       #    - podemos ver com Santiago se ele descobre algo com pessoal da Embrapa Milho & Sorgo
       # 4) retornar os R stages, usando as proporções que virão dos valores da pagina 69 (pdf)
       
-      #TODO Victor, 'desliguei' o print por hora aqui pras minhas simulações [2020-01-20]
+      #TODO Victor, 'desliguei' o print por hora aqui pras minhas simulações [2021-01-20]
       # print('\n')
       # print(unlist(dm, use.names = T))
       
@@ -518,7 +545,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       peaklai[i]  <- max(peaklai[i], plai[i])
       
-      greenfrac[i] <- 1.0 #TODO pensar na relação folha verde/folha seca [2020-01-20]
+      greenfrac[i] <- 1.0 #TODO pensar na relação folha verde/folha seca [2021-01-20]
       
       biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbioc[i]
       # print(c('biomass' = biomass[i]))
@@ -574,6 +601,9 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       #___________________________________________________
       #       Harvest
       
+      # flag to export or not the following csv that Victor uses
+      export <- F 
+      if(export) {
       fileout <- paste("Maize_DAILY.csv")
       
       if(idpp[i] == 1) ID <- paste0(jday, iyear)
@@ -582,16 +612,35 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
             file = fileout,
             append = TRUE,
             sep = "\n")
+      }
     
     }
     
+    # getting reproductive stages (rstage)
+    if(gdd10 < (gddt-gdds)) {
+      rstage = 0
+    } else if (gdd10 < p_rstage$`1to2`){
+      rstage = 1
+    } else if (gdd10 < p_rstage$`2to3`){
+      rstage = 2
+    } else if (gdd10 < p_rstage$`3to4`){
+      rstage = 3
+    } else if (gdd10 < p_rstage$`4to5`){
+      rstage = 4
+    } else if (gdd10 < p_rstage$`5to6`){
+      rstage = 5
+    } else {
+      rstage = 6
+    }
+    
+    assign('rstage'    , rstage    , envir = env)
     
     if(cropy == 1) {
       if ( gdd10 >= gddt ) { # physiological maturity predicted by the model
         
         # print(paste('Harvest Maize ',ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai[i],cbiog[i],sep = " ; "    ))
         
-        #TODO Victor, 'desliguei' o print e os outputs por hora aqui pras minhas simulações [2020-01-20]
+        #TODO Victor, 'desliguei' o print e os outputs por hora aqui pras minhas simulações [2021-01-20]
         # cat('\nDates: Germination:',date_germ,'| Emergence:',date_emerg)
         # 
         # fileout <- paste("Maize_SEASON.csv")
@@ -641,15 +690,14 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign('date_emerg', date_emerg, envir = env)
     assign('date_germ' , date_germ , envir = env)
     assign('plaf'      , plaf      , envir = env)
-    assign('vphase'    , vphase    , envir = env)
+    assign('vstage'    , vstage    , envir = env)
+    # assign('rstage'    , rstage    , envir = env)
     assign('rest'      , rest      , envir = env)
-    
-    # 
     assign('dm'        , dm        , envir = env)
+    assign('coleog'    , coleog    , envir = env)
     
   }
   
-  #TO DO: Alexandre -
   ztopPft[i] <- (min(plai[i]/5, 1)) * ztopmxPft[i]
 
   assign("endCycle" , endCycle , envir = env)
@@ -683,6 +731,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   
 }
 
+# function to get daily degree days (or thermal time)
 calc_dtt <- function(dpp, jday, ldtt, udtt) {
   
   dtt <- 0.0

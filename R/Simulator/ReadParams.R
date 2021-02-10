@@ -322,15 +322,15 @@ ReadPlantParamsFromFile <- function(path = "") {
       # funcao mandar em parametro nome da variavel em nome da coluna
       
       # environment(readSoybeanParams) <- simInstances
-      source("./R/CropModels/Soybean/readSoybeanParams.R")
-      # source("./R/CropModels/PerennialForage/readForageParams.R")
       
       if (simInstances[[simId]]$config[[paste0("plant", i)]]$name == "soybean"){
+      source("./R/CropModels/Soybean/readSoybeanParams.R")
         if(!is.na(as.character(data[n,column])) && (!grepl("^[0-9]*$", as.character(data[n,column]), perl = T))){
           readSoybeanParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances,column = column , simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
           n <- n + 1
         }
       } else if(simInstances[[simId]]$config[[paste0("plant", i)]]$name == "forage"){
+      source("./R/CropModels/PerennialForage/readForageParams.R")
         if(!is.na(as.character(data[n,column])) && (!grepl("^[0-9]*$", as.character(data[n,column]), perl = T))){
           readForageParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances,column = column , simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
           n <- n + 1
