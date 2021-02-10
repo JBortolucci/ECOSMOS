@@ -28,8 +28,6 @@
 # tauroot    # fine root biomass turnover time constant (years)
 # tauwood    # wood biomass turnover time constant (years)
 # tauwood0   # wood biomass turnover time constant (years) 
-# totbiol    # total biomass in the lower canopy (kg_C m-2)
-# totbiou    # total biomass in the upper canopy (kg_C m-2)
 # totlail    # total leaf area index for the lower canopy
 # totlaiu    # total leaf area index for the upper canopy
 # woodnorm   # value of woody biomass for upper canopy closure (ie when wood = woodnorm fu = 1.0) (kg_C m-2)
@@ -182,10 +180,10 @@ dynaveg <- function (isimfire) {
     # by loss of carbon to atmosphere due to biomass burning (fire)
     ayneetot <- ayneetot - cdisturb
     
-    # determine total ecosystem above-ground npp
-    ayanpptot <- sum(ayanpp[1:npft])
-    
+
     # PFT_UPDATE: Soma todos os plais do dossel superior
+      totlaiu <- 0.0
+      totbiou <- 0.0
     for(i in 1:npft) {
       if(!plantList[[i]]$active || plantList[[j]]$type == CROPS) next
       if(plantList[[i]]$canopy == UPPER) {
@@ -194,23 +192,6 @@ dynaveg <- function (isimfire) {
       }
     }
     
-    # update total canopy leaf area
-    # totlaiu <- sum(plai[1:8])
-    
-    for(i in 1:npft) {
-      if(!plantList[[i]]$active || plantList[[j]]$type == CROPS) next
-      if(plantList[[i]]$canopy == LOWER) {
-        totlail <- totlail + plai[i]
-        totbiol <- totbiol + biomass[i]
-      }
-    }
-    # totlail <- sum(plai[9:12])
-    
-
-    # update total biomass
-    # totbiou <- sum(biomass[1:8])
-    # 
-    # totbiol <- sum(biomass[9:12])
 
     
     # ---------------------------------------------------------------------
@@ -223,11 +204,8 @@ dynaveg <- function (isimfire) {
     totlail <- max(0.25, totlail)
     
     fu <- (1 - exp( - wood)) / (1 - exp( - woodnorm))
-    
-    # TODO: Alterado somente para testes, voltar ao valor original   fl <- totlail / 0.5
-    # fl <- totlail / 0.5
-    fl <- 1
-#    fl <- totlail / 1
+    fl <- totlail / 1.5
+
     
     # apply disturbances to fractional cover
     fu <- fu * (1 - disturbf - disturbo)
@@ -250,8 +228,8 @@ dynaveg <- function (isimfire) {
     #
     # estimate stem area index (sai) as a fraction of the lai
     
-    #san - original        sai[i,1] <- 0.050 * totlail[i]
-    #san - original        sai[i,2] <- 0.250 * totlaiu[i]
+    sai[i,1] <- 0.050 * totlail[i]
+    sai[i,2] <- 0.250 * totlaiu[i]
     
     sai[1] <- max(0.05,0.050 * totlail)
     sai[2] <- max(0.25,0.250 * totlaiu)
@@ -296,11 +274,6 @@ dynaveg <- function (isimfire) {
   assign("plai", plai, envir = env)
   assign("biomass", biomass, envir = env)
   assign("ayneetot", ayneetot, envir = env)
-  assign("ayanpptot", ayanpptot, envir = env)
-  assign("totlaiu", totlaiu, envir = env)
-  assign("totlail", totlail, envir = env)
-  assign("totbiou", totbiou, envir = env)
-  assign("totbiol", totbiol, envir = env)
   assign("fu", fu, envir = env)
   assign("fl", fl, envir = env)
   assign("zbot", zbot, envir = env)

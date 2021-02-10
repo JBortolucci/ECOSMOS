@@ -364,8 +364,8 @@ GeneralModel <- function(simVars = NULL) {
           }
         } 
         
-        ResetCropsAfterHarvest()
         
+        ResetCropsAfterHarvest()
         CropPhenoUpdate()
         
         # Check if the cycle is complete
@@ -398,6 +398,8 @@ GeneralModel <- function(simVars = NULL) {
         
         # call soil biogeochemistry model
         SoilbgcModel(year, month, day)
+        
+        
         
         # TODO: O que esse código faz?
         plenmin <- 1 +  as.integer((4 * 3600 - 1) / simVars$dtime)

@@ -331,7 +331,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
       }
     }
     
-    ztopPft[j] <- ztopmxPft[j] * min(1,(rm / 50))* (min(plaimx[j] / (laimx[j]), 1)) ** 2
+    ztopPft[j] <- max(ztopPft[j],ztopmxPft[j] * min(1,(rm / 50))* (min(plai[j] / (laimx[j]), 1)) ** 2)
     
   }
   

@@ -25,8 +25,6 @@ ResetCropsAfterHarvest <- function() {
         ayrprod[i]    <- 0
         ayabprod[i]   <- 0
         aylprod[i]    <- 0
-        htmx[1]       <- 0      # ou 2
-        plaimx[i]     <- 0
         biomass[i]    <- 0
         totnuptake[i] <- 0
         tnplant[i]    <- 0
@@ -38,8 +36,6 @@ ResetCropsAfterHarvest <- function() {
         lai[1]        <- 0  # ou 2
         zbot[1]       <- 0    # ou 2
         ztop[1]       <- 0    # ou 2
-        totbiol       <- 0
-        totlail       <- 0
         arepr[i]      <- 0
         
 
@@ -96,8 +92,6 @@ ResetCropsAfterHarvest <- function() {
         assign("aybprod", aybprod, envir = env)
         assign("ayrprod", ayrprod, envir = env)
         assign("aylprod", aylprod, envir = env)
-        assign("htmx", htmx, envir = env)
-        assign("plaimx", plaimx, envir = env)
         assign("biomass", biomass, envir = env)
         assign("totnuptake", totnuptake, envir = env)
         assign("tnplant", tnplant, envir = env)
@@ -109,8 +103,6 @@ ResetCropsAfterHarvest <- function() {
         assign("lai", lai, envir = env)
         assign("zbot", zbot, envir = env)
         assign("ztop", ztop, envir = env)
-        assign("totbiol", totbiol, envir = env)
-        assign("totlail", totlail, envir = env)
 
       }
     }

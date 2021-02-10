@@ -46,7 +46,6 @@ initialcrop <- function() {
       env$ayabprod[i]<- 0
       env$aylprod[i] <- 0
 
-      env$plaimx[i]  <- 0
       env$biomass[i] <- 0
       env$totnuptake[i] <- 0
       env$tnplant[i] <- 0
@@ -61,16 +60,12 @@ initialcrop <- function() {
     
   }
   
-  assign("htmx", matrix(0, 1, 2), envir = env)
   assign("cropy", array(0, 1), envir = env)
   assign("sai", matrix(0, 1, 2), envir = env)
   assign("fu", array(0, 1), envir = env)
   assign("lai", matrix(0, 1, 2), envir = env)
   assign("zbot", matrix(0, 1, 2), envir = env)
   assign("ztop", matrix(0, 1, 2), envir = env)
-  assign("totbiou", array(0, 1), envir = env)
-  assign("totbiol", array(0, 1), envir = env)
-  assign("totlaiu", array(0, 1), envir = env)
-  assign("totlail", array(0, 1), envir = env)
+
 
 }

@@ -343,7 +343,8 @@ iniveg <- function (isimveg) {
   # ************************************************************************
   # 
   # total leaf area for upper and lower canopies
-  
+    totlaiu <- 0
+    totbiou <- 0 
   for(i in 1:npft) {
     if(plantList[[i]]$canopy == UPPER) {
       totlaiu <- totlaiu + plai[i]
@@ -351,6 +352,9 @@ iniveg <- function (isimveg) {
     }
   }
   
+  
+    totlail <- 0 
+    totbiol <- 0
   for(i in 1:npft) {
     if(plantList[[i]]$canopy == LOWER) {
       totlail <- totlail + plai[i]
@@ -557,10 +561,6 @@ iniveg <- function (isimveg) {
   assign("cbios", cbios, envir = env)
   assign("cbiog", cbiog, envir = env)
   assign("biomass", biomass, envir = env)
-  assign("totlaiu", totlaiu, envir = env)
-  assign("totlail", totlail, envir = env)
-  assign("totbiou", totbiou, envir = env)
-  assign("totbiol", totbiol, envir = env)
   assign("sai", sai, envir = env)
   assign("fu", fu, envir = env)
   assign("fl", fl, envir = env)
