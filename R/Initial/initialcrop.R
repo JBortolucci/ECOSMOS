@@ -26,6 +26,7 @@ initialcrop <- function() {
       env$thrlai[i] <- 0
       env$peaklai[i] <- 0
       env$cbiol[i] <- 0
+      env$cbioc[i] <- 0
       env$cbios[i] <- 0
       env$cbior[i] <- 0
       env$cbiow[i] <- 0
@@ -37,6 +38,7 @@ initialcrop <- function() {
       env$astem[i] <- 0
       env$arepr[i] <- 0
       env$awood[i] <- 0
+      env$acob[i]  <- 0
       
       env$aybprod[i] <- 0
       env$ayrprod[i] <- 0

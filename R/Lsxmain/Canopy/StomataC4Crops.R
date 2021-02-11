@@ -1,4 +1,3 @@
-
 StomataC4Crops <- function(i) {
   
   canopy <- plantList[[i]]$canopy
@@ -59,7 +58,7 @@ StomataC4Crops <- function(i) {
   
   # q10 <- 2.92 # Henrique: alterado após análise de dados de milho em Nebraska [2020-11-26] (talvez trazer como parâmetro?)
                 # TODO: Valor de q10 esta no arquivo PlantParams - 04/12/2020
-  
+
   rwork <- 3.47e-03 - 1 / canopyTemp
   tleaf <- canopyTemp - 273.16
   

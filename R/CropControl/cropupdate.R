@@ -223,6 +223,7 @@ Cropupdate <- function (jday) {
   
   
   assign("cbiol", cbiol, envir = env) 
+  assign("cbioc", cbioc, envir = env) 
   assign("plaimx", plaimx, envir = env)           
   assign("frac", frac, envir = env)              
   assign("totlail", totlail, envir = env)         

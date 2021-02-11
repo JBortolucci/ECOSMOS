@@ -289,4 +289,3 @@ StomataC3Crops <- function(i) {
   assign ("rdarkc3", rdarkc3, envir = env)
   
 }
-
