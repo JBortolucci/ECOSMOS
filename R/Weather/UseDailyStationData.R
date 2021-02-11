@@ -56,13 +56,13 @@ UseDailyStationData <- function(day, month, year) {
   qd <- qd * qsat(esat(td), psurf)
   
   # Henrique & Leandro: irrigation feature [2020-11-06]
-  # if(irriON) {
-  #   irrig <- inirrig[which(inirrig$day == useDay &  inirrig$month == month & inirrig$year == useYear),]
-  #   irrig <- ifelse(as.numeric(nrow(irrig))==1,irrig$irrig,0)
-  #   } else {
-  #   irrig <- 0
-  # }
-  # precip <- precip + irrig
+  if(irriON) {
+    irrig <- inirrig[which(inirrig$day == useDay &  inirrig$month == month & inirrig$year == useYear),]
+    irrig <- ifelse(as.numeric(nrow(irrig))==1,irrig$irrig,0)
+    } else {
+    irrig <- 0
+  }
+  precip <- precip + irrig
 
   # Assign to global environment
   assign("tmax", tmax, envir = env)
@@ -73,6 +73,6 @@ UseDailyStationData <- function(day, month, year) {
   assign("ud", ud, envir = env)
   assign("qd", qd, envir = env)
   assign("psurf", psurf, envir = env)
-  # assign("irrig", irrig, envir = env) # Henrique & Leandro: irrigation feature [2020-11-06]
+  assign("irrig", irrig, envir = env) # Henrique & Leandro: irrigation feature [2020-11-06]
   
 }

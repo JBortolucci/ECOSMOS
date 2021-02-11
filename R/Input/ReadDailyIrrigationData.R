@@ -10,10 +10,10 @@ ReadDailyIrrigationData <- function(id, path = "UserFiles/Field/Irrigation/", in
   inirrig   <- read.csv2(paste0(path,id,".csv"), header = T, stringsAsFactors = F, dec = ".")
   if(ncol(inirrig) == 1) {
     inirrig <- read.csv(paste0(path,id,".csv"), header = T, stringsAsFactors = F, dec = ".")
+    assign("irriON",TRUE, envir = instanceEnv)
   }
   
   # Assign to global environment
-  assign("irriON",TRUE, envir = instanceEnv)
   assign("inirrig", inirrig, envir = instanceEnv)
 
 }
