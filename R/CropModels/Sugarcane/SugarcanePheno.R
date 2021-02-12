@@ -248,9 +248,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         
         biomass[j] <- cbiol[j] + cbiog[j] + cbior[j] + cbios[j] + cbiow[j]
         
-        # keep track of aboveground annual npp 
-        ayanpp[j]  <- (aleaf[j] + arepr[j] + astem[j] + awood[j]) * adnpp[j] + ayanpp[j]
-        
+   
         # keep track of total biomass production for the entire year, and the
         aybprod[j] <- aybprod[j] + 
           aleaf[j] * max(0.0,adnpp[j]) +
@@ -372,7 +370,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   assign("cbior", cbior, envir = env)
   assign("cbiow", cbiow, envir = env)
   assign("biomass", biomass, envir = env)
-  assign("ayanpp", ayanpp, envir = env)
   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
 

@@ -3,8 +3,6 @@
 inisoil <- function() {
   
 
-  
-  
   # set sand/silt/clay vectors (xdat,ydat,zdat) for 11 data points
   assign("xdat", texdat[1, 1:ndat], envir = env)
   assign("ydat", texdat[2, 1:ndat], envir = env)
@@ -213,6 +211,10 @@ inisoil <- function() {
   # albsan -> saturated soil surface albedo (near-ir waveband)
   assign("albsav",  fracsand[1] * 0.120 + fracsilt[1] * 0.085 + fracclay[1] * 0.050, envir = env)
   assign("albsan",  2.0 * albsav, envir = env)
+
+  
+  assign("isoilay",  min(isoilay,nsoilay), envir = env) # soil layer for which drainage and leaching data is output
+  
 
 }
 

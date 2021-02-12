@@ -1,5 +1,5 @@
 
-SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
+SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, index) {
   
   i <- index
   
@@ -58,7 +58,7 @@ SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
       if (iyear < 1950) {
         fertnitro[i] <- 0.0009       # sugarcane - kg_n m-2 y-1
       } else if(iyear > 2000) {
-        fertnitro[i] <- fertsgc[51]   * ffact * 1e-04 # sugarcane - kg_n m-2 y-1
+        fertnitro[i] <- fertsgc[51]   * 1e-04 # sugarcane - kg_n m-2 y-1
       } else {
         fertnitro[i] <- fertsgc[iyear+1-1950]   * 1e-04 # sugarcane - kg_n m-2 y-1
       }

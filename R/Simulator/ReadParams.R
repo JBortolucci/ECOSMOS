@@ -184,8 +184,8 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
   assign("tauvegirlg", as.numeric(data[112,][2]), envir = envToSet)
   assign("tauvegirlb", as.numeric(data[113,][2]), envir = envToSet)
   assign("tauvegiru",  as.numeric(data[114,][2]), envir = envToSet)
-  
-  
+  print(as.numeric(data[115,][2]))
+  assign("isoilay",  as.numeric(data[115,][2]), envir = envToSet)
 }
 
 

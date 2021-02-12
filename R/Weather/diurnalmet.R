@@ -20,8 +20,7 @@
 # xirrig     # irrigated water application rate (mm/day) to crops
 # xirriga    # irrigated application rate per timestep
 
-diurnalmetR <- function (envi, time, jday, plens, startp, endp,
-                        irrigate, ilens, starti, endi) {
+diurnalmetR <- function (envi, time, jday, irrigate) {
   # ---------------------------------------------------------------------- 
   # *  *  * calendar and orbital calculations *  * *
   # ---------------------------------------------------------------------- 
@@ -130,40 +129,9 @@ diurnalmetR <- function (envi, time, jday, plens, startp, endp,
   }
   
   # ---------------------------------------------------------------------- 
-  # *  *  * temperature calculations *  * *
-  # ---------------------------------------------------------------------- 
-  #
-  # assign hourly temperatures using tmax and tmin 
-  # following Environmental Biophysics, by Campbell and Norman, p.23
-  #
-  # this function fits a fourier series to the diurnal temperature cycle
-  # note that the maximum temperature occurs at 2:00 pm local solar time
-  #
-  # note that the daily mean value of gamma is 0.44, 
-  # so td <- 0.44 * tmax + 0.56 * tmin,  instead of
-  #    td <- 0.50 * tmax + 0.50 * tmin
-  
-  gamma <- 0.44 - 0.46 * sin (      pi / 12 * rtime  + 0.9) +  
-    0.11 * sin (2 * pi / 12 * rtime  + 0.9)
-  
-  # ---------------------------------------------------------------------- 
   # *  *  * humidity calculations *  * *
   # ---------------------------------------------------------------------- 
-  #
-  # adjust specific humidity against daily minimum temperatures
-  #
-  # To do this, qa is written as an approximate sine function (same as ta)
-  # to preserve the daily mean specific humidity, while also preventing rh
-  # from exceeding 99% at night
-  #
-  # Note that the daily mean RH is * not * preserved, and therefore the
-  # output RH will be slightly different from what was read in.
-  #
-  # first adjust so that maximum RH cannot exceed 99% at night
-  
-  # if needed, adjust again to 99% at other times of the day (in which
-  # case the daily mean * specific * humidity is also not preserved)
-  
+
   qsa <- 0.99 * qsat(esat(ta), psurf)
   
   # calculate the hourly specific humidity, using the above adjustments
@@ -210,6 +178,10 @@ diurnalmetR <- function (envi, time, jday, plens, startp, endp,
   # determine the number of timesteps per day
   niter <- as.integer (86400 / dtime)
   
+  plen <-1
+  plens  <- dtime * plen
+
+  
   if(ta - 273.15 > 2.5) {
     raina <- precip / plens
   } else {
@@ -222,6 +194,10 @@ diurnalmetR <- function (envi, time, jday, plens, startp, endp,
   #
   # reset rate of irrigation application per timestep 
   xirriga <- 0
+  
+  ilens  <- dtime * (12.0 * 3600 / dtime)
+  starti <- dtime * (6.0  * 3600 / dtime)
+  endi   <- starti + ilens
   
   # if precipitation event - then no irrigation that day 
   if(time  >= starti && time  < endi &&  

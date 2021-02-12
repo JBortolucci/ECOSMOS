@@ -198,7 +198,7 @@ EucaliptoModel <- function(year, month, day, index) {
 #   }
 #   assign("froot", froot, envir = env)
   
-  EucaliptoPlanting(year0, year, month, day, jday, ffact, index)
+  EucaliptoPlanting(year0, year, month, day, jday, index)
   
   EucaliptoPhenocrop(year, year0, month, day, jday, index)
   

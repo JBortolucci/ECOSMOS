@@ -162,29 +162,21 @@ GeneralModel <- function(simVars = NULL) {
     simVars$isimfire   <- config$isimfire          
     simVars$isimco2    <- simVars$FIXED_CO2                
     simVars$irrigate   <- config$irrigate                  
-    simVars$gdddy      <- 1 #simVars$UPDATE_GDD_YEAR        
-    simVars$irotation  <- simVars$NONE                      
     simVars$overveg    <- simVars$COMPETE_CLIM_CONSTRAINTS  
     
-    simVars$ffact      <- 1.0        #SCV/Jair - alterar para ler do plant_params
-    simVars$isoilay    <- simVars$nsoilay # Henrique: trava qdo é > nsoilay (25/09/2020)        
     simVars$co2init    <- 0.000380 
     simVars$o2init     <- 0.209000 
     
     simVars$lat        <- point$coord$lat
     simVars$lon        <- point$coord$lon
     
-    # por que setado aqui?
-    simVars$istyear    <- 1980      
-    simVars$istend     <- 2020  
-    
     # Função de Configuração do output
     # createOutput(simVars)
     
     simVars$cropsums <- length(simVars$plantList)
-    
     # TODO: Para testar a planta, por causa dos if's, coloca como 0. Remover essa variável e os if's depois.
-    simVars$cropsums <- 1
+    simVars$cropsums <- 1 #Jair e Victor atencao na hora de testar o modelo
+    
     
     simVars$iyrlast <- simVars$year0 - 1
     
@@ -333,17 +325,84 @@ GeneralModel <- function(simVars = NULL) {
       for(day in seq(simVars$simulationStartDay, daypm(month, year))) {
         
         simVars$day <- day
-        
-        # to do: Santiago ou Jair, achar lugar apropriado para levar ayanpp          
-        if(day == 1  && month == 1) { 
-          ayanpp <- array(0, 1)    
-        }
-        
+
         simVars$jday <- simVars$jday + 1
         
         
         UseDailyStationData(day, month, year)
         
+        
+
+        for(j in seq(1,simVars$npft)) {
+          if(!simVars$plantList[[j]]$active) next
+          if(simVars$plantList[[j]]$type == simVars$CROPS) {
+            if(simVars$irrigate == 1 && simVars$croplive[j]) { 
+              irrigation(day, month) 
+            }
+          }
+        }
+        
+        # INICIO LOOP HORÁRIO
+        
+        # cria as Variáveis de média
+        # initializeMeansVariables(simVars, simVars$outputDailyList)
+        
+        for(step in seq(1, simVars$niter)) {
+          
+          simVars$step <- step
+
+          time <- (step - 1) * simVars$dtime
+          
+          if ( (year == simVars$imetyear && simVars$jday >= simVars$dmetyear) || 
+               (year > simVars$imetyear && year < simVars$imetend) || 
+               (year == simVars$imetend && simVars$jday <= simVars$dmetend)) {
+            
+            UseMethourlyData(year, simVars$jday, time)
+            
+            diurnalmet(simVars, time, simVars$jday, simVars$irrigate)
+          } else {
+            
+            diurnal(simVars, time, simVars$jday, simVars$irrigate)
+            
+          }
+          
+
+          lsxmain(time, day, month, year, simVars$jday)
+          
+          sumnow() # codigo em R
+          
+          sumday(step, plens, year, simVars$jday)
+          #CSVC summonth(step, day, month)
+          #CSVC sumyear(step, day, month)
+          
+          nitrostress(step, day, month)
+          
+          leaching(0, step, day, month, year, 0, simVars$year0)
+          
+          
+          # Adiciona 1 ao passo absoluto
+          simVars$absStep <- simVars$absStep + 1 
+          
+          # # Salva o valor incrementando ele mesmo todos os dias 
+          # for (variavel in simVars$outputDailyList) {
+          #   simVars[[paste(variavel, "Mean", sep = '')]] <- simVars[[paste(variavel, "Mean", sep = '')]] + simVars[[variavel]]
+          # } 
+          # 
+          # if (!is.null(simVars$outputHourlyList))
+          #   outputC(simVars, paste(year, month, day, sep = '-'), simVars$HOURLY)
+          # 
+          # output_hourly <- paste(year, simVars$jday, step, - simVars$tneetot * 1e6 , sep=',')
+          # writeLines(output_hourly, simVars$out_tower_hourly)
+          # 
+          if(!is.null(simVars$OnEndHourlyStep))
+            simVars$OnEndHourlyStep(simVars)
+          
+          
+        } # FIM DO LOOP HORÁRIO
+        
+        
+        
+#       Chama os modelos de vegetacao
         
         # TODO: Testando, comentar caso queira rodar o modelo corretamente (ou antes de terminar de testar)
         # determine the daily vegetation cover characteristics
@@ -366,6 +425,8 @@ GeneralModel <- function(simVars = NULL) {
         
         
         ResetCropsAfterHarvest()
+        
+#   Atualiza as propriedades da vegetacao 
         CropPhenoUpdate()
         
         # Check if the cycle is complete
@@ -400,96 +461,6 @@ GeneralModel <- function(simVars = NULL) {
         SoilbgcModel(year, month, day)
         
         
-        
-        # TODO: O que esse código faz?
-        plenmin <- 1 +  as.integer((4 * 3600 - 1) / simVars$dtime)
-        plenmax <- max(as.integer(24* 3600 / simVars$dtime), plenmin)
-        
-        if( (year < simVars$imetyear || year > simVars$imetend || (year == simVars$imetyear && simVars$jday < simVars$dmetyear) || (year == simVars$imetend && simVars$jday > simVars$dmetend))  ) {
-          plen <- min (plenmax, as.integer(plenmin + 0.5 * (plenmax-plenmin+1)))
-        } else {
-          plen <- 1
-        }
-        
-        plens  <- simVars$dtime * plen
-        
-        startp <- simVars$dtime * min (simVars$niter - plen, as.integer(0.5 * (simVars$niter-plen+1)))
-        endp   <- startp + plens
-        
-        ilens  <- simVars$dtime * (12.0 * 3600 / simVars$dtime)
-        starti <- simVars$dtime * (6.0  * 3600 / simVars$dtime)
-        endi   <- starti + ilens
-        
-        for(j in seq(1,simVars$npft)) {
-          if(!simVars$plantList[[j]]$active) next
-          if(simVars$plantList[[j]]$type == simVars$CROPS) {
-            if(simVars$irrigate == 1 && simVars$croplive[j]) { 
-              irrigation(day, month) 
-            }
-          }
-        }
-        
-        # INICIO LOOP HORÁRIO
-        
-        # cria as Variáveis de média
-        # initializeMeansVariables(simVars, simVars$outputDailyList)
-        
-        for(step in seq(1, simVars$niter)) {
-          
-          simVars$step <- step
-
-          time <- (step - 1) * simVars$dtime
-          
-          if ( (year == simVars$imetyear && simVars$jday >= simVars$dmetyear) || 
-               (year > simVars$imetyear && year < simVars$imetend) || 
-               (year == simVars$imetend && simVars$jday <= simVars$dmetend)) {
-            
-            UseMethourlyData(year, simVars$jday, time)
-            
-            diurnalmet(simVars, time, simVars$jday, plens, startp, endp, simVars$irrigate, ilens, starti, endi)
-          } else {
-            
-            diurnal(simVars, time, simVars$jday, plens, startp, endp, simVars$irrigate, ilens, starti, endi)
-            
-          }
-          
-          
-          # JAIR: Não estão sendo utilizadas
-          simVars$t_sec    <- time
-          simVars$t_startp <- startp
-          
-          lsxmain(time, day, month, year, simVars$jday)
-          
-          sumnow() # codigo em R
-          
-          sumday(step, plens, year, simVars$jday)
-          #CSVC summonth(step, day, month)
-          #CSVC sumyear(step, day, month)
-          
-          nitrostress(step, day, month)
-          
-          leaching(0, step, day, month, year, 0, simVars$year0)
-          
-          
-          # Adiciona 1 ao passo absoluto
-          simVars$absStep <- simVars$absStep + 1 
-          
-          # # Salva o valor incrementando ele mesmo todos os dias 
-          # for (variavel in simVars$outputDailyList) {
-          #   simVars[[paste(variavel, "Mean", sep = '')]] <- simVars[[paste(variavel, "Mean", sep = '')]] + simVars[[variavel]]
-          # } 
-          # 
-          # if (!is.null(simVars$outputHourlyList))
-          #   outputC(simVars, paste(year, month, day, sep = '-'), simVars$HOURLY)
-          # 
-          # output_hourly <- paste(year, simVars$jday, step, - simVars$tneetot * 1e6 , sep=',')
-          # writeLines(output_hourly, simVars$out_tower_hourly)
-          # 
-          if(!is.null(simVars$OnEndHourlyStep))
-            simVars$OnEndHourlyStep(simVars)
-          
-          
-        } # FIM DO LOOP HORÁRIO
         
         # # Divide todos os valor por 24 para calcular a média do dia 
         # for (variavel in simVars$outputDailyList) {

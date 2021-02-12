@@ -9,7 +9,7 @@ SugarcaneModel <- function(year, month, day, index) {
   environment(SugarcanePheno)     <- env
   environment(SugarcaneResidue)   <- env
   
-  SugarcanePlanting(year0, year, month, day, jday, ffact, index)
+  SugarcanePlanting(year0, year, month, day, jday, index)
   
   SugarcanePheno(year, year0, month, day, jday, index)
   

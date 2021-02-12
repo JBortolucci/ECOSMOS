@@ -383,10 +383,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       biomass[i] <- cbiol[i] + cbiocr[i] + cbior[i] + cbiob[i] + cbiow[i]
       
-      # keep track of aboveground annual npp
-      ayanpp[i] <- (aleaf[i] + acroot[i] + abranch[i] + awood[i]) * adnpp[i] + ayanpp[i]
-      
-      
+  
       #####################################################################
       # check for climatic and phenological limits on maturity, growth,
       # and harvest date
@@ -472,7 +469,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("ayabprod", ayabprod, envir = env)
   assign("ayrprod", ayrprod, envir = env)
   assign("aylprod", aylprod, envir = env)
-  assign("ayanpp", ayanpp, envir = env)
   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
   assign("Deadwood",Deadwood      , envir = env)

@@ -1,5 +1,5 @@
 
-SugarcanePlanting <- function(year0, year, month, day, jday, ffact, index) {
+SugarcanePlanting <- function(year0, year, month, day, jday, index) {
   
   j <- index
   
@@ -68,7 +68,7 @@ SugarcanePlanting <- function(year0, year, month, day, jday, ffact, index) {
         
       } else if(year > 2000) {
         
-        fertnitro[j] <- fertsgc[51]   * ffact * 1e-04 # sugarcane - kg_n m-2 y-1
+        fertnitro[j] <- fertsgc[51]   * 1e-04 # sugarcane - kg_n m-2 y-1
         
       } else {
         

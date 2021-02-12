@@ -2,8 +2,6 @@
 # aleaf      # fraction allocation to leaves
 # aroot      # fraction allocation to fine roots
 # awood      # fraction allocation to wood
-# ayanpp     # annual above-ground npp for each plant type(kg-c/m**2/yr)
-# ayanpptot  # annual above-ground npp for ecosystem (kg-c/m**2/yr)
 # ayneetot   # annual total NEE for ecosystem (kg-C/m**2/yr)
 # aynpp      # annual total npp for each plant type(kg-c/m**2/yr)
 # biomass    # total biomass of each plant functional type  (kg_C m-2)
@@ -94,9 +92,6 @@ dynaveg <- function (isimfire) {
       if(!plantList[[j]]$active || plantList[[j]]$type == CROPS) next
       # apply this year's existence arrays to npp
       aynpp[j] <- exist[j] * aynpp[j]
-      
-      # determine above-ground npp for each plant type
-      ayanpp[j] <- (aleaf[j] + awood[j]) * aynpp[j]
       
       # determine turnover rates for woody biomass:
       #
@@ -273,7 +268,6 @@ dynaveg <- function (isimfire) {
   assign("disturbo", disturbo, envir = env)
   assign("plai", plai, envir = env)
   assign("biomass", biomass, envir = env)
-  assign("ayneetot", ayneetot, envir = env)
   assign("fu", fu, envir = env)
   assign("fl", fl, envir = env)
   assign("zbot", zbot, envir = env)

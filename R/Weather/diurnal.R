@@ -36,8 +36,7 @@
 # xirrig     # irrigated water application rate (mm/day) to crops
 # xirriga    # irrigated application rate per timestep
 
-diurnalR <- function (envi, time, jday, plens, startp, endp,
-                     irrigate, ilens, starti, endi) {
+diurnalR <- function (envi, time, jday, irrigate) {
   # ---------------------------------------------------------------------- 
   # *  *  * calendar and orbital calculations *  * *
   # ---------------------------------------------------------------------- 
@@ -258,8 +257,6 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   # *  *  * snow and rain calculations *  * *
   # ---------------------------------------------------------------------- 
   
-  repeat {
-    
     # reset snow and rain to zero
     snowa <- 0
     raina <- 0
@@ -270,31 +267,32 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
     # change the rain length when the amount of rainfall / timestep is
     # too high (at the first time step)
     
-    if(time  < dtime) {
-      plen <- plens / dtime
+
+    # adicionar variabilidade 
+    if(time == 0) {
       plenmin <- 1 + as.integer ((4 * 3600 - 1) / dtime)
       plenmax <- max (as.integer (24 * 3600 / dtime), plenmin)
-      checkP <- 0
+      plen <- min (plenmax, as.integer(plenmin + 0.5 * (plenmax-plenmin+1)))
+      # startp <- dtime  * min (niter - plen, (runif(1) * (niter - plen + 1)))
+      startp <- dtime  * min (niter - plen, (0.5 * (niter - plen + 1)))
+      endp <- startp + plen * dtime
+      plens  <- dtime  * plen
+            
+      add_Plen <- 0
       
       while(precip / plen > 95 && plen < plenmax) {
         plen <- plen + 1
-        checkP <- 1
-      }
+        add_Plen <- add_Plen + 1 }
       
-      if(checkP == 1) {
-        plens <- dtime  * plen
-        # startp <- dtime  * min (niter - plen, (runif(1) * (niter - plen + 1)))
-        startp <- dtime  * min (niter - plen, (0.5 * (niter - plen + 1)))
-        endp <- startp + plen * dtime
-      } else {
-        break
-      }
-    } else {
-      break
-    }
+        if(add_Plen >= 1) {
+          startp <- dtime  * max (startp - add_Plen, 1)
+          endp   <- startp + plen * dtime
+          plens  <- dtime  * plen
+        } 
   }
   
   
+
   
   # if precipitation event then calculate
   if(time  >= startp && time  < endp) {  
@@ -316,8 +314,15 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   # *  *  * irrigation calculations *  * *
   # ---------------------------------------------------------------------- 
   #
+  
+  
   # reset rate of irrigation application per timestep 
   xirriga <- 0
+  
+  ilens  <- dtime * (12.0 * 3600 / dtime)
+  starti <- dtime * (6.0  * 3600 / dtime)
+  endi   <- starti + ilens
+  
   
   # if precipitation event - then no irrigation that day 
   if(time  >= starti && time  < endi &&  
@@ -348,6 +353,9 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   assign("raina", raina, envir = env)
   assign("xirriga", xirriga, envir = env)
   assign("totirrig", totirrig, envir = env)
+  assign("plens" , plens , envir = env)
+  assign("startp", startp, envir = env)
+  assign("endp"  , endp  , envir = env)
   
   return()
 }

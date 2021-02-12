@@ -824,10 +824,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbiop[i]
     
-    # keep track of aboveground annual npp
-    ayanpp[i] <- ayanpp[i] + adnpp[i] 
-    
-    
     #END TEST RICE MODEL FROM ORYZA    
     #____________________________________        
     

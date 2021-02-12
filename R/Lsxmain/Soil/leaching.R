@@ -34,7 +34,7 @@
 # fwtop      # h20 flux into top layer from evap/condens 
 # hsoi       # soil layer thickness (m)
 # idoy       # day of year counter  
-# isoilay    # daily average soil ice content for each soil layer            #Henrique: duas definições para mesma sigla? (25/09/2020)
+# adwisoilay# daily average soil ice content for each soil layer           
 # isoilay    # soil layer for which drainage and leaching data is output
 # nout       # current timestep nitrate leaching flux  (kg_solute/m2)
 # smsoil     # current timestep solute in soil (kg_solute/m2)
