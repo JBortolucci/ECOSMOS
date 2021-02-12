@@ -310,7 +310,7 @@ iniveg <- function (isimveg) {
     # TODO: Crir parâmetro para vegetação natural, altura inicial.
     if(plantList[[j]]$type == NATURAL_VEG) {
       if (plantList[[j]]$name == "BroadleafDD") {
-        plai[j] <- 1.00
+        plai[j] <- 5.00
       } else if (plantList[[j]]$name == "BroadleafE") {
         plai[j] <- 5.00
       } else {

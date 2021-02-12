@@ -199,6 +199,7 @@ ReadPlantParamsFromFile <- function(path = "") {
     
     for(i in 1:npft) {  
       
+      
       column <- simInstances[[simId]]$config[[paste0("plant", i)]]$params
       
       # Cuidado, na função as.Date, o dia juliano começa com 0!!! Será preciso subtrair 1 do valor da planilha

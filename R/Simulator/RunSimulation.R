@@ -329,6 +329,9 @@ GeneralModel <- function(simVars = NULL) {
         simVars$jday <- simVars$jday + 1
         
         
+        print(paste("Simulation ",day, month, year,simVars$lai[1],simVars$lai[2],sep = " / "))
+        
+        
         UseDailyStationData(day, month, year)
         
         

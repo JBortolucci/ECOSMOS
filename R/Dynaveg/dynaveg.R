@@ -175,7 +175,7 @@ dynaveg <- function (isimfire) {
     # by loss of carbon to atmosphere due to biomass burning (fire)
     ayneetot <- ayneetot - cdisturb
     
-
+# remover
     # PFT_UPDATE: Soma todos os plais do dossel superior
       totlaiu <- 0.0
       totbiou <- 0.0
@@ -187,8 +187,10 @@ dynaveg <- function (isimfire) {
       }
     }
     
-
-    
+      # remover ate aqui
+  
+# essa parte de baixo ja' esta' sendo feita no CropPhenoUpdate
+      
     # ---------------------------------------------------------------------
     # *  *  * update fractional cover and vegetation height parameters *  * *
     # ---------------------------------------------------------------------
@@ -240,6 +242,9 @@ dynaveg <- function (isimfire) {
     denswood <- 400                       # kg / m**3
     
     sapfrac <- min (0.50, max (0.05, sapvolume  * denswood / wood))
+    
+    # essa parte levar para CropPhenoUpdate
+    
     
   # }  # check for crop existence 
   

@@ -1,2 +1,2 @@
-ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,plant population,row spacing,planting depth,cycle length,cycles,params,P1,plating day,start year,plant population,row spacing,planting depth,cycle length,cycles
-NAT_VEG_TEST,-21.951667,-47.335278,2015,1,2018,365,FAYS,FAYS1518,0,0,1,0,0,C4Grass,244,2015,,,,440,1,sugarcane1,BroadleafE,,,,,,,
+ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,plating day,start year,plant population,row spacing,planting depth,cycle length,cycles,params,P2,plating day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
+NAT_VEG_TEST,-21.951667,-47.335278,2015,1,2016,100,FAYS,FAYS1518,0,0,1,0,0,C4Grass,0,0,0,0,0,0,1,C4Grass,BroadleafDD,0,0,0,0,0,0,1,BroadleafDD
