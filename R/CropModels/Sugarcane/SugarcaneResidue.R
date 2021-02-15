@@ -38,23 +38,18 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     ayabprod[j] <- max(cbiol[j], ayabprod[j])
     
     # calculate dry matter material (Mg / ha); yield in Mg / ha dry matter (sucrose carbon)
-    dmyield[j] <- cbiog[j] * 10 / cgrain[j]  
-    dmstem[j]  <- cbios[j] * 10 / cgrain[j]   
+    dmyield[j] <- cbiog[j]* fyield[j] * 10 / cgrain[j]  
+    dmstem[j]  <- cbios[j]* fyield[j] * 10 / cgrain[j]   
     dmleaf[j]  <- cbiol[j] * 10 / cgrain[j]   
     dmroot[j]  <- cbior[j] * 10 / cgrain[j]   
-    dmwood[j]  <- cbiow[j] * 10 / cgrain[j]   
+
     dmcrop[j] <- dmyield[j] + dmstem[j] + dmleaf[j] + dmroot[j]
     
-    if(j == j) {
-      dmyield[j] <- dmyield[j] * fyield[j] 
-      dmstem[j]  <- dmstem[j] * fyield[j]
-    }
+   
     
     # calculate above ground residue dry matter (Mg / ha) at harvest
-    if(j == j) {
       dmresidue[j] <- dmleaf[j] + ( (cbios[j] + cbiog[j]) * (1 - fyield[j]) * 10 / cgrain[j] ) #meristem + the base not harvested
-    } 
-    
+
     
     # calculate aboveground residue dry matter total (including along the grow season)
     rdm <- dmresidue[j] + (aylprod[j] * 10 / cgrain[j]) - dmleaf[j] # - dmleaf[i,j]; since dmleaf[i,j] is accounted in aylprod    

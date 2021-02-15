@@ -111,21 +111,11 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
     
     fallw <- 0.0
     
-    cbior[j] <- 0.0
-    cbiol[j] <- 0.0
-    cbiog[j] <- 0.0
-    cbiop[j] <- 0.0
-    cbios[j] <- 0.0
-    
-    
+
     
   }  # harvest <- jday
   
-  falll <- as.vector(falll)
-  fallr <- as.vector(fallr)
-  fallw <- as.vector(fallw)
-  
-  
+
 
   assign("falll", falll, envir = env)
   assign("fallw", fallw, envir = env)

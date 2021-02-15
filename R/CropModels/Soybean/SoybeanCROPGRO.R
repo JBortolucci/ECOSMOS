@@ -829,33 +829,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     #_____________________________________________
     
-    # keep track of total biomass production for the entire year, and the
-    aybprod[i] <- aybprod[i] +
-      aleaf[i] * max(0.0,adnpp[i]) +
-      abranch[i] * max(0.0,adnpp[i]) +
-      aroot[i] * max(0.0,adnpp[i]) +
-      awood[i] * max(0.0,adnpp[i]) +
-      acroot[i] * max(0.0,adnpp[i])
-    
-    # aboveground value to calculate harvest index
-    ayabprod[i] <- ayabprod[i] +
-      aleaf[i] * max(0.0,adnpp[i]) +
-      abranch[i] * max(0.0,adnpp[i]) +
-      awood[i] * max(0.0,adnpp[i])
-    
-    
-    # keep track of annual total root production carbon
-    ayrprod[i] <- ayrprod[i] +
-      aroot[i] * max(0.0,adnpp[i]) +
-      acroot[i] * max(0.0,adnpp[i])
-    
-    
-    # keep track of total carbon allocated to
-    # leaves for litterfall calculation
-    aylprod[i] <- aylprod[i] +
-      aleaf[i] * max (0.0, adnpp[i])
-    
-    
+  
     if(cropy == 1) {
       
       if ( RSTAGE == 8 | frost ) {
@@ -901,12 +875,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("cbior", cbior, envir = env)
   assign("plai", plai, envir = env)
   assign("aerial", aerial, envir = env)
-  assign("aybprod", aybprod, envir = env)
-  assign("ayabprod", ayabprod, envir = env)
-  assign("ayrprod", ayrprod, envir = env)
-  assign("aylprod", aylprod, envir = env)
-  assign("biomass", biomass, envir = env)
-  assign("ayanpp", ayanpp, envir = env)
   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
   assign("cropy", cropy, envir = env)

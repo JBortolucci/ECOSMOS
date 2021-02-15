@@ -21,36 +21,25 @@ EucaliptoCropresidue <- function (year, year0, jday, index) {
   if(exist[j] == 1 && harvdate[j] == jday) {
     
 
-    ayabprod[j] <- max(cbiol[j], ayabprod[j])
-    
-    # added so division by zero doesn't take place in those places where
-    # production was zero 
-    
-    # adjust actual grain yield value (params.crp)
-    dumg <- cbiocr[j] 
-    cbiocr[j] <- cbiocr[j] * fyield[j] 
-    
-    # add excess (i.e. pod of soybeans) to stem storage pool of plant 
-    cbiob[j] <- max(0, cbiob[j] + (dumg - cbiocr[j]))
-    
+ 
 
     # calculate dry matter material (Mg / ha); yield in Mg / ha dry matter (sucrose carbon)
-    dmyield[j] <- cbiocr[j] * 10 / cgrain[j]  
+    dmyield[j] <- (cbiow[j]*fyield[j]) / cgrain[j]  
     dmstem[j]  <- cbiob[j]  * 10 / cgrain[j]   
     dmleaf[j]  <- cbiol[j]  * 10 / cgrain[j]   
-    dmroot[j]  <- cbior[j]  * 10 / cgrain[j]   
+    dmroot[j]  <- (cbior[j]+cbiocr[j])  * 10 / cgrain[j]   
     dmwood[j]  <- cbiow[j]  * 10 / cgrain[j]   
     
-    dmcrop[j] <- dmyield[j] + dmstem[j] + dmleaf[j] + dmroot[j]
+    dmcrop[j] <- dmstem[j] + dmleaf[j] + dmroot[j] + dmwood[j] 
     
     
     # calculate above ground residue dry matter (Mg / ha) at harvest
-    dmresidue[j] <- dmleaf[j] + dmstem[j] + (dmwood[j]*fyield[j])
+    dmresidue[j] <- dmleaf[j] + dmstem[j] + dmwood[j] * (1-fyield[j])
     
     
     
     # calculate aboveground residue dry matter total (including along the grow season)
-    rdm <- dmresidue[j] + (aylprod[j] * 10 / cgrain[j]) - dmleaf[j] # - dmleaf[i,j]; since dmleaf[i,j] is accounted in aylprod    
+    rdm <- dmresidue[j] + ((aylprod[j] * 10 / cgrain[j]) - dmleaf[j])   
     
     
     # calculate fractions for leaf and stem
@@ -125,7 +114,6 @@ EucaliptoCropresidue <- function (year, year0, jday, index) {
   assign("falll", falll, envir = env)
   assign("fallw", fallw, envir = env)
   assign("fallr", fallr, envir = env)
-  assign("ayabprod", ayabprod, envir = env)
   assign("dmyield", dmyield, envir = env)
   assign("dmstem", dmstem, envir = env)
   assign("dmleaf", dmleaf, envir = env)

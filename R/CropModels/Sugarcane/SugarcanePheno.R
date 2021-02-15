@@ -246,36 +246,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         cbiog[j] <- max(0.0, cbiog[j]) 
         
         
-        biomass[j] <- cbiol[j] + cbiog[j] + cbior[j] + cbios[j] + cbiow[j]
-        
-   
-        # keep track of total biomass production for the entire year, and the
-        aybprod[j] <- aybprod[j] + 
-          aleaf[j] * max(0.0,adnpp[j]) +
-          astem[j] * max(0.0,adnpp[j]) +
-          aroot[j] * max(0.0,adnpp[j]) +
-          awood[j] * max(0.0,adnpp[j]) +
-          arepr[j] * max(0.0,adnpp[j])
-        
-        
-        # aboveground value to calculate harvest index
-        ayabprod[j] <- ayabprod[j] +
-          aleaf[j] * max(0.0,adnpp[j]) +
-          astem[j] * max(0.0,adnpp[j]) +
-          arepr[j] * max(0.0,adnpp[j]) +
-          awood[j] * max(0.0,adnpp[j]) 
-        
-        # keep track of annual total root production carbon
-        ayrprod[j] <- ayrprod[j] +
-          aroot[j] * max(0.0,adnpp[j])
-        
-        # keep track of total carbon allocated to 
-        # leaves for litterfall calculation
-        aylprod[j] <- aylprod[j] + 
-          aleaf[j] * max (0.0, adnpp[j])
-        
-        
-        
+       
         #####################################################################
         # check for climatic and phenological limits on maturity, growth, 
         # and harvest date
@@ -347,8 +318,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   assign("astem", astem, envir = env)
   assign("tlai", tlai, envir = env)
   assign("plai", plai, envir = env)
-  assign("astemi", astemi, envir = env)
-  assign("aleafi", aleafi, envir = env)
   assign("templai", templai, envir = env)
   assign("gddemerg", gddemerg, envir = env)
   assign("aerial", aerial, envir = env)
@@ -359,17 +328,12 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   assign("af4", af4, envir = env)
   assign("af5", af5, envir = env)
   assign("af6", af6, envir = env)
-  assign("aybprod", aybprod, envir = env)
-  assign("ayabprod", ayabprod, envir = env)
-  assign("ayrprod", ayrprod, envir = env)
-  assign("aylprod", aylprod, envir = env)
   assign("cbiol", cbiol, envir = env)
   assign("cbiog", cbiog, envir = env)
   assign("cbios", cbios, envir = env)
   assign("fallrsgc", fallrsgc, envir = env)
   assign("cbior", cbior, envir = env)
   assign("cbiow", cbiow, envir = env)
-  assign("biomass", biomass, envir = env)
   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
 

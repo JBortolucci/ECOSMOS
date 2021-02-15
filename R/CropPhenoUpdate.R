@@ -106,6 +106,44 @@ CropPhenoUpdate <- function() {
   }
   
   
+# Fim da Atualizacao das propriedades dos Dosseis
+#______________________________________________________
+
+#______________________________________________________    
+# Start track of total biomass production  
+
+    #----------------------------
+  #### Annual production
+  #----------------------------
+  # keep track of total biomass production for the entire year, and the
+  aybprod[i]   <- aybprod[i] +
+    aleaf[i]   * max(0.0,adnpp[i]) +
+    abranch[i] * max(0.0,adnpp[i]) +
+    aroot[i]   * max(0.0,adnpp[i]) +
+    awood[i]   * max(0.0,adnpp[i]) +
+    acroot[i]  * max(0.0,adnpp[i])
+  
+  # aboveground value to calculate harvest index
+  ayabprod[i]  <- ayabprod[i] +
+    aleaf[i]   * max(0.0,adnpp[i]) +
+    abranch[i] * max(0.0,adnpp[i]) +
+    awood[i]   * max(0.0,adnpp[i])
+  
+  # keep track of annual total root production carbon
+  ayrprod[i]  <- ayrprod[i] +
+    aroot[i]  * max(0.0,adnpp[i]) +
+    acroot[i] * max(0.0,adnpp[i])
+  
+  # keep track of total carbon allocated to
+  # leaves for litterfall calculation
+  aylprod[i] <- aylprod[i] +
+    aleaf[i] * max (0.0, adnpp[i])
+  
+  biomass[i] <- cbiol[i] + cbiocr[i] + cbior[i] + cbiob[i] + cbiow[i]
+  
+
+# End track of total biomass production  
+#______________________________________________________      
   
   
   
@@ -117,5 +155,12 @@ CropPhenoUpdate <- function() {
   assign("greenfracl", greenfracl, envir = env)   
   assign("zbot", zbot, envir = env)               
   assign("ztop", ztop, envir = env)               
-  assign("sai", sai, envir = env)                 
+  assign("sai", sai, envir = env)   
+  
+  assign("biomass", biomass, envir = env)
+  assign("aybprod", aybprod, envir = env)
+  assign("ayabprod", ayabprod, envir = env)
+  assign("ayrprod", ayrprod, envir = env)
+  assign("aylprod", aylprod, envir = env)
+  
 }

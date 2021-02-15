@@ -31,11 +31,6 @@ ResetCropsAfterHarvest <- function() {
         totnfix[i]    <- 0
         idpp[i]       <- 0
         gddplant[i]   <- 0
-        sai[1]        <- 0   # ou 2
-        fu            <- 0
-        lai[1]        <- 0  # ou 2
-        zbot[1]       <- 0    # ou 2
-        ztop[1]       <- 0    # ou 2
         arepr[i]      <- 0
         
 
@@ -98,11 +93,7 @@ ResetCropsAfterHarvest <- function() {
         assign("totnfix", totnfix, envir = env)
         assign("idpp", idpp, envir = env)
         assign("gddplant", gddplant, envir = env)
-        assign("sai", sai, envir = env)
-        assign("fu", fu, envir = env)
-        assign("lai", lai, envir = env)
-        assign("zbot", zbot, envir = env)
-        assign("ztop", ztop, envir = env)
+        
 
       }
     }
