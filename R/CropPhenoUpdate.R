@@ -23,25 +23,6 @@ CropPhenoUpdate <- function() {
   totlail <- max(totlail, 0.01)
   totlaiu <- max(totlaiu, epsilon)
   
-  for(j in 1:npft) {
-    if(!plantList[[j]]$active) next
-    if(plantList[[j]]$canopy == LOWER) {
-      frac[j] <-  plai[j] * temp[j] /  max (totlail, epsilon)
-    } else {
-      frac[j] <-  plai[j] * temp[j] /  max (totlaiu, epsilon)
-    }
-  }
-  
-  greenfracl <- 0
-  for(i in 1:npft) {
-    if(!plantList[[i]]$active) next
-    if(plantList[[i]]$canopy == LOWER) {
-      greenfracl <- greenfracl + frac[j] * greenfrac[j]
-    }
-  }
-  
-
-  totlaiu <- max(totlaiu, epsilon)
   fu <- totlaiu / 2.0
   fu <- max(0.025, min(0.975, fu))
   lai[2] <- totlaiu / fu
@@ -105,7 +86,72 @@ CropPhenoUpdate <- function() {
     }
   }
   
+
+  for(j in 1:npft) {
+    if(!plantList[[j]]$active) next
+    if(plantList[[j]]$canopy == LOWER) {
+      frac[j] <-  plai[j] * temp[j] /  max (totlail, epsilon)
+    } else {
+      frac[j] <-  plai[j] * temp[j] /  max (totlaiu, epsilon)
+    }
+  }
   
+    greenfracl <- 0
+    rhovegvlg  <- 0
+    rhovegvlb  <- 0
+    rhovegirlg <- 0
+    rhovegirlb <- 0
+    tauvegirlg <- 0
+    tauvegirlb <- 0
+    tauvegvlg  <- 0
+    tauvegvlb  <- 0
+    chiflzavg  <- 0
+    
+  for(i in 1:npft) {
+    if(!plantList[[i]]$active) next
+    if(plantList[[i]]$canopy == LOWER) {
+      
+    greenfracl <- greenfracl + frac[j] * greenfrac[j]
+    rhovegvlg  <- rhovegvlg  + frac[j] * rhovegvlgin[i]     # vis leaf reflectance, lower story, green leaves
+    rhovegvlb  <- rhovegvlb  + frac[j] * rhovegvlbin[i]     # vis leaf reflectance, lower story, brown leaves     
+    rhovegirlg <- rhovegirlg + frac[j] * rhovegirlgin[i]    # nir leaf reflectance, lower story, green leaves
+    rhovegirlb <- rhovegirlb + frac[j] * rhovegirlbin[i]    # nir leaf reflectance, lower story, brown leaves  
+    tauvegirlg <- tauvegirlg + frac[j] * tauvegirlgin[i]    # nir leaf transmittance, lower story, green leaves
+    tauvegirlb <- tauvegirlb + frac[j] * tauvegirlbin[i]    # nir leaf transmittance, lower story, brown leaves
+    tauvegvlg  <- tauvegvlg  + frac[j] * tauvegvlgin[i]     # vis leaf transmittance, lower story, green leaves
+    tauvegvlb  <- tauvegvlb  + frac[j] * tauvegvlbin[i]     # vis leaf transmittance, lower story, brown leaves
+    chiflzavg  <- chiflzavg  + frac[j] * chiflz[j]
+    }
+  }
+  
+    # Define other vegetation properties    
+    # leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
+    
+    oriev[1] <- max ( - chiflzavg, 0)
+    orieh[1] <- max ( chiflzavg, 0)
+
+    
+      rhovegvu   <- 0
+      rhovegiru  <- 0
+      tauvegvu   <- 0
+      tauvegiru  <- 0 
+      chifuzavg  <- 0
+      
+    for(i in 1:npft) {
+      if(!plantList[[i]]$active) next
+      if(plantList[[i]]$canopy == UPPER) {
+
+   rhovegvu   <- rhovegvu  + frac[j] * rhovegvuin[i]      # vis leaf reflectance, upper story, green leaves
+   rhovegiru  <- rhovegiru + frac[j] * rhovegiruin[i]    # nir leaf reflectance, upper story, green leaves
+   tauvegvu   <- tauvegvu  + frac[j] * tauvegvuin[i]     # vis leaf transmittance, upper story, green leaves
+   tauvegiru  <- tauvegiru + frac[j] * tauvegiruin[i]    # nir leaf transmittance, upper story, green leaves
+   chifuzavg  <- chifuzavg + frac[j] * chifuz[i]
+      }
+    }
+      
+      oriev[2] <- max ( - chifuzavg, 0)
+      orieh[2] <- max ( chifuzavg, 0)    
+      
 # Fim da Atualizacao das propriedades dos Dosseis
 #______________________________________________________
 
@@ -117,29 +163,33 @@ CropPhenoUpdate <- function() {
   #----------------------------
   # keep track of total biomass production for the entire year, and the
   aybprod[i]   <- aybprod[i] +
-    aleaf[i]   * max(0.0,adnpp[i]) +
-    abranch[i] * max(0.0,adnpp[i]) +
-    aroot[i]   * max(0.0,adnpp[i]) +
-    awood[i]   * max(0.0,adnpp[i]) +
-    acroot[i]  * max(0.0,adnpp[i])
+                  aleaf[i]   * max(0.0,adnpp[i]) +
+                  astem[j]   * max(0.0,adnpp[i]) +
+                  arepr[j]   * max(0.0,adnpp[i]) +
+                  abranch[i] * max(0.0,adnpp[i]) +
+                  aroot[i]   * max(0.0,adnpp[i]) +
+                  acroot[i]  * max(0.0,adnpp[i]) +
+                  awood[i]   * max(0.0,adnpp[i]) 
   
   # aboveground value to calculate harvest index
   ayabprod[i]  <- ayabprod[i] +
-    aleaf[i]   * max(0.0,adnpp[i]) +
-    abranch[i] * max(0.0,adnpp[i]) +
-    awood[i]   * max(0.0,adnpp[i])
+                  aleaf[i]   * max(0.0,adnpp[i]) +
+                  astem[j]   * max(0.0,adnpp[i]) +
+                  arepr[j]   * max(0.0,adnpp[i]) +
+                  abranch[i] * max(0.0,adnpp[i]) +
+                  awood[i]   * max(0.0,adnpp[i]) 
   
   # keep track of annual total root production carbon
   ayrprod[i]  <- ayrprod[i] +
-    aroot[i]  * max(0.0,adnpp[i]) +
-    acroot[i] * max(0.0,adnpp[i])
+                 aroot[i]  * max(0.0,adnpp[i]) +
+                 acroot[i] * max(0.0,adnpp[i])
   
   # keep track of total carbon allocated to
   # leaves for litterfall calculation
   aylprod[i] <- aylprod[i] +
-    aleaf[i] * max (0.0, adnpp[i])
+                aleaf[i] * max (0.0, adnpp[i])
   
-  biomass[i] <- cbiol[i] + cbiocr[i] + cbior[i] + cbiob[i] + cbiow[i]
+  biomass[i] <- cbiol[i] + cbios[j] + cbiog[j] + cbiocr[i] + cbior[i] + cbiob[i] + cbiow[i]
   
 
 # End track of total biomass production  

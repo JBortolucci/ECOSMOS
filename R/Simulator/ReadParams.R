@@ -171,21 +171,7 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
   assign("ypb", as.numeric(data[100,][2]), envir = envToSet)
   assign("ynb", as.numeric(data[101,][2]), envir = envToSet)
   assign("za",  as.numeric(data[102,][2]), envir = envToSet)
-  
-  assign("rhovegvlg",  as.numeric(data[103,][2]), envir = envToSet)
-  assign("rhovegvlb",  as.numeric(data[104,][2]), envir = envToSet)
-  assign("rhovegvu",   as.numeric(data[105,][2]), envir = envToSet)
-  assign("rhovegirlg", as.numeric(data[106,][2]), envir = envToSet)
-  assign("rhovegirlb", as.numeric(data[107,][2]), envir = envToSet)
-  assign("rhovegiru",  as.numeric(data[108,][2]), envir = envToSet)
-  assign("tauvegvlg",  as.numeric(data[109,][2]), envir = envToSet)
-  assign("tauvegvlb",  as.numeric(data[110,][2]), envir = envToSet)
-  assign("tauvegvu",   as.numeric(data[111,][2]), envir = envToSet)
-  assign("tauvegirlg", as.numeric(data[112,][2]), envir = envToSet)
-  assign("tauvegirlb", as.numeric(data[113,][2]), envir = envToSet)
-  assign("tauvegiru",  as.numeric(data[114,][2]), envir = envToSet)
-  print(as.numeric(data[115,][2]))
-  assign("isoilay",  as.numeric(data[115,][2]), envir = envToSet)
+  assign("isoilay",  as.numeric(data[103,][2]), envir = envToSet)
 }
 
 
@@ -326,6 +312,20 @@ ReadPlantParamsFromFile <- function(path = "") {
       envToSet$chiflz[indexOfPlant] <- as.numeric(data[71,column])
       envToSet$chifuz[indexOfPlant] <- as.numeric(data[72,column])
       
+      envToSet$rhovegvlgin[indexOfPlant]  <- as.numeric(data[73,column])
+      envToSet$rhovegvlbin[indexOfPlant]  <- as.numeric(data[74,column])
+      envToSet$rhovegvuin[indexOfPlant]   <- as.numeric(data[75,column])
+      envToSet$rhovegirlgin[indexOfPlant] <- as.numeric(data[76,column])
+      envToSet$rhovegirlbin[indexOfPlant] <- as.numeric(data[77,column])
+      envToSet$rhovegiruin[indexOfPlant]  <- as.numeric(data[78,column])
+      envToSet$tauvegvlgin[indexOfPlant]  <- as.numeric(data[79,column])
+      envToSet$tauvegvlbin[indexOfPlant]  <- as.numeric(data[80,column])
+      envToSet$tauvegvuin[indexOfPlant]   <- as.numeric(data[81,column])
+      envToSet$tauvegirlgin[indexOfPlant] <- as.numeric(data[82,column])
+      envToSet$tauvegirlbin[indexOfPlant] <- as.numeric(data[83,column])
+      envToSet$tauvegiruin[indexOfPlant]  <- as.numeric(data[84,column])
+      
+
             
       # TODO: Estava calculando assim nas versões anteriores. Mantém fazendo esse calculo?
       # envToSet$pcm[indexOfPlant] <- as.integer((((envToSet$pmmin[indexOfPlant] + envToSet$mxmat[indexOfPlant]/30)-1) %% 12) + 1)
@@ -342,7 +342,7 @@ ReadPlantParamsFromFile <- function(path = "") {
       # TODO: Criar a lista de nomes no modelo. O usuário deve listar os parâmetros adicionais.
       # seta os parâmetros adicionais automaticamente
       # if(!is.na(as.numeric(data[71,column]))) {
-      n <- 72
+      n <- 84
       # funcao mandar em parametro nome da variavel em nome da coluna
       
       # TODO: Leandro, ler os arquivos especificos das culturas dentro dos modelos para cada uma delas

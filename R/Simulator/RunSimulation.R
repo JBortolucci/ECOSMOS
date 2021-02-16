@@ -255,7 +255,8 @@ GeneralModel <- function(simVars = NULL) {
     # PFT_UPDATE: Depois de modularizar para cada tipo de planta, retirar essa variável "cropsums",
     #             pois o tipo será decidido pelo usuário e as configurações setadas antes de iniciar
     #             a simulação.
-    initialcrop()
+    # SVC - levei tudo para iniveg
+    # initialcrop()
     
     
     # determine the number of timesteps per day

@@ -153,26 +153,22 @@ iniveg <- function (isimveg) {
       croplive[i] <- 0 
     } 
   }
-  # for(jj in scpft:ecpft) { 
-  #   if(round(exist[jj]) == 1) {
-  #     icrop <- icrop + 1    
-  #     croplive[jj] <- 0 
-  #   }
-  # }
-  
+
   # make sure counter is at least 1 (to avoid division by zero)
   icrop  <- max (1, icrop)
   ilower <- ilower + icrop
   
   iupper <- max (1, iupper)
   ilower <- max (1, ilower)
+
   
+#________________________________________  
+#  Vegetacao Natural  
+  
+  # #isimveg    0: static veg, 1: dynamic veg, 2: dynamic veg-cold start  
   # ************************************************************************
   # case (0) assign vegetation characteristics for static vegetation
   # ************************************************************************
-  #
-  # and
-  #
   # ************************************************************************
   # case (1) assign vegetation characteristics for dynamic vegtation
   #          that is initialized with fixed vegetation map
@@ -187,22 +183,21 @@ iniveg <- function (isimveg) {
     vegtype0 <- xinveg
     
     # ---------------------------------------------------
-    #  1: tropical evergreen forest / woodland
-    #  2: tropical deciduous forest / woodland
-    #  3: temperate evergreen broadleaf forest / woodland
-    #  4: temperate evergreen conifer forest / woodland
-    #  5: temperate deciduous forest / woodland
-    #  6: boreal evergreen forest / woodland
-    #  7: boreal deciduous forest / woodland
-    #  8: mixed forest / woodland
-    #  9: savanna
-    # 10: grassland / steppe
-    # 11: dense shrubland
-    # 12: open shrubland
-    # 13: tundra
-    # 14: desert
-    # 15: polar desert / rock / ice
-    # 16: croplands
+    #  1: tropical evergreen forest / woodland              (TROPEF)
+    #  2: tropical deciduous forest / woodland              (TROPDF)
+    #  3: temperate evergreen broadleaf forest / woodland   (TEMPEBF)
+    #  4: temperate evergreen conifer forest / woodland     (TEMPECF)
+    #  5: temperate deciduous forest / woodland             (TEMPDF)
+    #  6: boreal evergreen forest / woodland                (BOREALEF)
+    #  7: boreal deciduous forest / woodland                (BOREALDF)
+    #  8: mixed forest / woodland                           (MIXF)
+    #  9: savanna                                           (SAVANA)
+    # 10: grassland / steppe                                (GRASS)
+    # 11: dense shrubland                                   (SHRUD) 
+    # 12: open shrubland                                    (SHRUO)
+    # 13: tundra                                            (TUNDRA)
+    # 14: desert                                            (DESERT) 
+    # 15: polar desert / rock / ice                         (DESERTP)
     # ---------------------------------------------------
     #
     # these classes consist of some combination of 
@@ -221,46 +216,8 @@ iniveg <- function (isimveg) {
     # 10: cold - deciduous shrubs
     # 11: warm (c4) grasses
     # 12: cool (c3) grasses
-    # 13: soybean
-    # 14: maize 
-    # 15: winter and spring wheat 
     # ---------------------------------------------------
-    #
-    # initially all values are set to zero
-    #
-    #*** DTP 2001 / 05 / 25 The following code replaces the 450+
-    #    lines of stuff that follows it (hence the temporary goto
-    #    statement). Note that values of plai_init are read in as
-    #    parameters from params.veg. Note also that the declarations
-    #    of the four local variables plaievgr, plaideci, plaishrub 
-    #    and plaigrass can all be dropped.
-    
-    # PFT_UPDATE (Santiago): Verificar depois
-    
-    # plai[1] <- exist[1] / (ievgr) * plai_init[1,inveg]
-    # plai[2] <- exist[2] / (ideci) * plai_init[2,inveg]
-    # plai[3] <- exist[3] / (ievgr) * plai_init[1,inveg]
-    # plai[4] <- exist[4] / (ievgr) * plai_init[1,inveg]
-    # plai[5] <- exist[5] / (ideci) * plai_init[2,inveg]
-    # plai[6] <- exist[6] / (ievgr) * plai_init[1,inveg]
-    # plai[7] <- exist[7] / (ideci) * plai_init[2,inveg]
-    # plai[8] <- exist[8] / (ideci) * plai_init[2,inveg]
-    # plai[9] <- exist[9] / (ishrub) * plai_init[3,inveg]
-    # plai[10] <- exist[10] / (ishrub) *plai_init[3,inveg]
-    # 
-    # if((inveg == 9) || (inveg == 10)) {
-    #   if(tw > 22) {
-    #     plai[11] <- exist[11] * 0.80 * plai_init[4,inveg]
-    #     plai[12] <- exist[12] * 0.20 * plai_init[4,inveg]
-    #   } else {
-    #     plai[11] <- exist[11] * 0 * plai_init[4,inveg]
-    #     plai[12] <- exist[12] * 1 * plai_init[4,inveg]
-    #   }
-    # } else {
-    #   plai[11] <- exist[11] / (igrass) * plai_init[4,inveg]
-    #   plai[12] <- exist[12] / (igrass) * plai_init[4,inveg]
-    # }
-    
+
     # cropping systems - just set equal to zero
     plai[] <- 0   
     
@@ -274,8 +231,8 @@ iniveg <- function (isimveg) {
   #
   # specify uniform initial conditions
   
-  # PFT_UPDATE: Vegetação natural
-  if(isimveg == 2) {
+  # isimveg  =  2 : dynamic veg-cold start
+  if(isimveg == 2) {     
     
     for(i in 1:npft) {
       if(plantList[[i]]$canopy == UPPER) {
@@ -290,12 +247,7 @@ iniveg <- function (isimveg) {
   # ************************************************************************
   # for both cases (1) and (2)
   # ************************************************************************
-  #
   # set minimum lai for each existing plant type
-  #
-  #         xminlai <- 0.010
-  
-  
   for(j in 1:npft) {
     plai[j] <- max (plai[j] , exist[j] * xminlai) 
   }
@@ -391,14 +343,83 @@ iniveg <- function (isimveg) {
   zbot[2] <- ztop[1] + 1 
   ztop[2] <- max (zbot[2] + 1, 2.50 * totbiou / fu * 0.75)
   
- 
-# leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
-
-  oriev[1] <- max ( - chiflz, 0)
-  oriev[2] <- max ( - chifuz, 0)
   
-  orieh[1] <- max ( chiflz, 0)
-  orieh[2] <- max ( chifuz, 0)
+  # Fim Vegetacao Natural
+ 
+#_________________________________________________  
+#_____ Crops are initialized after planting ______
+  # determine number of crop functional types 
+  #TO DO: JAIR SE NÃO O P1 FOR QUALQUER CROP TODA A VEGETACAO TEM QUE SER ZERADA!!!
+  # NÃO PODEMOS TER VEG NATURAL E CROP COEXISTINDO 
+  
+  for(i in 1:npft) {
+    if(round(exist[i]==1) && plantList[[i]]$type == CROPS) {
+
+      plai[]    <- 0  
+      frac[]     <- 0 
+      fu        <- 0
+      fl        <- 0
+      lai[]     <- 0
+      greenfrac <- 0
+      zbot[]    <- 0
+      ztop[]    <- 0
+      sai[]     <- 0
+      
+      cbiol[i]   <- 0
+      cbios[i]   <- 0
+      cbiog[i]   <- 0
+      cbiow[i]   <- 0
+      cbiob[i]   <- 0  
+      cbior[i]   <- 0   
+      cbiocr[i]  <- 0
+
+       
+      aleaf[i]   <- 0
+      astem[i]   <- 0
+      arepr[i]   <- 0
+      awood[i]   <- 0 
+      abranch[i] <- 0
+      aroot[i]   <- 0
+      acroot[i]  <- 0
+   
+      aybprod[i] <- 0
+      ayrprod[i] <- 0
+      ayabprod[i]<- 0
+      aylprod[i] <- 0
+      biomass[i] <- 0
+      totnuptake[i] <- 0
+      tnplant[i] <- 0
+      totnfix[i] <- 0
+      idpp[i] <- 0
+      fixn[i] <- 0
+      gddplant[i] <- 0
+      fertinput[i] <- 0
+      pstart[i] <- 999
+    } 
+  }
+  
+
+  
+# Initializing values (Updated every time step in CropPhenoUpdate)
+
+ rhovegvlg  <- 0.10      # vis leaf reflectance, lower story, green leaves
+ rhovegvlb  <- 0.36      # vis leaf reflectance, lower story, brown leaves
+ rhovegvu   <- 0.10       # vis leaf reflectance, upper story, green leaves
+ rhovegirlg <- 0.48     # nir leaf reflectance, lower story, green leaves
+ rhovegirlb <- 0.58     # nir leaf reflectance, lower story, brown leaves
+ rhovegiru  <- 0.40      # nir leaf reflectance, upper story, green leaves
+ tauvegvlg  <- 0.07      # vis leaf transmittance, lower story, green leaves
+ tauvegvlb  <- 0.22      # vis leaf transmittance, lower story, brown leaves
+ tauvegvu   <- 0.05       # vis leaf transmittance, upper story, green leaves
+ tauvegirlg <- 0.25     # nir leaf transmittance, lower story, green leaves
+ tauvegirlb <- 0.38     # nir leaf transmittance, lower story, brown leaves
+ tauvegiru  <- 0.20      # nir leaf transmittance, upper story, green leaves
+ 
+ # Leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
+ oriev[1] <- 0
+ oriev[2] <- 0
+ orieh[1] <- 0
+ orieh[2] <- 0
   
   # ************************************************************************
   # define rooting profiles
@@ -555,21 +576,88 @@ iniveg <- function (isimveg) {
   assign("vegtype0", vegtype0, envir = env)
   assign("plai", plai, envir = env)
   assign("sapfrac", sapfrac, envir = env)
-  assign("cbiol", cbiol, envir = env)
-  assign("cbior", cbior, envir = env)
-  assign("cbiow", cbiow, envir = env)
-  assign("cbios", cbios, envir = env)
-  assign("cbiog", cbiog, envir = env)
-  assign("biomass", biomass, envir = env)
-  assign("sai", sai, envir = env)
-  assign("fu", fu, envir = env)
-  assign("fl", fl, envir = env)
-  assign("lai", lai, envir = env)
-  assign("zbot", zbot, envir = env)
-  assign("ztop", ztop, envir = env)
   assign("exist", exist, envir = env)
   assign("froot", froot, envir = env)
   assign("sumfroot", sumfroot, envir = env)
+  
+
+  assign("harvdate", harvdate, envir = env)
+  assign("dmyield", dmyield, envir = env)
+  assign("dmleaf", dmleaf, envir = env)
+  assign("dmstem", dmstem, envir = env)
+  assign("dmroot", dmroot, envir = env)
+  assign("dmresidue", dmresidue, envir = env)
+  assign("dmcrop", dmcrop, envir = env)
+  assign("residuen", residuen, envir = env)
+  assign("nconcl", nconcl, envir = env)
+  assign("nconcs", nconcs, envir = env)
+  assign("nconcr", nconcr, envir = env)
+  assign("nconcg", nconcg, envir = env)
+  assign("cropn", cropn, envir = env)
+  assign("cropfixn", cropfixn, envir = env)
+  assign("cntops", cntops, envir = env)
+  assign("cnroot", cnroot, envir = env)
+  
+  # TO DO: Victor Verificar se essas variaveis do bloco acima sao usadas antes de serem resetadas 
+
+  assign("harvdate", harvdate, envir = env)
+  assign("plai", plai, envir = env)
+  assign("cbiog", cbiog, envir = env)
+  assign("cbios", cbios, envir = env)
+  assign("cbiol", cbiol, envir = env)
+  assign("cbior", cbior, envir = env)
+  assign("cbiow", cbiow, envir = env)
+  assign("cbiocr", cbiocr, envir = env)
+  assign("cbiob", cbiob, envir = env)  
+  assign("ayabprod", ayabprod, envir = env)
+  assign("aybprod", aybprod, envir = env)
+  assign("ayrprod", ayrprod, envir = env)
+  assign("aylprod", aylprod, envir = env)
+  assign("biomass", biomass, envir = env)
+  assign("totnuptake", totnuptake, envir = env)
+  assign("tnplant", tnplant, envir = env)
+  assign("totnfix", totnfix, envir = env)
+  assign("idpp", idpp, envir = env)
+  assign("gddplant", gddplant, envir = env)
+  
+  
+  assign("aleaf"    ,aleaf    , envir = env) 
+  assign("astem"    ,astem    , envir = env) 
+  assign("arepr"    ,arepr    , envir = env) 
+  assign("awood"    ,awood    , envir = env) 
+  assign("abranch"  ,abranch  , envir = env) 
+  assign("aroot"    ,aroot    , envir = env) 
+  assign("acroot"   ,acroot   , envir = env) 
+  assign("fertinput",fertinput, envir = env) 
+  assign("pstart"   ,pstart   , envir = env) 
+  
+  
+  assign("frac", frac, envir = env)              
+  assign("fu", fu, envir = env)
+  assign("fl", fl, envir = env)                   
+  assign("lai", lai, envir = env)                 
+  assign("greenfracl", greenfracl, envir = env)   
+  assign("zbot", zbot, envir = env)               
+  assign("ztop", ztop, envir = env)               
+  assign("sai", sai, envir = env)  
+  assign("cropy", array(0, 1), envir = env)
+  
+  
+  assign("rhovegvlg",rhovegvlg  , envir = env)
+  assign("rhovegvlb",rhovegvlb  , envir = env)
+  assign("rhovegvu",rhovegvu   , envir = env)
+  assign("rhovegirlg",rhovegirlg , envir = env)
+  assign("rhovegirlb",rhovegirlb , envir = env)
+  assign("rhovegiru",rhovegiru  , envir = env)
+  assign("tauvegvlg",tauvegvlg  , envir = env)
+  assign("tauvegvlb",tauvegvlb  , envir = env)
+  assign("tauvegvu",tauvegvu   , envir = env)
+  assign("tauvegirlg",tauvegirlg , envir = env)
+  assign("tauvegirlb",tauvegirlb , envir = env)
+  assign("tauvegiru",tauvegiru  , envir = env)
+   assign("oriev",oriev, envir = env)
+   assign("orieh",orieh, envir = env)
+  
   
   # return to main program
   return()

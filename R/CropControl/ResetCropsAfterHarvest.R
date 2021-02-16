@@ -31,8 +31,7 @@ ResetCropsAfterHarvest <- function() {
         totnfix[i]    <- 0
         idpp[i]       <- 0
         gddplant[i]   <- 0
-        arepr[i]      <- 0
-        
+
 
 # TO DO: Victor, Verificar se essas variaveis sao usadas antes de serem resetadas 
         harvdate[i]   <- 999
