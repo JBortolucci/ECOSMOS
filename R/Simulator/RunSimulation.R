@@ -67,6 +67,8 @@ source("R/Simulator/VariablesInicialization.R")
 VariablesInicialization()
 
 
+CreateBuiltInNatVegModels()
+
 # Run all simulations
 
 
@@ -411,8 +413,7 @@ GeneralModel <- function(simVars = NULL) {
         # TODO: Testando, comentar caso queira rodar o modelo corretamente (ou antes de terminar de testar)
         # determine the daily vegetation cover characteristics
         for(i in seq(1, simVars$npft)) {
-          # TODO: Descomentar linha e testar (Depois que estiver funcionando).
-          # if(!simVars$plantList[[i]]$active) next
+          if(!simVars$plantList[[i]]$active) next
           if(simVars$plantList[[i]]$type == simVars$NATURAL_VEG && !is.null(simVars$plantList[[i]]$Model)) {
             environment(simVars$plantList[[i]]$Model) <- simVars
             simVars$plantList[[i]]$Model(simVars$jday, i)
@@ -436,7 +437,7 @@ GeneralModel <- function(simVars = NULL) {
         # Check if the cycle is complete
         for(i in seq(1,simVars$npft)) {
           
-          if(!simVars$plantList[[i]]$active) next
+          if(!simVars$plantList[[i]]$active || simVars$plantList[[i]]$type == simVars$NATURAL_VEG) next
           
           if(simVars$endCycle) {
             

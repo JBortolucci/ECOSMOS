@@ -1,6 +1,7 @@
 
 
 SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
+  
   nratoon  <- plantList$sugarcane$params$nratoon
   rootd    <- plantList$sugarcane$params$rootd
   sf1      <- plantList$sugarcane$params$sf1
@@ -21,6 +22,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   tmld     <- plantList$sugarcane$params$tmld
   ecf7     <- plantList$sugarcane$params$ecf7
   firecane <- plantList$sugarcane$params$firecane
+  
   
   j <- index
   
