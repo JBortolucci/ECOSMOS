@@ -182,18 +182,7 @@ iniveg <- function (isimveg) {
     # for initialization purposes, set the predicted vegetation type
     # to the initial vegetation type
     vegtype0 <- xinveg
-    
-    for(i in seq(1, simVars$npft)) {
-      
-      if(plantList[[i]]$type == simVars$NATURAL_VEG) {
-        
-        if(plantList[[i]]$name == "C4Grass") {
-          
-        }
-        
-      }
-      
-    }
+
     # ---------------------------------------------------
     #  1: tropical evergreen forest / woodland              (TROPEF)
     #  2: tropical deciduous forest / woodland              (TROPDF)

@@ -104,12 +104,18 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
       #
       if(IsBioma(name)) {
         
+        simInstances[[id]]$biomaConfig <- simConfigs[[i]][[paste0("plant",j)]]
+        
         models <- biomaModels[[name]]
         
         for(n in 1:length(models)) {
           modelName <- models[n]
           simInstances[[id]]$plantList[[modelName]]        <- basePlantList[[modelName]]
-          simInstances[[id]]$plantList[[modelName]]$active <- T
+          simInstances[[id]]$plantList[[modelName]]$active <- F
+          
+          # flag para verificar se a planta faz parte de um bioma
+          simInstances[[id]]$plantList[[modelName]]$bioma  <- T
+          
         }
         
       #
@@ -125,9 +131,11 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
           
           # NOVO: A planta agora é ativada no loop, dependendo do ano que deve iniciar
           simInstances[[id]]$plantList[[name]]$active <- F
-          if(simInstances[[id]]$plantList[[name]]$type == simDataVars$NATURAL_VEG) {
-            simInstances[[id]]$plantList[[name]]$active <- T
-          }
+          simInstances[[id]]$plantList[[name]]$bioma  <- F
+          # TODO: Agora a vegetação natural também é afetada pelos ciclos
+          # if(simInstances[[id]]$plantList[[name]]$type == simDataVars$NATURAL_VEG) {
+          #   simInstances[[id]]$plantList[[name]]$active <- T
+          # }
           
           
         } else {
@@ -145,15 +153,15 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
       simInstances[[id]][[name]] <- numeric(simInstances[[id]]$npft)
     }
     
+    # create endCycle for each plant
+    simInstances[[id]]$endCycle <- numeric(simInstances[[id]]$npft)
+    
     # Passa a configuração para a instancia da simulação
     simInstances[[id]]$config <- simConfigs[[i]]
     
     # Coord info
     simInstances[[id]]$point <- GetPointsFromRect(simConfigs[[i]]$coord$lat, simConfigs[[i]]$coord$lat,
                                                   simConfigs[[i]]$coord$lon, simConfigs[[i]]$coord$lon)$point1
-    
-    # This variable controls the end of the cycle
-    simInstances[[id]]$endCycle <- F
     
     
     # TODO: Nessa prieira versão uma planta roda após a outra, tal como especificado no arquivo de configuração.
@@ -191,10 +199,6 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     
     #___________________________________________    
     # READ HORLY STATION DATA
-    
-    
-    
-    
     
     
     assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])

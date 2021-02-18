@@ -283,14 +283,14 @@ GeneralModel <- function(simVars = NULL) {
     
     # TODO: Colocar em outro local, pois se a planta n inicia o ano crescendo e é colhida no meio do ano a próxima não é plantada.
     # Ativa planta caso esteja no ano de plantar (input da planilha de controle)
-    if(simVars$currentPlant <= length(simVars$plantList)) {
-      if(simVars$plantList[[simVars$currentPlant]]$startYear == year & !simVars$plantList[[simVars$currentPlant]]$active) {
-        simVars$plantList[[simVars$currentPlant]]$active <- T
-        simVars$exist[simVars$currentPlant]              <- 1
-      }
-    } else {
-      print("There is no plant configured to run in this simulation!")
-    }
+    # if(simVars$currentPlant <= length(simVars$plantList)) {
+    #   if(simVars$plantList[[simVars$currentPlant]]$startYear == year & !simVars$plantList[[simVars$currentPlant]]$active) {
+    #     simVars$plantList[[simVars$currentPlant]]$active <- T
+    #     simVars$exist[simVars$currentPlant]              <- 1
+    #   }
+    # } else {
+    #   print("There is no plant configured to run in this simulation!")
+    # }
     
     # OK
     # reset julian date
@@ -326,6 +326,16 @@ GeneralModel <- function(simVars = NULL) {
       }
       
       for(day in seq(simVars$simulationStartDay, daypm(month, year))) {
+        
+        
+        for(i in seq(1,simVars$npft)) {
+          if(simVars$plantList[[i]]$active) next
+          if(simVars$plantList[[i]]$startYear == year) {
+            simVars$plantList[[i]]$active <- T
+            simVars$exist[i]              <- 1
+          }
+        }
+
         
         simVars$day <- day
 
@@ -372,7 +382,7 @@ GeneralModel <- function(simVars = NULL) {
             
           }
           
-
+          
           lsxmain(time, day, month, year, simVars$jday)
           
           sumnow() # codigo em R
@@ -439,23 +449,22 @@ GeneralModel <- function(simVars = NULL) {
           
           if(!simVars$plantList[[i]]$active || simVars$plantList[[i]]$type == simVars$NATURAL_VEG) next
           
-          if(simVars$endCycle) {
-            
+          if(simVars$endCycle[i]) {
             
             print(paste0("Harvest ", simVars$plantList[[i]]$name, " - cycle ", simVars$plantList[[i]]$currentCycle))
             simVars$plantList[[i]]$currentCycle <- simVars$plantList[[i]]$currentCycle + 1
             
             # reset end cycle variable
-            simVars$endCycle <- F
+            simVars$endCycle[i] <- F
             
             if(simVars$plantList[[i]]$currentCycle > simVars$plantList[[i]]$totalCycles) {
               
               print(paste0("Crop ", simVars$plantList[[i]]$name, " is finished"))
               # turn off current plant
-              simVars$plantList[[simVars$currentPlant]]$active <- F
-              simVars$exist[simVars$currentPlant]              <- 0
+              simVars$plantList[[i]]$active <- F
+              simVars$exist[i]              <- 0
               # if exist a plant to simulate next, increase the currentPlant by one.
-              simVars$currentPlant <- simVars$currentPlant + 1
+              # simVars$currentPlant <- simVars$currentPlant + 1
               
             }
           }

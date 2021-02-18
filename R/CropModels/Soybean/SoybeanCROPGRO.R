@@ -843,7 +843,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         greenfrac[i]  <- 0.0 # turn all vegetation to brown
         harvdate[i]   <- jday
         plai[i]       <- 0.01 # simulates remaining stubble/mulch
-        endCycle      <- T
+        endCycle[i]   <- T
     
       }
     } else {

@@ -150,7 +150,7 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     } else if ( cropy > nratoon) {
       croplive[j] <- 0    
       cropy       <- 0
-      endCycle    <- T
+      endCycle[i] <- T
     }  
     
   }  # harvest <- jday

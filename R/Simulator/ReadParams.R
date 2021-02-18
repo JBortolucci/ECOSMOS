@@ -191,25 +191,30 @@ ReadPlantParamsFromFile <- function(path = "") {
         data   <- natVegParams
         column <- simInstances[[simId]]$plantList[[i]]$name
         
-        #TODO: Checar esses valores para a vegetação natural
-
-        startYear     <- 0
-        plantJDay     <- 0
-        cycleLength   <- 0
-        plantingDate  <- 0
-        plantingDay   <- 0
-        plantingMonth <- 0
+        # if(simInstances[[simId]]$plantList[[i]]$bioma) {
+        config <- simInstances[[simId]]$biomaConfig
+        # } else {
+        #   config <- simInstances[[simId]]$config[[paste0("plant", i)]]
+        # }
         
-        nextHarvestDate <- 0
         
-        pmMin <- 0
-        pdMin <- 0
+        startYear     <- config$startYear
+        plantJDay     <- config$plantJday
+        cycleLength   <- config$cycleLength
+        plantingDate  <- as.Date(plantJDay-1, origin = as.Date(paste0(startYear,"-01-01")))
+        plantingDay   <- as.numeric(format(plantingDate, "%d"))
+        plantingMonth <- as.numeric(format(plantingDate, "%m"))
         
-        simInstances[[simId]]$plantList[[i]]$totalYears <- 10
+        nextHarvestDate <- as.Date(cycleLength-1, origin = plantingDate)
         
-        simInstances[[simId]]$plantList[[i]]$startYear     <- 0
-        simInstances[[simId]]$plantList[[i]]$currentCycles <- 0
-        simInstances[[simId]]$plantList[[i]]$totalCycles   <- 0
+        pmMin <- plantingMonth
+        pdMin <- plantingDay
+        
+        simInstances[[simId]]$plantList[[i]]$totalYears <- (as.numeric(format(nextHarvestDate, "%Y")) - as.numeric(format(plantingDate, "%Y")) + 1) * simInstances[[simId]]$config$plant1$ncycles
+        
+        simInstances[[simId]]$plantList[[i]]$startYear     <- startYear
+        simInstances[[simId]]$plantList[[i]]$currentCycles <- 1
+        simInstances[[simId]]$plantList[[i]]$totalCycles   <- config$ncycles
         
       } else {
         
