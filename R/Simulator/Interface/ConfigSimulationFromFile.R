@@ -104,15 +104,19 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
       #
       if(IsBioma(name)) {
         
-        simInstances[[id]]$biomaConfig <- simConfigs[[i]][[paste0("plant",j)]]
+        controlConfigs <- simConfigs[[i]][[paste0("plant",j)]]
         
         models <- biomaModels[[name]]
         
         for(n in 1:length(models)) {
-          modelName <- models[n]
-          simInstances[[id]]$plantList[[modelName]]        <- basePlantList[[modelName]]
-          simInstances[[id]]$plantList[[modelName]]$active <- F
           
+          modelName <- models[n]
+          simInstances[[id]]$plantList[[modelName]]                <- basePlantList[[modelName]]
+          simInstances[[id]]$plantList[[modelName]]$active         <- F
+          
+          controlConfigs$name <- modelName
+          simInstances[[id]]$plantList[[modelName]]$controlConfigs <- controlConfigs
+            
           # flag para verificar se a planta faz parte de um bioma
           simInstances[[id]]$plantList[[modelName]]$bioma  <- T
           
@@ -130,8 +134,9 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
           simInstances[[id]]$plantList[[name]] <- model
           
           # NOVO: A planta agora é ativada no loop, dependendo do ano que deve iniciar
-          simInstances[[id]]$plantList[[name]]$active <- F
-          simInstances[[id]]$plantList[[name]]$bioma  <- F
+          simInstances[[id]]$plantList[[name]]$active         <- F
+          simInstances[[id]]$plantList[[name]]$controlConfigs <- simConfigs[[i]][[paste0("plant",j)]]
+          simInstances[[id]]$plantList[[name]]$bioma          <- F
           # TODO: Agora a vegetação natural também é afetada pelos ciclos
           # if(simInstances[[id]]$plantList[[name]]$type == simDataVars$NATURAL_VEG) {
           #   simInstances[[id]]$plantList[[name]]$active <- T

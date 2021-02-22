@@ -191,12 +191,7 @@ ReadPlantParamsFromFile <- function(path = "") {
         data   <- natVegParams
         column <- simInstances[[simId]]$plantList[[i]]$name
         
-        # if(simInstances[[simId]]$plantList[[i]]$bioma) {
-        config <- simInstances[[simId]]$biomaConfig
-        # } else {
-        #   config <- simInstances[[simId]]$config[[paste0("plant", i)]]
-        # }
-        
+        config <- simInstances[[simId]]$plantList[[i]]$controlConfigs
         
         startYear     <- config$startYear
         plantJDay     <- config$plantJday
@@ -210,7 +205,7 @@ ReadPlantParamsFromFile <- function(path = "") {
         pmMin <- plantingMonth
         pdMin <- plantingDay
         
-        simInstances[[simId]]$plantList[[i]]$totalYears <- (as.numeric(format(nextHarvestDate, "%Y")) - as.numeric(format(plantingDate, "%Y")) + 1) * simInstances[[simId]]$config$plant1$ncycles
+        simInstances[[simId]]$plantList[[i]]$totalYears <- (as.numeric(format(nextHarvestDate, "%Y")) - as.numeric(format(plantingDate, "%Y")) + 1) * config$ncycles
         
         simInstances[[simId]]$plantList[[i]]$startYear     <- startYear
         simInstances[[simId]]$plantList[[i]]$currentCycles <- 1
@@ -221,10 +216,12 @@ ReadPlantParamsFromFile <- function(path = "") {
         data   <- userParams
         column <- simInstances[[simId]]$config[[paste0("plant", i)]]$params
         
+        config <- simInstances[[simId]]$plantList[[i]]$controlConfigs
+        
         # Cuidado, na função as.Date, o dia juliano começa com 0!!! Será preciso subtrair 1 do valor da planilha
-        startYear     <- simInstances[[simId]]$config[[paste0("plant", i)]]$startYear
-        plantJDay     <- simInstances[[simId]]$config[[paste0("plant", i)]]$plantJday
-        cycleLength   <- simInstances[[simId]]$config[[paste0("plant", i)]]$cycleLength
+        startYear     <- config$startYear
+        plantJDay     <- config$plantJday
+        cycleLength   <- config$cycleLength
         plantingDate  <- as.Date(plantJDay-1, origin = as.Date(paste0(startYear,"-01-01")))
         plantingDay   <- as.numeric(format(plantingDate, "%d"))
         plantingMonth <- as.numeric(format(plantingDate, "%m"))
@@ -236,12 +233,12 @@ ReadPlantParamsFromFile <- function(path = "") {
         pmMin <- plantingMonth
         pdMin <- plantingDay
         
-        simInstances[[simId]]$plantList[[i]]$totalYears <- (as.numeric(format(nextHarvestDate, "%Y")) - as.numeric(format(plantingDate, "%Y")) + 1) * simInstances[[simId]]$config$plant1$ncycles
+        simInstances[[simId]]$plantList[[i]]$totalYears <- (as.numeric(format(nextHarvestDate, "%Y")) - as.numeric(format(plantingDate, "%Y")) + 1) * config$ncycles
         
         # create a variable for tracking the current cycle of the plant.
         simInstances[[simId]]$plantList[[i]]$startYear     <- startYear
         simInstances[[simId]]$plantList[[i]]$currentCycles <- 1
-        simInstances[[simId]]$plantList[[i]]$totalCycles   <- simInstances[[simId]]$config[[paste0("plant", i)]]$ncycles
+        simInstances[[simId]]$plantList[[i]]$totalCycles   <- config$ncycles
         
       }
     
