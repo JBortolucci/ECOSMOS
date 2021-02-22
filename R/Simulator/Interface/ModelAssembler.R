@@ -28,7 +28,7 @@ CreateModel <- function(nameArg           = "unnamed",
 # funções e variáveis de montagem de biomas (modelos)
 
 source("./R/NaturalVegModels/C4Grass.R")
-source("./R/NaturalVegModels/C3Grass.R")
+source("./R/NaturalVegModels/C3Grass/C3GrassModel.R")
 source("./R/NaturalVegModels/Upper.R")
 
 biomaNames <- c("TROPEF", "TROPDF", "TEMPEBF", "TEMPECF", "TEMPDF", "BOREALEF",
@@ -150,7 +150,7 @@ CreateBuiltInNatVegModels <- function() {
               typeArg           = simDataVars$NATURAL_VEG,
               canopyArg         = simDataVars$LOWER,
               carbonFixationArg = simDataVars$C3,
-              ModelArg          = C3GrassPheno)
+              ModelArg          = C3GrassModel)
   
 }
 

@@ -99,6 +99,8 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
       
       name  <- simConfigs[[i]][[paste0("plant",j)]]$name
       
+      simInstances[[id]][['biomeName']] <- name
+      
       #
       # Para modelos compostos
       #
