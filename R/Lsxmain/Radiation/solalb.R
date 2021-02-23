@@ -400,17 +400,16 @@ twoset <- function(omega, betad, betai, avmu, gdir, coszen, iv, ib) {
         # visible values for the lower canopy, weighted by how much of
         # canopy is green
         
-        zrho <- greenfracl[i] * rhovegvlg + rhovegvlb * (1. - greenfracl[i])
-        ztau <- greenfracl[i] * tauvegvlg + tauvegvlb * (1. - greenfracl[i])
+        zrho <- greenfrac[1] * rhovegvlg + rhovegvlb * (1. - greenfrac[1])
+        ztau <- greenfrac[1] * tauvegvlg + tauvegvlb * (1. - greenfrac[1])
         
       }else{
         
         # ir values for the lower canopy, weighted by how much of
         # canopy is green
         
-        zrho <- greenfracl[i] * rhovegirlg + rhovegirlb * (1. - greenfracl[i])
-        
-        ztau <- greenfracl[i] * tauvegirlg + tauvegirlb * (1. - greenfracl[i])
+        zrho <- greenfrac[1] * rhovegirlg + rhovegirlb * (1. - greenfrac[1])
+        ztau <- greenfrac[1] * tauvegirlg + tauvegirlb * (1. - greenfrac[1])
       }
     }
     

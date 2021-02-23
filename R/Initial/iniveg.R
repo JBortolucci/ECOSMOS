@@ -353,14 +353,13 @@ iniveg <- function (isimveg) {
   # NÃO PODEMOS TER VEG NATURAL E CROP COEXISTINDO 
   
   for(i in 1:npft) {
-    if(round(exist[i]==1) && plantList[[i]]$type == CROPS) {
+    if( plantList[[i]]$type == CROPS) {
 
       plai[]    <- 0  
       frac[]     <- 0 
       fu        <- 0
       fl        <- 0
       lai[]     <- 0
-      greenfrac <- 0
       zbot[]    <- 0
       ztop[]    <- 0
       sai[]     <- 0
@@ -635,8 +634,16 @@ iniveg <- function (isimveg) {
   assign("frac", frac, envir = env)              
   assign("fu", fu, envir = env)
   assign("fl", fl, envir = env)                   
-  assign("lai", lai, envir = env)                 
-  assign("greenfracl", greenfracl, envir = env)   
+  assign("lai", lai, envir = env)
+  # TODO: Verificar valor do greenfrac para NaturalVeg
+#  pgreenfrac[] <- 1
+  
+  pgreenfrac <- numeric(npft)
+  assign("pgreenfrac", pgreenfrac, envir = env)    
+#  assign("pgreenfrac", array(0, 1), envir = env)
+  
+
+  assign("greenfrac", matrix(0, 1, 2), envir = env)
   assign("zbot", zbot, envir = env)               
   assign("ztop", ztop, envir = env)               
   assign("sai", sai, envir = env)  

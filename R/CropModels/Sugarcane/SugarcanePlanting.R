@@ -5,8 +5,7 @@ SugarcanePlanting <- function(year0, year, month, day, jday, index) {
   
   
   # in order to only allow a crop to be planted once each year
-  # initialize cropplant = 0, but hold it = 1 through the end of the year
-  
+
   if (day == pdmin[j] && month == pmmin[j] && croplive[j] != 1 &&  exist[j] == 1){ pstart[j] <- 0             }
   if (                                        croplive[j] != 1 &&  exist[j] == 1){ pstart[j] <- pstart[j] + 1 }
   
@@ -20,7 +19,7 @@ SugarcanePlanting <- function(year0, year, month, day, jday, index) {
   #__________________ Start Planting Block _______________________
   
   
-  if (exist[j] == 1 && croplive[j] != 1 && cropplant[j] == 0) {
+  if (exist[j] == 1 && croplive[j] != 1 ) {
     
 
     if(    (cropy == 0 && j == j) &&
@@ -30,7 +29,6 @@ SugarcanePlanting <- function(year0, year, month, day, jday, index) {
       
       # sant- to avoid that a crop that was killed by a frost be planted again in the same year. 
       croplive[j]     <- 1        # initialize freeze kill function to 1 - crops living 
-      cropplant[j]    <- 1        # initialize freeze kill function to 1 - crops living 
       pdate[j]         <- jday    
       cropy          <- 1
       
@@ -96,7 +94,6 @@ SugarcanePlanting <- function(year0, year, month, day, jday, index) {
   
   assign("pstart", pstart, envir = env)  
   assign("croplive", croplive, envir = env) 
-  assign("cropplant", cropplant, envir = env) 
   assign("pdate", pdate, envir = env)    
   assign("cropy", cropy, envir = env)   
   assign("gddmaturity", gddmaturity, envir = env)

@@ -20,20 +20,20 @@ CropPhenoUpdate <- function() {
     }
   }
   
-  totlail <- max(totlail, 0.01)
+  totlail <- max(totlail, 0.005)
   totlaiu <- max(totlaiu, epsilon)
   
   fu <- totlaiu / 2.0
-  fu <- max(0.025, min(0.975, fu))
+  fu <- max(0.001, min(0.975, fu))
   lai[2] <- totlaiu / fu
-  lai[2] <- max(0.025, min (lai[2], 12.0) )
+  lai[2] <- max(0.005, min (lai[2], 12.0) )
 
     
-  totlail <- max(totlail, 0.025)
+  totlail <- max(totlail, 0.005)
   fl <- totlail/1.0
-  fl <- max(0.025, min(0.975, fl))
+  fl <- max(0.001, min(0.975, fl))
   lai[1] <- totlail / fl
-  lai[1] <- max(0.025, min (lai[1], 12.0) )
+  lai[1] <- max(0.005, min (lai[1], 12.0) )
   
 
 #LOWER CANOPY
@@ -96,7 +96,7 @@ CropPhenoUpdate <- function() {
     }
   }
   
-    greenfracl <- 0
+    greenfrac[1] <- 0
     rhovegvlg  <- 0
     rhovegvlb  <- 0
     rhovegirlg <- 0
@@ -111,7 +111,7 @@ CropPhenoUpdate <- function() {
     if(!plantList[[i]]$active) next
     if(plantList[[i]]$canopy == LOWER) {
       
-    greenfracl <- greenfracl + frac[j] * greenfrac[j]
+    greenfrac[1] <- greenfrac[1] + frac[j] * pgreenfrac[j]
     rhovegvlg  <- rhovegvlg  + frac[j] * rhovegvlgin[i]     # vis leaf reflectance, lower story, green leaves
     rhovegvlb  <- rhovegvlb  + frac[j] * rhovegvlbin[i]     # vis leaf reflectance, lower story, brown leaves     
     rhovegirlg <- rhovegirlg + frac[j] * rhovegirlgin[i]    # nir leaf reflectance, lower story, green leaves
@@ -130,7 +130,7 @@ CropPhenoUpdate <- function() {
     oriev[1] <- max ( - chiflzavg, 0)
     orieh[1] <- max ( chiflzavg, 0)
 
-    
+      greenfrac[2] <- 0
       rhovegvu   <- 0
       rhovegiru  <- 0
       tauvegvu   <- 0
@@ -141,6 +141,7 @@ CropPhenoUpdate <- function() {
       if(!plantList[[i]]$active) next
       if(plantList[[i]]$canopy == UPPER) {
 
+   greenfrac[2] <- greenfrac[2] + frac[j] * pgreenfrac[j]
    rhovegvu   <- rhovegvu  + frac[j] * rhovegvuin[i]      # vis leaf reflectance, upper story, green leaves
    rhovegiru  <- rhovegiru + frac[j] * rhovegiruin[i]    # nir leaf reflectance, upper story, green leaves
    tauvegvu   <- tauvegvu  + frac[j] * tauvegvuin[i]     # vis leaf transmittance, upper story, green leaves
@@ -202,7 +203,7 @@ CropPhenoUpdate <- function() {
   assign("fu", fu, envir = env)
   assign("fl", fl, envir = env)                   
   assign("lai", lai, envir = env)                 
-  assign("greenfracl", greenfracl, envir = env)   
+  assign("greenfrac", greenfrac, envir = env)   
   assign("zbot", zbot, envir = env)               
   assign("ztop", ztop, envir = env)               
   assign("sai", sai, envir = env)   
