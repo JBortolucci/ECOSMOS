@@ -267,7 +267,6 @@ GeneralModel <- function(simVars = NULL) {
     
     # simVars$out_tower <- file(outputDailyFileName, "w")
     
-    
     flx <- array(0,  50)
     
     # inicializou o simulador
@@ -329,12 +328,9 @@ GeneralModel <- function(simVars = NULL) {
 
         simVars$jday <- simVars$jday + 1
         
-        
-        print(paste("Simulation ",day, month, year,simVars$lai[1],simVars$lai[2],sep = " / "))
-        
+        print(paste("Simulation ",day, month, year, simVars$plai[1], simVars$lai[1], simVars$lai[2], sep = " / "))
         
         UseDailyStationData(day, month, year)
-        
         
 
         for(j in seq(1,simVars$npft)) {
@@ -449,6 +445,7 @@ GeneralModel <- function(simVars = NULL) {
             
             if(simVars$plantList[[i]]$currentCycle > simVars$plantList[[i]]$totalCycles) {
               
+              browser()
               print(paste0("Crop ", simVars$plantList[[i]]$name, " is finished"))
               # turn off current plant
               simVars$plantList[[simVars$currentPlant]]$active <- F

@@ -18,8 +18,6 @@ ResetCropsAfterHarvest <- function() {
         cbiob[i]   <- 0  
         cbior[i]   <- 0   
         cbiocr[i]  <- 0
-
-
         
         aybprod[i]    <- 0
         ayrprod[i]    <- 0
