@@ -18,16 +18,13 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, index) {
   
   #_______________________________________________________________    
   #__________________ Start Planting Block _______________________
-  # if(iyear == 2011 && jday >= 30) {
-  #   browser()
-  # }
-  
-  if (exist[i] == 1 && croplive[i] != 1) {
+
+  if (exist[i] == 1 && croplive[i] != 1 ) {
+    
     
     if(cropy == 0 && pstart[i] >= 1 && pstart[i] <= 180) {
       
       croplive[i]     <- 1        # initialize freeze kill function to 1 - crops living 
-      # cropplant[i]    <- 1        # initialize freeze kill function to 1 - crops living 
       pdate[i]         <- jday    
       cropy            <- 1
       gddmaturity[i]  <- hybgdd[i]
@@ -82,7 +79,6 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, index) {
  
   assign("pstart", pstart, envir = env)  
   assign("croplive", croplive, envir = env) 
-  assign("cropplant", cropplant, envir = env) 
   assign("pdate", pdate, envir = env)    
   assign("cropy", cropy, envir = env)   
   assign("gddmaturity", gddmaturity, envir = env)

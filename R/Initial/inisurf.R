@@ -262,11 +262,7 @@ inisurf <- function() {
   #if (irestart == 0) {
     assign("tempu", array(1, 1), envir = env)
     assign("templs", array(1, 1), envir = env)
-    assign("greenfracl3", array(1, 1), envir = env)
-    assign("greenfracl4", array(1, 1), envir = env)
-    # TODO: Verificar valor do greenfrac para NaturalVeg
-    greenfrac[] <- 1
-    assign("greenfrac", greenfrac, envir = env)
+
     assign("onflagu", as.logical(array(F, 1)), envir = env)
     assign("onflagl3", as.logical(array(F, 1)), envir = env)
     assign("onflagl4", as.logical(array(F, 1)), envir = env)

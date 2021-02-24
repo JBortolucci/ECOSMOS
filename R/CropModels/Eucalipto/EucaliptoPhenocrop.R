@@ -70,7 +70,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       # accumulate growing degree days for planted crops past planting
       gddplant[i] <- gddplant[i] + max(0, min(td - baset[i], mxtmp[i]))
 
-      greenfrac[i] <- 1.0
+      pgreenfrac[i] <- 1.0
       
       idpp[i]    <- idpp[i] + 1
       
@@ -118,7 +118,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       waterfact <-max(min(waterfact,1),0)
       
-      greenfrac[i] <- 1
+      pgreenfrac[i] <- 1
       
       ########################################################################################
       #############    ## ### ####     ##    ##     ##     ## ##     ## #### #################
@@ -129,7 +129,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       #---------------------
       #Fine root C allocation
       #---------------------
-      Finerootexp <- Fineroot1 * (plai[i]*greenfrac[i])
+      Finerootexp <- Fineroot1 * (plai[i]*pgreenfrac[i])
       
       aroot[i] <- (0.5 + 0.5 * (1.- (cbior[i]*kg_C_M2_to_T_ha) / Finerootexp ) / Allocsensf )
       aroot[i] <- aroot[i]*(nrx*nrn)/(nrn+(nrx-nrn)*waterfact)
@@ -401,7 +401,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
           Deadcoroots   <- cbiocr[i]
           
           croplive[i]   <- 0.0
-          greenfrac[i]  <- 0.0 # turn all vegetation to brown
+          pgreenfrac[i]  <- 0.0 # turn all vegetation to brown
           harvdate[i] <- jday
           plai[i]         <- 0.01 # simulates remaining stubble/mulch
           endCycle <- T
@@ -425,7 +425,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("ztopPft", ztopPft, envir = env)
   assign("sapfrac", sapfrac, envir = env)
   assign("gddplant", gddplant, envir = env)
-  assign("greenfrac", greenfrac, envir = env)
+  assign("pgreenfrac", pgreenfrac, envir = env)
   assign("idpp", idpp, envir = env)
   assign("awood", awood, envir = env)
   assign("aleaf", aleaf, envir = env)

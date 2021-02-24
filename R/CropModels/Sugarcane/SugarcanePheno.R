@@ -72,7 +72,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           astem[j]    <- 0.0
           arepr[j]    <- 0.0
           rm          <- 0.0 
-          greenfrac[j] <- 1.0  
+          pgreenfrac[j] <- 1.0  
           
         } else if (gddplant[j] >= huileaf[j]) {
           
@@ -109,7 +109,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           #            (astem[j] / aerial[j]) * ldf * aleaf[j] * 
           #              min(1.,exp(tmld * ecf7) / exp((td - 273.16) * ecf7) ) )
           
-          if(plai[j] * greenfrac[j] < 2 && rm < 75 && rm > 10) {
+          if(plai[j] * pgreenfrac[j] < 2 && rm < 75 && rm > 10) {
               #if green lai < 2. then aleaf is equal to 0.5 
             astem[j] <- min( max(0.,aerial[j] - 0.5) ,astem[j] ) 
          
@@ -220,10 +220,10 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         plai[j] <- max(cbiol[j] * specla[j] , 0.01)
 
         # sencon try as function of GDD, age and self-shade
-        if( rm <= 50 ) { greenfrac[j] <- 1.0 }else{ 
+        if( rm <= 50 ) { pgreenfrac[j] <- 1.0 }else{ 
                             f_dead_leaves <- 0.15 # 0.15 because dead leaves does note have the
                             dead_leaves_inpact <- cbiol[j] * specla[j] + (aylprod[j]- cbiol[j] ) * specla[j] * f_dead_leaves 
-                         greenfrac[j] <- plai[j]/ dead_leaves_inpact }
+                         pgreenfrac[j] <- plai[j]/ dead_leaves_inpact }
         
         
         
@@ -275,7 +275,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
             # year == 2005 && jday == 104   ) { # maximum harvest date
             
             croplive[j]     <- 0.0
-            greenfrac[j]    <- 0.0 # turn all vegetation to brown
+            pgreenfrac[j]    <- 0.0 # turn all vegetation to brown
             if (harvdate[j] == 999) harvdate[j] <- jday 
             plai[j]         <- 0.25 # simulates remaining stubble/mulch
             print(paste('Sug.Cane - 1st cycle = ',cropy, year, jday, idpp[j], gddplant[j], gddmaturity[j]))
@@ -289,7 +289,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
               (day == pdmin[j] && month == ((pmmin[j] + (mxmat[j] / 30.) - 1)%%12 + 1)))) { # maximum harvest date
             
             croplive[j]   <- 0.0
-            greenfrac[j]  <- 0.0 # turn all vegetation to brown
+            pgreenfrac[j]  <- 0.0 # turn all vegetation to brown
             
             if(harvdate[j] == 999) harvdate[j] <- jday 
             plai[j]       <- 0.25 # simulates remaining stubble/mulch
@@ -309,7 +309,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
   assign("aplantn", aplantn, envir = env)
   assign("mxgddgf", mxgddgf, envir = env)
   assign("mxmat", mxmat, envir = env)
-  assign("greenfrac", greenfrac, envir = env)
+  assign("pgreenfrac", pgreenfrac, envir = env)
   assign("idpp", idpp, envir = env)
   assign("awood", awood, envir = env)
   assign("aleaf", aleaf, envir = env)

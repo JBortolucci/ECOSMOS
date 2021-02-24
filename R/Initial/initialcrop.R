@@ -21,9 +21,9 @@ initialcrop <- function() {
   # replace natural vegetation!
   for(i in seq(1, npft)) {
     if(plantList[[i]]$type == CROPS) {
-      plai[i] <- 0.01
       
-  
+      env$plai[i] <- 0.01
+      env$pgreenfrac[i]  <- 1
       env$cbiol[i]   <- 0
       env$cbios[i]   <- 0
       env$cbiog[i]   <- 0
@@ -64,6 +64,7 @@ initialcrop <- function() {
   assign("sai", matrix(0, 1, 2), envir = env)
   assign("fu", array(0, 1), envir = env)
   assign("lai", matrix(0, 1, 2), envir = env)
+  assign("greenfrac", matrix(0, 1, 2), envir = env)
   assign("zbot", matrix(0, 1, 2), envir = env)
   assign("ztop", matrix(0, 1, 2), envir = env)
 
