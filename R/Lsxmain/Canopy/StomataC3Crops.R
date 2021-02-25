@@ -171,7 +171,7 @@ StomataC3Crops <- function(i) {
     # Stomatal conductance models [2020-11-18]
     {
       
-      gsmodel <- "BBC" # BBO | BBL | USO | BBC
+      gsmodel <- "BBL" # BBO | BBL | USO | BBC
       
       # Ball (1988) & Berry (1991) model [BBO] 'O' means original
       if (gsmodel=="BBO") {

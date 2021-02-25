@@ -14,8 +14,10 @@ CropPhenoUpdate <- function() {
   for(j in 1:npft) {
     if(!plantList[[j]]$active) next
     if(plantList[[j]]$canopy == LOWER) {
+      plai[j]<- max( plai[j],0.01)
       totlail <- totlail + plai[j] * temp[j]
     } else {
+      plai[j]<- max( plai[j],0.01)
       totlaiu <- totlaiu + plai[j] * temp[j]
     }
   }
@@ -23,15 +25,15 @@ CropPhenoUpdate <- function() {
   totlail <- max(totlail, 0.005)
   totlaiu <- max(totlaiu, epsilon)
   
-  fu <- totlaiu / 2.0
-  fu <- max(0.001, min(0.975, fu))
+  fu <- totlaiu / 1.0
+  fu <- max(0.001, min(0.98, fu))
   lai[2] <- totlaiu / fu
   lai[2] <- max(0.005, min (lai[2], 12.0) )
 
     
   totlail <- max(totlail, 0.005)
   fl <- totlail/1.0
-  fl <- max(0.001, min(0.975, fl))
+  fl <- max(0.001, min(0.99, fl))
   lai[1] <- totlail / fl
   lai[1] <- max(0.005, min (lai[1], 12.0) )
   
@@ -106,24 +108,42 @@ CropPhenoUpdate <- function() {
     tauvegvlg  <- 0
     tauvegvlb  <- 0
     chiflzavg  <- 0
-    
+
   for(i in 1:npft) {
     if(!plantList[[i]]$active) next
     if(plantList[[i]]$canopy == LOWER) {
       
     greenfrac[1] <- greenfrac[1] + frac[j] * pgreenfrac[j]
-    rhovegvlg  <- rhovegvlg  + frac[j] * rhovegvlgin[i]     # vis leaf reflectance, lower story, green leaves
-    rhovegvlb  <- rhovegvlb  + frac[j] * rhovegvlbin[i]     # vis leaf reflectance, lower story, brown leaves     
-    rhovegirlg <- rhovegirlg + frac[j] * rhovegirlgin[i]    # nir leaf reflectance, lower story, green leaves
-    rhovegirlb <- rhovegirlb + frac[j] * rhovegirlbin[i]    # nir leaf reflectance, lower story, brown leaves  
-    tauvegirlg <- tauvegirlg + frac[j] * tauvegirlgin[i]    # nir leaf transmittance, lower story, green leaves
-    tauvegirlb <- tauvegirlb + frac[j] * tauvegirlbin[i]    # nir leaf transmittance, lower story, brown leaves
-    tauvegvlg  <- tauvegvlg  + frac[j] * tauvegvlgin[i]     # vis leaf transmittance, lower story, green leaves
-    tauvegvlb  <- tauvegvlb  + frac[j] * tauvegvlbin[i]     # vis leaf transmittance, lower story, brown leaves
+    rhovegvlg  <- rhovegvlg  + frac[j] * rhovegvgin[i]     # vis leaf reflectance, lower story, green leaves
+    rhovegvlb  <- rhovegvlb  + frac[j] * rhovegvbin[i]     # vis leaf reflectance, lower story, brown leaves     
+    rhovegirlg <- rhovegirlg + frac[j] * rhovegirgin[i]    # nir leaf reflectance, lower story, green leaves
+    rhovegirlb <- rhovegirlb + frac[j] * rhovegirbin[i]    # nir leaf reflectance, lower story, brown leaves  
+    tauvegirlg <- tauvegirlg + frac[j] * tauvegirgin[i]    # nir leaf transmittance, lower story, green leaves
+    tauvegirlb <- tauvegirlb + frac[j] * tauvegirbin[i]    # nir leaf transmittance, lower story, brown leaves
+    tauvegvlg  <- tauvegvlg  + frac[j] * tauvegvgin[i]     # vis leaf transmittance, lower story, green leaves
+    tauvegvlb  <- tauvegvlb  + frac[j] * tauvegvbin[i]     # vis leaf transmittance, lower story, brown leaves
     chiflzavg  <- chiflzavg  + frac[j] * chiflz[j]
     }
   }
+    
+    if (greenfrac[1]  == 0) greenfrac[1]   <- 1 
+    if(rhovegvlg  == 0 ) rhovegvlg  <- rhovegvgin[1] 
+    if(rhovegvlb  == 0 ) rhovegvlb  <- rhovegvbin[1] 
+    if(rhovegirlg == 0 ) rhovegirlg <- rhovegirgin[1]
+    if(rhovegirlb == 0 ) rhovegirlb <- rhovegirbin[1]
+    if(tauvegirlg == 0 ) tauvegirlg <- tauvegirgin[1]
+    if(tauvegirlb == 0 ) tauvegirlb <- tauvegirbin[1]
+    if(tauvegvlg  == 0 ) tauvegvlg  <- tauvegvgin[1] 
+    if(tauvegvlb  == 0 ) tauvegvlb  <- tauvegvbin[1] 
+    if(chiflzavg  == 0 ) chiflzavg  <- chiflz[1]
   
+  print(paste( plai[j],totlail,frac[j],fl, greenfrac[1],
+                rhovegvlg ,
+                rhovegirlg,
+                tauvegirlg,
+                tauvegvlg ,
+              sep = " / "))
+
     # Define other vegetation properties    
     # leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
     
@@ -131,24 +151,45 @@ CropPhenoUpdate <- function() {
     orieh[1] <- max ( chiflzavg, 0)
 
       greenfrac[2] <- 0
-      rhovegvu   <- 0
-      rhovegiru  <- 0
-      tauvegvu   <- 0
-      tauvegiru  <- 0 
-      chifuzavg  <- 0
+      rhovegvug   <- 0
+      rhovegvub   <- 0
+      rhovegirug  <- 0
+      rhovegirub  <- 0
+      tauvegvug   <- 0
+      tauvegvub   <- 0
+      tauvegirug  <- 0
+      tauvegirub  <- 0
+      chifuzavg   <- 0
       
     for(i in 1:npft) {
       if(!plantList[[i]]$active) next
       if(plantList[[i]]$canopy == UPPER) {
 
    greenfrac[2] <- greenfrac[2] + frac[j] * pgreenfrac[j]
-   rhovegvu   <- rhovegvu  + frac[j] * rhovegvuin[i]      # vis leaf reflectance, upper story, green leaves
-   rhovegiru  <- rhovegiru + frac[j] * rhovegiruin[i]    # nir leaf reflectance, upper story, green leaves
-   tauvegvu   <- tauvegvu  + frac[j] * tauvegvuin[i]     # vis leaf transmittance, upper story, green leaves
-   tauvegiru  <- tauvegiru + frac[j] * tauvegiruin[i]    # nir leaf transmittance, upper story, green leaves
+   rhovegvug   <- rhovegvug  + frac[j] * rhovegvgin[i]      # vis leaf reflectance, upper story, green leaves
+   rhovegvub   <- rhovegvub  + frac[j] * rhovegvbin[i]      # vis leaf reflectance, upper story, green leaves
+   rhovegirug  <- rhovegirug + frac[j] * rhovegirgin[i]    # nir leaf reflectance, upper story, green leaves
+   rhovegirub  <- rhovegirub + frac[j] * rhovegirbin[i]    # nir leaf reflectance, upper story, green leaves
+   tauvegvug   <- tauvegvug  + frac[j] * tauvegvgin[i]     # vis leaf transmittance, upper story, green leaves
+   tauvegvub   <- tauvegvub  + frac[j] * tauvegvbin[i]     # vis leaf transmittance, upper story, green leaves
+   tauvegirug  <- tauvegirug + frac[j] * tauvegirgin[i]    # nir leaf transmittance, upper story, green leaves
+   tauvegirub  <- tauvegirub + frac[j] * tauvegirbin[i]    # nir leaf transmittance, upper story, green leaves
+   
    chifuzavg  <- chifuzavg + frac[j] * chifuz[i]
       }
     }
+      
+        if (greenfrac[2]  == 0) greenfrac[2]   <- 1 
+        if (rhovegvug  == 0) rhovegvug   <- rhovegvgin[1] 
+        if (rhovegvub  == 0) rhovegvub   <- rhovegvbin[1] 
+        if (rhovegirug == 0) rhovegirug  <- rhovegirgin[1]
+        if (rhovegirub == 0) rhovegirub  <- rhovegirbin[1]
+        if (tauvegvug  == 0) tauvegvug   <- tauvegvgin[1] 
+        if (tauvegvub  == 0) tauvegvub   <- tauvegvbin[1] 
+        if (tauvegirug == 0) tauvegirug  <- tauvegirgin[1]
+        if (tauvegirub == 0) tauvegirub  <- tauvegirbin[1]
+        if (chifuzavg  == 0) chifuzavg   <- chifuz[1]
+      
       
       oriev[2] <- max ( - chifuzavg, 0)
       orieh[2] <- max ( chifuzavg, 0)    
@@ -213,5 +254,28 @@ CropPhenoUpdate <- function() {
   assign("ayabprod", ayabprod, envir = env)
   assign("ayrprod", ayrprod, envir = env)
   assign("aylprod", aylprod, envir = env)
+  
+  
+  assign("rhovegvlg",rhovegvlg ,envir = env)
+  assign("rhovegvlb",rhovegvlb ,envir = env)
+  assign("rhovegirlg",rhovegirlg,envir = env)
+  assign("rhovegirlb",rhovegirlb,envir = env)
+  assign("tauvegvlg",tauvegvlg ,envir = env)
+  assign("tauvegvlb",tauvegvlb ,envir = env)
+  assign("tauvegirlg",tauvegirlg,envir = env)
+  assign("tauvegirlb",tauvegirlb,envir = env)
+  
+  assign("rhovegvug",rhovegvug ,envir = env)
+  assign("rhovegvub",rhovegvub ,envir = env)
+  assign("rhovegirug",rhovegirug,envir = env)
+  assign("rhovegirub",rhovegirub,envir = env)
+  assign("tauvegvug",tauvegvug ,envir = env)
+  assign("tauvegvub",tauvegvub ,envir = env)
+  assign("tauvegirug",tauvegirug,envir = env)
+  assign("tauvegirub",tauvegirub,envir = env)
+  
+  
+
+  
   
 }

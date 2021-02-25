@@ -380,19 +380,20 @@ twoset <- function(omega, betad, betai, avmu, gdir, coszen, iv, ib) {
     # iv is 1 for lower canopy and 2 for upper canopy
     # ib is 1 for visible wavebands and 2 for near infrared wavebands
     
+
     if (iv == 2) {
       if (ib == 1) {
         
         # visible values for the upper canopy
         
-        zrho <- rhovegvu
-        ztau <- tauvegvu
+        zrho <- greenfrac[2] * rhovegvug + rhovegvub * (1 - greenfrac[2]) 
+        ztau <- greenfrac[2] * tauvegvug + tauvegvub * (1 - greenfrac[2])
       }else{
         
         # ir values for the upper canopy
         
-        zrho <- rhovegiru
-        ztau <- tauvegiru
+        zrho <- greenfrac[2] * rhovegirug + rhovegirub * (1 - greenfrac[2])
+        ztau <- greenfrac[2] * tauvegirug + tauvegirub * (1 - greenfrac[2])
       }
     }else{
       if (ib == 1) {

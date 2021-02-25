@@ -87,8 +87,14 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         cbior[i]  <- 0.0001482158/kg_C_M2_to_T_ha
         cbiol[i]  <- 0.005065926 /kg_C_M2_to_T_ha
         cbiocr[i] <- 0.000163217 /kg_C_M2_to_T_ha
-        plai[i]   <- cbiol[i] * specla[i]  }
+        plai[i]   <- cbiol[i] * specla[i]  
+        plai[i]   <- max(plai[i],0.02)
+        cbiol[i]  <- plai[i]/specla[i]    
+        
+        }
       
+
+        
       rm          <- min(mxmat[i]/365, idpp[i]/365)
       hsum        <- 0
       water       <- 0

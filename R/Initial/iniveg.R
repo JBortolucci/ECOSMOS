@@ -401,18 +401,22 @@ iniveg <- function (isimveg) {
   
 # Initializing values (Updated every time step in CropPhenoUpdate)
 
- rhovegvlg  <- 0.10      # vis leaf reflectance, lower story, green leaves
- rhovegvlb  <- 0.36      # vis leaf reflectance, lower story, brown leaves
- rhovegvu   <- 0.10       # vis leaf reflectance, upper story, green leaves
- rhovegirlg <- 0.48     # nir leaf reflectance, lower story, green leaves
- rhovegirlb <- 0.58     # nir leaf reflectance, lower story, brown leaves
- rhovegiru  <- 0.40      # nir leaf reflectance, upper story, green leaves
- tauvegvlg  <- 0.07      # vis leaf transmittance, lower story, green leaves
- tauvegvlb  <- 0.22      # vis leaf transmittance, lower story, brown leaves
- tauvegvu   <- 0.05       # vis leaf transmittance, upper story, green leaves
- tauvegirlg <- 0.25     # nir leaf transmittance, lower story, green leaves
- tauvegirlb <- 0.38     # nir leaf transmittance, lower story, brown leaves
- tauvegiru  <- 0.20      # nir leaf transmittance, upper story, green leaves
+ rhovegvlg   <- 0.10      # vis leaf reflectance, lower story, green leaves
+ rhovegvlb   <- 0.36      # vis leaf reflectance, lower story, brown leaves
+ rhovegvug   <- 0.10     # vis leaf reflectance, upper story, green leaves
+ rhovegvub   <- 0.36     # vis leaf reflectance, upper story, green leaves
+ rhovegirlg  <- 0.48      # nir leaf reflectance, lower story, green leaves
+ rhovegirlb  <- 0.58      # nir leaf reflectance, lower story, brown leaves
+ rhovegirug  <- 0.40     # nir leaf reflectance, upper story, green leaves
+ rhovegirub  <- 0.58     # nir leaf reflectance, upper story, green leaves
+ tauvegvlg   <- 0.07      # vis leaf transmittance, lower story, green leaves
+ tauvegvlb   <- 0.22      # vis leaf transmittance, lower story, brown leaves
+ tauvegvug   <- 0.05     # vis leaf transmittance, upper story, green leaves
+ tauvegvub   <- 0.22     # vis leaf transmittance, upper story, green leaves
+ tauvegirlg  <- 0.25      # nir leaf transmittance, lower story, green leaves
+ tauvegirlb  <- 0.38      # nir leaf transmittance, lower story, brown leaves
+ tauvegirug  <- 0.20     # nir leaf transmittance, upper story, green leaves
+ tauvegirub  <- 0.38     # nir leaf transmittance, upper story, green leaves
  
  # Leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
  oriev[1] <- 0
@@ -652,16 +656,20 @@ iniveg <- function (isimveg) {
   
   assign("rhovegvlg",rhovegvlg  , envir = env)
   assign("rhovegvlb",rhovegvlb  , envir = env)
-  assign("rhovegvu",rhovegvu   , envir = env)
+  assign("rhovegvug",rhovegvug   , envir = env)
+  assign("rhovegvub",rhovegvub   , envir = env) 
   assign("rhovegirlg",rhovegirlg , envir = env)
   assign("rhovegirlb",rhovegirlb , envir = env)
-  assign("rhovegiru",rhovegiru  , envir = env)
+  assign("rhovegirug",rhovegirug  , envir = env)
+  assign("rhovegirub",rhovegirub  , envir = env)
   assign("tauvegvlg",tauvegvlg  , envir = env)
   assign("tauvegvlb",tauvegvlb  , envir = env)
-  assign("tauvegvu",tauvegvu   , envir = env)
+  assign("tauvegvug",tauvegvug   , envir = env)
+  assign("tauvegvub",tauvegvub   , envir = env)
   assign("tauvegirlg",tauvegirlg , envir = env)
   assign("tauvegirlb",tauvegirlb , envir = env)
-  assign("tauvegiru",tauvegiru  , envir = env)
+  assign("tauvegirug",tauvegirug  , envir = env)
+  assign("tauvegirub",tauvegirub  , envir = env)
    assign("oriev",oriev, envir = env)
    assign("orieh",orieh, envir = env)
   
