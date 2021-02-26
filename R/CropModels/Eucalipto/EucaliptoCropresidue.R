@@ -3,7 +3,7 @@
 
 EucaliptoCropresidue <- function (year, year0, jday, index) {
   
-  deltay    <- plantList$eucalipto$params$deltay 
+  deltay    <- plantList[[index]]$params$deltay 
   
   j <- index
   

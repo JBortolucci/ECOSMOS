@@ -2,8 +2,8 @@
 
 SugarcaneResidue <- function(year, iyear0, jday, index) {
   
-  nratoon  <- plantList$sugarcane$param$nratoon
-  firecane <- plantList$sugarcane$param$firecane
+  nratoon  <- plantList[[index]]$param$nratoon
+  firecane <- plantList[[index]]$param$firecane
   
   j <- index
   

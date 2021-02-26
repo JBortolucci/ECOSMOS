@@ -163,6 +163,7 @@ sumnow <- function() {
     #    tgpp[i] <- frac[i] * ag[i] * lai[2] * fu
     tgpp[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$canopy == LOWER,  frac[i] * ag[i] * lai[2] * fu, tgpp[i])
   }
+  
   # tgpp[1] <- frac[1] * agcub * lai[2] * fu
   # tgpp[2] <- frac[2] * agcub * lai[2] * fu
   # tgpp[3] <- frac[3] * agcub * lai[2] * fu

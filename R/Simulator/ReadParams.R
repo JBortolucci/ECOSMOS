@@ -380,7 +380,7 @@ ReadPlantParamsFromFile <- function(path = "") {
       # TODO: Leandro, ler os arquivos especificos das culturas dentro dos modelos para cada uma delas
       if(simInstances[[simId]]$plantList[[i]]$type != simInstances[[simId]]$NATURAL_VEG) {
         
-        if (simInstances[[simId]]$config[[paste0("plant", i)]]$name == "soybean"){
+        if (simInstances[[simId]]$config[[paste0("plant", i)]]$name == "soybean") {
           
           # environment(readSoybeanParams) <- simInstances
           
@@ -390,7 +390,7 @@ ReadPlantParamsFromFile <- function(path = "") {
             readSoybeanParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances,column = column , simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
             n <- n + 1
           }
-        } else if(simInstances[[simId]]$config[[paste0("plant", i)]]$name == "forage"){
+        } else if(simInstances[[simId]]$config[[paste0("plant", i)]]$name == "forage") {
           
           source("./R/CropModels/PerennialForage/readForageParams.R")
           

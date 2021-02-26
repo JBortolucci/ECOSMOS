@@ -94,6 +94,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]][["wflo"]]     <- numeric(simInstances[[id]]$nsoilay+1)
     simInstances[[id]][["froot"]]    <- matrix(0, simInstances[[id]]$nsoilay, 2)
 
+    
     # Criando na instancia da simulação a lista de plantas que serão simuladas
     for(j in seq(1, simConfigs[[i]]$npft)) {
       
@@ -115,8 +116,8 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
         for(n in 1:length(models)) {
           
           modelName <- models[n]
-          simInstances[[id]]$plantList[[modelName]]                <- basePlantList[[modelName]]
-          simInstances[[id]]$plantList[[modelName]]$active         <- F
+          simInstances[[id]]$plantList[[modelName]]        <- basePlantList[[modelName]]
+          simInstances[[id]]$plantList[[modelName]]$active <- F
           
           controlConfigs$name <- modelName
           simInstances[[id]]$plantList[[modelName]]$controlConfigs <- controlConfigs
@@ -135,12 +136,12 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
         
         if(!is.null(model)) {
           
-          simInstances[[id]]$plantList[[name]] <- model
+          simInstances[[id]]$plantList[[paste0(name,j)]] <- model
           
           # NOVO: A planta agora é ativada no loop, dependendo do ano que deve iniciar
-          simInstances[[id]]$plantList[[name]]$active         <- F
-          simInstances[[id]]$plantList[[name]]$controlConfigs <- simConfigs[[i]][[paste0("plant",j)]]
-          simInstances[[id]]$plantList[[name]]$bioma          <- F
+          simInstances[[id]]$plantList[[paste0(name,j)]]$active         <- F
+          simInstances[[id]]$plantList[[paste0(name,j)]]$controlConfigs <- simConfigs[[i]][[paste0("plant",j)]]
+          simInstances[[id]]$plantList[[paste0(name,j)]]$bioma          <- F
           # TODO: Agora a vegetação natural também é afetada pelos ciclos
           # if(simInstances[[id]]$plantList[[name]]$type == simDataVars$NATURAL_VEG) {
           #   simInstances[[id]]$plantList[[name]]$active <- T
@@ -218,6 +219,5 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     if(simConfigs[[i]]$irrigate>0){try(ReadDailyIrrigationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)}
   }
   
-
   
 }
