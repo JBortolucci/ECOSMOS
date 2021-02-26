@@ -455,7 +455,6 @@ GeneralModel <- function(simVars = NULL) {
             
             if(simVars$plantList[[i]]$currentCycle > simVars$plantList[[i]]$totalCycles) {
               
-              browser()
               print(paste0("Crop ", simVars$plantList[[i]]$name, " is finished"))
               # turn off current plant
               simVars$plantList[[i]]$active <- F
