@@ -100,22 +100,23 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]][["anuptake"]] <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["wflo"]]     <- numeric(simInstances[[id]]$nsoilay+1)
     simInstances[[id]][["froot"]]    <- matrix(0, simInstances[[id]]$nsoilay, 2)
-    
+
     # Criando na instancia da simulação a lista de plantas que serão simuladas
     for(j in seq(1, simConfigs[[i]]$npft)) {
-
+      
+      
       # Busca na baseList a planta pelo id passado no arquivo de configuração. Se a planta não existir, interrompe a execução.
       name  <- simConfigs[[i]][[paste0("plant",j)]]$name
       model <- basePlantList[[name]]
       
       if(!is.null(model)) {
         
-        simInstances[[id]]$plantList[[name]] <- model
+        simInstances[[id]]$plantList[[paste0(name,j)]] <- model
         
         # NOVO: A planta agora é ativada no loop, dependendo do ano que deve iniciar
-        simInstances[[id]]$plantList[[name]]$active <- F
-        if(simInstances[[id]]$plantList[[name]]$type == simDataVars$NATURAL_VEG) {
-          simInstances[[id]]$plantList[[name]]$active <- T
+        simInstances[[id]]$plantList[[paste0(name,j)]]$active <- F
+        if(simInstances[[id]]$plantList[[paste0(name,j)]]$type == simDataVars$NATURAL_VEG) {
+          simInstances[[id]]$plantList[[paste0(name,j)]]$active <- T
         }
         
         
@@ -124,7 +125,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
       }
     }
     
-    
+
     # Passa a configuração para a instancia da simulação
     simInstances[[id]]$config <- simConfigs[[i]]
     
@@ -140,7 +141,6 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     #       Depois, fazer um jeito de definir plantas rodando ao mesmo tempo.
     
     ReadPlantParamsFromFile(path = paramsPath)
-    
     
     #___________________________________________    
     # READ DAILY STATION DATA
