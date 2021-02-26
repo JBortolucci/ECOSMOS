@@ -404,7 +404,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
           pgreenfrac[i]  <- 0.0 # turn all vegetation to brown
           harvdate[i] <- jday
           plai[i]         <- 0.01 # simulates remaining stubble/mulch
-          endCycle <- T
+          endCycle[i] <- T
           print(paste('Harvest Eucalyptus - = ',cropy,iyear,jday,idpp[i],rm))
         }
       } else {

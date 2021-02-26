@@ -180,7 +180,7 @@ dynaveg <- function (isimfire) {
       totlaiu <- 0.0
       totbiou <- 0.0
     for(i in 1:npft) {
-      if(!plantList[[i]]$active || plantList[[j]]$type == CROPS) next
+      if(!plantList[[i]]$active || plantList[[i]]$type == CROPS) next
       if(plantList[[i]]$canopy == UPPER) {
           totlaiu <- totlaiu + plai[i]
           totbiou <- totbiou + biomass[i]
@@ -225,8 +225,8 @@ dynaveg <- function (isimfire) {
     #
     # estimate stem area index (sai) as a fraction of the lai
     
-    sai[i,1] <- 0.050 * totlail[i]
-    sai[i,2] <- 0.250 * totlaiu[i]
+    # sai[i,1] <- 0.050 * totlail[i]
+    # sai[i,2] <- 0.250 * totlaiu[i]
     
     sai[1] <- max(0.05,0.050 * totlail)
     sai[2] <- max(0.25,0.250 * totlaiu)
