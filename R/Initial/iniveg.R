@@ -175,13 +175,14 @@ iniveg <- function (isimveg) {
   # ************************************************************************
   
   if(isimveg == 0 || isimveg == 1) {
+    
     # translate vegetation type (real) to nearest integer
     inveg <- round (xinveg)
     
     # for initialization purposes, set the predicted vegetation type
     # to the initial vegetation type
     vegtype0 <- xinveg
-    
+
     # ---------------------------------------------------
     #  1: tropical evergreen forest / woodland              (TROPEF)
     #  2: tropical deciduous forest / woodland              (TROPDF)

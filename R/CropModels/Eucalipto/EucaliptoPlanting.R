@@ -18,12 +18,11 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, index) {
   
   #_______________________________________________________________    
   #__________________ Start Planting Block _______________________
-  
-  
+
   if (exist[i] == 1 && croplive[i] != 1 ) {
     
     
-    if(cropy == 0 &&  pstart[i] >=1 && pstart[i] <= 180) {
+    if(cropy == 0 && pstart[i] >= 1 && pstart[i] <= 180) {
       
       croplive[i]     <- 1        # initialize freeze kill function to 1 - crops living 
       pdate[i]         <- jday    
@@ -33,7 +32,6 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, index) {
       print(paste('1st Plant Eucalyptus ', jday, imonth, iyear,hybgdd[i],gddmaturity[i],sep=' / '))
       
     }
-    
     
     # add fertilizer nitrogen input for each crop planted (kg m-2)
     # on the planting date

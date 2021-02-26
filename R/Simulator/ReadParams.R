@@ -177,39 +177,71 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
 
 ReadPlantParamsFromFile <- function(path = "") {
   
-  data <- read.csv(file = path, header = T, stringsAsFactors = F, sep = ",")
+  userParams   <- read.csv(file = path, header = T, stringsAsFactors = F, sep = ",")
+  natVegParams <- read.csv(file = "inst/natveg_params.csv", header = T, stringsAsFactors = F, sep = ",")
   
   for(simId in ls(simInstances)) {
     
     npft <- simInstances[[simId]]$npft
+
+    for(i in 1:npft) {
+      
+      if(simInstances[[simId]]$plantList[[i]]$type == simInstances[[simId]]$NATURAL_VEG) {
+        
+        data   <- natVegParams
+        column <- simInstances[[simId]]$plantList[[i]]$name
+        
+        config <- simInstances[[simId]]$plantList[[i]]$controlConfigs
+        
+        startYear     <- config$startYear
+        plantJDay     <- config$plantJday
+        cycleLength   <- config$cycleLength
+        plantingDate  <- as.Date(plantJDay-1, origin = as.Date(paste0(startYear,"-01-01")))
+        plantingDay   <- as.numeric(format(plantingDate, "%d"))
+        plantingMonth <- as.numeric(format(plantingDate, "%m"))
+        
+        nextHarvestDate <- as.Date(cycleLength-1, origin = plantingDate)
+        
+        pmMin <- plantingMonth
+        pdMin <- plantingDay
+        
+        simInstances[[simId]]$plantList[[i]]$totalYears <- (as.numeric(format(nextHarvestDate, "%Y")) - as.numeric(format(plantingDate, "%Y")) + 1) * config$ncycles
+        
+        simInstances[[simId]]$plantList[[i]]$startYear     <- startYear
+        simInstances[[simId]]$plantList[[i]]$currentCycles <- 1
+        simInstances[[simId]]$plantList[[i]]$totalCycles   <- config$ncycles
+        
+      } else {
+        
+        data   <- userParams
+        column <- simInstances[[simId]]$config[[paste0("plant", i)]]$params
+        
+        config <- simInstances[[simId]]$plantList[[i]]$controlConfigs
+        
+        # Cuidado, na função as.Date, o dia juliano começa com 0!!! Será preciso subtrair 1 do valor da planilha
+        startYear     <- config$startYear
+        plantJDay     <- config$plantJday
+        cycleLength   <- config$cycleLength
+        plantingDate  <- as.Date(plantJDay-1, origin = as.Date(paste0(startYear,"-01-01")))
+        plantingDay   <- as.numeric(format(plantingDate, "%d"))
+        plantingMonth <- as.numeric(format(plantingDate, "%m"))
+        
+        # Verificar se a quantidade de ciclos é maior que 1, se sim, atualiza.
+        nextHarvestDate <- as.Date(cycleLength-1, origin = plantingDate)
+        
+        # These two values is being read from simulation config table.
+        pmMin <- plantingMonth
+        pdMin <- plantingDay
+        
+        simInstances[[simId]]$plantList[[i]]$totalYears <- (as.numeric(format(nextHarvestDate, "%Y")) - as.numeric(format(plantingDate, "%Y")) + 1) * config$ncycles
+        
+        # create a variable for tracking the current cycle of the plant.
+        simInstances[[simId]]$plantList[[i]]$startYear     <- startYear
+        simInstances[[simId]]$plantList[[i]]$currentCycles <- 1
+        simInstances[[simId]]$plantList[[i]]$totalCycles   <- config$ncycles
+        
+      }
     
-    for(i in 1:npft) {  
-      
-      
-      column <- simInstances[[simId]]$config[[paste0("plant", i)]]$params
-      
-      # Cuidado, na função as.Date, o dia juliano começa com 0!!! Será preciso subtrair 1 do valor da planilha
-      startYear     <- simInstances[[simId]]$config[[paste0("plant", i)]]$startYear
-      plantJDay     <- simInstances[[simId]]$config[[paste0("plant", i)]]$plantJday
-      cycleLength   <- simInstances[[simId]]$config[[paste0("plant", i)]]$cycleLength
-      plantingDate  <- as.Date(plantJDay-1, origin = as.Date(paste0(startYear,"-01-01")))
-      plantingDay   <- as.numeric(format(plantingDate, "%d"))
-      plantingMonth <- as.numeric(format(plantingDate, "%m"))
-      
-      # Verificar se a quantidade de ciclos é maior que 1, se sim, atualiza.
-      nextHarvestDate <- as.Date(cycleLength-1, origin = plantingDate)
-      
-      # These two values is being read from simulation config table.
-      pmMin <- plantingMonth
-      pdMin <- plantingDay
-      
-      simInstances[[simId]]$plantList[[i]]$totalYears <- (as.numeric(format(nextHarvestDate, "%Y")) - as.numeric(format(plantingDate, "%Y")) + 1) * simInstances[[simId]]$config$plant1$ncycles
-      
-      # create a variable for tracking the current cycle of the plant.
-      simInstances[[simId]]$plantList[[i]]$startYear     <- startYear
-      simInstances[[simId]]$plantList[[i]]$currentCycles <- 1
-      simInstances[[simId]]$plantList[[i]]$totalCycles   <- simInstances[[simId]]$config[[paste0("plant", i)]]$ncycles
-      
       indexOfPlant <- i
       
       if(is.null(data[[column]])) {
@@ -342,33 +374,37 @@ ReadPlantParamsFromFile <- function(path = "") {
       # funcao mandar em parametro nome da variavel em nome da coluna
       
       # TODO: Leandro, ler os arquivos especificos das culturas dentro dos modelos para cada uma delas
-      if (simInstances[[simId]]$config[[paste0("plant", i)]]$name == "soybean"){
+      if(simInstances[[simId]]$plantList[[i]]$type != simInstances[[simId]]$NATURAL_VEG) {
         
-        
-              # environment(readSoybeanParams) <- simInstances
-
-              source("./R/CropModels/Soybean/readSoybeanParams.R")
-
-        if(!is.na(as.character(data[n,column])) && (!grepl("^[0-9]*$", as.character(data[n,column]), perl = T))){
-          readSoybeanParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances,column = column , simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
+        if (simInstances[[simId]]$config[[paste0("plant", i)]]$name == "soybean") {
+          
+          # environment(readSoybeanParams) <- simInstances
+          
+          source("./R/CropModels/Soybean/readSoybeanParams.R")
+          
+          if(!is.na(as.character(data[n,column])) && (!grepl("^[0-9]*$", as.character(data[n,column]), perl = T))){
+            readSoybeanParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances,column = column , simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
+            n <- n + 1
+          }
+        } else if(simInstances[[simId]]$config[[paste0("plant", i)]]$name == "forage") {
+          
+          source("./R/CropModels/PerennialForage/readForageParams.R")
+          
+          if(!is.na(as.character(data[n,column])) && (!grepl("^[0-9]*$", as.character(data[n,column]), perl = T))){
+            readForageParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances,column = column , simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
+            n <- n + 1
+          }
+          ReadForageHarvData(simId, simInstances = simInstances[[simId]])
+        }
+        while(!is.na(as.character(data[n,1]))) {
+          if(!is.na(as.numeric(data[n,column]))) { 
+            simInstances[[simId]]$plantList[[i]]$params[[as.character(data[n,1])]] <- as.numeric(data[n,column])
+          }
           n <- n + 1
         }
-      } else if(simInstances[[simId]]$config[[paste0("plant", i)]]$name == "forage"){
         
-              source("./R/CropModels/PerennialForage/readForageParams.R")
-
-        if(!is.na(as.character(data[n,column])) && (!grepl("^[0-9]*$", as.character(data[n,column]), perl = T))){
-          readForageParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances,column = column , simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
-          n <- n + 1
-        }
-        ReadForageHarvData(simId, simInstances = simInstances[[simId]])
       }
-      while(!is.na(as.character(data[n,1]))) {
-        if(!is.na(as.numeric(data[n,column]))) { 
-          simInstances[[simId]]$plantList[[i]]$params[[as.character(data[n,1])]] <- as.numeric(data[n,column])
-        }
-        n <- n + 1
-      }
+      
     }
   }
 }

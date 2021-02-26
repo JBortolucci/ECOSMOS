@@ -2,8 +2,8 @@
 
 SugarcaneResidue <- function(year, iyear0, jday, index) {
   
-  nratoon  <- plantList$sugarcane$param$nratoon
-  firecane <- plantList$sugarcane$param$firecane
+  nratoon  <- plantList[[index]]$param$nratoon
+  firecane <- plantList[[index]]$param$firecane
   
   j <- index
   
@@ -150,7 +150,7 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     } else if ( cropy > nratoon) {
       croplive[j] <- 0    
       cropy       <- 0
-      endCycle    <- T
+      endCycle[i] <- T
     }  
     
   }  # harvest <- jday
