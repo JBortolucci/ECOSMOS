@@ -27,7 +27,7 @@ CreateModel <- function(nameArg           = "unnamed",
 # TODO: Criar outro script para o BIOMA
 # funções e variáveis de montagem de biomas (modelos)
 
-source("./R/NaturalVegModels/C4Grass.R")
+source("./R/NaturalVegModels/C4Grass/C4GrassModel.R")
 source("./R/NaturalVegModels/C3Grass/C3GrassModel.R")
 source("./R/NaturalVegModels/Upper.R")
 
@@ -143,7 +143,7 @@ CreateBuiltInNatVegModels <- function() {
               typeArg           = simDataVars$NATURAL_VEG,
               canopyArg         = simDataVars$LOWER,
               carbonFixationArg = simDataVars$C4,
-              ModelArg          = C4GrassPheno)
+              ModelArg          = C4GrassModel)
   
   # 12: cool (c3) grasses
   CreateModel(nameArg           = "C3Grass",

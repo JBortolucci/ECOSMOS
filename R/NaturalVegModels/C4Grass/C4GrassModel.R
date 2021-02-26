@@ -1,14 +1,23 @@
 
-source("R/NaturalVegModels/C3Grass/C3GrassIniVeg.R")
-source("R/NaturalVegModels/C3Grass/C3GrassPheno.R")
-source("R/NaturalVegModels/C3Grass/C3GrassResidue.R")
+source("R/NaturalVegModels/C4Grass/C4GrassIniVeg.R")
+source("R/NaturalVegModels/C4Grass/C4GrassPheno.R")
+source("R/CropPhenoUpdate.R")
+# source("R/NaturalVegModels/C4Grass/C4GrassResidue.R")
 
-C3GrassModel <- function(jday, index) {
+C4GrassModel <- function(jday, index) {
   
-  environment(C3GrassIniVeg)  <- env
-  environment(C3GrassPheno)   <- env
-  # environment(C3GrassResidue) <- env
+  environment(C4GrassIniVeg)   <- env
+  environment(C4GrassPheno)    <- env
+  environment(CropPhenoUpdate) <- env
   
-  C3GrassIniVeg(jday, index)
+  Deadleaves <- list()
+  Deadfroots <- list()
+  
+  assign('Deadleaves', Deadleaves, envir = env)
+  assign('Deadfroots', Deadfroots, envir = env)
+  
+  C4GrassIniVeg(jday, index)
+  C4GrassPheno(jday, index)
+  CropPhenoUpdate()
   
 }

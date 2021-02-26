@@ -38,8 +38,9 @@ climanl <- function() {
   #______________________________________________________________________
   #  Find annual averages for vegetations existence
   #______________________________________________________________________
-  # annual average precipitation taken from 30 year climate mean  
-  assign("PPTavgann",  mean(data_station$RAIN), envir = env)
+  # annual average precipitation taken from 30 year climate mean
+  PPTavgann <- aggregate(x = data_station$RAIN, by = list(year(as.Date(data_station$mydate))), FUN = sum)[,2]
+  assign("PPTavgann",  mean(PPTavgann), envir = env)
   
   # annual average minimum air temperature (deg C)
   assign("tminavgann", mean(data_station$TMIN), envir = env)

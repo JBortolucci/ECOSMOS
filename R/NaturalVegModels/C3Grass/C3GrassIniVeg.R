@@ -31,25 +31,23 @@ C3GrassIniVeg <- function(jday, i) {
     
     greenfrac[i] <- 1.0
     
-    falll[i] <- 0.0
-    fallr[i] <- 0.0
-    fallw[i] <- 0.0
+    flagl3 <- list('on' = F, 'off' = T)
     
-    assign('plai'     , plai     , envir = env)
-    assign('sapfrac'  , sapfrac  , envir = env)
-    assign('cbiol'    , cbiol    , envir = env)
-    assign('cbior'    , cbior    , envir = env)
-    assign('cbiow'    , cbiow    , envir = env)
-    assign('cbios'    , cbios    , envir = env)
-    assign('cbiog'    , cbiog    , envir = env)
-    assign('wood'     , wood     , envir = env)
-    assign('biomass'  , biomass  , envir = env)
-    assign('greenfrac', greenfrac, envir = env)
-    assign('falll'    , falll    , envir = env)
-    assign('fallr'    , fallr    , envir = env)
-    assign('fallw'    , fallw    , envir = env)
-    assign('croplive' , croplive , envir = env)
-    assign('a10td'    , a10td    , envir = env)
+    assign('plai'      , plai      , envir = env)
+    assign('sapfrac'   , sapfrac   , envir = env)
+    assign('cbiol'     , cbiol     , envir = env)
+    assign('cbior'     , cbior     , envir = env)
+    assign('cbiow'     , cbiow     , envir = env)
+    assign('cbios'     , cbios     , envir = env)
+    assign('cbiog'     , cbiog     , envir = env)
+    assign('wood'      , wood      , envir = env)
+    assign('biomass'   , biomass   , envir = env)
+    assign('greenfrac' , greenfrac , envir = env)
+    assign('croplive'  , croplive  , envir = env)
+    assign('a10td'     , a10td     , envir = env)
+    assign('flagl3'    , flagl3    , envir = env)
+    assign('Deadleaves', Deadleaves, envir = env)
+    assign('Deadfroots', Deadfroots, envir = env)
     
   }
   
