@@ -21,6 +21,7 @@ inisoil <- function() {
   
 
   
+ 
   assign("wsoi",  matrix(0.5   , 1, nsoilay), envir = env)
   assign("tsoi",  matrix(Tavgann+273.16, 1, nsoilay), envir = env)
   assign("wisoi", matrix(0     , 1, nsoilay), envir = env)
@@ -151,11 +152,15 @@ inisoil <- function() {
     swater[k] <- 0.000001
     sice[k]   <- 0
     
-    print(paste('Soil Properties',k,bex[k],fracsand[k],fracclay[k],poros[k],sfield[k]*poros[k],swilt[k]*poros[k],hydraul[k],sep=" / "))
+    
+      if((swic[k]/ poros[k])>= (swilt[k]-0.01) && (swic[k]/ poros[k]) < 1.0) wsoi[k]<- swic[k]/poros[k]
+  
+           wsoi[k] <- min(max(wsoi[k],wsoi[k]),sfield[k])
+      
+    print(paste('Soil Properties',k,bex[k],fracsand[k],fracclay[k],poros[k],sfield[k]*poros[k],swilt[k]*poros[k],
+                hydraul[k],wsoi[k],sep=" / "))
     
   }
-  
-
   
 
   #SVC Move carfrac and texfact from soilbgc to here, need to compute only once   
@@ -179,6 +184,7 @@ inisoil <- function() {
   
   
   
+  assign("wsoi",  wsoi, envir = env)
   assign("hsoi", hsoi, envir = env)
   assign("tsoi",  tsoi, envir = env)
   assign("rhosoi",  rhosoi, envir = env)
