@@ -136,7 +136,7 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
       croplive[j] <- 1   
       cbiol[j] <- 0.05/ specla[j]
       plai[j]  <- cbiol[j] * specla[j]
-      gddmaturity[j]  <- gddsgcp
+      gddmaturity[j]  <- gddsgcr
       
 
       ##### Check if cycle was complete #####

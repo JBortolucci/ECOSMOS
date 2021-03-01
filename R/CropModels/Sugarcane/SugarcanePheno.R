@@ -86,9 +86,9 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           
           # scheme based on CANEGRO model (Singels et al. 2005) 
           # if sugarcane is planted, it takes long to construct the 
-          # root sistem, if ratoon leafs develop faster 
+          # root system, if ratoon leaves develop faster 
           if(cropy == 1) {
-            aerial[j] <- (1 - arootf[j]) * min(1.0, ( 1 - exp(-rootd * 0.2 * rm))) 
+            aerial[j] <- (1 - arootf[j]) * min(1.0, ( 1 - exp(-rootd * 0.5 * rm))) 
           } else {
             aerial[j] <- (1 - arootf[j]) * min(1.0, ( 1 - exp(-rootd * rm))) 
           }
