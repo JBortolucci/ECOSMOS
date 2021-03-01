@@ -373,13 +373,13 @@ iniveg <- function (isimveg) {
       cbior[i]   <- 0   
       cbiocr[i]  <- 0
       
-      cbiold[i]   <- 0
-      cbiosd[i]   <- 0
-      cbiogd[i]   <- 0
-      cbiowd[i]   <- 0
-      cbiobd[i]   <- 0  
-      cbiord[i]   <- 0   
-      cbiocrd[i]  <- 0
+      env$cbiold[i]   <- 0
+      env$cbiosd[i]   <- 0
+      env$cbiogd[i]   <- 0
+      env$cbiowd[i]   <- 0
+      env$cbiobd[i]   <- 0 
+      env$cbiord[i]   <- 0 
+      env$cbiocrd[i]  <- 0
 
        
       aleaf[i]   <- 0
