@@ -31,6 +31,14 @@ initialcrop <- function() {
       env$cbiob[i]   <- 0 
       env$cbior[i]   <- 0 
       env$cbiocr[i]  <- 0
+      
+      env$cbiold[i]   <- 0
+      env$cbiosd[i]   <- 0
+      env$cbiogd[i]   <- 0
+      env$cbiowd[i]   <- 0
+      env$cbiobd[i]   <- 0 
+      env$cbiord[i]   <- 0 
+      env$cbiocrd[i]  <- 0
 
       env$aleaf[i]   <- 0
       env$astem[i]   <- 0
