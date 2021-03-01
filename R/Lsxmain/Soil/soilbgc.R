@@ -841,7 +841,11 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
     tco2mic <- tco2mic / (86400 * 0.012)
   }
   
-  
+  # Henrique: added to analyse the outputs [2021-02-12]
+  assign("totcbegin", totcbegin, envir = env)
+  assign("totcin", totcin, envir = env)
+  assign("totcend", totcend, envir = env)
+  assign("cleach", cleach, envir = env)
 
   falll <- max(falll - falll * tottsl, 0)
   fallr <- max(fallr - fallr * tottsr, 0)

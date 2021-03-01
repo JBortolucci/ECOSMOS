@@ -98,9 +98,9 @@ StomataC4Crops <- function(i) {
   dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
   
   agc4 <- min (dumq / duma, dumc / dumq)
-  anc4 <- agc4 - rdarkc4
-  
-  anc4 <- anc4 * max(0, stresst)
+  anc4 <- agc4 - rdarkc4 #TODO Henrique: verificar assimilação negativa aqui [2021-02-12]
+
+  anc4 <- anc4 * max(0, stresst) #TODO Henrique: verificar pq stresst está on aqui e não na C3 [2021-02-12]
   
   # csc4 <- 0.5 * (csc4 + co2conc - anc4 / gbco2l)  
   cs[i] <- 0.5 * (cs[i] + co2conc - anc4 / gbco2l)
@@ -166,7 +166,7 @@ StomataC4Crops <- function(i) {
   gscc4 <- max (gsmin[i], coefb[i] * stressc4c, gscc4)
   # gscc4 <- gscc4 * grnfraccrop[idc]
   gscc4 <- gscc4 * greenfrac[i]
-  
+
   
   rwork <- 1 / airVegCoef
   dump <- 1 / 0.029   

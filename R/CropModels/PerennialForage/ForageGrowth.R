@@ -639,7 +639,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   ROWSPC <- config$plant1$rowSpacing / 100 # 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
   
   
-  SDWTPL <- 2000 # equivalente ao [.SBX] *PLANTING DETAILS: PLWT | Henrique: levar para template [2020-11-26]
+  SDWTPL <- 1000 # equivalente ao [.SBX] *PLANTING DETAILS: PLWT | Henrique: levar para template [2020-11-26]
   
   TNCFAC   <- params$TNCFAC
   PLIGSR   <- params$PLIGSR
@@ -2810,7 +2810,7 @@ ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT) {
             # HELPS IOWA 88 AND VEG STRESS TRTS IN 1981 AND 1985. INCR SEED AND BIO.
             #-----------------------------------------------------------------------
           }
-          # VERIFICAR: DEPMAX estava sendo calculado no RUNINIT
+          # Henrique: last xy lookup pair of XRTFAC must be higher than 30 leaves, otherwise RFAC2 and RTDEP will return NA in case of free growth [2021-02-23]
           DEPMAX <- DS[NLAYR]
           if (RTDEP > DEPMAX) {
             RTDEP <- DEPMAX
@@ -3500,7 +3500,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
       #     Calculate Pattern of Vegetative Partitioning, a function of V-STAGE
       #-----------------------------------------------------------------------
       if (PHZACC[4] >= SDLEST) { 
-        FRLF  <- TABEX(YLFEST,XLFEST,VSTAGE,8)
+        FRLF  <- TABEX(YLFEST,XLFEST,VSTAGE,8) # Henrique: last xy lookup pair of XLFEST must be higher than 40 leaves, otherwise will return many NA's in case of free growth [2021-02-23]
         FRSTM <- TABEX(YSTEST,XLFEST,VSTAGE,8)
         FRSTR <- TABEX(YSREST,XLFEST,VSTAGE,8)
       } else {
@@ -3627,6 +3627,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
       #     Limit leaf pertitioning to FRLFMX (i.e., FRLFMX = 0.7)
       #-----------------------------------------------------------------------
       FRLF <- (AGRLF*GAINWT)/(CDMVEG + 0.0001)
+
       if (FRLF > FRLFMX) {
         GAINWT <- (CDMVEG/AGRLF) * FRLFMX
         # VERIFICAR: F novamente. Mudar
@@ -3706,7 +3707,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
       CDMVEG <- CDMVEG - CDMOLD
       
       NDMVEG <- (CDMVEG/AGRVG2) * (FRLF * FNINL + FRSTM * FNINS + FRRT * FNINR + FRSTR * FNINSR)
-      
+
       NDMNEW <- NDMREP + NDMVEG
       
     }

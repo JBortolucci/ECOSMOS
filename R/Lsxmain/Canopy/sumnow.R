@@ -46,7 +46,7 @@
 # tgpp       # instantaneous GPP for each pft (mol-CO2 / m-2 / second)
 # tgpptot    # instantaneous gpp (mol-CO2 / m-2 / second)
 # tmin       # minimum daily temperature (K)
-# tneetot    # instantaneous net ecosystem exchange of co2 per timestep (kg_C m-2/timestep)
+# tneetot    # instantaneous net ecosystem exchange of co2 per timestep (kg_C m-2/timestep) # check units [Henrique, 2021-02-12]
 # tnpp       # instantaneous NPP for each pft (mol-CO2 / m-2 / second)
 # tnpptot    # instantaneous npp (mol-CO2 / m-2 / second)
 # ts         # temperature of upper canopy stems (K)
@@ -275,7 +275,7 @@ sumnow <- function() {
   for(i in seq(1,npft)) {
     if(!plantList[[i]]$active) next
 
-    mcbior[i]  <- cbior[i]  * (funcb*rroot)
+    mcbior[i]  <- cbior[i]  * (funcb*rroot) #TODO checar [Henrique; 2020-02-11]
     mcbiog[i]  <- cbiog[i]  *  0.0
     mcbiop[i]  <- cbiop[i]  *  0.0 # TODO: Henrique, rever quanto sao esses valores de respiracao
     mcbiow[i]  <- cbiow[i]  * (sapfrac*rwood*funca)

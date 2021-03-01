@@ -27,6 +27,7 @@ simDataVars$slfc  <-  0
 simDataVars$slft  <-  0
 simDataVars$lsr  <-  0
 simDataVars$plag  <-  0
+simDataVars$plaf  <-  0
 simDataVars$leafwt  <-  0
 simDataVars$leafwg  <-  0
 simDataVars$leafwb  <-  0
@@ -41,6 +42,9 @@ simDataVars$date_emerg <- 0
 simDataVars$coleog <- 0
 simDataVars$vstage <- 0
 simDataVars$rstage <- 0
+simDataVars$sen <- 0  #TODO Henrique: verificar comportamento, pois muda drasticamente na ocasião do R1 [2021-02-25]
+simDataVars$fsen <- 0
+simDataVars$senmaxstage2 <- 0
 
 MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
 
@@ -120,6 +124,9 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       rest   <- 0.0
       vstage <- 0.0
       rstage <- 0
+      sen    <- 0
+      fsen   <- 0
+      senmaxstage2 <- 0
       
       dm <- list('leaf' = 0.0, 'stem' = 0.0, 'root' = 0.0, 'cob' = 0.0, 'grain' = 0.0)
      
@@ -133,7 +140,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     # From sowing to germination #
     ##############################
     
-    #TODO Henrique: sugestão abaixo implementada! comparar com dados de Nebraska e talvez calibrar [2021-02-10]
+    # TODO: emergência está levando em torno de 8 dias apenas... pensar num fator f(água no solo) [2021-02-26]
+    # Sugestão abaixo implementada! comparar com dados de Nebraska e talvez calibrar [Henrique; 2021-02-10]
     # Victor, acho que vamos precisar de um contador aqui! [2021-01-20]
     # Ciclo tem terminado bem antes, mesmo eu subindo o ggdt de 1500 pra 1600
     # Imagino que o gdd10 da germ-emerg é em ºCd por cada cm naquele dia.
@@ -210,8 +218,11 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       }
       rest <- gdd10%%gddv[ph]
       
-      fr <- 1.0 / (1.0 - rgrowth) #rgrowth comment
+      fr <- 1.0 / (1.0 - rgrowth) # check rgrowth comment previously mentioned
       
+      # TODO CO2 assimilation in HM does not seem to be penalised by water stress [Henrique; 2021-02-26]
+      #     read sections 4.1.2, 4.1.3 & 4.2.4 in the manual
+      #     should we include the 'stress' variable from ECOSMOS here, in addition to that applied to leaf expansion?
       adnppl <- adnpp[i] * fr / (1 + fresp$leaf)
       adnpps <- adnpp[i] * fr / (1 + fresp$stem)
       adnppr <- adnpp[i] * fr / (1 + fresp$root)
@@ -278,7 +289,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
                        yes  = 3.0 * xn * ti,
                        no   = 3.5 * (xn^2) * ti)
   
-        pla <- pla + plag
+        pla <- pla + plag #TODO includes water 'stress' here following Keating et al. (2003) in pages 69-70 [Henrique; 2021-02-26]
         leafwt <- pla / (specla[i] * 10) # 10 (convertion SPECLA from m²/kg DM to cm²/g DM)
         leafwg <- leafwt - leafwb
         leafwb <- leafwt
@@ -358,8 +369,11 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         stemwg <- stemwg / (1.0 + fresp$stem)
         
         sen$slan <- gdd8 * pla / 1e4
-        sen$plas <- plag * lsr
+        sen$plas <- plag * lsr #TODO includes water 'stress' here following Keating et al. (2003) in pages 69-70 [Henrique; 2021-02-26]
         sen <- max(unlist(sen))
+        
+        #senmaxstage2 <- sen #dummy variable to avoid starting with low fsen in stage 3
+        
         fsen <- sen / pla
         pla <- pla - sen
         
@@ -404,6 +418,13 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         sf <- laim * ((sumgdd8 / gddf) ^ sg) # gddf = P5 in model's manual
         sen$plas <- plaf * sf
         sen <- max(unlist(sen))
+        
+        #TODO LAI still decreasing rapidly after R1 compared to Yang et al. in FCR 87 (2004) 131–154 [Henrique; 2021-02-26]
+        #TODO verify this manipulation. perhaps 'lsr', 'plag' & 'plaf' calculations should be included here again [Henrique; 2021-02-26]
+        #TODO includes water 'stress' here following Keating et al. (2003) in page 70 [Henrique; 2021-02-26]
+        # check manipulation to avoid low sen & fsen values between stages 2 & 3 [Henrique; 2021-02-26]
+        #sen <- ifelse(sen < senmaxstage2, sen+senmaxstage2, sen)
+        
         pla <- pla - sen
         fsen <- sen / plaf
         
@@ -545,7 +566,9 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       peaklai[i]  <- max(peaklai[i], plai[i])
       
-      greenfrac[i] <- 1.0 #TODO pensar na relação folha verde/folha seca [2021-01-20]
+      greenfrac[i] <- 1.0
+      #TODO pensar na relação folha verde/folha seca [2021-01-20]
+      #TODO verificar o comportamento do 'sen', que está meio estranho [2021-02-25]
       
       biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbioc[i]
       # print(c('biomass' = biomass[i]))
@@ -690,11 +713,20 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign('date_emerg', date_emerg, envir = env)
     assign('date_germ' , date_germ , envir = env)
     assign('plaf'      , plaf      , envir = env)
+    assign('fr', fr, envir = env)
+    assign('slfc', slfc, envir = env)
+    assign('slft', slft, envir = env)
+    assign('lsr', lsr, envir = env)
+    assign('plag', plag, envir = env)
     assign('vstage'    , vstage    , envir = env)
     # assign('rstage'    , rstage    , envir = env)
     assign('rest'      , rest      , envir = env)
     assign('dm'        , dm        , envir = env)
     assign('coleog'    , coleog    , envir = env)
+    assign('sen'       , sen       , envir = env)
+    assign('fsen'      , fsen      , envir = env)
+    assign('senmaxstage2'      , senmaxstage2      , envir = env)
+    assign('dtt8'      , dtt8      , envir = env)
     
   }
   
