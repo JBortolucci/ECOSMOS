@@ -344,19 +344,15 @@ ReadPlantParamsFromFile <- function(path = "") {
       envToSet$chiflz[indexOfPlant] <- as.numeric(data[71,column])
       envToSet$chifuz[indexOfPlant] <- as.numeric(data[72,column])
       
-      envToSet$rhovegvlgin[indexOfPlant]  <- as.numeric(data[73,column])
-      envToSet$rhovegvlbin[indexOfPlant]  <- as.numeric(data[74,column])
-      envToSet$rhovegvuin[indexOfPlant]   <- as.numeric(data[75,column])
-      envToSet$rhovegirlgin[indexOfPlant] <- as.numeric(data[76,column])
-      envToSet$rhovegirlbin[indexOfPlant] <- as.numeric(data[77,column])
-      envToSet$rhovegiruin[indexOfPlant]  <- as.numeric(data[78,column])
-      envToSet$tauvegvlgin[indexOfPlant]  <- as.numeric(data[79,column])
-      envToSet$tauvegvlbin[indexOfPlant]  <- as.numeric(data[80,column])
-      envToSet$tauvegvuin[indexOfPlant]   <- as.numeric(data[81,column])
-      envToSet$tauvegirlgin[indexOfPlant] <- as.numeric(data[82,column])
-      envToSet$tauvegirlbin[indexOfPlant] <- as.numeric(data[83,column])
-      envToSet$tauvegiruin[indexOfPlant]  <- as.numeric(data[84,column])
-      
+      envToSet$rhovegvgin[indexOfPlant]  <- as.numeric(data[73,column])
+      envToSet$rhovegvbin[indexOfPlant]  <- as.numeric(data[74,column])
+      envToSet$rhovegirgin[indexOfPlant] <- as.numeric(data[75,column])
+      envToSet$rhovegirbin[indexOfPlant] <- as.numeric(data[76,column])
+      envToSet$tauvegvgin[indexOfPlant]  <- as.numeric(data[77,column])
+      envToSet$tauvegvbin[indexOfPlant]  <- as.numeric(data[78,column])
+      envToSet$tauvegirgin[indexOfPlant] <- as.numeric(data[79,column])
+      envToSet$tauvegirbin[indexOfPlant] <- as.numeric(data[80,column])
+
 
             
       # TODO: Estava calculando assim nas versões anteriores. Mantém fazendo esse calculo?
@@ -374,13 +370,13 @@ ReadPlantParamsFromFile <- function(path = "") {
       # TODO: Criar a lista de nomes no modelo. O usuário deve listar os parâmetros adicionais.
       # seta os parâmetros adicionais automaticamente
       # if(!is.na(as.numeric(data[71,column]))) {
-      n <- 84
+      n <- 81
       # funcao mandar em parametro nome da variavel em nome da coluna
       
       # TODO: Leandro, ler os arquivos especificos das culturas dentro dos modelos para cada uma delas
       if(simInstances[[simId]]$plantList[[i]]$type != simInstances[[simId]]$NATURAL_VEG) {
         
-        if (simInstances[[simId]]$config[[paste0("plant", i)]]$name == "soybean"){
+        if (simInstances[[simId]]$config[[paste0("plant", i)]]$name == "soybean") {
           
           # environment(readSoybeanParams) <- simInstances
           
@@ -390,7 +386,7 @@ ReadPlantParamsFromFile <- function(path = "") {
             readSoybeanParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances,column = column , simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
             n <- n + 1
           }
-        } else if(simInstances[[simId]]$config[[paste0("plant", i)]]$name == "forage"){
+        } else if(simInstances[[simId]]$config[[paste0("plant", i)]]$name == "forage") {
           
           source("./R/CropModels/PerennialForage/readForageParams.R")
           

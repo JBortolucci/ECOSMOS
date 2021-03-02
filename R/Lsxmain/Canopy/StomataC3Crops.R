@@ -171,7 +171,7 @@ StomataC3Crops <- function(i) {
     # Stomatal conductance models [2020-11-18]
     {
       
-      gsmodel <- "BBC" # BBO | BBL | USO | BBC
+      gsmodel <- "BBL" # BBO | BBL | USO | BBC
       
       # Ball (1988) & Berry (1991) model [BBO] 'O' means original
       if (gsmodel=="BBO") {
@@ -274,13 +274,17 @@ StomataC3Crops <- function(i) {
     gscc3 <- coefm[i] * an[i] * rh34 / cscc3 + coefb[i] * stressc3c
     
     gscc3 <- max (gsmin[i], coefb[i] * stressc3c, gscc3)
-    
-    gscc3 <- gscc3 * greenfrac[i]
-    
+
   } else {
     cscc3 <- 0
     gscc3 <- 0
   }
+  
+  an[i] <- an[i] * pgreenfrac[i]
+  ag[i] <- ag[i] * pgreenfrac[i]
+  gscc3 <- gscc3 * pgreenfrac[i]
+  
+  
   
   rwork <- 1 / airVegCoef   
   dump  <- 1 / 0.029   

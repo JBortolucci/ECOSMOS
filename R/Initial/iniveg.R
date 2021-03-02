@@ -354,14 +354,13 @@ iniveg <- function (isimveg) {
   # NÃO PODEMOS TER VEG NATURAL E CROP COEXISTINDO 
   
   for(i in 1:npft) {
-    if(round(exist[i]==1) && plantList[[i]]$type == CROPS) {
+    if( plantList[[i]]$type == CROPS) {
 
       plai[]    <- 0  
       frac[]     <- 0 
       fu        <- 0
       fl        <- 0
       lai[]     <- 0
-      greenfrac <- 0
       zbot[]    <- 0
       ztop[]    <- 0
       sai[]     <- 0
@@ -373,6 +372,14 @@ iniveg <- function (isimveg) {
       cbiob[i]   <- 0  
       cbior[i]   <- 0   
       cbiocr[i]  <- 0
+      
+      env$cbiold[i]   <- 0
+      env$cbiosd[i]   <- 0
+      env$cbiogd[i]   <- 0
+      env$cbiowd[i]   <- 0
+      env$cbiobd[i]   <- 0 
+      env$cbiord[i]   <- 0 
+      env$cbiocrd[i]  <- 0
 
        
       aleaf[i]   <- 0
@@ -403,18 +410,22 @@ iniveg <- function (isimveg) {
   
 # Initializing values (Updated every time step in CropPhenoUpdate)
 
- rhovegvlg  <- 0.10      # vis leaf reflectance, lower story, green leaves
- rhovegvlb  <- 0.36      # vis leaf reflectance, lower story, brown leaves
- rhovegvu   <- 0.10       # vis leaf reflectance, upper story, green leaves
- rhovegirlg <- 0.48     # nir leaf reflectance, lower story, green leaves
- rhovegirlb <- 0.58     # nir leaf reflectance, lower story, brown leaves
- rhovegiru  <- 0.40      # nir leaf reflectance, upper story, green leaves
- tauvegvlg  <- 0.07      # vis leaf transmittance, lower story, green leaves
- tauvegvlb  <- 0.22      # vis leaf transmittance, lower story, brown leaves
- tauvegvu   <- 0.05       # vis leaf transmittance, upper story, green leaves
- tauvegirlg <- 0.25     # nir leaf transmittance, lower story, green leaves
- tauvegirlb <- 0.38     # nir leaf transmittance, lower story, brown leaves
- tauvegiru  <- 0.20      # nir leaf transmittance, upper story, green leaves
+ rhovegvlg   <- 0.10      # vis leaf reflectance, lower story, green leaves
+ rhovegvlb   <- 0.36      # vis leaf reflectance, lower story, brown leaves
+ rhovegvug   <- 0.10     # vis leaf reflectance, upper story, green leaves
+ rhovegvub   <- 0.36     # vis leaf reflectance, upper story, green leaves
+ rhovegirlg  <- 0.48      # nir leaf reflectance, lower story, green leaves
+ rhovegirlb  <- 0.58      # nir leaf reflectance, lower story, brown leaves
+ rhovegirug  <- 0.40     # nir leaf reflectance, upper story, green leaves
+ rhovegirub  <- 0.58     # nir leaf reflectance, upper story, green leaves
+ tauvegvlg   <- 0.07      # vis leaf transmittance, lower story, green leaves
+ tauvegvlb   <- 0.22      # vis leaf transmittance, lower story, brown leaves
+ tauvegvug   <- 0.05     # vis leaf transmittance, upper story, green leaves
+ tauvegvub   <- 0.22     # vis leaf transmittance, upper story, green leaves
+ tauvegirlg  <- 0.25      # nir leaf transmittance, lower story, green leaves
+ tauvegirlb  <- 0.38      # nir leaf transmittance, lower story, brown leaves
+ tauvegirug  <- 0.20     # nir leaf transmittance, upper story, green leaves
+ tauvegirub  <- 0.38     # nir leaf transmittance, upper story, green leaves
  
  # Leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)
  oriev[1] <- 0
@@ -610,6 +621,15 @@ iniveg <- function (isimveg) {
   assign("cbiow", cbiow, envir = env)
   assign("cbiocr", cbiocr, envir = env)
   assign("cbiob", cbiob, envir = env)  
+  
+  assign("cbiogd", cbiogd, envir = env)
+  assign("cbiosd", cbiosd, envir = env)
+  assign("cbiold", cbiold, envir = env)
+  assign("cbiord", cbiord, envir = env)
+  assign("cbiowd", cbiowd, envir = env)
+  assign("cbiocrd", cbiocrd, envir = env)
+  assign("cbiobd", cbiobd, envir = env)  
+  
   assign("ayabprod", ayabprod, envir = env)
   assign("aybprod", aybprod, envir = env)
   assign("ayrprod", ayrprod, envir = env)
@@ -636,8 +656,16 @@ iniveg <- function (isimveg) {
   assign("frac", frac, envir = env)              
   assign("fu", fu, envir = env)
   assign("fl", fl, envir = env)                   
-  assign("lai", lai, envir = env)                 
-  assign("greenfracl", greenfracl, envir = env)   
+  assign("lai", lai, envir = env)
+  # TODO: Verificar valor do greenfrac para NaturalVeg
+#  pgreenfrac[] <- 1
+  
+  pgreenfrac <- numeric(npft)
+  assign("pgreenfrac", pgreenfrac, envir = env)    
+#  assign("pgreenfrac", array(0, 1), envir = env)
+  
+
+  assign("greenfrac", matrix(0, 1, 2), envir = env)
   assign("zbot", zbot, envir = env)               
   assign("ztop", ztop, envir = env)               
   assign("sai", sai, envir = env)  
@@ -646,16 +674,20 @@ iniveg <- function (isimveg) {
   
   assign("rhovegvlg",rhovegvlg  , envir = env)
   assign("rhovegvlb",rhovegvlb  , envir = env)
-  assign("rhovegvu",rhovegvu   , envir = env)
+  assign("rhovegvug",rhovegvug   , envir = env)
+  assign("rhovegvub",rhovegvub   , envir = env) 
   assign("rhovegirlg",rhovegirlg , envir = env)
   assign("rhovegirlb",rhovegirlb , envir = env)
-  assign("rhovegiru",rhovegiru  , envir = env)
+  assign("rhovegirug",rhovegirug  , envir = env)
+  assign("rhovegirub",rhovegirub  , envir = env)
   assign("tauvegvlg",tauvegvlg  , envir = env)
   assign("tauvegvlb",tauvegvlb  , envir = env)
-  assign("tauvegvu",tauvegvu   , envir = env)
+  assign("tauvegvug",tauvegvug   , envir = env)
+  assign("tauvegvub",tauvegvub   , envir = env)
   assign("tauvegirlg",tauvegirlg , envir = env)
   assign("tauvegirlb",tauvegirlb , envir = env)
-  assign("tauvegiru",tauvegiru  , envir = env)
+  assign("tauvegirug",tauvegirug  , envir = env)
+  assign("tauvegirub",tauvegirub  , envir = env)
    assign("oriev",oriev, envir = env)
    assign("orieh",orieh, envir = env)
   

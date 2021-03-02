@@ -79,7 +79,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   environment(RESPIR)       <- env
   
   i <- index
-  greenfrac[i] <- 1.0 
+  pgreenfrac[i] <- 1.0 
   
   NLAYR <- nsoilay
   assign("NLAYR",NLAYR, envir = env)
@@ -819,7 +819,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     # update vegetation's physical characteristics
     # plai[i] <- cbiol[i] * specla[i] 
     # plai[i]  <- max(XLAI,0.1)
-    greenfrac[i] <- 1.0   
+    pgreenfrac[i] <- 1.0   
     
     
     biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbiop[i]
@@ -840,7 +840,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         croplive[i]   <- 0.0
         cropy         <- 0.0
         idpp[i]       <- 0.0
-        greenfrac[i]  <- 0.0 # turn all vegetation to brown
+        pgreenfrac[i]  <- 0.0 # turn all vegetation to brown
         harvdate[i]   <- jday
         plai[i]       <- 0.01 # simulates remaining stubble/mulch
         endCycle[i]   <- T
@@ -862,7 +862,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   
   assign("ztopPft", ztopPft, envir = env)
   
-  assign("greenfrac", greenfrac, envir = env)
+  assign("pgreenfrac", pgreenfrac, envir = env)
   assign("idpp", idpp, envir = env)
   assign("aroot", aroot, envir = env)
   assign("aleaf", aleaf, envir = env)

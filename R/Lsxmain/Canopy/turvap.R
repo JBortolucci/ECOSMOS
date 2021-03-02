@@ -509,7 +509,7 @@ turvapR <- function (envi, iter, niter) {
   # is usually significantly underestimated in IBIS.)
   
   #        slw[i] <- min (fwetlx[i] * sl[i],
-  slw <- min (fwetlx * sl * min(0.1, greenfracl), 0.8 * (wliql + wsnol) / max (dtime  * (ql - q34), epsilon))
+  slw <- min (fwetlx * sl * min(0.1, greenfrac[1]), 0.8 * (wliql + wsnol) / max (dtime  * (ql - q34), epsilon))
   
   
   # PFT_UPDATE: Quando implementação estiver pronta, substituir essa linha por laço

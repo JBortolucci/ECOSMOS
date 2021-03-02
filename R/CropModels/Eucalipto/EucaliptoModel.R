@@ -97,11 +97,11 @@ EucaliptoModel <- function(year, month, day, index) {
   #' AddSubModel(EucaliptoPlanting, EucaliptoModel)
   #'
   
-  b1 <- plantList$eucalipto$params$b1 # não usando
-  b2 <- plantList$eucalipto$params$b2 # não usando 
+  b1 <- plantList[[index]]$params$b1 # não usando
+  b2 <- plantList[[index]]$params$b2 # não usando 
   
-  beta1A       <- plantList$eucalipto$params$beta1A
-  betamax      <- plantList$eucalipto$params$betamax
+  beta1A       <- plantList[[index]]$params$beta1A
+  betamax      <- plantList[[index]]$params$betamax
   
   environment(EucaliptoPlanting)    <- env
   environment(EucaliptoPhenocrop)   <- env

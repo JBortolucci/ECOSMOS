@@ -269,7 +269,6 @@ GeneralModel <- function(simVars = NULL) {
     
     # simVars$out_tower <- file(outputDailyFileName, "w")
     
-    
     flx <- array(0,  50)
     
     # inicializou o simulador
@@ -341,12 +340,9 @@ GeneralModel <- function(simVars = NULL) {
 
         simVars$jday <- simVars$jday + 1
         
-        
-        print(paste("Simulation ",day, month, year,simVars$lai[1],simVars$lai[2],sep = " / "))
-        
+        print(paste("Simulation ",day, month, year,simVars$lai[1]*simVars$fl,simVars$lai[2]*simVars$fu,sep = " / "))
         
         UseDailyStationData(day, month, year)
-        
         
 
         for(j in seq(1,simVars$npft)) {

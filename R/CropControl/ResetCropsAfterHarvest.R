@@ -18,8 +18,14 @@ ResetCropsAfterHarvest <- function() {
         cbiob[i]   <- 0  
         cbior[i]   <- 0   
         cbiocr[i]  <- 0
-
-
+        
+        cbiold[i]   <- 0
+        cbiosd[i]   <- 0
+        cbiogd[i]   <- 0
+        cbiowd[i]   <- 0
+        cbiobd[i]   <- 0  
+        cbiord[i]   <- 0   
+        cbiocrd[i]  <- 0
         
         aybprod[i]    <- 0
         ayrprod[i]    <- 0
@@ -82,6 +88,14 @@ ResetCropsAfterHarvest <- function() {
         assign("cbiow", cbiow, envir = env)
         assign("cbiocr", cbiocr, envir = env)
         assign("cbiob", cbiob, envir = env)  
+        assign("cbiogd", cbiogd, envir = env)
+        assign("cbiosd", cbiosd, envir = env)
+        assign("cbiold", cbiold, envir = env)
+        assign("cbiord", cbiord, envir = env)
+        assign("cbiowd", cbiowd, envir = env)
+        assign("cbiocrd", cbiocrd, envir = env)
+        assign("cbiobd", cbiobd, envir = env)  
+        
         assign("ayabprod", ayabprod, envir = env)
         assign("aybprod", aybprod, envir = env)
         assign("ayrprod", ayrprod, envir = env)

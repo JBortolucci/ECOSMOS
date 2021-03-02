@@ -3,50 +3,50 @@
 EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   
   # parametros
-  Alleaf1      <- plantList$eucalipto$params$Alleaf1
-  Alleaf2      <- plantList$eucalipto$params$Alleaf2
-  Alleafinit   <- plantList$eucalipto$params$Alleafinit
-  Alleafmin    <- plantList$eucalipto$params$Alleafmin
-  Alleafremain <- plantList$eucalipto$params$Alleafremain
-  Allocsensb   <- plantList$eucalipto$params$Allocsensb
-  Allocsenscr  <- plantList$eucalipto$params$Allocsenscr
-  Allocsensf   <- plantList$eucalipto$params$Allocsensf 
-  Bdecay       <- plantList$eucalipto$params$Bdecay
-  BdecayStart  <- plantList$eucalipto$params$BdecayStart
-  Bfall        <- plantList$eucalipto$params$Bfall
-  BfallStart   <- plantList$eucalipto$params$BfallStart
-  Branch1      <- plantList$eucalipto$params$Branch1
-  Branch2      <- plantList$eucalipto$params$Branch2
-  Callocb      <- plantList$eucalipto$params$Callocb
-  Calloccr     <- plantList$eucalipto$params$Calloccr
-  Callocf      <- plantList$eucalipto$params$Callocf
-  Cdecay       <- plantList$eucalipto$params$Cdecay
-  Cfracts      <- plantList$eucalipto$params$Cfracts
-  Coroot1      <- plantList$eucalipto$params$Coroot1
-  Coroot2      <- plantList$eucalipto$params$Coroot2
-  deltay       <- plantList$eucalipto$params$deltay 
-  Density      <- plantList$eucalipto$params$Density
-  Fdecay1      <- plantList$eucalipto$params$Fdecay1
-  Fdecay2      <- plantList$eucalipto$params$Fdecay2
-  Fdecay3      <- plantList$eucalipto$params$Fdecay3
-  Fdecay4      <- plantList$eucalipto$params$Fdecay4
-  Fineroot1    <- plantList$eucalipto$params$Fineroot1
-  Fwpmax       <- plantList$eucalipto$params$Fwpmax
-  Fwpmin       <- plantList$eucalipto$params$Fwpmin
-  Leafsap1     <- plantList$eucalipto$params$Leafsap1
-  Leafsap2     <- plantList$eucalipto$params$Leafsap2
-  Leafsap3     <- plantList$eucalipto$params$Leafsap3
-  LimLai       <- plantList$eucalipto$params$LimLai
-  nrn          <- plantList$eucalipto$params$nrn
-  nrx          <- plantList$eucalipto$params$nrx
-  Rdecay1      <- plantList$eucalipto$params$Rdecay1
-  Rdecay2      <- plantList$eucalipto$params$Rdecay2
-  Sapheight    <- plantList$eucalipto$params$Sapheight
-  Siginit      <- plantList$eucalipto$params$Siginit
-  Sigmin       <- plantList$eucalipto$params$Sigmin
-  Wdecay       <- plantList$eucalipto$params$Wdecay
-  Ht0          <- plantList$eucalipto$params$Ht0
-  Htpower      <- plantList$eucalipto$params$Htpower
+  Alleaf1      <- plantList[[index]]$params$Alleaf1
+  Alleaf2      <- plantList[[index]]$params$Alleaf2
+  Alleafinit   <- plantList[[index]]$params$Alleafinit
+  Alleafmin    <- plantList[[index]]$params$Alleafmin
+  Alleafremain <- plantList[[index]]$params$Alleafremain
+  Allocsensb   <- plantList[[index]]$params$Allocsensb
+  Allocsenscr  <- plantList[[index]]$params$Allocsenscr
+  Allocsensf   <- plantList[[index]]$params$Allocsensf 
+  Bdecay       <- plantList[[index]]$params$Bdecay
+  BdecayStart  <- plantList[[index]]$params$BdecayStart
+  Bfall        <- plantList[[index]]$params$Bfall
+  BfallStart   <- plantList[[index]]$params$BfallStart
+  Branch1      <- plantList[[index]]$params$Branch1
+  Branch2      <- plantList[[index]]$params$Branch2
+  Callocb      <- plantList[[index]]$params$Callocb
+  Calloccr     <- plantList[[index]]$params$Calloccr
+  Callocf      <- plantList[[index]]$params$Callocf
+  Cdecay       <- plantList[[index]]$params$Cdecay
+  Cfracts      <- plantList[[index]]$params$Cfracts
+  Coroot1      <- plantList[[index]]$params$Coroot1
+  Coroot2      <- plantList[[index]]$params$Coroot2
+  deltay       <- plantList[[index]]$params$deltay 
+  Density      <- plantList[[index]]$params$Density
+  Fdecay1      <- plantList[[index]]$params$Fdecay1
+  Fdecay2      <- plantList[[index]]$params$Fdecay2
+  Fdecay3      <- plantList[[index]]$params$Fdecay3
+  Fdecay4      <- plantList[[index]]$params$Fdecay4
+  Fineroot1    <- plantList[[index]]$params$Fineroot1
+  Fwpmax       <- plantList[[index]]$params$Fwpmax
+  Fwpmin       <- plantList[[index]]$params$Fwpmin
+  Leafsap1     <- plantList[[index]]$params$Leafsap1
+  Leafsap2     <- plantList[[index]]$params$Leafsap2
+  Leafsap3     <- plantList[[index]]$params$Leafsap3
+  LimLai       <- plantList[[index]]$params$LimLai
+  nrn          <- plantList[[index]]$params$nrn
+  nrx          <- plantList[[index]]$params$nrx
+  Rdecay1      <- plantList[[index]]$params$Rdecay1
+  Rdecay2      <- plantList[[index]]$params$Rdecay2
+  Sapheight    <- plantList[[index]]$params$Sapheight
+  Siginit      <- plantList[[index]]$params$Siginit
+  Sigmin       <- plantList[[index]]$params$Sigmin
+  Wdecay       <- plantList[[index]]$params$Wdecay
+  Ht0          <- plantList[[index]]$params$Ht0
+  Htpower      <- plantList[[index]]$params$Htpower
   
   i <- index
   
@@ -70,7 +70,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       # accumulate growing degree days for planted crops past planting
       gddplant[i] <- gddplant[i] + max(0, min(td - baset[i], mxtmp[i]))
 
-      greenfrac[i] <- 1.0
+      pgreenfrac[i] <- 1.0
       
       idpp[i]    <- idpp[i] + 1
       
@@ -87,8 +87,14 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         cbior[i]  <- 0.0001482158/kg_C_M2_to_T_ha
         cbiol[i]  <- 0.005065926 /kg_C_M2_to_T_ha
         cbiocr[i] <- 0.000163217 /kg_C_M2_to_T_ha
-        plai[i]   <- cbiol[i] * specla[i]  }
+        plai[i]   <- cbiol[i] * specla[i]  
+        plai[i]   <- max(plai[i],0.02)
+        cbiol[i]  <- plai[i]/specla[i]    
+        
+        }
       
+
+        
       rm          <- min(mxmat[i]/365, idpp[i]/365)
       hsum        <- 0
       water       <- 0
@@ -118,7 +124,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       waterfact <-max(min(waterfact,1),0)
       
-      greenfrac[i] <- 1
+      pgreenfrac[i] <- 1
       
       ########################################################################################
       #############    ## ### ####     ##    ##     ##     ## ##     ## #### #################
@@ -129,7 +135,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       #---------------------
       #Fine root C allocation
       #---------------------
-      Finerootexp <- Fineroot1 * (plai[i]*greenfrac[i])
+      Finerootexp <- Fineroot1 * (plai[i]*pgreenfrac[i])
       
       aroot[i] <- (0.5 + 0.5 * (1.- (cbior[i]*kg_C_M2_to_T_ha) / Finerootexp ) / Allocsensf )
       aroot[i] <- aroot[i]*(nrx*nrn)/(nrn+(nrx-nrn)*waterfact)
@@ -401,7 +407,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
           Deadcoroots   <- cbiocr[i]
           
           croplive[i]   <- 0.0
-          greenfrac[i]  <- 0.0 # turn all vegetation to brown
+          pgreenfrac[i]  <- 0.0 # turn all vegetation to brown
           harvdate[i] <- jday
           plai[i]         <- 0.01 # simulates remaining stubble/mulch
           endCycle[i] <- T
@@ -425,7 +431,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("ztopPft", ztopPft, envir = env)
   assign("sapfrac", sapfrac, envir = env)
   assign("gddplant", gddplant, envir = env)
-  assign("greenfrac", greenfrac, envir = env)
+  assign("pgreenfrac", pgreenfrac, envir = env)
   assign("idpp", idpp, envir = env)
   assign("awood", awood, envir = env)
   assign("aleaf", aleaf, envir = env)

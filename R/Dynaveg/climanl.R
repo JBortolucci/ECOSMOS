@@ -74,7 +74,8 @@ climanl <- function() {
   
 # Agrega os dados de clima para dias me'dios, assim podemos fazer a media de GDD para qualquer periodo
   td_mj <- aggregate(data_station,by=list(jday=data_station$jday), FUN=mean)
-  
+  td_mj$TD <- (td_mj$TMAX+td_mj$TMIN)/2.
+
   i=0
   ii=0
   
@@ -120,7 +121,7 @@ climanl <- function() {
       # 
       # gdd0  <- gdd0  + max(0, td_mj$var[i])
       # gdd5  <- gdd5  + max(0, td_mj$var[i] - 5.0)
-      gdd12 <- gdd12 + max(0, min(td_mj$TMIN[i] + 273.16 - baset[1], 30))
+      gdd12 <- gdd12 + max(0, min(td_mj$TD[i] + 273.16 - baset[1], 30))
       
     }
   }
