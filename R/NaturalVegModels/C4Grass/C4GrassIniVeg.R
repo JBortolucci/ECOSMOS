@@ -13,7 +13,8 @@ C4GrassIniVeg <- function(jday, i) {
                     'SHRUO'   = 0.25,
                     'TUNDRA'  = 1.00,
                     'DESERT'  = 0.05,
-                    'DESERTP' = 0.05)
+                    'DESERTP' = 0.05,
+                    'C4Grass' = 2.50)
     
     plai[i] <- iniplai[[biomeName]]
     
