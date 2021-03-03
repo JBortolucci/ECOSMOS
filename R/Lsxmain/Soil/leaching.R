@@ -395,7 +395,7 @@ leaching <- function (irstyear, istep,iday,
   # calculate the total daily inputs to top number of layers - determined by the
   # soilay constant - to help in mass balance calculation to that depth
   for(k in 1:isoilay) { 
-    frootavg <- (froot[k,1] + froot[k,2]) / 2
+    frootavg <- (froot[k,1] + froot[k,2]) / 2 #TODO verificar pq vem de froot se estou crescendo uma planta apenas [Henrique/Victor; 2021-03-03]
     tslay <- tslay + tnmin * frootavg * dtime * 0.014 + fixsoin * frootavg * dtime  / 86400               
   }
   
