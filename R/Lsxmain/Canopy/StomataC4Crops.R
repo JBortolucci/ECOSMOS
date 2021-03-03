@@ -98,7 +98,7 @@ StomataC4Crops <- function(i) {
   dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
   
   agc4 <- min (dumq / duma, dumc / dumq)
-  anc4 <- agc4 - rdarkc4 #TODO Henrique: verificar assimilação negativa aqui [2021-02-12]
+  anc4 <- agc4 - rdarkc4
 
   anc4 <- anc4 * max(0, stresst) #TODO Henrique: verificar pq stresst está on aqui e não na C3 [2021-02-12]
   

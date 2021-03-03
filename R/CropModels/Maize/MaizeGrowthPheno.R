@@ -42,7 +42,7 @@ simDataVars$date_emerg <- 0
 simDataVars$coleog <- 0
 simDataVars$vstage <- 0
 simDataVars$rstage <- 0
-simDataVars$sen <- 0  #TODO Henrique: verificar comportamento, pois muda drasticamente na ocasião do R1 [2021-02-25]
+simDataVars$sen <- 0
 simDataVars$fsen <- 0
 simDataVars$senmaxstage2 <- 0
 simDataVars$senmaxstage3 <- 0
@@ -54,6 +54,10 @@ simDataVars$transs <- 0
 simDataVars$transl <- 0
 simDataVars$fcbios <- 0
 simDataVars$fcbiol <- 0
+simDataVars$ndaysS3 <- 0
+
+simDataVars$cbiols <- 0 #TODO check with the new version in 'refactoring_v0'
+simDataVars$lais <- 0
 
 MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
 
@@ -136,6 +140,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       sen    <- 0
       fsen   <- 0
       senmaxstage2 <- 0
+      senmaxstage3 <- 0
       
       dm <- list('leaf' = 0.0, 'stem' = 0.0, 'root' = 0.0, 'cob' = 0.0, 'grain' = 0.0, 'sleaf' = 0)
      
@@ -202,8 +207,12 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         cumPh <- 1.0
         xn <- 3.0
         
-        cbiol[i]  <- 1.00 * pden * 0.4 * 1e-3  # primeiro termo seria a massa inicial
+        cbiol[i]  <- 0.5 * pden * 0.4 * 1e-3  # primeiro termo seria a massa inicial
         plai[i]   <- cbiol[i] * specla[i]
+        
+        cbiols[i] <- 0
+        lais[i] <- 0
+        
       }
       
     } else {
@@ -333,12 +342,13 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # C mass-based for ECOSMOS 
         cbiorg <- max(0.0, aroot * adnppr)
         cbiolg <- max(0.0, aleaf * adnppl)
-        
         cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot)
         cbiol[i] <- cbiol[i] + cbiolg - (cbiol[i] * fsen)
-        
+        cbiols[i] <- cbiols[i] + cbiol[i]*fsen
+
         # DM mass-based for model evaluation
         dm$leaf <- dm$leaf + leafwg - sen / (specla[i] * 10)
+        dm$sleaf <- dm$sleaf + sen / (specla[i] * 10) #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
         dm$root <- dm$root + (cbiorg * 1e3 / (pden * 0.40)) - (dm$root / tauroot)
         #TODO Victor, a taxa de morte da raiz está sendo considerada via tauroot ? [2021-01-20]
         
@@ -402,10 +412,12 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot[i])
         cbiol[i] <- cbiol[i] + cbiolg - (cbiol[i] * fsen)
+        cbiols[i] <- cbiols[i] + cbiol[i]*fsen
         cbios[i] <- cbios[i] + cbiosg
         
         # DM mass-based for model evaluation
         dm$leaf <- dm$leaf + leafwg - sen / (specla[i] * 10)
+        dm$sleaf <- dm$sleaf + sen / (specla[i] * 10) #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
         dm$root <- dm$root + (cbiorg * 1e3 / (pden * 0.40)) - (dm$root / tauroot)
         dm$stem <- dm$stem + stemwg
         
@@ -473,6 +485,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         cbioc[i] <- cbioc[i] + cbiocg
         cbios[i] <- cbios[i] + cbiosg
         cbiol[i] <- cbiol[i] - cbiol[i] * fsen
+        cbiols[i] <- cbiols[i] + cbiol[i]*fsen
         
         ndaysS3 <- ndaysS3 + 1
         
@@ -481,12 +494,14 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         # DM mass-based for model evaluation per plant here
         dm$leaf <- dm$leaf - sen / (specla[i] * 10)
+        dm$sleaf <- dm$sleaf + sen / (specla[i] * 10) #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
         dm$root <- dm$root + (cbiorg * 1e3 / (pden * 0.40)) - (dm$root / tauroot)
         dm$stem <- dm$stem + stemwg
         dm$cob  <- dm$cob + cobwg
         
-        sumP = sumP + adnpp[i] * 1e3 / (pden * 0.40) # C to CH2O per plant
+        sumP = sumP + adnpp[i] * 1e3 / (pden * 0.40) # g C to g CH2O per plant
         senmaxstage3 <- sen 
+        
         # cat('\nStage 3\n')
         # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
           
@@ -510,7 +525,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         fsen <- sen / plaf
         
         # grainGrow is the actual grain filling rate(g plant-1 day-1)
-        # GPP is the number of viable grain per plant (assuming one ear per plant)
+        # GPP is the number of viable grain per plant (assuming one ear per plant) -> most likely from Fig. 3. in Andrade et al. Crop Sci. 39:453-459 (1999)
         # FillEffi is the filling efficiency related to plant density
         # RGfill (0 to 1) is the temperature driven filling scale
         # sumP (g CH2O plant-1) is the cumulative net assimilation adjusted for maintenance respiration of grain (GRRG; 0.49 g CH2O g-1 DM)
@@ -522,9 +537,29 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         #     which is higher than the threshold for grain setting used in the original version of CERES-Maize (Jones and Kiniry, 1986)
         #     and subsequent versions (Lopez Cedron et al., 2003).
         
-        psker <- sumP / (1 + fresp$grain) * 1e3 / ndaysS3 * 3.4 / 5.0
-        gpp <- G2 - (676 / (psker/1e3))
+        # OLD manual?
+        #psker = sumP * 1000 / ndaysS3 * 3.4 / 5
+        #gpp = G2 * (psker - 195) / (1213.2 + psker - 195)
         
+        # NEW manual?
+        # psker <- sumP / (1 + fresp$grain) * 1e3 / ndaysS3 * 3.4 / 5.0 # we don't know the mathematical manipulation here
+        # gpp <- G2 - 676 / (psker/1e3) # mg as in the manual, but it may be wrong! 
+        
+        # Our version
+        # KNP = 573 - 676/PGR
+        #    where, KNP in # kernels per plant with one ear; PGR = g/d per plant [0-15 +-]
+        psker <- sumP / ndaysS3
+        gpp <- min(max(0, G2 - 676 / psker), G2)
+        
+        # CERES-MAIZE
+        # PSKER = SUMP*1000.0/IDURP*3.4/5.0
+        # GPP   = G2*PSKER/7200.0 + 50.0
+        # GPP   = AMIN1 (GPP, G2)
+        # GPP   = AMAX1 (GPP,0.0)
+        # such model still considers barrenness (esterelidade in Portuguese)
+        
+        
+        #browser()
         # FillEffi is for adjusting the potential grain filling rate based on plant population, and its function was derived from a high-yield maize experiment at Lincoln, Nebraska (Yang et al., 2004)
         filleffi <- 1.47 - (0.09 * pden) + (0.0036 * pden^2)
         
@@ -544,7 +579,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         transs <- 0.0
         transl <- 0.0
-        
+
         # C mass-based for ECOSMOS 
         if (grainwg > adnppg & fcbios >= abs(grainwg - adnppg)) {
           transs <- abs(grainwg - adnppg)
@@ -552,7 +587,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
           fcbios <- fcbios - efftrans * transs
           cbios[i] <- cbios[i] - transs * efftrans
         } else {
-          transl <- - min(0.005 * fcbiol, abs(grainwg - adnppg))
+          transl <- min(0.005 * fcbiol, abs(grainwg - adnppg))
           grainwg <- grainwg + efftrans * transl
           fcbiol <- fcbiol - efftrans * transl
           cbiol[i] <- cbiol[i] - transl * efftrans
@@ -564,12 +599,14 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         }
         
           cbiog[i] <- cbiog[i] + grainwg
+          cbiols[i] <- cbiols[i] + fsen*cbiol[i]
           
           # DM mass-based for model evaluation
           dm$leaf  <- dm$leaf - (efftrans * transl * 1e3 / (pden * 0.40))
+          dm$sleaf <- dm$sleaf + sen / (specla[i] * 10) #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
           dm$stem  <- dm$stem - (efftrans * transs * 1e3 / (pden * 0.40))
           dm$grain <- dm$grain + (grainwg * 1e3 / (pden * 0.40))
-        
+          
           # cat('\nStage 4\n')
           # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
         
@@ -586,23 +623,22 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       #    - um dia procurei saber se tem algo pros híbridos daqui do GDD8, mas nada
       #    - tem a maturidade relativa (RM), que daria pra usar a equação da fig 4.1 como aproximação
       #    - podemos ver com Santiago se ele descobre algo com pessoal da Embrapa Milho & Sorgo
-      # 4) retornar os R stages, usando as proporções que virão dos valores da pagina 69 (pdf)
+      # 4) retornar os R stages, usando as proporções que virão dos valores da pagina 69 (pdf) [Ok]
       
-      #TODO Victor, 'desliguei' o print por hora aqui pras minhas simulações [2021-01-20]
+      # Victor, 'desliguei' o print por hora aqui pras minhas simulações [2021-01-20]
       # print('\n')
       # print(unlist(dm, use.names = T))
       
       # update vegetation's physical characteristics
       # plai[i] <- min(max(0.0, cbiol[i] * specla[i]),5) #TODO check
-      plai[i] <- max(0.0, cbiol[i] * specla[i])
-      # print(c('lai' = plai[i]))
-      
-      peaklai[i]  <- max(peaklai[i], plai[i])
-      
-      greenfrac[i] <- max(0, 1-sen/pla)
-      #TODO pensar na relação folha verde/folha seca [2021-01-20]
+      #TODO verificar na relação folha verde/folha seca [2021-01-20]
       #TODO verificar o comportamento do 'sen', que está meio estranho [2021-02-25]
-      
+      plai[i] <- max(0.01, cbiol[i] * specla[i])
+      lais[i] <- cbiols[i] * specla[i] #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
+      greenfrac[i] <- max(0.01,1-lais[i]/plai[i])
+      # print(c('lai' = plai[i]))
+      peaklai[i]  <- max(peaklai[i], plai[i])
+
       biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbioc[i]
       # print(c('biomass' = biomass[i]))
       
@@ -696,7 +732,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         # print(paste('Harvest Maize ',ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai[i],cbiog[i],sep = " ; "    ))
         
-        #TODO Victor, 'desliguei' o print e os outputs por hora aqui pras minhas simulações [2021-01-20]
+        # Victor, 'desliguei' o print e os outputs por hora aqui pras minhas simulações [2021-01-20]
         # cat('\nDates: Germination:',date_germ,'| Emergence:',date_emerg)
         # 
         # fileout <- paste("Maize_SEASON.csv")
@@ -710,6 +746,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         greenfrac[i]  <- 0.0 # turn all vegetation to brown
         harvdate[i]   <- jday
         plai[i]       <- 0.01 # simulates remaining stubble/mulch
+        lais[i]       <- 0
         peaklai[i]    <- 0.0
         endCycle      <- T
         
@@ -767,6 +804,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign('RGfill', RGfill, envir = env)
     assign('transs', transs, envir = env)
     assign('transl', transl, envir = env)
+    
+    assign('lais', lais, envir = env)
 
   }
   
