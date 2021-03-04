@@ -243,7 +243,6 @@ ReadPlantParamsFromFile <- function(path = "") {
       }
     
       indexOfPlant <- i
-      type         <- simInstances[[simId]]$plantList[[i]]$type
       
       if(is.null(data[[column]])) {
         stop(paste0("This column does not exist in parameters table."))
@@ -342,14 +341,8 @@ ReadPlantParamsFromFile <- function(path = "") {
       envToSet$rratio[indexOfPlant] <-as.numeric(data[68,column])
       envToSet$fnopt[indexOfPlant] <- as.numeric(data[69,column])
       envToSet$fngrain[indexOfPlant] <- as.numeric(data[70,column])
-      
       envToSet$chiflz[indexOfPlant] <- as.numeric(data[71,column])
       envToSet$chifuz[indexOfPlant] <- as.numeric(data[72,column])
-      
-      if(type == simInstances[[simId]]$NATURAL_VEG) {
-        envToSet$chiflz[indexOfPlant] <- 0
-        envToSet$chifuz[indexOfPlant] <- 0
-      }
       
       envToSet$rhovegvgin[indexOfPlant]  <- as.numeric(data[73,column])
       envToSet$rhovegvbin[indexOfPlant]  <- as.numeric(data[74,column])
@@ -359,17 +352,7 @@ ReadPlantParamsFromFile <- function(path = "") {
       envToSet$tauvegvbin[indexOfPlant]  <- as.numeric(data[78,column])
       envToSet$tauvegirgin[indexOfPlant] <- as.numeric(data[79,column])
       envToSet$tauvegirbin[indexOfPlant] <- as.numeric(data[80,column])
-      
-      if(type == simInstances[[simId]]$NATURAL_VEG) {
-        envToSet$rhovegvgin[indexOfPlant]  <- 0
-        envToSet$rhovegvbin[indexOfPlant]  <- 0
-        envToSet$rhovegirgin[indexOfPlant] <- 0
-        envToSet$rhovegirbin[indexOfPlant] <- 0
-        envToSet$tauvegvgin[indexOfPlant]  <- 0
-        envToSet$tauvegvbin[indexOfPlant]  <- 0
-        envToSet$tauvegirgin[indexOfPlant] <- 0
-        envToSet$tauvegirbin[indexOfPlant] <- 0
-      }
+
 
             
       # TODO: Estava calculando assim nas versões anteriores. Mantém fazendo esse calculo?
