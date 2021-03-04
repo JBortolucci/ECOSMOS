@@ -1,11 +1,4 @@
 # Global Vars:
-# a10ancc3   # 10-day average canopy photosynthesis rate - c3 crops (mol_co2 m-2 s-1)
-# a10ancc4   # 10-day average canopy photosynthesis rate - c4 crops (mol_co2 m-2 s-1)
-# a10ancl3   # 10-day average canopy photosynthesis rate - c3 grasses (mol_co2 m-2 s-1)
-# a10ancl4   # 10-day average canopy photosynthesis rate - c4 grasses (mol_co2 m-2 s-1)
-# a10ancls   # 10-day average canopy photosynthesis rate - shrubs (mol_co2 m-2 s-1)
-# a10ancub   # 10-day average canopy photosynthesis rate - broadleaf (mol_co2 m-2 s-1)
-# a10ancuc   # 10-day average canopy photosynthesis rate - conifer (mol_co2 m-2 s-1)
 # a10td      # 10-day average daily air temperature (K)
 # a10tmin    # 10-day average minimum air temperature (K)
 # a10ts      # 10-day average daily soil temperature in top layer (K)
@@ -82,7 +75,7 @@ sumnow <- function() {
   #     rgrowthc <- 0.25  ! crop growth respiration from Amthor, 1984
   # rgrowthc <- 0.242  # crop growth respiration for sugarcane from Singles,2002
   # rgrowthc <- 0.17
-  rgrowth <- 0.30
+  rgrowth <- 0.30 # To do: Jair ou Leandro enviar para planilha plantparams
 
   # 10 - day time averaging factor
   zweight <- exp( - 1 / (10 * 86400 / dtime))
@@ -170,6 +163,7 @@ sumnow <- function() {
     #    tgpp[i] <- frac[i] * ag[i] * lai[2] * fu
     tgpp[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$canopy == LOWER,  frac[i] * ag[i] * lai[2] * fu, tgpp[i])
   }
+  
   # tgpp[1] <- frac[1] * agcub * lai[2] * fu
   # tgpp[2] <- frac[2] * agcub * lai[2] * fu
   # tgpp[3] <- frac[3] * agcub * lai[2] * fu
@@ -260,6 +254,7 @@ sumnow <- function() {
   #
   # finally, note that growth respiration is only applied to
   # positive carbon gains (i.e., when gpp - rmaint is positive)
+  
   rwood <- 0.0125 / (ndaypy * 86400) * (1000 / 12)
   rroot <- 2.50 / (ndaypy * 86400) * (1000 / 12)
 
@@ -275,6 +270,7 @@ sumnow <- function() {
 
     mcbior[i]  <- cbior[i]  * (funcb*rroot)
     mcbiog[i]  <- cbiog[i]  *  0.0
+    mcbiop[i]  <- cbiop[i]  *  0.0 # to do : Henrique, rever quanto sao esses valores de respiracao
     mcbiow[i]  <- cbiow[i]  * (sapfrac*rwood*funca)
     mcbios[i]  <- cbios[i]  * (rwood*funca) 
     mcbiob[i]  <- cbiob[i]  * (rwood*funca)
@@ -296,7 +292,9 @@ sumnow <- function() {
   for(i in seq(1,npft)) {
     # if(!plantList[[i]]$active) next
     # tnpp[i] <- nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i]
-    tnpp[i] <- ifelse(plantList[[i]]$active, nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i], tnpp[i])
+    tan[i] <- ifelse(plantList[[i]]$active, nppdummy[i] , tnpp[i])
+    
+    tnpp[i] <- ifelse(plantList[[i]]$active, nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiop[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i], tnpp[i])
   }
 
   
@@ -318,7 +316,7 @@ sumnow <- function() {
     # TODO: Criar variável (criar acroot e abranch)
     
     if(tnpp[k] > 0 && plantList[[k]]$type == CROPS) {
-      fracgrowresp <- tnpp[k] * rgrowthc[k] * (aroot[k] + acroot[k])
+      # fracgrowresp <- tnpp[k] * rgrowthc[k] * (aroot[k] + acroot[k])
       tnpp[k]      <- tnpp[k] * (1 - rgrowthc[k])
     }
     
@@ -335,7 +333,8 @@ sumnow <- function() {
     #     tco2root <- sum(mcbior[k] +  mcbiocr[k] + fracgrowresp)
     # }
     # 
-    tco2root <- ifelse(plantList[[k]]$active && plantList[[k]]$type == CROPS, sum(mcbior[k] +  mcbiocr[k] + fracgrowresp), tco2root)
+    # tco2root <- ifelse(plantList[[k]]$active && plantList[[k]]$type == CROPS, sum(mcbior[k] +  mcbiocr[k] + fracgrowresp), tco2root)
+    tco2root <- ifelse(plantList[[k]]$active && plantList[[k]]$type == CROPS, sum(mcbior[k] +  mcbiocr[k]), tco2root)
   }
   # ---------------------------------------------------------------------
   # *  *  * calculate instantaneous NEE *  * *
@@ -363,23 +362,7 @@ sumnow <- function() {
   tsoiavg <- 0.6 * tsoi[1] + 0.4 * tsoi[2]
   a11soiltd <- zweight11 * a11soiltd + (1 - zweight11) * tsoiavg
   
-  # PFT_UPDATE
-  for(i in seq(1,npft)) {
-    # if(!plantList[[i]]$active) next
-    # a10anc[i] <- zweight * a10anc[i] + (1 - zweight) * an[i]
-    a10anc[i] <- ifelse(plantList[[i]]$active, zweight * a10anc[i] + (1 - zweight) * an[i],  a10anc[i])
-  }
-  #
-  # PFT_UPDATE: Transformar em um laço. Cada planta terá uma variável própria
-  # 10 - day canopy photosynthesis rates
-  # a10ancub <- zweight * a10ancub + (1 - zweight) * ancub
-  # a10ancuc <- zweight * a10ancuc + (1 - zweight) * ancuc
-  # a10ancls <- zweight * a10ancls + (1 - zweight) * ancls
-  # a10ancl3 <- zweight * a10ancl3 + (1 - zweight) * ancl3
-  # a10ancl4 <- zweight * a10ancl4 + (1 - zweight) * ancl4
-  # a10ancc3 <- zweight * a10ancc3 + (1 - zweight) * ancc3
-  # a10ancc4 <- zweight * a10ancc4 + (1 - zweight) * ancc4
-  
+
   # 10 - day minimimum daily temperature average -- used to help determine
   # planting dates of crops.  If both the daily average temperature
   # (10 - day mean) > 8 C and the 10 - day minimum temperature average
@@ -391,6 +374,7 @@ sumnow <- function() {
   
   assign("mcbior", mcbior, envir = env)
   assign("mcbiog", mcbiog, envir = env)
+  assign("mcbiop", mcbiop, envir = env)
   assign("mcbiow", mcbiow, envir = env)
   assign("mcbios", mcbios, envir = env)
   assign("mcbiocr", mcbiocr, envir = env)
@@ -400,6 +384,7 @@ sumnow <- function() {
   assign("tgpp", tgpp, envir = env)
   assign("tgpptot", tgpptot, envir = env)
   assign("tnpp", tnpp, envir = env)
+  assign("tan", tan, envir = env)
   assign("rootr", rootr, envir = env)
   assign("tnpptot", tnpptot, envir = env)
   assign("tco2root", tco2root, envir = env)
@@ -410,8 +395,7 @@ sumnow <- function() {
   assign("a3tdmin", a3tdmin, envir = env)
   assign("tsoiavg", tsoiavg, envir = env)
   assign("a11soiltd", a11soiltd, envir = env)
-  
-  assign("a10anc", a10anc, envir = env)
+
   assign("a5tmin", a5tmin, envir = env)
   assign("a10tmin", a10tmin, envir = env)
   

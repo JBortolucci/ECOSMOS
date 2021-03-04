@@ -29,35 +29,40 @@
 # ---------------------------------------------------------------------
 climanl <- function() {
   
-  
+  # data_station$TMIN
+  # data_station$TMAX
+  # data_station$RAIN
+  # data_station$SRAD
+  # data_station$RHUM
+  # data_station$WIND
   #______________________________________________________________________
   #  Find annual averages for vegetations existence
   #______________________________________________________________________
   # annual average precipitation taken from 30 year climate mean  
-  assign("PPTavgann",  mean(inprec$var), envir = env)
+  assign("PPTavgann",  mean(data_station$RAIN), envir = env)
   
   # annual average minimum air temperature (deg C)
-  assign("tminavgann", mean(intmin$var), envir = env)
-  # assign("tminavgann", 0, envir = env)
-  
-  intd$jday <- yday(intd$mydate)
-  
-  td_m <- aggregate(intd,by=list(month=intd$month),FUN=mean)
-  
+  assign("tminavgann", mean(data_station$TMIN), envir = env)
+
   # annual average air temperature taken from 30 year climate mean    
-  assign("Tavgann",    mean(intd$var), envir = env)
-  
-  # coldest monthly temperature (year 0) in deg c
-  assign("tc", min(td_m$var), envir = env)
-  
-  # warmest monthly temperature (year 0) in deg c
-  assign("tw", max(td_m$var), envir = env)
+  assign("Tavgann",    mean((data_station$TMAX+data_station$TMIN)/2), envir = env)
   
   # to do: supostamente esse valores esta´correto, pois seria -> tcmin = tc +deltat | deltat=tmin_absuluta 
   #   coldest daily temperature of current year (C)
-  assign("tcmin", min(intmin$var), envir = env) #SVC set as - Absolute minimum temperature 
+  assign("tcmin", min(data_station$TMIN), envir = env) #SVC set as - Absolute minimum temperature 
   
   
+  
+  td_m <- aggregate(data_station,by=list(month=data_station$month),FUN=mean)
+  td_m$TM<-(td_m$TMAX+td_m$TMIN)/2
+
+  # coldest monthly temperature (year 0) in deg c
+  assign("tc", min(td_m$TM), envir = env)
+  
+  # warmest monthly temperature (year 0) in deg c
+  assign("tw", max(td_m$TM), envir = env)
+  
+
   # local dummy variables
   gdd0    <- 0 
   gdd0c   <- 0
@@ -66,9 +71,10 @@ climanl <- function() {
   gdd10   <- 0
   gdd12   <- 0
   
-  
-  td_mj <- aggregate(intd,by=list(jday=intd$jday), FUN=mean)
-  
+# Agrega os dados de clima para dias me'dios, assim podemos fazer a media de GDD para qualquer periodo
+  td_mj <- aggregate(data_station,by=list(jday=data_station$jday), FUN=mean)
+  td_mj$TD <- (td_mj$TMAX+td_mj$TMIN)/2.
+
   i=0
   ii=0
   
@@ -114,7 +120,7 @@ climanl <- function() {
       # 
       # gdd0  <- gdd0  + max(0, td_mj$var[i])
       # gdd5  <- gdd5  + max(0, td_mj$var[i] - 5.0)
-      gdd12 <- gdd12 + max(0, min(td_mj$var[i] + 273.16 - baset[1], 30))
+      gdd12 <- gdd12 + max(0, min(td_mj$TD[i] + 273.16 - baset[1], 30))
       
     }
   }

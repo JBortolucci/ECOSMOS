@@ -18,16 +18,19 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
   assign("cimax", as.numeric(data[4,][2]), envir = envToSet)
   assign("woodnorm", as.numeric(data[5,][2]), envir = envToSet) 
   
+  # TO DO - Remover (nband e' sempre igual a 2 no nosso modelo)
   assign("nband", as.numeric(data[6,][2]), envir = envToSet) 
   
+  # TO DO - Remover - esta' no final do Global_params 
   rhoveg <- matrix(0, simDataVars$nband, 2)
-  rhoveg[1,] <- c( as.numeric(data[7,][2]),  as.numeric(data[7,][3]))
-  rhoveg[2,] <- c( as.numeric(data[8,][2]),  as.numeric(data[8,][3]))
+  rhoveg[1,] <- c( as.numeric(data[7,][2]),  as.numeric(data[7,][3]))  # vis leaf reflectance, lower story
+  rhoveg[2,] <- c( as.numeric(data[8,][2]),  as.numeric(data[8,][3]))  # vis leaf reflectance, upper story
   assign("rhoveg", rhoveg, envir = envToSet) 
+  # TO DO - Remover 
   
   tauveg <- matrix(0, simDataVars$nband, 2)
-  tauveg[1,] <- c( as.numeric(data[9,][2]),  as.numeric(data[9,][3]))
-  tauveg[2,] <- c( as.numeric(data[10,][2]),  as.numeric(data[10,][3]))
+  tauveg[1,] <- c( as.numeric(data[9,][2]),  as.numeric(data[9,][3]))   # vis leaf transmittance, lower story
+  tauveg[2,] <- c( as.numeric(data[10,][2]),  as.numeric(data[10,][3])) # vis leaf transmittance, upper story
   assign("tauveg", tauveg, envir = envToSet) 
   
   dleaf <- c( as.numeric(data[11,][2]),  as.numeric(data[11,][3]))
@@ -90,7 +93,8 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
     simDataVars$hsoi[i-1] <- as.numeric(data[47,][i])
   }
   
-  assign("nslaym", as.numeric(data[48,][2]), envir = envToSet)
+  
+   assign("nslaym", as.numeric(data[48,][2]), envir = envToSet) # TODO: Leandro, retirar dos parametros globias:
   assign("bperm", as.numeric(data[49,][2]), envir = envToSet)
   assign("wpudmax", as.numeric(data[50,][2]), envir = envToSet)
   assign("zwpmax", as.numeric(data[51,][2]), envir = envToSet)
@@ -98,24 +102,24 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
   assign("nsoi", as.numeric(data[52,][2]), envir = envToSet)
   assign("ndat", as.numeric(data[53,][2]), envir = envToSet)
   
-  simDataVars$texdat     <- matrix(0, 3, simDataVars$ndat)
-  simDataVars$porosdat   <- numeric(simDataVars$ndat)
-  simDataVars$sfielddat  <- numeric(simDataVars$ndat)
-  simDataVars$swiltdat   <- numeric(simDataVars$ndat)
-  simDataVars$bexdat     <- numeric(simDataVars$ndat)
-  simDataVars$suctiondat <- numeric(simDataVars$ndat)
-  simDataVars$hydrauldat <- numeric(simDataVars$ndat)
+  simDataVars$texdat     <- matrix(0, 3, simDataVars$ndat) # TODO: Leandro, retirar dos parametros globias:
+  simDataVars$porosdat   <- numeric(simDataVars$ndat)      # TODO: Leandro, retirar dos parametros globias:
+  simDataVars$sfielddat  <- numeric(simDataVars$ndat)      # TODO: Leandro, retirar dos parametros globias:
+  simDataVars$swiltdat   <- numeric(simDataVars$ndat)      # TODO: Leandro, retirar dos parametros globias:
+  simDataVars$bexdat     <- numeric(simDataVars$ndat)      # TODO: Leandro, retirar dos parametros globias:
+  simDataVars$suctiondat <- numeric(simDataVars$ndat)      # TODO: Leandro, retirar dos parametros globias:
+  simDataVars$hydrauldat <- numeric(simDataVars$ndat)      # TODO: Leandro, retirar dos parametros globias:
   
   for(i in 2:(simDataVars$ndat+1)) {
-    simDataVars$texdat[1, i-1]  <- as.numeric(data[54,][i])
-    simDataVars$texdat[2, i-1]  <- as.numeric(data[55,][i])
-    simDataVars$texdat[3, i-1]  <- as.numeric(data[56,][i])
-    simDataVars$porosdat[i-1]   <- as.numeric(data[57,][i])
-    simDataVars$sfielddat[i-1]  <- as.numeric(data[58,][i])
-    simDataVars$swiltdat[i-1]   <- as.numeric(data[59,][i])
-    simDataVars$bexdat[i-1]     <- as.numeric(data[60,][i])
-    simDataVars$suctiondat[i-1] <- as.numeric(data[61,][i])
-    simDataVars$hydrauldat[i-1] <- as.numeric(data[62,][i])
+    simDataVars$texdat[1, i-1]  <- as.numeric(data[54,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$texdat[2, i-1]  <- as.numeric(data[55,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$texdat[3, i-1]  <- as.numeric(data[56,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$porosdat[i-1]   <- as.numeric(data[57,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$sfielddat[i-1]  <- as.numeric(data[58,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$swiltdat[i-1]   <- as.numeric(data[59,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$bexdat[i-1]     <- as.numeric(data[60,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$suctiondat[i-1] <- as.numeric(data[61,][i])# TODO: Leandro, depois que retirar dos parametros globias:
+    simDataVars$hydrauldat[i-1] <- as.numeric(data[62,][i])# TODO: Leandro, depois que retirar dos parametros globias:
   }
   
   assign("lig_frac",  as.numeric(data[63,][2]), envir = envToSet)
@@ -166,45 +170,78 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
   assign("ysb", as.numeric(data[99,][2]), envir = envToSet)
   assign("ypb", as.numeric(data[100,][2]), envir = envToSet)
   assign("ynb", as.numeric(data[101,][2]), envir = envToSet)
-  
-  
+  assign("za",  as.numeric(data[102,][2]), envir = envToSet)
+  assign("isoilay",  as.numeric(data[103,][2]), envir = envToSet)
 }
 
 
 ReadPlantParamsFromFile <- function(path = "") {
   
-  data <- read.csv(file = path, header = T, stringsAsFactors = F, sep = ",")
+  userParams   <- read.csv(file = path, header = T, stringsAsFactors = F, sep = ",")
+  natVegParams <- read.csv(file = "inst/natveg_params.csv", header = T, stringsAsFactors = F, sep = ",")
   
   for(simId in ls(simInstances)) {
     
     npft <- simInstances[[simId]]$npft
+
+    for(i in 1:npft) {
+      
+      if(simInstances[[simId]]$plantList[[i]]$type == simInstances[[simId]]$NATURAL_VEG) {
+        
+        data   <- natVegParams
+        column <- simInstances[[simId]]$plantList[[i]]$name
+        
+        config <- simInstances[[simId]]$plantList[[i]]$controlConfigs
+        
+        startYear     <- config$startYear
+        plantJDay     <- config$plantJday
+        cycleLength   <- config$cycleLength
+        plantingDate  <- as.Date(plantJDay-1, origin = as.Date(paste0(startYear,"-01-01")))
+        plantingDay   <- as.numeric(format(plantingDate, "%d"))
+        plantingMonth <- as.numeric(format(plantingDate, "%m"))
+        
+        nextHarvestDate <- as.Date(cycleLength-1, origin = plantingDate)
+        
+        pmMin <- plantingMonth
+        pdMin <- plantingDay
+        
+        simInstances[[simId]]$plantList[[i]]$totalYears <- (as.numeric(format(nextHarvestDate, "%Y")) - as.numeric(format(plantingDate, "%Y")) + 1) * config$ncycles
+        
+        simInstances[[simId]]$plantList[[i]]$startYear     <- startYear
+        simInstances[[simId]]$plantList[[i]]$currentCycles <- 1
+        simInstances[[simId]]$plantList[[i]]$totalCycles   <- config$ncycles
+        
+      } else {
+        
+        data   <- userParams
+        column <- simInstances[[simId]]$config[[paste0("plant", i)]]$params
+        
+        config <- simInstances[[simId]]$plantList[[i]]$controlConfigs
+        
+        # Cuidado, na função as.Date, o dia juliano começa com 0!!! Será preciso subtrair 1 do valor da planilha
+        startYear     <- config$startYear
+        plantJDay     <- config$plantJday
+        cycleLength   <- config$cycleLength
+        plantingDate  <- as.Date(plantJDay-1, origin = as.Date(paste0(startYear,"-01-01")))
+        plantingDay   <- as.numeric(format(plantingDate, "%d"))
+        plantingMonth <- as.numeric(format(plantingDate, "%m"))
+        
+        # Verificar se a quantidade de ciclos é maior que 1, se sim, atualiza.
+        nextHarvestDate <- as.Date(cycleLength-1, origin = plantingDate)
+        
+        # These two values is being read from simulation config table.
+        pmMin <- plantingMonth
+        pdMin <- plantingDay
+        
+        simInstances[[simId]]$plantList[[i]]$totalYears <- (as.numeric(format(nextHarvestDate, "%Y")) - as.numeric(format(plantingDate, "%Y")) + 1) * config$ncycles
+        
+        # create a variable for tracking the current cycle of the plant.
+        simInstances[[simId]]$plantList[[i]]$startYear     <- startYear
+        simInstances[[simId]]$plantList[[i]]$currentCycles <- 1
+        simInstances[[simId]]$plantList[[i]]$totalCycles   <- config$ncycles
+        
+      }
     
-    for(i in 1:npft) {  
-      
-      column <- simInstances[[simId]]$config[[paste0("plant", i)]]$params
-      
-      # Cuidado, na função as.Date, o dia juliano começa com 0!!! Será preciso subtrair 1 do valor da planilha
-      startYear     <- simInstances[[simId]]$config[[paste0("plant", i)]]$startYear
-      plantJDay     <- simInstances[[simId]]$config[[paste0("plant", i)]]$plantJday
-      cycleLength   <- simInstances[[simId]]$config[[paste0("plant", i)]]$cycleLength
-      plantingDate  <- as.Date(plantJDay-1, origin = as.Date(paste0(startYear,"-01-01")))
-      plantingDay   <- as.numeric(format(plantingDate, "%d"))
-      plantingMonth <- as.numeric(format(plantingDate, "%m"))
-      
-      # Verificar se a quantidade de ciclos é maior que 1, se sim, atualiza.
-      nextHarvestDate <- as.Date(cycleLength-1, origin = plantingDate)
-      
-      # These two values is being read from simulation config table.
-      pmMin <- plantingMonth
-      pdMin <- plantingDay
-      
-      simInstances[[simId]]$plantList[[i]]$totalYears <- (as.numeric(format(nextHarvestDate, "%Y")) - as.numeric(format(plantingDate, "%Y")) + 1) * simInstances[[simId]]$config$plant1$ncycles
-      
-      # create a variable for tracking the current cycle of the plant.
-      simInstances[[simId]]$plantList[[i]]$startYear     <- startYear
-      simInstances[[simId]]$plantList[[i]]$currentCycles <- 1
-      simInstances[[simId]]$plantList[[i]]$totalCycles   <- simInstances[[simId]]$config[[paste0("plant", i)]]$ncycles
-      
       indexOfPlant <- i
       
       if(is.null(data[[column]])) {
@@ -251,59 +288,73 @@ ReadPlantParamsFromFile <- function(path = "") {
       
       envToSet$stressBeta0[indexOfPlant] <-as.numeric(data[23,column])
       envToSet$stressBeta1[indexOfPlant] <-as.numeric(data[24,column])
-      
+
       envToSet$rgrowthc[indexOfPlant] <-as.numeric(data[25,column])
       envToSet$lotemp[indexOfPlant] <-as.numeric(data[26,column])
       envToSet$hitemp[indexOfPlant] <-as.numeric(data[27,column])
-      envToSet$drought[indexOfPlant] <-as.numeric(data[28,column])
-      envToSet$f1[indexOfPlant] <-as.numeric(data[29,column])
-      envToSet$f2[indexOfPlant] <-as.numeric(data[30,column])
-      envToSet$baset[indexOfPlant] <- as.numeric(data[31,column])
-      envToSet$mxtmp[indexOfPlant] <-as.numeric(data[32,column])
-      envToSet$tkill[indexOfPlant] <-as.numeric(data[33,column])
-      envToSet$laicons[indexOfPlant] <-as.numeric(data[34,column])
-      envToSet$allconsl[indexOfPlant] <-as.numeric(data[35,column])
-      envToSet$allconss[indexOfPlant] <-as.numeric(data[36,column])
-      envToSet$laimx[indexOfPlant] <-as.numeric(data[37,column])
-      envToSet$arooti[indexOfPlant] <-as.numeric(data[38,column])
-      envToSet$arootf[indexOfPlant] <- as.numeric(data[39,column])
-      envToSet$aleaff[indexOfPlant] <-as.numeric(data[40,column])
-      envToSet$astemf[indexOfPlant] <-as.numeric(data[41,column])
-      envToSet$declfact[indexOfPlant] <-as.numeric(data[42,column])
-      envToSet$fleafi[indexOfPlant] <-as.numeric(data[43,column])
-      envToSet$ptemp[indexOfPlant] <-as.numeric(data[44,column])
-      envToSet$pmintemp[indexOfPlant] <-as.numeric(data[45,column])
+      envToSet$f1[indexOfPlant] <-as.numeric(data[28,column])
+      envToSet$f2[indexOfPlant] <-as.numeric(data[29,column])
+      envToSet$q10[indexOfPlant] <-as.numeric(data[30,column])
+      envToSet$drought[indexOfPlant] <-as.numeric(data[31,column])
+      envToSet$baset[indexOfPlant] <- as.numeric(data[32,column])
+      envToSet$mxtmp[indexOfPlant] <-as.numeric(data[33,column])
+      envToSet$tkill[indexOfPlant] <-as.numeric(data[34,column])
+      envToSet$laicons[indexOfPlant] <-as.numeric(data[35,column])
+      envToSet$allconsl[indexOfPlant] <-as.numeric(data[36,column])
+      envToSet$allconss[indexOfPlant] <-as.numeric(data[37,column])
+      envToSet$laimx[indexOfPlant] <-as.numeric(data[38,column])
+      envToSet$arooti[indexOfPlant] <-as.numeric(data[39,column])
+      envToSet$arootf[indexOfPlant] <- as.numeric(data[40,column])
+      envToSet$aleaff[indexOfPlant] <-as.numeric(data[41,column])
+      envToSet$astemf[indexOfPlant] <-as.numeric(data[42,column])
+      envToSet$declfact[indexOfPlant] <-as.numeric(data[43,column])
+      envToSet$fleafi[indexOfPlant] <-as.numeric(data[44,column])
+      envToSet$ptemp[indexOfPlant] <-as.numeric(data[45,column])
+      envToSet$pmintemp[indexOfPlant] <-as.numeric(data[46,column])
       
       # Agora o dia de plantar é definido pelos valores do arquivo de configuração
       envToSet$pmmin[indexOfPlant] <- pmMin #as.numeric(data[46,column])
       envToSet$pdmin[indexOfPlant] <- pdMin #as.numeric(data[47,column])
       
-      envToSet$pcm[indexOfPlant] <- as.numeric(data[48,column])
-      envToSet$pcd[indexOfPlant] <- as.numeric(data[49,column])
-      envToSet$hybgdd[indexOfPlant] <-as.numeric(data[50,column])
-      envToSet$gddmin[indexOfPlant] <-as.numeric(data[51,column])
-      envToSet$mxgddgf[indexOfPlant] <-as.numeric(data[52,column])
-      envToSet$mxdgfi[indexOfPlant] <-as.numeric(data[53,column])
+      envToSet$pcm[indexOfPlant] <- as.numeric(data[49,column])
+      envToSet$pcd[indexOfPlant] <- as.numeric(data[50,column])
+      envToSet$hybgdd[indexOfPlant] <-as.numeric(data[51,column])
+      envToSet$gddmin[indexOfPlant] <-as.numeric(data[52,column])
+      envToSet$mxgddgf[indexOfPlant] <-as.numeric(data[53,column])
+      envToSet$mxdgfi[indexOfPlant] <-as.numeric(data[54,column])
       
       # O mxmat é igual o período máximo do ciclo.
       envToSet$mxmat[indexOfPlant] <- cycleLength  # as.numeric(data[54,column])
       
-      envToSet$lfemerg[indexOfPlant] <-as.numeric(data[55,column])
-      envToSet$grnfill[indexOfPlant] <-as.numeric(data[56,column])
-      envToSet$bfact[indexOfPlant] <-as.numeric(data[57,column])
-      envToSet$ztopmxPft[indexOfPlant] <-as.numeric(data[58,column])
-      envToSet$cgrain[indexOfPlant] <- as.numeric(data[59,column])
-      envToSet$convfact[indexOfPlant] <- as.numeric(data[60,column])
-      envToSet$maxhi[indexOfPlant] <-as.numeric(data[61,column])
-      envToSet$fyield[indexOfPlant] <-as.numeric(data[62,column])
-      envToSet$cfrac[indexOfPlant] <-as.numeric(data[63,column])
-      envToSet$fnlfmx[indexOfPlant] <-as.numeric(data[64,column])
-      envToSet$fngrmx[indexOfPlant] <-as.numeric(data[65,column])
-      envToSet$sratio[indexOfPlant] <-as.numeric(data[66,column])
-      envToSet$rratio[indexOfPlant] <-as.numeric(data[67,column])
-      envToSet$fnopt[indexOfPlant] <- as.numeric(data[68,column])
-      envToSet$fngrain[indexOfPlant] <- as.numeric(data[69,column])
+      envToSet$lfemerg[indexOfPlant] <-as.numeric(data[56,column])
+      envToSet$grnfill[indexOfPlant] <-as.numeric(data[57,column])
+      envToSet$bfact[indexOfPlant] <-as.numeric(data[58,column])
+      envToSet$ztopmxPft[indexOfPlant] <-as.numeric(data[59,column])
+      envToSet$cgrain[indexOfPlant] <- as.numeric(data[60,column])
+      envToSet$convfact[indexOfPlant] <- as.numeric(data[61,column])
+      envToSet$maxhi[indexOfPlant] <-as.numeric(data[62,column])
+      envToSet$fyield[indexOfPlant] <-as.numeric(data[63,column])
+      envToSet$cfrac[indexOfPlant] <-as.numeric(data[64,column])
+      envToSet$fnlfmx[indexOfPlant] <-as.numeric(data[65,column])
+      envToSet$fngrmx[indexOfPlant] <-as.numeric(data[66,column])
+      envToSet$sratio[indexOfPlant] <-as.numeric(data[67,column])
+      envToSet$rratio[indexOfPlant] <-as.numeric(data[68,column])
+      envToSet$fnopt[indexOfPlant] <- as.numeric(data[69,column])
+      envToSet$fngrain[indexOfPlant] <- as.numeric(data[70,column])
+      envToSet$chiflz[indexOfPlant] <- as.numeric(data[71,column])
+      envToSet$chifuz[indexOfPlant] <- as.numeric(data[72,column])
       
+      envToSet$rhovegvgin[indexOfPlant]  <- as.numeric(data[73,column])
+      envToSet$rhovegvbin[indexOfPlant]  <- as.numeric(data[74,column])
+      envToSet$rhovegirgin[indexOfPlant] <- as.numeric(data[75,column])
+      envToSet$rhovegirbin[indexOfPlant] <- as.numeric(data[76,column])
+      envToSet$tauvegvgin[indexOfPlant]  <- as.numeric(data[77,column])
+      envToSet$tauvegvbin[indexOfPlant]  <- as.numeric(data[78,column])
+      envToSet$tauvegirgin[indexOfPlant] <- as.numeric(data[79,column])
+      envToSet$tauvegirbin[indexOfPlant] <- as.numeric(data[80,column])
+
+
+            
       # TODO: Estava calculando assim nas versões anteriores. Mantém fazendo esse calculo?
       # envToSet$pcm[indexOfPlant] <- as.integer((((envToSet$pmmin[indexOfPlant] + envToSet$mxmat[indexOfPlant]/30)-1) %% 12) + 1)
       # envToSet$pcd[indexOfPlant] <- envToSet$pdmin[indexOfPlant]
@@ -319,17 +370,41 @@ ReadPlantParamsFromFile <- function(path = "") {
       # TODO: Criar a lista de nomes no modelo. O usuário deve listar os parâmetros adicionais.
       # seta os parâmetros adicionais automaticamente
       # if(!is.na(as.numeric(data[71,column]))) {
-        n <- 71
+      n <- 81
+      # funcao mandar em parametro nome da variavel em nome da coluna
+      
+      # TODO: Leandro, ler os arquivos especificos das culturas dentro dos modelos para cada uma delas
+      if(simInstances[[simId]]$plantList[[i]]$type != simInstances[[simId]]$NATURAL_VEG) {
+        
+        if (simInstances[[simId]]$config[[paste0("plant", i)]]$name == "soybean") {
+          
+          # environment(readSoybeanParams) <- simInstances
+          
+          source("./R/CropModels/Soybean/readSoybeanParams.R")
+          
+          if(!is.na(as.character(data[n,column])) && (!grepl("^[0-9]*$", as.character(data[n,column]), perl = T))){
+            readSoybeanParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances,column = column , simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
+            n <- n + 1
+          }
+        } else if(simInstances[[simId]]$config[[paste0("plant", i)]]$name == "forage") {
+          
+          source("./R/CropModels/PerennialForage/readForageParams.R")
+          
+          if(!is.na(as.character(data[n,column])) && (!grepl("^[0-9]*$", as.character(data[n,column]), perl = T))){
+            readForageParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances,column = column , simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
+            n <- n + 1
+          }
+          ReadForageHarvData(simId, simInstances = simInstances[[simId]])
+        }
         while(!is.na(as.character(data[n,1]))) {
           if(!is.na(as.numeric(data[n,column]))) { 
-             simInstances[[simId]]$plantList[[i]]$params[[as.character(data[n,1])]] <- as.numeric(data[n,column])
+            simInstances[[simId]]$plantList[[i]]$params[[as.character(data[n,1])]] <- as.numeric(data[n,column])
           }
           n <- n + 1
         }
-      # }
+        
+      }
       
     }
   }
-  
 }
-

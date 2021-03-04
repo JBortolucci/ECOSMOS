@@ -9,6 +9,7 @@
 # adevap      # daily average evaporation (mm/day)
 # adnmintot   # daily accumulated net nitrogen mineralization (kg_N m-2 /day)
 # adnpp       # daily total npp for each plant type (kg-C/m**2/day) 
+# adan        # daily total an for each plant type (kg-C/m**2/day) 
 # adrain      # daily average rainfall rate (mm/day)
 # adrh        # daily average rh (percent)
 # adsnod      # daily average snow depth (m)
@@ -96,6 +97,7 @@ sumday <- function (istep, plens, iyear, jday) {
     # if(plantList[[i]]$type == CROPS)
     #     adnpp[i] <- ((ndtimes - 1) * adnpp[i] + tnpp[i] * rwork3) * rwork
     adnpp[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$type == CROPS, ((ndtimes - 1) * adnpp[i] + tnpp[i] * rwork3) * rwork, adnpp[i])
+    adan[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$type == CROPS, ((ndtimes - 1) * adan[i] + tan[i] * rwork3) * rwork, adan[i])
   }
   
   # ---------------------------------------------------------------------
@@ -230,7 +232,7 @@ sumday <- function (istep, plens, iyear, jday) {
   
   # calculate daily total co2 respiration from soil
   adco2soi <- adco2root + adco2mic
-  
+
   # calculate daily ratio of total root to total co2 respiration
   if(adco2soi > 0) {
     adco2ratio <- adco2root/ adco2soi
@@ -337,6 +339,14 @@ sumday <- function (istep, plens, iyear, jday) {
   adnmintot <- ((ndtimes - 1) * adnmintot + tnmin * rwork4) * rwork
   
   
+  adpar <- ((ndtimes - 1) * adpar + solad[1] + solai[1] ) * rwork
+  
+  
+  
+  tl_h[istep]<-tl 
+  tu_h[istep]<-tu 
+  ta_h[istep]<-ta 
+  
   assign("ndtimes", ndtimes, envir = env)
   assign("adnpp", adnpp, envir = env)
   assign("adrain", adrain, envir = env)
@@ -371,6 +381,12 @@ sumday <- function (istep, plens, iyear, jday) {
   assign("decompl", decompl, envir = env)
   assign("decomps", decomps, envir = env)
   assign("adnmintot", adnmintot, envir = env)
+  assign("tl_h", tl_h, envir = env)
+  assign("tu_h", tu_h, envir = env)
+  assign("ta_h", ta_h, envir = env)
+  assign("adan", adan, envir = env)
+  assign("adpar", adpar, envir = env)
+  
   
   # return to main program
   return()

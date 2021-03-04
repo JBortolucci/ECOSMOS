@@ -509,7 +509,7 @@ turvapR <- function (envi, iter, niter) {
   # is usually significantly underestimated in IBIS.)
   
   #        slw[i] <- min (fwetlx[i] * sl[i],
-  slw <- min (fwetlx * sl * min(0.1, greenfracl), 0.8 * (wliql + wsnol) / max (dtime  * (ql - q34), epsilon))
+  slw <- min (fwetlx * sl * min(0.1, greenfrac[1]), 0.8 * (wliql + wsnol) / max (dtime  * (ql - q34), epsilon))
   
   
   # PFT_UPDATE: Quando implementação estiver pronta, substituir essa linha por laço
@@ -565,8 +565,6 @@ turvapR <- function (envi, iter, niter) {
   slh <- slw * (rliql * hvapf(tl,ta) + (1 - rliql) * hsubf(tl,ta)) + slt * hvapf(tl,ta)
   
   
-  #sant	if(i == 1)print(paste0(slt[i],slh[i]))
-    
   # set the matrix of coefficients and the right - hand sides
   # of the linearized equations
   arr[,] <- 0

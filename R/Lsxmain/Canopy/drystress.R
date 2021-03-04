@@ -96,13 +96,12 @@ drystressR <- function(envi, time,jday) {
     # TODO: Verificar se o parametro é específico ou global (agora parece que é global)
     # stressBeta0 <- -20
     # stressBeta1 <- 900
-    
-    zwilt <- 1.0 - (log(1+stressBeta1*exp(stressBeta0[1]*awc))/log(stressBeta1[1]))
+    zwilt    <- 1.0 - (log(1+stressBeta1*exp(stressBeta0[1]*awc))/log(stressBeta1[1]))
     
     # update for each layer
     stressl[k] <- froot[k,1] * max (0.0, min (1.0, zwilt))
     stressu[k] <- froot[k,2] * max (0.0, min (1.0, zwilt))
-    
+
     # cstressl[k] = froot(k,1)^lambda * max (0.0, min (1.0, zwilt))
     # cstressu[k] = froot(k,2)^lambda * max (0.0, min (1.0, zwilt))
     # 
@@ -133,6 +132,10 @@ drystressR <- function(envi, time,jday) {
   
   # 34   format (1x,i3,1x,13(1x,f4.2))
   
+  # To do Henrique : if crop ==soybean stresstl= CROPGRO ???
+  stresstl = 1
+    
+    
   assign("stresstl", stresstl, envir = env)
   assign("stresstu", stresstu, envir = env)
   assign("stressl", stressl, envir = env)

@@ -1,73 +1,70 @@
 
 
 inisoil <- function() {
-
-  # MICHEL
-
-  # added for Green-Ampt
-  assign("fwpudtot", array(0, 1), envir = env)
-  assign("wpud", array(0, 1), envir = env)
-
+  
 
   # set sand/silt/clay vectors (xdat,ydat,zdat) for 11 data points
   assign("xdat", texdat[1, 1:ndat], envir = env)
   assign("ydat", texdat[2, 1:ndat], envir = env)
   assign("zdat", texdat[3, 1:ndat], envir = env)
-
-  # initialization and normalization constant for puddle model (kg m-2)
-  assign("wipud", array(0, 1), envir = env)
+  
 
   # set physical parameters of soil
   assign("z0soi", array(0.005, 1), envir = env)
-
+  
   # initialize soil water and soil temperature fields
   # also initialize daily average fields for crops
-
-  # TODO: Leandro. Mudei de 0.9 pra 0.5
-  assign("wsoi", matrix(0.9, 1, nsoilay), envir = env)
-  # assign("wsoi", matrix(0.5, 1, nsoilay), envir = env)
-
-  assign("wisoi", matrix(0, 1, nsoilay), envir = env)
-  assign("tsoi", matrix(278.13, 1, nsoilay), envir = env)
-
+  
   assign("adwsoilay", matrix(0.5, 1, nsoilay), envir = env)
   assign("adwisoilay", matrix(0, 1, nsoilay) , envir = env)
   assign("adtsoilay", matrix(278.13, 1, nsoilay) , envir = env)
+  
 
+  
+ 
+  assign("wsoi",  matrix(0.5   , 1, nsoilay), envir = env)
+  assign("tsoi",  matrix(Tavgann+273.16, 1, nsoilay), envir = env)
+  assign("wisoi", matrix(0     , 1, nsoilay), envir = env)
+  assign("fi",  array(0, 1), envir = env)
+  assign("wipud", array(0, 1), envir = env)
+  
+  
+  
+  # added for Green-Ampt
+  assign("fwpudtot", array(0, 1), envir = env)
+  assign("wpud", array(0, 1), envir = env)
+  
   # initialize total irrigation
   assign("totirrig", array(0, 1), envir = env)
-
+  
   # initialize plant available nitrogen pool (kg/m2)
   assign("aplantn", array(0.008, 1), envir = env)
-
+  
   # initialize soil nitrogen variables
   assign("totnuptake", matrix(0, 1, npft), envir = env)
   assign("stressn", matrix(1, 1, npft), envir = env)
   assign("tg", array(278.13, 1), envir = env)
   assign("ti", array(273.13, 1), envir = env)
-
-
-  rhosoi   <- matrix(0, nrow = 1, ncol = nsoilay)
-  csoi     <- matrix(0, nrow = 1, ncol = nsoilay)
-  fracsand <- matrix(0, nrow = 1, ncol = nsoilay)
-  fracsilt <- matrix(0, nrow = 1, ncol = nsoilay)
-  fracclay <- matrix(0, nrow = 1, ncol = nsoilay)
-  poros    <- matrix(0, nrow = 1, ncol = nsoilay)
-  sfield   <- matrix(0, nrow = 1, ncol = nsoilay)
-  swilt    <- matrix(0, nrow = 1, ncol = nsoilay)
-  bex      <- matrix(0, nrow = 1, ncol = nsoilay)
-  ibex     <- matrix(0, nrow = 1, ncol = nsoilay)
-  suction  <- matrix(0, nrow = 1, ncol = nsoilay)
-  hydraul  <- matrix(0, nrow = 1, ncol = nsoilay)
-  cpwf     <- matrix(0, nrow = 1, ncol = nsoilay)
-  swater   <- matrix(0, nrow = 1, ncol = nsoilay)
-  sice     <- matrix(0, nrow = 1, ncol = nsoilay)
-
-
-  fclay    <- 0
-  fsilt    <- 0
-  fsand    <- 0
-
+  
+  
+  rhosoi   <- array(0, nsoilay)
+  csoi     <- array(0, nsoilay)
+  fracsand <- array(0, nsoilay)
+  fracsilt <- array(0, nsoilay)
+  fracclay <- array(0, nsoilay)
+  swilt    <- array(0, nsoilay)  
+  sfield   <- array(0, nsoilay)  
+  poros    <- array(0, nsoilay)
+  hydraul  <- array(0, nsoilay)
+  bex      <- array(0, nsoilay)
+  ibex     <- array(0, nsoilay)
+  suction  <- array(0, nsoilay)
+  cpwf     <- array(0, nsoilay)
+  swater   <- array(0, nsoilay)
+  sice     <- array(0, nsoilay)
+  soilbase <- array(0, nsoilay)
+  depth    <- array(0, nsoilay)
+  
   cpwfdat <- c(
     0.0495,     # sand
     0.0613,     # loamy sand
@@ -80,140 +77,117 @@ inisoil <- function() {
     0.2390,     # sandy clay
     0.2922,     # silty clay
     0.3163)
-
+  
+  
   for(k in 1:nsoilay) {
-
-    if(k <= 6) {
-      msand <- sand[k]
-      mclay <- clay[k]
+    
+    # Minimum information
+    fracclay[k] <- SOIL.profile$SLCL[k]/100               # clay content
+    fracsilt[k] <- SOIL.profile$SLSI[k]/100               # silt content
+    fracsand[k] <- 1- fracclay[k] - fracsilt[k]           # sand content 
+    
+    if(k==1) {  
+      
+      hsoi[k]<-SOIL.profile$SLB[k]/100 
+      
     } else {
-      msand <- sand[6]
-      mclay <- clay[6]
+      
+      hsoi[k]<-(SOIL.profile$SLB[k]/100) - (SOIL.profile$SLB[k-1]/100)
+      
     }
+    
+    if( (fracclay[k] + fracsilt[k] + fracsand[k])!= 1 | hsoi[k]< 0.01 ){
+      print('Check the Texture and soil layers depth in the inst/input/SOIL.csv')
+      stop()   }
+    
+    # Apply Pedotransfer function    
+    pedofunct <- 1 # the PTF option
 
-    lmin <-textcls(msand, mclay)  # class from the global file.
-
-    # print(msand)
-
-    fracsand[k] <- texdat[1, lmin]
-    fracsilt[k] <- texdat[2, lmin]
-    fracclay[k] <- texdat[3, lmin]
-    if(!is.na(soilType)) {
-
-      # tab.DSSAT <- read.csv('inst/input/perfil_solo_ecosmos_UPDATE.csv',sep = ",")
-      # tab.DSSAT<- subset(tab.DSSAT, LAT == point$coord$lat & LON == point$coord$lon)
+    if(pedofunct == 1) {
       
-      tab.DSSAT <- layers #subset(tab.DSSAT, SID == soilType)
-
-      fclay      <- tab.DSSAT$SLCL[k]/100   # clay content
-      fsilt      <- tab.DSSAT$SLSI[k]/100   # silt content
-      fsand      <- 1- fclay - fsilt        # sand content
-      poros[k]   <-  tab.DSSAT$SSAT[k]      # porosity
-      sfield[k]  <- (1 / poros[k]) * tab.DSSAT$SDUL[k]  # field capacity
-      swilt[k]   <- (1 / poros[k]) * tab.DSSAT$SLLL[k]  # wilting point
-      hydraul[k] <- tab.DSSAT$SSKS[k] / (100 * 3600)    
-      suction[k] <- swilt[k]*1.5
-      bex[k]     <- tab.DSSAT$BEXP[k]
-      # SRGF[k] <- tab.DSSAT$SRGF[k]
-      # assign("SRGF", SRGF, envir = env)
+      poros[k]   <- (50.5 - 3.7 * fracclay[k] - 14.2 * fracsand[k]) / 100 # porosity (fraction):
+      sfield[k]  <- 1 / poros[k] * (50.5-3.7*fracclay[k]-14.2*fracsand[k])/100 * (1.157e-9 / hydraul[k])**(1/(2*bex[k]+3))
+      swilt[k]   <- 1 / poros[k] * (50.5-3.7*fracclay[k]-14.2*fracsand[k])/100 *((10**(2.17-0.63*fracclay[k]-1.58*fracsand[k])*0.01)/(1500/9.80665))**(1/bex[k])
+      hydraul[k] <- 1.0 * 10 ** (-0.6 - 0.64 * fracclay[k] + 1.26 * fracsand[k]) * 0.0254 / (3600)
+      suction[k] <- 10 ** (2.17 - 0.63 * fracclay[k] - 1.58 * fracsand[k]) * 0.01
+      bex[k]     <- 3.10 + 15.7 * fracclay[k] - 0.3 * fracsand[k]
+      bperm      <- 0.01
       
-      if(!is.na(tab.DSSAT$Bperm[k])) {
-        bperm <-  tab.DSSAT$Bperm[1]
-        assign("bperm", bperm, envir = env)
-      }
+      print(paste('Calculated Soil Properties',poros[1],sfield[1],swilt[1],hydraul[1],suction[1],bex[1],SRGF[1],bulkd[1],bperm[1],sep=" / "))
       
-      if(k==1) {  
-        hsoi[k]<-tab.DSSAT$SLB[k]/100
-      } else { 
-        hsoi[k]<-tab.DSSAT$SLB[k]/100-tab.DSSAT$SLB[k-1]/100  
-      }
-     
-      #      hsoi[k]<-tab.DSSAT$SLB[k]
-      #bex[k]<- rep(3,8)#tab.perfil$BEXP[k]
-
-      print("WARNING  -  SOIL DATABASE PROPERTIES ")
-      print(paste('     Resulting Properties',k,bex[k],fsand,fclay,poros[k],sfield[k]*poros[k],swilt[k]*poros[k],hydraul[k],sep=" / "))
-
-    } else {
-
-      # porosity (fraction):
-      poros[k] <- porosdat[lmin]
-
-      # field capacity (defined relative to the porosity):
-      sfield[k] <- 1.0 / poros[k] * sfielddat[lmin]
-
-      # wilting point (defined relative to the porosity):
-      swilt[k]  <- 1.0 / poros[k] * swiltdat[lmin]
-
-      # "b" exponent for the Campbell moisture-release equation:
-      bex[k] <- bexdat[lmin]
-
-      # nearest integer of "b" exponent (for computational efficiency):
-      ibex[k] <-round(bex[k])
-
-      # saturated matric (air entry) potential (m-h2o):
-      suction[k] <- suctiondat[lmin]
-
-      # saturated hydraulic conductivity (m s-1):
-      hydraul[k] <- hydrauldat[lmin]
-
-      pedofunct <- 1 # chose if use or not pedo functions
-
-      if(pedofunct == 1) {
-
-        # csant - From Andrea - representing
-        fsand <- 0.01 * msand
-        fclay <- 0.01 * mclay
-        fsilt <- 0.01 * (100 - msand - mclay)
-
-        # porosity (fraction):
-        poros[k]  <- (50.5 - 3.7 * fclay - 14.2 * fsand) / 100
-        bex[k]    <- 3.10 + 15.7 * fclay - 0.3 * fsand
-
-        #saturated matric (air entry) potential (m-h2o):
-        suction[k] <- 10 ** (2.17 - 0.63 * fclay - 1.58 * fsand) * 0.01
-
-        if(ipast == 1) {
-          hydraul[k] <- 0.25 * 10 ** (-0.6 - 0.64 * fclay + 1.26 * fsand) * 0.0254 / (3600) #teste para pasto por Santiago. Nao considerar.
-        } else {
-          hydraul[k] <- 1.0 * 10 ** (-0.6 - 0.64 * fclay + 1.26 * fsand) * 0.0254 / (3600)
-        }
-
-        # field capacity (defined relative to the porosity):
-        sfield[k] <- 1 / poros[k] * (50.5-3.7*fclay-14.2*fsand)/100 * (1.157e-9 / hydraul[k])**(1/(2*bex[k]+3))
-
-        # wilting point (defined relative to the porosity):
-        swilt[k]  <- 1 / poros[k] * (50.5-3.7*fclay-14.2*fsand)/100 *((10**(2.17-0.63*fclay-1.58*fsand)*0.01)/(1500/9.80665))**(1/bex[k])
-
-        print(paste('     Resulting Properties',k,bex[k],fsand,fclay,poros[k],sfield[k]*poros[k],swilt[k]*poros[k],hydraul[k],sep=" / "))
-      }
-    }
-
+    } 
+    
+    if(!is.na(SOIL.profile$SSAT[k])) {poros[k]    <- SOIL.profile$SSAT[k]                  } # porosity (volume fraction)
+    if(!is.na(SOIL.profile$SDUL[k])) {sfield[k]   <- (1 / poros[k]) * SOIL.profile$SDUL[k] } # field capacity as fraction of porosity (volume fraction)
+    if(!is.na(SOIL.profile$SLLL[k])) {swilt[k]    <- (1 / poros[k]) * SOIL.profile$SLLL[k] } # wilting point as fraction of porosity  (volume fraction)
+    if(!is.na(SOIL.profile$SSKS[k])) {hydraul[k]  <- SOIL.profile$SSKS[k] / (1000 * 3600)  } # SHC : saturated hydraulic conductivity (m s-1)
+    if(!is.na(SOIL.profile$SLLL[k])) {suction[k]  <- SOIL.profile$SSKS[k]*1.5              } # AEP : air entry potential (m-H20)
+    if(!is.na(SOIL.profile$BEXP[k])) {bex[k]      <- SOIL.profile$BEXP[k]                  } # Campbell's 'b' exponent
+    if(!is.na(SOIL.profile$SRGF[k])) {SRGF[k]     <- SOIL.profile$SRGF[k]                  } # Root hospitality factor 
+    if(!is.na(SOIL.profile$SBDM[k])) {bulkd[k]    <- SOIL.profile$SBDM[k]                  } # Bulk density
+    if(!is.na(SOIL.profile$Bperm[k])){bperm       <- SOIL.profile$Bperm[1]}                  # Soil hydraulic diffusivity lower b.c. (units???)
+    
+    ibex[k]     <- round(bex[k])
+    soilbase[k] <- SOIL.profile$SLB[k]
+    depth[k]    <- hsoi[k] * 100
+    
     # Convert input sand and clay percents to fractions
     # Changed by TET
     # for now, we assume that all soils have a 1% organic content --
     # this is just a place holder until we couple the soil carbon
     # dynamics to the soil physical properties
-
+    
     forganic  <- 0.010
-
+    
     # density of soil material (without pores, not bulk) (kg m-3)
     # from Campbell and Norman, 1998
     rhosoi[k] <- 2650.0 * (1.0 - forganic) + 1300.0 * forganic
-
+    
     # specific heat of soil material (j kg-1 k-1):
     # from Campbell and Norman, 1998
     csoi[k]   <- 870.0 * (1.0 - forganic) + 1920.0 * forganic
-
+    
     # added for Green-Ampt
-    cpwf[k]   <- cpwfdat[lmin]
+    cpwf[k]   <- cpwfdat[3]
     swater[k] <- 0.000001
     sice[k]   <- 0
-
+    
+    if(soilic==1){
+      if((swic[k]/ poros[k])>= (swilt[k]-0.01) && (swic[k]/ poros[k]) < 1.0) wsoi[k]<- swic[k]/poros[k]
+    }
+    
+         wsoi[k] <- min(max(wsoi[k],wsoi[k]),sfield[k])
+      
+    print(paste('Soil Properties',k,bex[k],fracsand[k],fracclay[k],poros[k],sfield[k]*poros[k],swilt[k]*poros[k],
+                hydraul[k],wsoi[k],sep=" / "))
+    
   }
+  
 
-  #assign("hsoi", hsoi, envir = env)
+  #SVC Move carfrac and texfact from soilbgc to here, need to compute only once   
+  # Top 1 m of soil 
+  rdepth  <- 0
+  carfrac <- 0
+  texfact <- 0 
+  
+  # top 1 m of soil 
+  for(k in 1:nsoilay) { 
+    
+    if(rdepth<1){
+      rdepth  <- rdepth + hsoi[k]
+      carfrac <- carfrac + fracclay[k] * hsoi[k]
+      texfact <- texfact + fracsand[k] * hsoi[k]
+    }
+  }
+  
+  carfrac <- carfrac / rdepth
+  texfact <- texfact / rdepth
+  
+  
+  
   assign("wsoi",  wsoi, envir = env)
+  assign("hsoi", hsoi, envir = env)
+  assign("tsoi",  tsoi, envir = env)
   assign("rhosoi",  rhosoi, envir = env)
   assign("csoi",  csoi, envir = env)
   assign("fracsand",  fracsand, envir = env)
@@ -229,290 +203,27 @@ inisoil <- function() {
   assign("cpwf",  cpwf, envir = env)
   assign("swater",  swater, envir = env)
   assign("sice",  sice, envir = env)
-  assign("hsoi",  hsoi, envir = env)
-
+  assign("sand",  sand, envir = env)
+  assign("clay",  clay, envir = env)
+  assign("SRGF", SRGF, envir = env)
+  assign("bulkd", bulkd, envir = env)
+  assign("bperm", bperm, envir = env)
+  assign("carfrac", carfrac, envir = env)
+  assign("texfact", texfact, envir = env)
+  assign("soilbase",  soilbase, envir = env)
+  assign("depth",  depth, envir = env)
+  
   # surface parameters
-  assign("albsav",  fracsand[ ,1] * 0.120 + fracsilt[,1] * 0.085 + fracclay[,1] * 0.050, envir = env)
+  # albsav -> saturated soil surface albedo (visible waveband)
+  # albsan -> saturated soil surface albedo (near-ir waveband)
+  assign("albsav",  fracsand[1] * 0.120 + fracsilt[1] * 0.085 + fracclay[1] * 0.050, envir = env)
   assign("albsan",  2.0 * albsav, envir = env)
+
+  
+  assign("isoilay",  min(isoilay,nsoilay), envir = env) # soil layer for which drainage and leaching data is output
   
 
 }
-
-
-
-# JAIR
-
-# # added for Green-Ampt
-# assign("fwpudtot", 0, envir = env)
-# assign("wpud", 0, envir = env)
-# 
-# 
-# # set sand/silt/clay vectors (xdat,ydat,zdat) for 11 data points
-# assign("xdat", texdat[1, 1:ndat], envir = env)
-# assign("ydat", texdat[2, 1:ndat], envir = env)
-# assign("zdat", texdat[3, 1:ndat], envir = env)
-# 
-# # initialization and normalization constant for puddle model (kg m-2)
-# assign("wipud", 0, envir = env)
-# 
-# # set physical parameters of soil
-# assign("z0soi", array(0.005, 1), envir = env)
-# 
-# # initialize soil water and soil temperature fields
-# # also initialize daily average fields for crops
-# assign("wsoi", matrix(0.5, 1, nsoilay), envir = env)
-# assign("wisoi", matrix(0, 1, nsoilay), envir = env)
-# assign("tsoi", matrix(278.13, 1, nsoilay), envir = env)
-# 
-# assign("adwsoilay", matrix(0.5, 1, nsoilay), envir = env)
-# assign("adwisoilay", matrix(0, 1, nsoilay) , envir = env)
-# assign("adtsoilay", matrix(278.13, 1, nsoilay) , envir = env)
-# 
-# # initialize total irrigation
-# assign("totirrig", 0, envir = env)
-# 
-# # initialize plant available nitrogen pool (kg/m2)  
-# assign("aplantn", array(0.008, 1), envir = env)
-# 
-# # initialize soil nitrogen variables
-# assign("totnuptake", matrix(0, 1, npft), envir = env)
-# assign("stressn", matrix(1, 1, npft), envir = env)
-# assign("tg", array(278.13, 1), envir = env)
-# assign("ti", array(273.13, 1), envir = env)
-# 
-# 
-# rhosoi   <- matrix(0, nrow = 1, ncol = nsoilay)
-# csoi     <- matrix(0, nrow = 1, ncol = nsoilay)
-# fracsand <- matrix(0, nrow = 1, ncol = nsoilay)
-# fracsilt <- matrix(0, nrow = 1, ncol = nsoilay)
-# fracclay <- matrix(0, nrow = 1, ncol = nsoilay)
-# poros    <- matrix(0, nrow = 1, ncol = nsoilay)
-# sfield   <- matrix(0, nrow = 1, ncol = nsoilay)
-# swilt    <- matrix(0, nrow = 1, ncol = nsoilay)
-# bex      <- matrix(0, nrow = 1, ncol = nsoilay)
-# ibex     <- matrix(0, nrow = 1, ncol = nsoilay)
-# suction  <- matrix(0, nrow = 1, ncol = nsoilay)
-# hydraul  <- matrix(0, nrow = 1, ncol = nsoilay)
-# cpwf     <- matrix(0, nrow = 1, ncol = nsoilay)
-# swater   <- matrix(0, nrow = 1, ncol = nsoilay)
-# sice     <- matrix(0, nrow = 1, ncol = nsoilay)
-# 
-# 
-# #fclay <-matrix(0, 1, nsoilay)
-# #fsilt <-matrix(0, 1, nsoilay)
-# #fsand <-matrix(0, 1, nsoilay)
-# 
-# cpwfdat <- c(
-#   0.0495,     # sand
-#   0.0613,     # loamy sand
-#   0.1101,     # sandy loam
-#   0.0889,     # loam
-#   0.1668,     # silt loam
-#   0.2185,     # sandy clay loam
-#   0.2088,     # clay loam
-#   0.2730,     # silty clay loam
-#   0.2390,     # sandy clay
-#   0.2922,     # silty clay
-#   0.3163 
-# )  
-# 
-# # TODO: Substituir por implementação do michel
-# if(!is.nan(soilType)) {
-#   # use perfil table
-# } else {
-#   # use default values
-# }
-# 
-# 
-# if(SOIL_OBS == 1) {   
-#   
-#   tab.perfil<- read.csv('inst/input/tab.perfil.csv',sep = ",")
-#   #    tab.perfil<- read.csv('inst/input/tab.perfil.VCP.csv',sep = ",")
-# }
-# 
-# 
-# if(SOIL_BR == 1) {   
-#   tab.DSSAT<- read.csv('inst/input/perfil_solo_ecosmos.csv',sep = ",")
-#   tab.DSSAT<- tab.DSSAT[tab.DSSAT$SID==soilType,]
-# }
-# 
-# # Convert input sand and clay percents to fractions
-# # Changed by TET
-# for(k in 1:nsoilay) {
-#   
-#   if(k <= 6) {
-#     msand <- sand[k]
-#     mclay <- clay[k] 
-#   } else {
-#     msand <- sand[6] 
-#     mclay <- clay[6]
-#     
-#   }
-#   
-#   # for now, we assume that all soils have a 1% organic content -- 
-#   # this is just a place holder until we couple the soil carbon
-#   # dynamics to the soil physical properties
-#   
-#   forganic <- 0.010
-#   
-#   # density of soil material (without pores, not bulk) (kg m-3)
-#   # from Campbell and Norman, 1998
-#   rhosoi[k] <- 2650.0 * (1.0 - forganic) + 1300.0 * forganic 
-#   
-#   # specific heat of soil material (j kg-1 k-1):
-#   # from Campbell and Norman, 1998
-#   csoi[k] <- 870.0 * (1.0 - forganic) + 1920.0 * forganic
-#   
-#   
-#   lmin <-textcls(msand, mclay)  # class from the global file.
-#   
-#   
-#   
-#   fracsand[k] <- texdat[1, lmin]
-#   fracsilt[k] <- texdat[2, lmin]
-#   fracclay[k] <- texdat[3, lmin]
-#   
-#   
-#   
-#   # porosity (fraction):
-#   poros[k] <- porosdat[lmin]
-#   
-#   # field capacity (defined relative to the porosity):
-#   sfield[k] <- 1.0 / poros[k] * sfielddat[lmin]
-#   
-#   # wilting point (defined relative to the porosity):
-#   swilt[k]  <- 1.0 / poros[k] * swiltdat[lmin]
-#   
-#   # "b" exponent for the Campbell moisture-release equation:
-#   bex[k] <- bexdat[lmin]
-#   
-#   # nearest integer of "b" exponent (for computational efficiency):
-#   ibex[k] <-round(bex[k])
-#   
-#   
-#   # saturated matric (air entry) potential (m-h2o):
-#   
-#   suction[k] <- suctiondat[lmin]
-#   
-#   # saturated hydraulic conductivity (m s-1):
-#   
-#   hydraul[k] <- hydrauldat[lmin]
-#   
-#   
-#   pedofunct <- 1 # chose if use or not pedo functions
-#   
-#   if(pedofunct == 1) {
-#     
-#     # csant - From Andrea - representing 
-#     fsand <- 0.01 * msand
-#     fclay <- 0.01 * mclay
-#     fsilt <- 0.01 * (100 - msand - mclay)
-#     
-#     
-#     if(SOIL_OBS==1){
-#       fsand <- tab.perfil$Sand
-#       fclay <- tab.perfil$Clay
-#       fsilt <- 1 - fsand - fsilt
-#     } # para euclfux
-#     #   
-#     
-#     if(SOIL_BR==1){
-#       fclay <- tab.DSSAT$SLCL[k]/100
-#       fsilt <- tab.DSSAT$SLSI[k]/100
-#       fsand <- 1- fclay - fsilt
-#     } # para euclfux
-#     #   
-#     
-#     # porosity (fraction):
-#     poros[k] <- (50.5 - 3.7 * fclay - 14.2 * fsand) / 100
-#     
-#     bex[k]    <- 3.10 + 15.7 * fclay - 0.3 * fsand 
-#     
-#     
-#     #saturated matric (air entry) potential (m-h2o):
-#     suction[k] <- 10 ** (2.17 - 0.63 * fclay - 1.58 * fsand) * 0.01
-#     
-#     if(ipast == 1) {
-#       hydraul[k] <- 0.25 * 10 ** (-0.6 - 0.64 * fclay + 1.26 * fsand) * 0.0254 / (3600)
-#     } else {
-#       hydraul[k] <- 1.0 * 10 ** (-0.6 - 0.64 * fclay + 1.26 * fsand) * 0.0254 / (3600)
-#     }
-#     
-#     # field capacity (defined relative to the porosity):
-#     sfield[k] <- 1 / poros[k] * (50.5-3.7*fclay-14.2*fsand)/100 * (1.157e-9 / hydraul[k])**(1/(2*bex[k]+3))
-#     
-#     # wilting point (defined relative to the porosity):
-#     swilt[k]  <- 1 / poros[k] * (50.5-3.7*fclay-14.2*fsand)/100 *((10**(2.17-0.63*fclay-1.58*fsand)*0.01)/(1500/9.80665))**(1/bex[k])
-#     
-#     
-#     
-#     
-#     
-#   }
-#   
-#   # added for Green-Ampt
-#   cpwf[k] <- cpwfdat[lmin]
-#   swater[k] <- 0.000001   
-#   sice[k] <- 0        
-#   
-#   
-#   print(paste('     Resulting Properties ',k,bex[k],fsand,fclay,poros[k],sfield[k]*poros[k],swilt[k]*poros[k],hydraul[k],sep=" / "))
-#   
-#   
-#   if(SOIL_OBS == 1) {      
-#     poros[k]<-tab.perfil$Porosity[k]   
-#     sfield[k]<- (1 / poros[k]) * tab.perfil$FC[k]
-#     swilt[k] <- (1 / poros[k]) * tab.perfil$WP[k]#/poros[k]
-#     hydraul[k]<-tab.perfil$SHC[k]
-#     bex[k]<-tab.perfil$BEXP[k]
-#     
-#     print("WARNING  -  USING EUCAFLUX SOIL PROPERTIES ")
-#     print(paste('     Resulting Properties ',k,bex[k],fsand,fclay,poros[k],sfield[k]*poros[k],swilt[k]*poros[k],hydraul[k],sep=" / "))
-#     
-#   }   # para rodarar com dados do perfil de input
-#   
-#   
-#   if(SOIL_BR == 1) {
-#     poros[k]   <-  tab.DSSAT$SSAT[k]
-#     sfield[k]  <- (1 / poros[k]) * tab.DSSAT$SDUL[k]
-#     swilt[k]   <- (1 / poros[k]) * tab.DSSAT$SLLL[k]
-#     hydraul[k] <- tab.DSSAT$SSKS[k] / (100 * 3600)
-#     suction[k] <- swilt[k]*1.5
-#     
-#     if(k==1){  hsoi[k]<-tab.DSSAT$SLB[k]/100} else{ hsoi[k]<-tab.DSSAT$SLB[k]/100-tab.DSSAT$SLB[k-1]/100  }
-#     #      hsoi[k]<-tab.DSSAT$SLB[k]
-#     #bex[k]<- rep(3,8)#tab.perfil$BEXP[k]
-#     
-#     print("WARNING  -  SOIL DATABASE PROPERTIES ")
-#     print(paste('     Resulting Properties ',k,bex[k],fsand,fclay,poros[k],sfield[k]*poros[k],swilt[k]*poros[k],hydraul[k],sep=" / "))
-#     
-#   }   # para rodarar com dados do perfil de input
-#   
-#   
-# }
-# 
-# 
-# assign("rhosoi",  rhosoi, envir = env)
-# assign("csoi",  csoi, envir = env)
-# assign("fracsand",  fracsand, envir = env)
-# assign("fracsilt",  fracsilt, envir = env)
-# assign("fracclay",  fracclay, envir = env)
-# assign("poros",  poros, envir = env)
-# assign("sfield",  sfield, envir = env)
-# assign("swilt",  swilt, envir = env)
-# assign("bex",  bex, envir = env)
-# assign("ibex",  ibex, envir = env)
-# assign("suction",  suction, envir = env)
-# assign("hydraul",  hydraul, envir = env)
-# assign("cpwf",  cpwf, envir = env)
-# assign("swater",  swater, envir = env)
-# assign("sice",  sice, envir = env)
-# assign("hsoi",  hsoi, envir = env)
-# 
-# # surface parameters
-# assign("albsav",  fracsand[ ,1] * 0.120 + fracsilt[,1] * 0.085 + fracclay[,1] * 0.050, envir = env)
-# assign("albsan",  2.0 * albsav, envir = env)    
-
 
 
 

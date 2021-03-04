@@ -1040,7 +1040,6 @@ stomata <- function (iter, time, jday) {
     rdarkc4 <- gammac4 * vmax_pft[idc] * tempvm * croplive[idc]
     #       rdarkc4 <- gammac4 * vmax_pft[idc] * tempvm 
     
-    #sant - print(paste0(jday,time/3600,vmax * 1e+06,tempvm,rdarkc4 * 1e+06))
     # from Collatz et al. (1992) - changed to 15 C base 
     # equation 5B
     
@@ -1145,8 +1144,6 @@ stomata <- function (iter, time, jday) {
     
     gsc4 <- max (gsc4min, coefbc4 * stressc4c, gsc4) 
     
-    #sant      if(i == 1  && iter == 3  && time  == 43200) print(paste0('gsc4_antes',time,jday,gsc4[i]))
-    
     # calculate new value of ci using implicit scheme
     
     cic4 <- (1 / 3) * (cic4 * 2 + csc4 - 1.6 * anc4 / gsc4)
@@ -1192,8 +1189,6 @@ stomata <- function (iter, time, jday) {
     if(topparl > 10) {
       
       scale <- (1 - exp( - pxail)) / plail  #csant - for example  - if lai <- 4, scale is +- 0.2
-      
-      #sant	if(i == 1) print(paste0('sai[i,1],lai[i,1],extpar',sai[i,1],lai[i,1],scale ))
       
       # update 10 - day running mean of scale, weighted by light levels
       
@@ -1354,7 +1349,6 @@ stomata <- function (iter, time, jday) {
   # multiply canopy photosynthesis by wet fraction -- this calculation is
   # done here and not earlier to avoid using within canopy conductance
   
-  #	print(paste0(fwetl[i]))
   rwork <- 1 - fwetl
   
   agcls <- rwork * agcls

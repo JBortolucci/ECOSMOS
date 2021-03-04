@@ -51,6 +51,15 @@ COMPETE_LANDCOVER_CLIMATE 1
 # JAIR: Ver com santiago as constantes
 NONE 0
 
+# Initiation
+simulationStartMonth 0
+simulationStartDay 0
+startOfSimulation 0
+simulationEndMonth 0
+simulationEndDay 0
+endOfSimulation 0
+simulationEnd logical F
+
 ##### com1d.h #####
 
 termu vector 7 0
@@ -278,7 +287,6 @@ ik vector npft 0
 qgalho 0 
 cdays 0 
 pstart vector npft 0
-ncyears 0 
 cropy 0 
 nplant 0
 iniday 0 
@@ -306,7 +314,6 @@ xirrig 0
 xirriga 0 
 totirrig 0 
 df 0 
-vf 0 
 pmask 0 
 cumvd 0 
 hdidx 0 
@@ -325,7 +332,6 @@ pcm vector npft 0
 pcd vector npft 0
 gddsgcp 0 
 gddsgcr 0 
-idop vector npft 0
 iavepdate vector npft 0
 harvdate vector npft 0
 corndop vector 2100 0
@@ -336,10 +342,8 @@ cnroot vector npft 0
 croplive vector npft 0
 grnfraccrop vector npft 0
 gddplant vector npft 0
-gddtsoi vector npft 0
 gddmaturity vector npft 0
 thrlai vector npft 0
-peaklai vector npft 0
 hui vector npft 0
 phuf vector npft 0
 tlai vector npft 0
@@ -355,8 +359,6 @@ tnplant vector npft 0
 grainn vector npft 0
 cumlvs vector npft 0
 idpp vector npft 0
-idpe vector npft 0
-dpgf vector npft 0
 cropyld vector npft 0
 dmleaf vector npft 0
 dmstem vector npft 0
@@ -375,15 +377,12 @@ croplaimx vector npft 0
 residuen vector  npft 0
 dmroot vector npft 0
 dmwood vector npft 0
-hdate vector npft 0
 pdate vector npft 0
 crmclim vector npft 0
 crmact vector npft 0
 crmplant vector npft 0
 ccdays vector npft 0
-grainday vector npft 0
 fertinput vector npft 0
-avehybrid vector npft 0
 idppout vector npft 0
 aerial vector npft 0
 rm 0 
@@ -452,7 +451,9 @@ DBranch_decay 0
 Signew 0
 cbiold 0.015
 cbiols 0.01
-
+tl_h vector 24 0
+tu_h vector 24 0
+ta_h vector 24 0
 ##### comhour.h #####
 
 iiyear vector 9000 0
@@ -681,6 +682,8 @@ csoln vector length(-nsoilay:nsoilay) 0
 tnuptake vector nsoilay 0
 anuptake vector nsoilay 0
 wflo vector nsoilay+1 0
+SRGF vector nsoilay 0
+bulkd vector nsoilay 0
 
 ##### comwork.h #####
 
@@ -847,6 +850,7 @@ cbiog vector npft 0
 cbios vector npft 0
 cbiocr vector npft 0
 cbiob vector npft 0
+cbiop vector npft 0
 clitll 0 
 clitlm 0 
 clitls 0 
@@ -873,6 +877,7 @@ frac vector npft 0
 plai vector npft 0
 plaimx vector npft 0
 tnpp vector npft 0
+tan vector npft 0
 tgpp vector npft 0
 nppdummy vector npft 0
 lai matrix 1 2 0
@@ -983,6 +988,8 @@ amco2ratio 0
 amnmintot 0 
 amnpp vector npft 0
 adnpp vector npft 0
+adan vector npft 0
+adpar 0
 ayprcp 0 
 ayaet 0 
 aytrans 0 
@@ -1071,6 +1078,7 @@ temp vector npft 1
 rgrowthc vector npft 0
 mcbior vector npft 0 
 mcbiog vector npft 0
+mcbiop vector npft 0
 mcbiow vector npft 0 
 mcbios vector npft 0 
 mcbiocr vector npft 0

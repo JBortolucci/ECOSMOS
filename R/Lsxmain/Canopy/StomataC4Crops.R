@@ -57,7 +57,7 @@ StomataC4Crops <- function(i) {
   qsat34 <- qsat (esat34, psurf)
   rh34 <- max (0.30, airHumidity / qsat34)
   
-  q10 <- 2.5  
+  #q10 <- 2.5  
   
   rwork <- 3.47e-03 - 1 / canopyTemp
   tleaf <- canopyTemp - 273.16
@@ -157,15 +157,12 @@ StomataC4Crops <- function(i) {
   
   # gscc4 <- coefmc4 * ancc4 * rh34 / cscc4 + coefbc4 * stressc4c
   gscc4 <- coefm[i] * an[i] * rh34 / cscc4 + coefb[i] * stressc4c
-  
-  # ancc4 <- ancc4 * grnfraccrop[idc]
-  an[i] <- an[i] * greenfrac[i]
-  # agcc4 <- agcc4 * grnfraccrop[idc]
-  ag[i] <- ag[i] * greenfrac[i]
-  # gscc4 <- max (gsc4min, coefbc4 * stressc4c, gscc4)
+
   gscc4 <- max (gsmin[i], coefb[i] * stressc4c, gscc4)
-  # gscc4 <- gscc4 * grnfraccrop[idc]
-  gscc4 <- gscc4 * greenfrac[i]
+    
+  an[i] <- an[i] * pgreenfrac[i]
+  ag[i] <- ag[i] * pgreenfrac[i]
+  gscc4 <- gscc4 * pgreenfrac[i]
   
   
   rwork <- 1 / airVegCoef

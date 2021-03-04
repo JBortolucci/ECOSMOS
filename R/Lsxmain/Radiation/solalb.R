@@ -342,21 +342,21 @@ twoset <- function(omega, betad, betai, avmu, gdir, coszen, iv, ib) {
   # of the spectrum is used, what part of the canopy is used (lower or upper),
   # and whether the leaves are green or brown
   
-  rhovegvlg <- 0.10      # vis leaf reflectance, lower story, green leaves
-  rhovegvlb <- 0.36      # vis leaf reflectance, lower story, brown leaves
-  rhovegvu <- 0.10       # vis leaf reflectance, upper story, green leaves
-  
-  rhovegirlg <- 0.48     # nir leaf reflectance, lower story, green leaves
-  rhovegirlb <- 0.58     # nir leaf reflectance, lower story, brown leaves
-  rhovegiru <- 0.40      # nir leaf reflectance, upper story, green leaves
-  
-  tauvegvlg <- 0.07      # vis leaf transmittance, lower story, green leaves
-  tauvegvlb <- 0.22      # vis leaf transmittance, lower story, brown leaves
-  tauvegvu <- 0.05       # vis leaf transmittance, upper story, green leaves
-  
-  tauvegirlg <- 0.25     # nir leaf transmittance, lower story, green leaves
-  tauvegirlb <- 0.38     # nir leaf transmittance, lower story, brown leaves
-  tauvegiru <- 0.20      # nir leaf transmittance, upper story, green leaves
+  #SVC 2021 (global params) - rhovegvlg <- 0.10      # vis leaf reflectance, lower story, green leaves
+  #SVC 2021 (global params) - rhovegvlb <- 0.36      # vis leaf reflectance, lower story, brown leaves
+  #SVC 2021 (global params) - rhovegvu  <- 0.10       # vis leaf reflectance, upper story, green leaves
+  #SVC 2021 (global params) - 
+  #SVC 2021 (global params) - rhovegirlg <- 0.48     # nir leaf reflectance, lower story, green leaves
+  #SVC 2021 (global params) - rhovegirlb <- 0.58     # nir leaf reflectance, lower story, brown leaves
+  #SVC 2021 (global params) - rhovegiru  <- 0.40      # nir leaf reflectance, upper story, green leaves
+  #SVC 2021 (global params) - 
+  #SVC 2021 (global params) - tauvegvlg <- 0.07      # vis leaf transmittance, lower story, green leaves
+  #SVC 2021 (global params) - tauvegvlb <- 0.22      # vis leaf transmittance, lower story, brown leaves
+  #SVC 2021 (global params) - tauvegvu  <- 0.05       # vis leaf transmittance, upper story, green leaves
+  #SVC 2021 (global params) - 
+  #SVC 2021 (global params) - tauvegirlg <- 0.25     # nir leaf transmittance, lower story, green leaves
+  #SVC 2021 (global params) - tauvegirlb <- 0.38     # nir leaf transmittance, lower story, brown leaves
+  #SVC 2021 (global params) - tauvegiru  <- 0.20      # nir leaf transmittance, upper story, green leaves
   
   
   # set two-stream parameters omega, betad, betai, gdir and avmu
@@ -380,19 +380,20 @@ twoset <- function(omega, betad, betai, avmu, gdir, coszen, iv, ib) {
     # iv is 1 for lower canopy and 2 for upper canopy
     # ib is 1 for visible wavebands and 2 for near infrared wavebands
     
+
     if (iv == 2) {
       if (ib == 1) {
         
         # visible values for the upper canopy
         
-        zrho <- rhovegvu
-        ztau <- tauvegvu
+        zrho <- greenfrac[2] * rhovegvug + rhovegvub * (1 - greenfrac[2]) 
+        ztau <- greenfrac[2] * tauvegvug + tauvegvub * (1 - greenfrac[2])
       }else{
         
         # ir values for the upper canopy
         
-        zrho <- rhovegiru
-        ztau <- tauvegiru
+        zrho <- greenfrac[2] * rhovegirug + rhovegirub * (1 - greenfrac[2])
+        ztau <- greenfrac[2] * tauvegirug + tauvegirub * (1 - greenfrac[2])
       }
     }else{
       if (ib == 1) {
@@ -400,17 +401,16 @@ twoset <- function(omega, betad, betai, avmu, gdir, coszen, iv, ib) {
         # visible values for the lower canopy, weighted by how much of
         # canopy is green
         
-        zrho <- greenfracl[i] * rhovegvlg + rhovegvlb * (1. - greenfracl[i])
-        ztau <- greenfracl[i] * tauvegvlg + tauvegvlb * (1. - greenfracl[i])
+        zrho <- greenfrac[1] * rhovegvlg + rhovegvlb * (1. - greenfrac[1])
+        ztau <- greenfrac[1] * tauvegvlg + tauvegvlb * (1. - greenfrac[1])
         
       }else{
         
         # ir values for the lower canopy, weighted by how much of
         # canopy is green
         
-        zrho <- greenfracl[i] * rhovegirlg + rhovegirlb * (1. - greenfracl[i])
-        
-        ztau <- greenfracl[i] * tauvegirlg + tauvegirlb * (1. - greenfracl[i])
+        zrho <- greenfrac[1] * rhovegirlg + rhovegirlb * (1. - greenfrac[1])
+        ztau <- greenfrac[1] * tauvegirlg + tauvegirlb * (1. - greenfrac[1])
       }
     }
     

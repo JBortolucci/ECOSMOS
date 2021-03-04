@@ -30,11 +30,10 @@ caniniR <- function(envi, jday) {
   
   cp <- cair * (1.0 + (cvap / cair - 1.0) * qa)
   
-  za <- (psurf - pa) / (rhoa * grav)
+  # za <- (psurf - pa) / (rhoa * grav)
   
   # make sure that atmospheric level is higher than canopy top
   za <- max (za, ztop[2] + 1.0)
-  
   
   # aerodynamic coefficients for the lower story
   # 
@@ -85,8 +84,7 @@ caniniR <- function(envi, jday) {
   
   displ <- x1 * 0.7 * z3
   
-  # sant	if(i.eq.1)print*,jday,ztop(i,1),x1,z3(i),displ(i),0.1*(z3(i)-z4(i))
-  
+
   # aerodynamic coefficients for the upper story
   # same comments as for lower story
   
@@ -129,7 +127,6 @@ caniniR <- function(envi, jday) {
   alog2 <- log (z2-displ)
   alog1 <- log (z1-dispu)
   aloga <- log (za-dispu)
-  
   # initialize u2, alogu, alogl for first iteration's fstrat
   u2 <- ua/exphu
   alogu <- log (max(.01, .1*(z1-z2)))
@@ -138,7 +135,7 @@ caniniR <- function(envi, jday) {
   assign("tfac", tfac, envir = env)
   assign("rhoa", rhoa, envir = env)
   assign("cp", cp, envir = env)
-  #assign("za", za, envir = env)  # SVC change for not update za
+  assign("za", za, envir = env)  
   assign("bdl", bdl, envir = env)
   assign("dil", dil, envir = env)
   assign("z3", z3, envir = env)

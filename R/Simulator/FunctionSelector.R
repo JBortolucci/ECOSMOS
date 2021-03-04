@@ -38,19 +38,19 @@ SetCompiledFunctions <- function(){
   setsoi    <- setsoiCpp
   fwetcal   <- fwetcalCpp
   solset    <- solsetCpp
-  solsur    <- solsurCpp
-  solalb    <- solalbCpp
+  solsur    <- solsurR
+#  solalb    <- solalbCpp
   solarf    <- solarfCpp
   irrad     <- irradCpp
   cascade   <- cascadeCpp
-  canini    <- caniniCpp
+#  canini    <- caniniCpp
   drystress <- drystressCpp
   turcof    <- turcofCpp
-  turvap    <- turvapCpp
+ # turvap    <- turvapCpp
   cascad2   <- cascad2Cpp
   noveg     <- novegCpp
-  diurnalmet<- diurnalmetCpp
-  diurnal   <- diurnalCpp
+ # diurnalmet<- diurnalmetCpp
+ # diurnal   <- diurnalCpp
   
   assign("setsoi", setsoi, envir = globalenv())
   assign("fwetcal", fwetcal, envir = globalenv())
