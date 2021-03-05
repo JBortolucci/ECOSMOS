@@ -88,7 +88,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         cbiol[i]  <- 0.005065926 /kg_C_M2_to_T_ha
         cbiocr[i] <- 0.000163217 /kg_C_M2_to_T_ha
         plai[i]   <- cbiol[i] * specla[i]  
-        plai[i]   <- max(plai[i],0.02)
+        plai[i]   <- max(plai[i],0.01)
         cbiol[i]  <- plai[i]/specla[i]    
         
         }
@@ -323,9 +323,10 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       #computation of new LAI from G'DAY  (not using, see bellow that LAI is re-calculated)
       # Deadleaves/Shoot = fraction of leaf mass which turns over; it is assumed that the same fraction of leaf area turns over.
-      plai[i] <- plai[i] + (deltay * ((aleaf[i] * max (0.0, adnpp[i]))
-                                      * Signew * M2_AS_HA / KG_AS_TONNES / Cfracts  - Deadleaves
-                                      * plai[i] / (cbiol[i]+1E-15)))
+     # plai[i] <- plai[i] + (deltay * ((aleaf[i] * max (0.0, adnpp[i]))
+     #                                 * Signew * M2_AS_HA / KG_AS_TONNES / Cfracts  - Deadleaves
+     #                                 * plai[i] / (cbiol[i]+1E-15)))
+      plai[i]    <- (cbiol[i] * specla[i])
       
       plai[i] <- max(plai[i],0.01)
       

@@ -96,6 +96,8 @@ inisoil <- function() {
       
     }
     
+    print(paste0((fracclay[k] + fracsilt[k] + fracsand[k])," / ",hsoi[k]))
+    
     if( (fracclay[k] + fracsilt[k] + fracsand[k])!= 1 | hsoi[k]< 0.01 ){
       print('Check the Texture and soil layers depth in the inst/input/SOIL.csv')
       stop()   }
