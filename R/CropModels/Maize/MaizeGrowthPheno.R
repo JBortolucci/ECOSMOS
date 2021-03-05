@@ -13,6 +13,7 @@ simDataVars$SRCT     <- 0
 
 simDataVars$cumPh  <-  0
 simDataVars$xn  <-  0
+simDataVars$tiphyl  <-  0 # was 'ti' before
 simDataVars$gdd8  <-  0
 simDataVars$gdd10  <-  0
 simDataVars$sumgdd8  <-  0
@@ -20,7 +21,7 @@ simDataVars$pla  <-  0
 simDataVars$leafwb  <-  0
 simDataVars$dtt8  <-  0
 simDataVars$dtt10  <-  0
-simDataVars$tlno  <-  0
+simDataVars$tlno  <-  30
 simDataVars$P3  <-  0
 simDataVars$fr  <-  0
 simDataVars$slfc  <-  0
@@ -65,25 +66,30 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   
   i <- index
   
+  # Management Parameters
+  pden <- config$plant1$plantPop # plant population (plants per m⁻²)
+  pdpt <- config$plant1$plantingDepht # sowing depth (cm)
   # Crop Parameters
-  #TODO Leandro: levar pro plantparams junto comigo [2021-02-10]
+  #TODO Leandro: levar pro plantparams (adicionais) junto comigo [2021-02-10]
   gddgerm  <- 15  # GDD (base 10ºC) required for germination (default = 15)
   gddemerg <- 6.0 # GDD (base 10ºC) required for emergence per cm depth (default = 6) [we believe this is in cm/day]
   emerg_limit <- 25 # maximum days allowed from sowing to emergence (default = 25)
   gddf <- 170     # P5 in CERES-MAIZE and in the manual??? GDD (base 8ºC) from silking to effective grain filling
   gddt <- 1600    # GDD (base 10ºC) required from germination to maturity (default = 1500?)
-  gdds <- (0.41 * gddt) + 145.4 # GDD (base 10ºC) required from silking to physiological maturity
   laic <- 4       # critical LAI for light competition (condition for SLFC have a chance to affect leaf expansion)
   laim <- 0.7     # fraction of LAI at maturity of the maximum LAI
   sg   <- 4.0     # ‘stay-green’ factor, which controls how fast leaf senesces proceeds after silking
-  pden <- config$plant1$plantPop # plant population (plants per m⁻²)
-  pdpt <- config$plant1$plantingDepht # sowing depth (cm)
   phyl <- 38.9    #TODO Victor, o que significa esse parametro? vc 'criou' ele? [2021-01-20]
   dsstop <- 1.15  # development stage when root growth stops
-  gddv <- c(ph1 = 47, ph2 = 28)
+  ph1  <- 47
+  ph2  <- 28
   G2 <- 676 # the potential number of grains per plantkernels ear⁻¹ (default = 676)
   G5 <- 8.7 # the potential grain filling rate (mg d-1 kernel-1) (default = 8.7)
   efftrans <- 0.26 # Efficiency of carbon translocation from leaves/stem to grain filling
+  #TODO Leandro: até aqui
+  gdds <- (0.41 * gddt) + 145.4 # GDD (base 10ºC) required from silking to physiological maturity
+  gdds <- 100+0.4451*gddt -50 # last page in the manual
+  gddv <- c(ph1, ph2)
   
   rgrowth <- 0.30 #TODO vamos ter que pensar a respeito desse parâmetro ('rgrowthc' é dos crops)... [2021-01-20]
   
@@ -147,6 +153,14 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       #gddemerg <- gddemerg * pdpt # gddgerm taking into account the sowing depth already here
       
       plaf <- 0.0
+      
+      #TODO check if 'tlno' and 'P3' are dynamic or static [Henrique; 2021-03-04]
+      tlno <- 30
+      P3 <- 0
+      # tlno <- (gdd8 / (phyl * 0.5)) + 6
+      # P3 <- (tlno - 2.0) * phyl + 96 - gdd8
+      # TLNO is the total number of leaves that will eventually appear (#)
+      # P3: "The duration of Stage 2 in terms of GDD equals P3 whose value is determined at the end of Stage 1"
        
     }
     
@@ -207,12 +221,11 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         cumPh <- 1.0
         xn <- 3.0
         
-        cbiol[i]  <- 0.5 * pden * 0.4 * 1e-3  # primeiro termo seria a massa inicial
+        cbiol[i]  <- 2 * pden * 0.4 * 1e-3  # primeiro termo seria a massa inicial
         plai[i]   <- cbiol[i] * specla[i]
         
         cbiols[i] <- 0
         lais[i] <- 0
-        
       }
       
     } else {
@@ -222,7 +235,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       #     following largely CERES-Maize (Jones and Kiniry, 1986),
       #     but with a merger of stages 1 and 2 into one stage.
       # The four periods used in the Hybrid-Maize model are:
-      #     Stage 1: from emergence to tassel initiation
+      #     Stage 1: from emergence to tassel initiation                   *** Stages 1 & 2 in CERES ***
       #     Stage 2: from tassel initiation to silking
       #     Stage 3: from silking to effective grain filling
       #     Stage 4: from effective grain filling to physiological maturity.
@@ -250,15 +263,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       dtt10 <- calc_dtt(dpp = idpp[i], jday = jday, ldtt = 10, udtt = 34)
       gdd8  <- gdd8  + dtt8
       gdd10 <- gdd10 + dtt10
-      
-      if (idpp[i] == 1) {
-        tlno <- (gdd8 / (phyl * 0.5)) + 6
-        P3 <- (tlno - 2.0) * phyl + 96 - gdd8
-        
-        # TLNO is the total number of leaves that will eventually appear (#)
-        # P3: "The duration of Stage 2 in terms of GDD equals P3 whose value is determined at the end of Stage 1"
-      }
-      
+
       tmean  <- (tmax + tmin) / 2.0 #TODO talvez usamos do ECOSMOS direto e não precisemos esse passo toda vez [2021-01-20]
     
       # Leaf Growth and Senescence #
@@ -268,11 +273,12 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         pc <- 1
       }
       
-      ti <- dtt8 / (phyl * pc)
-      cumPh <- cumPh + ti
+      tiphyl <- dtt8 / (phyl * pc)
+      cumPh <- cumPh + tiphyl
       xn <- max(xn, cumPh + 1)
       
       # TI is the fraction of daily increase in leaf number
+      #     'ti' here had to be changed to 'tiphyl' because the same term is used in 'turvap' subroutine [Henrique; 2021-03-04]
       # cumPh is the number of fully expanded leaves
       # XN is the leaf number of the oldest expanding leaf
       # PC is an intermediate variable
@@ -295,23 +301,36 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       if (gdd8 / (gdd8 + P3) > gdd10 / gdds) {
         
         ################################################
-        # STAGE 1: from emergence to tassel initiation #
+        # STAGE 1: from emergence to tassel initiation #  *** Stages 1 & 2 in CERES ***
         ################################################
         
         # Leaf Growth and Senescence #
         # The daily expansion of leaf area (PLAG) and growth of leaf biomass is driven by temperature, and the choice of functions depends on growth stage.
-        tlno <- (gdd8 / (phyl * 0.5)) + 6
-        P3 <- (tlno - 2.0) * phyl + 96 - gdd8
+        
+        # Testings after CERES-MAIZE review [Henrique; 2021-03-04]
+        #VEGPHASE <- gddt-gdds
+        #tlno <- (VEGPHASE / (phyl * 0.5)) + 6
+        tlno <- (gdds / (phyl * 0.5)) + 6
+        P3 <- (tlno - 2.0) * phyl + 96 - gdds
+        #tlno <- (gdd8 / (phyl * 0.5)) + 6      # # this parameter is fixed as 30 in CERES in stages 1 & 2
+        #P3 <- (tlno - 2.0) * phyl + 96 - gdd8  # this parameter remains as 0 in CERES in stages 1 & 2
         
         plag <- ifelse(test = xn < 4,
-                       yes  = 3.0 * xn * ti,
-                       no   = 3.5 * (xn^2) * ti)
-  
-        pla <- pla + plag #TODO includes water 'stress' here following Keating et al. (2003) in pages 69-70 [Henrique; 2021-02-26]
+                       yes  = 3.0 * xn * tiphyl,
+                       no   = 3.5 * (xn^2) * tiphyl)
+
+        #TODO includes water and others 'stress' in plag following... [Henrique; 2021-02-26]
+        #    Keating et al. (2003) in pages 69-70 and/or CERES-MAIZE
+        #    CEREs also includes waterlogging, and seems to be accomodated for K and P [*AMIN1(TURFAC,(1.0-SATFAC),PStres2, KSTRES)]
+        
+        pla <- pla + plag
+        #TODO CERES-MAIZE includes **1.25 in leafwt (XLFWT)
         leafwt <- pla / (specla[i] * 10) # 10 (convertion SPECLA from m²/kg DM to cm²/g DM)
+        #TODO CERES-MAIZE has an intermediate variable called LFWT which is used XLFWT  = AMAX1 (XLFWT,LFWT)
         leafwg <- leafwt - leafwb
         leafwb <- leafwt
         xnti <- xn
+        #TODO include roots?
         
         # PLA (cm2 plant-1) is the total leaf area per plant
         # SLA (cm2 g-1, ≤ 400 cm2 g-1) is the specific leaf area
@@ -325,6 +344,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         fsen <- sen / pla
         pla <- max(0, pla - sen)
         leafwg <- leafwg / (1.0 + fresp$leaf)
+        #TODO CERES uses a different approach here
+        #TODO includes 'CumLeafSenes' now
         
         # SLAN (cm2 plant-1) is the accumulated leaf senescence caused by natural development
         # PLAS (cm2 plant-1 d-1) is the daily leaf senescence due to competition for light and temperature stress (affected by )
@@ -362,23 +383,28 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         ##############################################
         
         # Leaf Growth and Senescence #
+        
         # Stem and Root Growth #
         if (xn <= 12) {
-          plag <- 3.5 * xn^2 * ti
+          plag <- 3.5 * xn^2 * tiphyl
           pla <- pla + plag
           leafwg <- 0.00116 * plag * pla^0.25
           stemwg <- leafwg * 0.0182 * (xn - xnti)^2
         } else if (xn > 12 & xn <= tlno - 3) {
-          plag <- 595 * ti
+          plag <- 595 * tiphyl
           pla <- pla + plag
           leafwg <- 0.00116 * plag * pla^0.25
           stemwg <- leafwg * 0.0182 * (xn - xnti)^2
         } else if(xn > tlno - 3) {
-          plag <- 595 * ti / sqrt(xn + 5 - tlno)
+          plag <- 595 * tiphyl / sqrt(xn + 5 - tlno)
           pla <- pla + plag
           leafwg <- 0.00116 * plag * pla^0.25
-          stemwg <- 10.85 * ti
+          stemwg <- 10.85 * tiphyl
         }
+        
+        #TODO includes water and others 'stress' in plag following... [Henrique; 2021-02-26]
+        #    Keating et al. (2003) in pages 69-70 and/or CERES-MAIZE
+        #    CEREs also includes waterlogging, and seems to be accomodated for K and P [*AMIN1(TURFAC,(1.0-SATFAC),PStres2, KSTRES)]
         
         # XNTI is the value of XN at the end of Stage 1
         # Note that both PLAG and leafWtGrow are the values projected based on temperature, but whether they can be realized depends on (a) availability of net carbohydrate from photosynthesis and (b) crop water stress (Section 4.2.4).
@@ -448,7 +474,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         #TODO verify this manipulation. perhaps 'lsr', 'plag' & 'plaf' calculations should be included here again [Henrique; 2021-02-26]
         #TODO includes water 'stress' here following Keating et al. (2003) in page 70 [Henrique; 2021-02-26]
         # check manipulation to avoid low sen & fsen values between stages 2 & 3 [Henrique; 2021-02-26]
-        sen <- ifelse(sen < senmaxstage2, sen+senmaxstage2, sen)
+        sen <- max(senmaxstage2, sen)
         
         pla <- max(0, pla - sen)
         fsen <- sen / plaf
@@ -518,8 +544,9 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         sf <- laim * min(1, ((sumgdd8 / gdds) ^ sg)) #TODO gdds = P5 in model's manual (?) is base 10! e AGORA?
         sen$plas <- plaf * sf  # plaf antes & fator temp
         sen <- max(unlist(sen))
-        
-        sen <- ifelse(sen < senmaxstage3, sen+senmaxstage3, sen)
+        #if(idpp==115)browser()
+        #sen <- ifelse(sen < senmaxstage3, sen+senmaxstage3, sen)
+        sen <- max(senmaxstage3, sen)
       
         pla <- max(0, pla - sen)
         fsen <- sen / plaf
@@ -538,8 +565,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         #     and subsequent versions (Lopez Cedron et al., 2003).
         
         # OLD manual?
-        #psker = sumP * 1000 / ndaysS3 * 3.4 / 5
-        #gpp = G2 * (psker - 195) / (1213.2 + psker - 195)
+        # psker = sumP * 1000 / ndaysS3 * 3.4 / 5
+        # gpp = G2 * (psker - 195) / (1213.2 + psker - 195)
         
         # NEW manual?
         # psker <- sumP / (1 + fresp$grain) * 1e3 / ndaysS3 * 3.4 / 5.0 # we don't know the mathematical manipulation here
@@ -558,8 +585,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # GPP   = AMAX1 (GPP,0.0)
         # such model still considers barrenness (esterelidade in Portuguese)
         
-        
-        #browser()
         # FillEffi is for adjusting the potential grain filling rate based on plant population, and its function was derived from a high-yield maize experiment at Lincoln, Nebraska (Yang et al., 2004)
         filleffi <- 1.47 - (0.09 * pden) + (0.0036 * pden^2)
         
@@ -573,7 +598,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
           # return(RGfill)
         }))
         
-        grainwg <- (RGfill * gpp * G5 * filleffi * 0.001)
+        grainwg <- (RGfill * gpp * G5 * filleffi * 0.001) #TODO CERES-MAIZE applies *(0.45+0.55*SWFAC) here too
         grainwg <- 0.40 * grainwg * pden / 1e3 # convert from g-DM plant⁻¹ day⁻¹ to kg-C m⁻² day⁻¹
         #TODO Victor, a unidade do 'grain' ainda está bem diferente das demais... [2021-01-21]
         
@@ -581,6 +606,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         transl <- 0.0
 
         # C mass-based for ECOSMOS 
+        #if(idpp==79) browser()
         if (grainwg > adnppg & fcbios >= abs(grainwg - adnppg)) {
           transs <- abs(grainwg - adnppg)
           grainwg <- grainwg + efftrans * transs
@@ -752,6 +778,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         dm$root <- 0
         dm$leaf <- 0
+        dm$sleaf <- 0
         dm$stem <- 0
         dm$cob <- 0
         dm$grain <- 0
@@ -771,6 +798,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign('xnti'      , xnti      , envir = env)
     assign('sumgdd8'   , sumgdd8   , envir = env)
     assign('xn'        , xn        , envir = env)
+    assign('tiphyl'    , tiphyl        , envir = env)
     assign('P3'        , P3        , envir = env)
     assign('tlno'      , tlno      , envir = env)
     assign('ndaysS3'   , ndaysS3   , envir = env)
@@ -798,7 +826,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign('senmaxstage2'      , senmaxstage2      , envir = env)
     assign('senmaxstage3'      , senmaxstage3      , envir = env)
     assign('dtt8'      , dtt8      , envir = env)
-    
+
     assign('psker' , psker , envir = env)
     assign('gpp', gpp, envir = env)
     assign('RGfill', RGfill, envir = env)
