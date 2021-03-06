@@ -209,6 +209,33 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       
     
+      #===============================================================
+      #Michel: Teste 4/3/21
+      if(plai[i] <= 3.5 & idpp[i]<=450 ) {
+        aleaf[i] <- max(aleaf,Alleafinit)
+      }
+      
+      aleaf[i] <- max(aleaf[i],Alleafmin)
+      
+      
+      if ( (aroot[i] + aleaf[i] + abranch[i] + acroot[i]) > 1 ) {
+        reductionfactor <- 1 / (aroot[i] + aleaf[i] + abranch[i] + acroot[i])
+        aroot[i]        <- aroot[i]*reductionfactor
+        aleaf[i]        <- aleaf[i]*reductionfactor
+        abranch[i]      <- abranch[i]*reductionfactor
+        acroot[i]       <-acroot[i]*reductionfactor
+      }
+      
+      awood[i] <- 1 - (aroot[i] + aleaf[i] + abranch[i] + acroot[i])
+      
+      awood[i]     <- max(0.0, awood[i])
+      aroot[i]     <- max(0.0, aroot[i])
+      aleaf[i]     <- max(0.0, aleaf[i])
+      abranch[i]   <- max(0.0, abranch[i])
+      acroot[i]    <- max(0.0, acroot[i])
+      #===============================================================      
+      
+      
       
       ###############################################################################
       ######################    ###    ##    ##     ## #### #########################
