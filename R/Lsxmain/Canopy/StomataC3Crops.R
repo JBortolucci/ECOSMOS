@@ -180,31 +180,42 @@ StomataC3Crops <- function(i) {
     cs[i] <- max (1.05 * gamstar, cs[i])
     
 
-#____________________________________________________    
-# Stomatal conductance models [2020-11-18]    
-    gsmodel <- "BBC" # BBO | BBL | USO | BBC
-    
-    D0 = 1.5 # BBL
-    VPDSLP = -0.7  # BBC slope of VPD reduction on gs
-    VPDMIN = 1.5   # BBC threshold when VPD Starts to affect gs
-    
-
+    # Stomatal conductance models [2020-11-18]
     {
+      
+      gsmodel <- "BBC" # BBO | BBL | USO | BBC
+      
+      D0 = 1.5 # BBL
+      VPDSLP = -0.7  # BBC slope
+      VPDMIN = 0.5   # BBC - Start
+      
       # Ball (1988) & Berry (1991) model [BBO] 'O' means original
-      if (gsmodel=="BBO") { gs[i] <- 0.5*(gs[i] + coefm[i] * anc3 * rhdossel / cs[i] + coefb[i] * stressc3c)}
+      if (gsmodel=="BBO") {
+        gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 * rhdossel / cs[i] + coefb[i] * stressc3c)
+      }
       
       # BB after Leuning (1995) [BBL]
-      if (gsmodel=="BBL") { gs[i] <- 0.5*(gs[i] + (coefm[i] * anc3 / ((cs[i]-gamstar)*(1+VPDSL/D0)) + coefb[i] * stressc3c)) }
+      if (gsmodel=="BBL") {
+        
+        gs[i] <- 0.5*gs[i] + 0.5*(coefm[i] * anc3 / ((cs[i]-gamstar)*(1+VPDSL/D0)) + coefb[i] * stressc3c)
+      }
       
       # BB with the optimal stomatal control model of Cowan and Farquhar (1977) was proposed by Medlyn et al. (2011) [USO]
-      if (gsmodel=="USO") { gs[i] <-  0.5*(gs[i] +(1.6 * (1 + coefm[i] / sqrt(rhdossel)) * (anc3 / cs[i]))) } 
+      if (gsmodel=="USO") {
+        gs[i] <- 0.5 * (gs[i] + 1.6 * (1 + coefm[i] / sqrt(rhdossel)) * (anc3 / cs[i]) ) 
         # check if rhdossel = D & where to include stressc3c
-
-    # BB after Cuadra et al. (2021) [BBC]
+      }
+      
+      # BB after Cuadra et al. (2021) [BBC]
       if (gsmodel=="BBC") {
-        if (VPDSL >= VPDMIN) { VPDFACTOR=1+VPDSLP*(VPDSL-VPDMIN) } else { VPDFACTOR=1.0 }
-         VPDFACTOR=max(min(VPDFACTOR,1),0)
-                            gs[i] <-  0.5*(gs[i] + ((coefm[i]*anc3*VPDFACTOR)/(cs[i]-gamstar) + coefb[i] * stressc3c))
+        if (VPDSL >= VPDMIN) {
+          VPDFACTOR=1+VPDSLP*(VPDSL-VPDMIN)
+         # print(paste(rhdossel,VPDSL,VPDFACTOR),sep=" / ")
+        } else {
+          VPDFACTOR=1.0
+        }
+        VPDFACTOR=max(min(VPDFACTOR,1),0)
+        gs[i] <- 0.5*gs[i] + 0.5 * ((coefm[i]*anc3*VPDFACTOR)/(cs[i]-gamstar) + coefb[i] * stressc3c)
       }
       
     }
@@ -256,18 +267,35 @@ StomataC3Crops <- function(i) {
     csc <- max (1.05 * gamstar, co2conc - an[i] / gbco2l)
     
     {
+      
       # Ball (1988) & Berry (1991) model [BBO] 'O' means original
-      if (gsmodel=="BBO") { gsc <- coefm[i] * an[i] * rhdossel / csc + coefb[i] * stressc3c}
+      if (gsmodel=="BBO") {
+        gsc <- coefm[i] * an[i] * rhdossel / csc + coefb[i] * stressc3c
+      }
       
       # BB after Leuning (1995) [BBL]
-      if (gsmodel=="BBL") { gsc <-coefm[i] * an[i] / ((csc-gamstar)*(1+VPDSL/D0)) + coefb[i] * stressc3c}
+      if (gsmodel=="BBL") {
+        gsc <-coefm[i] * an[i] / ((csc-gamstar)*(1+VPDSL/D0)) + coefb[i] * stressc3c
+      }
       
       # BB with the optimal stomatal control model of Cowan and Farquhar (1977) was proposed by Medlyn et al. (2011) [USO]
-      if (gsmodel=="USO") { gsc <-  1.6 * (1 + coefm[i] / sqrt(rhdossel)) * (an[i] / csc) } 
+      if (gsmodel=="USO") {
+        gsc <-  1.6 * (1 + coefm[i] / sqrt(rhdossel)) * (an[i] / csc)  
         # check if rhdossel = D & where to include stressc3c
-    
+      }
+      
       # BB after Cuadra et al. (2021) [BBC]
-      if (gsmodel=="BBC") { gsc <- (coefm[i]*an[i]*VPDFACTOR)/(csc-gamstar) + coefb[i] * stressc3c  }
+      if (gsmodel=="BBC") {
+        if (VPDSL >= VPDMIN) {
+          VPDFACTOR=1+VPDSLP*(VPDSL-VPDMIN)
+          # print(paste(rhdossel,VPDSL,VPDFACTOR),sep=" / ")
+        } else {
+          VPDFACTOR=1.0
+        }
+        VPDFACTOR=max(min(VPDFACTOR,1),0)
+        gsc <- (coefm[i]*an[i]*VPDFACTOR)/(csc-gamstar) + coefb[i] * stressc3c
+      }
+      
     }
     
     gsc <- max (gsmin[i], coefb[i] * stressc3c, gsc)
