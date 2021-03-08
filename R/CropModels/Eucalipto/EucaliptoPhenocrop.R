@@ -24,6 +24,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   Cfracts      <- plantList[[index]]$params$Cfracts
   Coroot1      <- plantList[[index]]$params$Coroot1
   Coroot2      <- plantList[[index]]$params$Coroot2
+  acrootmin    <- plantList[[index]]$params$acrootmin
   deltay       <- plantList[[index]]$params$deltay 
   Density      <- plantList[[index]]$params$Density
   Fdecay1      <- plantList[[index]]$params$Fdecay1
@@ -179,7 +180,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       if (Corootexp < 0.) Corootexp = 0.001
       acroot[i] = (0.5 + 0.5 * (1.- (cbiocr[i]*kg_C_M2_to_T_ha) / Corootexp ) / Allocsenscr )
       
-      acrootmin <- 0.25
       
       acroot[i]<-max(min(acroot[i],1),acrootmin)
       
