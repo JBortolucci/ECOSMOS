@@ -51,7 +51,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
       simInstances[[id]]$ic  <- subset(tab.IC, SimIDic == id)
       #simInstances[[id]]$nsoilay <- length(simInstances[[id]]$ic$SimIDic) #it seems to be unnecessary here
       
-      #TODO: verificar 'swic' com santiago [2021-02]
+      #TODO: verificar 'swic' com santiago [2021-03-08]
       simInstances[[id]]$swic  <- tab.IC$SWic[tab.IC$SimIDic == id]
       
     } else {
