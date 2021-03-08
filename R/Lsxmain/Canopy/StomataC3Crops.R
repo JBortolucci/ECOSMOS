@@ -274,7 +274,7 @@ StomataC3Crops <- function(i) {
       }
       
       # BB after Leuning (1995) [BBL]
-      if (gsmodel=="BBL") {
+      if (gsmodel=="BBC") {
         gsc <-coefm[i] * an[i] / ((csc-gamstar)*(1+VPDSL/D0)) + coefb[i] * stressc3c
       }
       

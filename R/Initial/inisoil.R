@@ -155,10 +155,9 @@ inisoil <- function() {
     sice[k]   <- 0
     
     if(soilic==1){
-      if((swic[k]/ poros[k])>= (swilt[k]-0.01) && (swic[k]/ poros[k]) < 1.0) wsoi[k]<- swic[k]/poros[k]
+      if((swic[k]/ poros[k])>= (swilt[k]-0.01) && (swic[k]/ poros[k]) <= 1.0) wsoi[k]<- swic[k]/poros[k]
     }
-    
-         wsoi[k] <- min(max(wsoi[k],wsoi[k]),sfield[k])
+         wsoi[k] <- min(max(wsoi[k],swilt[k]),sfield[k])
       
     print(paste('Soil Properties',k,bex[k],fracsand[k],fracclay[k],poros[k],sfield[k]*poros[k],swilt[k]*poros[k],
                 hydraul[k],wsoi[k],sep=" / "))

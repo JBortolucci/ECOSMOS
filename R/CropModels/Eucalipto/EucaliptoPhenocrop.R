@@ -178,7 +178,10 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       if (Corootexp < 0.) Corootexp = 0.001
       acroot[i] = (0.5 + 0.5 * (1.- (cbiocr[i]*kg_C_M2_to_T_ha) / Corootexp ) / Allocsenscr )
-      acroot[i]<-max(min(acroot[i],1),0)
+      
+      acrootmin <- 0.25
+      
+      acroot[i]<-max(min(acroot[i],1),acrootmin)
       
       
       #---------------------
@@ -211,7 +214,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
     
       #===============================================================
       #Michel: Teste 4/3/21
-      if(plai[i] <= 3.5 & idpp[i]<=450 ) {
+      if(plai[i] <= 2.5 & idpp[i]<=450 ) {
         aleaf[i] <- max(aleaf,Alleafinit)
       }
       
