@@ -69,26 +69,27 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   # Management Parameters
   pden <- config$plant1$plantPop # plant population (plants per m⁻²)
   pdpt <- config$plant1$plantingDepht # sowing depth (cm)
+  
   # Crop Parameters
-  #TODO Leandro: levar pro plantparams (adicionais) junto comigo [2021-02-10]
-  gddgerm  <- 15  # GDD (base 10ºC) required for germination (default = 15)
-  gddemerg <- 6.0 # GDD (base 10ºC) required for emergence per cm depth (default = 6) [we believe this is in cm/day]
-  emerg_limit <- 25 # maximum days allowed from sowing to emergence (default = 25)
-  gddf <- 170     # P5 in CERES-MAIZE and in the manual??? GDD (base 8ºC) from silking to effective grain filling
-  gddt <- 1600    # GDD (base 10ºC) required from germination to maturity (default = 1500?)
-  laic <- 4       # critical LAI for light competition (condition for SLFC have a chance to affect leaf expansion)
-  laim <- 0.7     # fraction of LAI at maturity of the maximum LAI
-  sg   <- 4.0     # ‘stay-green’ factor, which controls how fast leaf senesces proceeds after silking
-  phyl <- 38.9    #TODO Victor, o que significa esse parametro? vc 'criou' ele? [2021-01-20]
-  dsstop <- 1.15  # development stage when root growth stops
-  ph1  <- 47
-  ph2  <- 28
-  G2 <- 676 # the potential number of grains per plantkernels ear⁻¹ (default = 676)
-  G5 <- 8.7 # the potential grain filling rate (mg d-1 kernel-1) (default = 8.7)
-  efftrans <- 0.26 # Efficiency of carbon translocation from leaves/stem to grain filling
-  #TODO Leandro: até aqui
-  gdds <- (0.41 * gddt) + 145.4 # GDD (base 10ºC) required from silking to physiological maturity
-  gdds <- 100+0.4451*gddt -50 # last page in the manual
+  params <- plantList$maize$params
+  gddgerm        <- params$gddgerm      # 15  # GDD (base 10ºC) required for germination (default = 15)
+  gddemerg       <- params$gddemerg     # 6.0 # GDD (base 10ºC) required for emergence per cm depth (default = 6) [we believe this is in cm/day]
+  emerg_limit    <- params$emerg_limit  # 25 # maximum days allowed from sowing to emergence (default = 25)
+  gddf           <- params$gddf         # 170     # P5 in CERES-MAIZE and in the manual??? GDD (base 8ºC) from silking to effective grain filling
+  gddt           <- params$gddt         # 1600    # GDD (base 10ºC) required from germination to maturity (default = 1500?)
+  laic           <- params$laic         # 4       # critical LAI for light competition (condition for SLFC have a chance to affect leaf expansion)
+  laim           <- params$laim         # 0.7     # fraction of LAI at maturity of the maximum LAI
+  sg             <- params$sg           # 4.0     # ‘stay-green’ factor, which controls how fast leaf senesces proceeds after silking
+  phyl           <- params$phyl         # 38.9    #TODO Victor, o que significa esse parametro? vc 'criou' ele? [2021-01-20]
+  dsstop         <- params$dsstop       # 1.15  # development stage when root growth stops
+  ph1            <- params$ph1          # 47
+  ph2            <- params$ph2          # 28
+  G2             <- params$G2           # 676 # the potential number of grains per plantkernels ear⁻¹ (default = 676)
+  G5             <- params$G5           # 8.7 # the potential grain filling rate (mg d-1 kernel-1) (default = 8.7)
+  efftrans       <- params$efftrans     # 0.26 # Efficiency of carbon translocation from leaves/stem to grain filling
+  
+  gdds <- (0.41 * gddt) + 145.4         # GDD (base 10ºC) required from silking to physiological maturity
+  gdds <- 100+0.4451*gddt -50           # last page in the manual
   gddv <- c(ph1, ph2)
   
   rgrowth <- 0.30 #TODO vamos ter que pensar a respeito desse parâmetro ('rgrowthc' é dos crops)... [2021-01-20]
