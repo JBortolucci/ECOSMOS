@@ -10,104 +10,106 @@ ResetCropsAfterHarvest <- function() {
     if(plantList[[i]]$type == CROPS) {
       if(harvdate[i] == jday) {
         
-        plai[i] <- 0.01
-        thrlai[i] <- 0
-        peaklai[i] <- 0
-        ccdays[i]  <- 0
+        plai[i]    <- 0.01
         cbiol[i]   <- 0
         cbioc[i]   <- 0
-        cbior[i]   <- 0
         cbios[i]   <- 0
         cbiog[i]   <- 0
         cbiow[i]   <- 0
+        cbiob[i]   <- 0  
+        cbior[i]   <- 0
+        cbiocr[i]  <- 0
         
-        # ADICIONADO NOVO
-        cbiocr[i] <- 0
-        cbiob[i]  <- 0
+        cbiold[i]   <- 0
+        cbiosd[i]   <- 0
+        cbiogd[i]   <- 0
+        cbiowd[i]   <- 0
+        cbiobd[i]   <- 0  
+        cbiord[i]   <- 0   
+        cbiocrd[i]  <- 0
         
-        hui[i]     <- 0
-        aybprod[i] <- 0
-        ayrprod[i]  <- 0
-        ayabprod[i] <- 0
-        aylprod[i] <- 0
-        leafout[i] <- 0
-        htmx[1] <- 0      # ou 2
-        cumlvs[i] <- 0
-        plaimx[i] <- 0
-        dpgf[i] <- 0
-        biomass[i] <- 0
+        aybprod[i]    <- 0
+        ayrprod[i]    <- 0
+        ayabprod[i]   <- 0
+        aylprod[i]    <- 0
+        biomass[i]    <- 0
         totnuptake[i] <- 0
-        tnplant[i] <- 0
-        totnfix[i] <- 0
-        idpp[i] <- 0
-        idpe[i] <- 0
-        gddplant[i] <- 0
-        gddtsoi[i] <- 0
-        sai[1]     <- 0   # ou 2
-        fu         <- 0
-        lai[1]     <- 0  # ou 2
-        zbot[1] <- 0    # ou 2
-        ztop[1] <- 0    # ou 2
-        totbiol <- 0
-        totlail <- 0
-        vf <- 0  # vernalization factor for winter wheat
-        arepr[i] <- 0
-        
-        # ADICIONADO NOVO
-        acroot[i] <- 0
-        
-        idop[i] <- 999
-        grainday[i] <- 9999
-        
-        # JAIR: Não estava resetando a cana por causa do ratoon.
-        harvdate[i] <- 999
+        tnplant[i]    <- 0
+        totnfix[i]    <- 0
+        idpp[i]       <- 0
+        gddplant[i]   <- 0
+
+
+# TO DO: Victor, Verificar se essas variaveis sao usadas antes de serem resetadas 
+        harvdate[i]   <- 999
+        dmyield[i]    <- 0
+        dmleaf[i]     <- 0
+        dmstem[i]     <- 0
+        dmroot[i]     <- 0
+        dmresidue[i]  <- 0
+        dmcrop[i]     <- 0
+        residuen[i]   <- 0
+        nconcl[i]     <- 0
+        nconcs[i]     <- 0
+        nconcr[i]     <- 0
+        nconcg[i]     <- 0
+        cropn[i]      <- 0
+        cropfixn[i]   <- 0
+        cntops[i]     <- 40
+        cnroot[i]     <- 60
+        fertinput[i]  <- 0
+
         assign("harvdate", harvdate, envir = env)
+        assign("dmyield", dmyield, envir = env)
+        assign("dmleaf", dmleaf, envir = env)
+        assign("dmstem", dmstem, envir = env)
+        assign("dmroot", dmroot, envir = env)
+        assign("dmresidue", dmresidue, envir = env)
+        assign("dmcrop", dmcrop, envir = env)
+        assign("residuen", residuen, envir = env)
+        assign("nconcl", nconcl, envir = env)
+        assign("nconcs", nconcs, envir = env)
+        assign("nconcr", nconcr, envir = env)
+        assign("nconcg", nconcg, envir = env)
+        assign("cropn", cropn, envir = env)
+        assign("cropfixn", cropfixn, envir = env)
+        assign("cntops", cntops, envir = env)
+        assign("cnroot", cnroot, envir = env)
+
+        # TO DO: Victor Verificar se essas variaveis do bloco acima sao usadas antes de serem resetadas 
         
-        # ADICIONADO NOVO
-        assign("cbiocr", cbiocr, envir = env)
-        assign("cbiob", cbiob, envir = env)
         
-        assign("acroot", acroot, envir = env)
-        assign("ayabprod", ayabprod, envir = env)
+        
+        assign("harvdate", harvdate, envir = env)
+        assign("plai", plai, envir = env)
         assign("cbiog", cbiog, envir = env)
         assign("cbios", cbios, envir = env)
-        assign("plai", plai, envir = env)
-        assign("thrlai", thrlai, envir = env)
-        assign("peaklai", peaklai, envir = env)
-        assign("ccdays", ccdays, envir = env)
         assign("cbiol", cbiol, envir = env)
         assign("cbioc", cbioc, envir = env)
         assign("cbior", cbior, envir = env)
         assign("cbiow", cbiow, envir = env)
-        assign("hui", hui, envir = env)
+        assign("cbiocr", cbiocr, envir = env)
+        assign("cbiob", cbiob, envir = env)  
+        assign("cbiogd", cbiogd, envir = env)
+        assign("cbiosd", cbiosd, envir = env)
+        assign("cbiold", cbiold, envir = env)
+        assign("cbiord", cbiord, envir = env)
+        assign("cbiowd", cbiowd, envir = env)
+        assign("cbiocrd", cbiocrd, envir = env)
+        assign("cbiobd", cbiobd, envir = env)  
+        
+        assign("ayabprod", ayabprod, envir = env)
         assign("aybprod", aybprod, envir = env)
         assign("ayrprod", ayrprod, envir = env)
         assign("aylprod", aylprod, envir = env)
-        assign("leafout", leafout, envir = env)
-        assign("htmx", htmx, envir = env)
-        assign("cumlvs", cumlvs, envir = env)
-        assign("plaimx", plaimx, envir = env)
-        assign("dpgf", dpgf, envir = env)
         assign("biomass", biomass, envir = env)
         assign("totnuptake", totnuptake, envir = env)
         assign("tnplant", tnplant, envir = env)
         assign("totnfix", totnfix, envir = env)
         assign("idpp", idpp, envir = env)
-        assign("idpe", idpe, envir = env)
         assign("gddplant", gddplant, envir = env)
-        assign("gddtsoi", gddtsoi, envir = env)
-        assign("sai", sai, envir = env)
-        assign("fu", fu, envir = env)
-        assign("lai", lai, envir = env)
-        assign("zbot", zbot, envir = env)
-        assign("ztop", ztop, envir = env)
-        assign("totbiol", totbiol, envir = env)
-        assign("totlail", totlail, envir = env)
-        assign("vf", vf, envir = env)
-        assign("arepr", arepr, envir = env)
-        assign("idop", idop, envir = env)
-        assign("grainday", grainday, envir = env)
         
+
       }
     }
   }

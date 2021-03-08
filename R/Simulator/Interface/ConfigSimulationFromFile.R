@@ -7,7 +7,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
   assign("simConfigs", simConfigs, env = globalenv())
   
   simDataVars$gridSolved <- F
-  
+
   len <- length(simConfigs)
   for(i in seq(1,len)) {
     
@@ -24,13 +24,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]]$env <- simInstances[[id]]
     
     # resize variables of specific instance based on input configuration file
-    
-    # resize npft
-    simInstances[[id]]$npft <- simConfigs[[i]]$npft
-    for(n in seq(1,length(varGroups$npft))) {
-      name <- varGroups$npft[n]
-      simInstances[[id]][[name]] <- numeric(simConfigs[[i]]$npft)
-    }
+  
     
     # rezise nband (nband = 2)
     simInstances[[id]][["rhoveg"]] <- matrix(0, simInstances[[id]]$nband, 2)
@@ -40,29 +34,33 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]][["asurd"]]  <- numeric(simInstances[[id]]$nband)
     simInstances[[id]][["asuri"]]  <- numeric(simInstances[[id]]$nband)
     
-    #browser()
-    tab.DSSAT <- read.csv('inst/input/perfil_solo_ecosmos_UPDATE.csv',sep = ",")
+    tab.SOIL <- read.csv('inst/input/SOIL.csv',sep = ",")
     if(!is.na(simConfigs[[i]]$soilId)) {
-      simInstances[[id]]$layers    <- subset(tab.DSSAT, SID == simConfigs[[i]]$soilId)
-      simInstances[[id]]$nsoilay <- length(simInstances[[id]]$layers$SID)
+      simInstances[[id]]$SOIL.profile <- subset(tab.SOIL, SOILID == simConfigs[[i]]$soilId)
+      simInstances[[id]]$nsoilay  <- length(simInstances[[id]]$SOIL.profile$SOILID)
     }else{
-      print('SOILID not defined in the Template or found in the soil file')
+      print('SID not defined in the Simulation Template or not found in the SOIL.csv')
       stop()
     }
     
     # Henrique & Leandro: including initial conditions (IC) [2020-11-04]
-    tab.IC <- read.csv('inst/input/initial_conditions.csv',sep = ",")
+    simInstances[[id]]$soilic <- simConfigs[[i]]$soilic
     if(simConfigs[[i]]$soilic == 1) {
+      tab.IC <- read.csv('inst/input/initial_conditions.csv',sep = ",")
       # when the user insert the initial conditions (nsoilay MUST be equal in both tab's [DSSAT & IC])
       simInstances[[id]]$ic  <- subset(tab.IC, SimIDic == id)
       #simInstances[[id]]$nsoilay <- length(simInstances[[id]]$ic$SimIDic) #it seems to be unnecessary here
+      
+      #TODO: verificar 'swic' com santiago [2021-02]
+      simInstances[[id]]$swic  <- tab.IC$SWic[tab.IC$SimIDic == id]
+      
     } else {
       # when there isn't explicitily values for the initial conditions
       simInstances[[id]]$ic <- data.frame(
         SimIDic = rep(id, simInstances[[id]]$nsoilay),
         SWic    = simInstances[[id]]$layers$SDUL,       # Soil water arbitrarily starting at field capacity (sfield) aka drained upper limit (DUL)
         STic    = rep(20, simInstances[[id]]$nsoilay) ) # Soil temp arbitrarily set as 20 ºC
-    }
+    
     
     # Henrique & Leandro: including initial conditions (IC) [2020-11-04]
     # tab.IC <- read.csv('inst/input/initial_conditions.csv',sep = ",")
@@ -77,7 +75,8 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     #     SWic    = simInstances[[id]]$layers$SDUL,       # Soil water arbitrarily starting at field capacity (sfield) aka drained upper limit (DUL)
     #     STic    = rep(20, simInstances[[id]]$nsoilay) ) # Soil temp arbitrarily set as 20 ºC
     # }
-
+    }
+    
     simInstances[[id]][["tsoi"]]     <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["wsoi"]]     <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["wisoi"]]    <- numeric(simInstances[[id]]$nsoilay)
@@ -91,8 +90,6 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]][["rhosoi"]]   <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["poros"]]    <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["porosflo"]] <- numeric(simInstances[[id]]$nsoilay)
-    simInstances[[id]][["sand"]]     <- numeric(simInstances[[id]]$nsoilay)
-    simInstances[[id]][["clay"]]     <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["stressl"]]  <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["stressu"]]  <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["upsoiu"]]   <- numeric(simInstances[[id]]$nsoilay)
@@ -120,30 +117,80 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]][["anuptake"]] <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["wflo"]]     <- numeric(simInstances[[id]]$nsoilay+1)
     simInstances[[id]][["froot"]]    <- matrix(0, simInstances[[id]]$nsoilay, 2)
+
     
     # Criando na instancia da simulação a lista de plantas que serão simuladas
     for(j in seq(1, simConfigs[[i]]$npft)) {
-
-      # Busca na baseList a planta pelo id passado no arquivo de configuração. Se a planta não existir, interrompe a execução.
-      name  <- simConfigs[[i]][[paste0("plant",j)]]$name
-      model <- basePlantList[[name]]
       
-      if(!is.null(model)) {
+
+      name  <- simConfigs[[i]][[paste0("plant",j)]]$name
+      
+      simInstances[[id]][['biomeName']] <- name
+      
+      #
+      # Para modelos compostos
+      #
+      if(IsBioma(name)) {
         
-        simInstances[[id]]$plantList[[name]] <- model
+
+        controlConfigs <- simConfigs[[i]][[paste0("plant",j)]]
         
-        # NOVO: A planta agora é ativada no loop, dependendo do ano que deve iniciar
-        simInstances[[id]]$plantList[[name]]$active <- F
-        if(simInstances[[id]]$plantList[[name]]$type == simDataVars$NATURAL_VEG) {
-          simInstances[[id]]$plantList[[name]]$active <- T
+        models <- biomaModels[[name]]
+        
+        for(n in 1:length(models)) {
+          
+          modelName <- models[n]
+          simInstances[[id]]$plantList[[modelName]]        <- basePlantList[[modelName]]
+          simInstances[[id]]$plantList[[modelName]]$active <- F
+          
+          controlConfigs$name <- modelName
+          simInstances[[id]]$plantList[[modelName]]$controlConfigs <- controlConfigs
+            
+          # flag para verificar se a planta faz parte de um bioma
+          simInstances[[id]]$plantList[[modelName]]$bioma  <- T
+          
         }
         
-        
+      #
+      # Para modelos isolados
+      #  
       } else {
-        stop(paste0("Model ", simConfigs[[name]]$plant1$name," does not exist in the simulator. Check if you have an implementation in your project."))
+        
+        model <- basePlantList[[name]]
+        
+        if(!is.null(model)) {
+          
+          simInstances[[id]]$plantList[[paste0(name,j)]] <- model
+          
+          # NOVO: A planta agora é ativada no loop, dependendo do ano que deve iniciar
+          simInstances[[id]]$plantList[[paste0(name,j)]]$active         <- F
+          simInstances[[id]]$plantList[[paste0(name,j)]]$controlConfigs <- simConfigs[[i]][[paste0("plant",j)]]
+          simInstances[[id]]$plantList[[paste0(name,j)]]$bioma          <- F
+          # TODO: Agora a vegetação natural também é afetada pelos ciclos
+          # if(simInstances[[id]]$plantList[[name]]$type == simDataVars$NATURAL_VEG) {
+          #   simInstances[[id]]$plantList[[name]]$active <- T
+          # }
+          
+          
+        } else {
+          stop(paste0("Model ", simConfigs[[name]]$plant1$name," does not exist in the simulator. Check if you have an implementation in your project."))
+        }
+        
       }
+      
     }
     
+    # resize npft
+    simInstances[[id]]$npft <- length(simInstances[[id]]$plantList)
+    for(n in seq(1,length(varGroups$npft))) {
+      name <- varGroups$npft[n]
+      simInstances[[id]][[name]] <- numeric(simInstances[[id]]$npft)
+    }
+    
+
+    # create endCycle for each plant
+    simInstances[[id]]$endCycle <- numeric(simInstances[[id]]$npft)
+
     # Passa a configuração para a instancia da simulação
     simInstances[[id]]$config <- simConfigs[[i]]
     
@@ -151,24 +198,54 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]]$point <- GetPointsFromRect(simConfigs[[i]]$coord$lat, simConfigs[[i]]$coord$lat,
                                                   simConfigs[[i]]$coord$lon, simConfigs[[i]]$coord$lon)$point1
     
-    # This variable controls the end of the cycle
-    simInstances[[id]]$endCycle <- F
     
-    ReadDailyStationData(stationDataPath, simConfigs[[i]]$coord$lat, simConfigs[[i]]$coord$lon,  simInstances[[id]])
+    # TODO: Nessa prieira versão uma planta roda após a outra, tal como especificado no arquivo de configuração.
+    #       Depois, fazer um jeito de definir plantas rodando ao mesmo tempo.
+    ReadPlantParamsFromFile(path = paramsPath)
+    
+    #___________________________________________    
+    # READ DAILY STATION DATA
+    
+    if(file.exists(paste0("inst/input/",simConfigs[[i]]$stationID,".csv"))==T) {
+      
+      pathw <- paste0("inst/input/",simConfigs[[i]]$stationID,".csv")
+      
+    }else{
+      
+      latc <-  simInstances[[id]]$point$coord$lat + 0.125
+      lonc <-  simInstances[[id]]$point$coord$lon - 0.125
+      lons<-substr(lonc*1000,2,5)
+      
+      if(latc*1000>0){
+        if(latc*1000<1000){lats<-paste0("N0",substr(latc*1000,1,2))}else{lats<-paste0("N",substr(latc*1000,1,3)) }}else{
+          if(latc*1000>(-10*1000)){lats<-paste0("0",substr(latc*1000,2,4))}else{lats<-substr(latc*1000,2,5)}
+        }
+      
+      wth<- as.character(sprintf("%4s%4s",lats,lons))
+      wth<-gsub(' ','0',wth)
+      
+      pathw<- paste0(stationDataPath,wth,".csv")
+      if(file.exists(pathw)==F){print(paste0('FILE ',pathw ,'DOES NOT EXIST'))
+        stop()}
+    }
+    
+
+    ReadDailyStationData(pathw, simInstances[[id]]$point$coord$lat, simInstances[[id]]$point$coord$lon,  simInstances[[id]])
+    
+    #___________________________________________    
+    # READ HORLY STATION DATA
+    
+    
+    assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])
     
     # Henrique & Leandro: irrigation feature [2020-11-06]
     try(ReadDailyIrrigationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)
 
     # Henrique & Leandro: fertilization feature [2020-11-30]
     try(ReadDailyFertilizationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)
+    assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])
+    if(simConfigs[[i]]$irrigate>0){try(ReadDailyIrrigationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)}
   }
-  
-  # TODO: Nessa prieira versão uma planta roda após a outra, tal como especificado no arquivo de configuração.
-  #       Depois, fazer um jeito de definir plantas rodando ao mesmo tempo.
-  
-  ReadPlantParamsFromFile(path = paramsPath)
-  
-  # read daily station data
   
   
 }

@@ -37,7 +37,7 @@
 # froot                         # fraction of root in soil layer
 # gddmaturity(npoi,npft)        # accumulated growing degrees needed for plant to reach both vegetative and physiological maturity
 # hsoi(nsoilay+1)               # soil layer thickness (m)
-# hui(npoi,npft)                # heat unit index
+# gddplant(npoi,npft)                # heat unit index
 # iwheat                        # 0: wheat not planted 1: spring wheat planted 2: winter wheat (ibis.infile)
 # npoi                          # total number of land points
 # nsoilay                       # number of soil layers
@@ -278,7 +278,7 @@ nitrostress <- function (istep, iday, imonth)  {
             # when the nitrogen amount in the root zone is greater than 100 kg / ha  
             if(j  ==  13) {
               # calculate growth stage and factor (fraction of total average gdd)
-              gs <- hui[j] / gddmaturity[j]
+              gs <- gddplant[j] / gddmaturity[j]
               
               if(gs  <=  0.15  ||   gs  >=  0.75) {
                 fxg <- 0

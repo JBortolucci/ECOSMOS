@@ -34,7 +34,6 @@ source("R/Weather/diurnalmet.R")
 # diurnal      = cmpfun(diurnal)
 # diurnalmet   = cmpfun(diurnalmet)
 
-source("R/Initial/coldstart.R")
 source("R/Initial/inisnow.R")
 source("R/Initial/inisoil.R")
 source("R/Initial/inisum.R")
@@ -165,6 +164,8 @@ source("R/Simulator/ReadParams.R")
 
 # ReadPlantParamsFromFile  = cmpfun(ReadPlantParamsFromFile)
 # ReadGlobalParamsFromFile = cmpfun(ReadGlobalParamsFromFile)
+
+# source("R/Simulator/GetNearestCoord.R")
 
 # source("R/Simulator/Interface/SetValue.R")
 # lsxmain = cmpfun(lsxmain)

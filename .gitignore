@@ -38,7 +38,20 @@ vignettes/*.pdf
 
 # User files
 UserFiles/
-inst/Template_Simulation_Control_ECOSMOS_LNBR.csv
+
+#Inst
+inst/
+
+#gitignore
+.gitignore
+
+#Output
+output/
+output/sim1_Daily_comparison.rds
+*.dat
+output/out_daily_tower_sim1.dat
+output/out_daily_tower_sim1.dat
+*.csv
+
+
 inst/input/perfil_solo_ecosmos.csv
-output/dailyOutput_IRA_1.dat
-output/outputHourly_IRA_1.dat

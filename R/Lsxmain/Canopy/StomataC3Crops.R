@@ -72,35 +72,35 @@ StomataC3Crops <- function(i) {
   
   if(canopy == UPPER) {
     
-    airTemp     <- t12
-    airHumidity <- q12
-    canopyTemp  <- tu
-    airVegCoef  <- su
-    toppar      <- topparu
-    stresst     <- stresstu
-    fwet        <- fwetu
-    l_lai       <- lai[2]
-    l_sai       <- sai[2]
-    term        <- termu
-    scalcoef    <- scalcoefu
+    airTemp      <- t12
+    airHumidity  <- q12
+    canopyTemp   <- tu
+    airVegCoef   <- su
+    toppar       <- topparu
+    stresst      <- stresstu
+    fwet         <- fwetu
+    canopy_lai   <- lai[2]
+    canopy_sai   <- sai[2]
+    term         <- termu
+    scalcoef     <- scalcoefu
     a10scalparam <- a10scalparamu
     a10daylight  <- a10daylightu
     
   } else {
     
-    airTemp     <- t34
-    airHumidity <- q34
-    canopyTemp  <- tl
-    airVegCoef  <- sl
-    toppar      <- topparl
-    stresst     <- stresstl
-    fwet        <- fwetl
-    l_lai       <- lai[1]
-    l_sai       <- sai[1]
-    term        <- terml
-    scalcoef    <- scalcoefl
-    a10scalparam <- a10scalparaml
-    a10daylight  <- a10daylightl
+    airTemp       <- t34
+    airHumidity   <- q34
+    canopyTemp    <- tl
+    airVegCoef    <- sl
+    toppar        <- topparl
+    stresst       <- stresstl
+    fwet          <- fwetl
+    canopy_lai    <- lai[1]
+    canopy_sai    <- sai[1]
+    term          <- terml
+    scalcoef      <- scalcoefl
+    a10scalparam  <- a10scalparaml
+    a10daylight   <- a10daylightl
     
   }
   
@@ -115,9 +115,21 @@ StomataC3Crops <- function(i) {
   ci[i] <- max (1.05 * gamstar, min (cimax, ci[i]))  
   
   gbco2l <- min (10, max (0.1, airVegCoef * 25.5))
-  esat34 <- esat (airTemp)
-  qsat34 <- qsat (esat34, psurf)
-  rh34 <- max (0.30, airHumidity / qsat34)
+  esatdossel <- esat (airTemp)
+  qsatdossel <- qsat (esatdossel, psurf)
+  rhdossel <- max (0.05, airHumidity / qsatdossel)
+  
+  
+  
+  #(1) Ascertain the saturated vapour pressure (SVP) for a given temperature (see list below)
+  #       Temperature (degC) - SVP (Pa)
+  VPSAT = 610.78 * exp(17.269*(airTemp - 273.16)/((airTemp- 273.16)+237.30))/1000
+  
+  #2 - (2) As VPD is the saturated vapour pressure minus the actual vapour pressure (SVP - VPactual), 
+  # and VPactual = (RH*SVP)/100
+  VPDSL = VPSAT*(1- (rhdossel ))
+  
+  
   
   # modelo começa a partir daqui
   rdarkc3 <- 0
@@ -127,16 +139,13 @@ StomataC3Crops <- function(i) {
     rwork <- 3.47e-03 - 1 / canopyTemp # recalcula aqui
     tleaf <- canopyTemp - 273.16       # recalcula aqui
     
-    # q10 <- 2 # TODO: Valor de q10 esta no arquivo PlantParams - 04/12/2020
-
     tempvm <- q10 ** ((tleaf - 15) / 10) / ((1 + exp(f1[i] * (lotemp[i] - tleaf))) * (1 + exp(f2[i] * (tleaf - hitemp[i]))))
     
     stressc3c <-  min(1, stresst)
+  
+    #    vmax <- max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i]))
+    vmax <- min(max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i])), 200) # maxim value of 150: Michel
     
-#    vmax <- max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i]))
-    vmax <- min(max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i])),200) # maxim value of 150: Michel
-    
-    # if(croplive[i]==1) print(paste( stressc3c, stressn[i],tempvm, vmax,sep = " || "))
     
     rdarkc3 <- gamma[i] * vmax_pft[i] * tempvm * croplive[i]
     
@@ -152,6 +161,7 @@ StomataC3Crops <- function(i) {
     dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
     
     jp <- min (dumq / duma, dumc / dumq)
+    
     js <- vmax / 2.2
     
     duma <- beta[i]
@@ -169,40 +179,43 @@ StomataC3Crops <- function(i) {
     
     cs[i] <- max (1.05 * gamstar, cs[i])
     
+
     # Stomatal conductance models [2020-11-18]
     {
       
       gsmodel <- "BBC" # BBO | BBL | USO | BBC
       
+      D0 = 1.5 # BBL
+      VPDSLP = -0.7  # BBC slope
+      VPDMIN = 0.5   # BBC - Start
+      
       # Ball (1988) & Berry (1991) model [BBO] 'O' means original
       if (gsmodel=="BBO") {
-        gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 * rh34 / cs[i] + coefb[i] * stressc3c)
+        gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 * rhdossel / cs[i] + coefb[i] * stressc3c)
       }
       
       # BB after Leuning (1995) [BBL]
       if (gsmodel=="BBL") {
-        D0 = 3.0 # new plant parameter in case of success
-        gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 / ((cs[i]-gamstar)*(1+rh34/D0)) + coefb[i] * stressc3c)
+        
+        gs[i] <- 0.5*gs[i] + 0.5*(coefm[i] * anc3 / ((cs[i]-gamstar)*(1+VPDSL/D0)) + coefb[i] * stressc3c)
       }
       
       # BB with the optimal stomatal control model of Cowan and Farquhar (1977) was proposed by Medlyn et al. (2011) [USO]
       if (gsmodel=="USO") {
-        gs[i] <- 0.5 * (gs[i] + 1.6 * (1 + coefm[i] / sqrt(rh34)) * (anc3 / cs[i]) ) 
-        # check if rh34 = D & where to include stressc3c
+        gs[i] <- 0.5 * (gs[i] + 1.6 * (1 + coefm[i] / sqrt(rhdossel)) * (anc3 / cs[i]) ) 
+        # check if rhdossel = D & where to include stressc3c
       }
       
       # BB after Cuadra et al. (2021) [BBC]
       if (gsmodel=="BBC") {
-        VPDSLP = -0.32  # new plant parameter in case of success
-        VPDMIN = 0.5    # new plant parameter in case of success
-        
-        if (rh34 >= VPDMIN) {
-          VPDFACTOR=max(0.3,(1+VPDSLP*(rh34-VPDMIN)))
+        if (VPDSL >= VPDMIN) {
+          VPDFACTOR=1+VPDSLP*(VPDSL-VPDMIN)
+         # print(paste(rhdossel,VPDSL,VPDFACTOR),sep=" / ")
         } else {
           VPDFACTOR=1.0
         }
-        
-        gs[i] <- 0.5 * (gs[i] +  (coefm[i] * anc3*VPDFACTOR) / (cs[i]-gamstar) + coefb[i] * stressc3c)
+        VPDFACTOR=max(min(VPDFACTOR,1),0)
+        gs[i] <- 0.5*gs[i] + 0.5 * ((coefm[i]*anc3*VPDFACTOR)/(cs[i]-gamstar) + coefb[i] * stressc3c)
       }
       
     }
@@ -213,69 +226,111 @@ StomataC3Crops <- function(i) {
     
     ci[i] <- max (1.05 * gamstar, min (cimax, ci[i]))
     
+  
+#________________________________________________________________________
+# # Canopy scaling
+
+# calculate the approximate extinction coefficient
+    extpar  <- (term[6] * scalcoef[1] + term[7] * scalcoef[2] - term[7] * scalcoef[3]) / max (scalcoef[4], epsilon)
+    extpar  <- max (1e-1, min (1e+1, extpar))
+    
+    # calculate canopy average photosynthesis (per unit leaf area):
+    pxail   <- extpar * (canopy_lai + canopy_sai)  
+    plail   <- extpar * canopy_lai
+    
+    # scale is the parameter that scales from leaf-level photosynthesis to
+    # canopy average photosynthesis
+    
+    zweight <- exp( - 1 / (10 * 86400 / dtime))
+    
+    
+    if(plail > 0) {
+      if(toppar > 10) {
+        scale         <- (1 - exp( - pxail)) / plail
+        a10scalparam <- zweight * a10scalparam + (1 - zweight) * scale  * toppar
+        a10daylight  <- zweight * a10daylight +  (1 - zweight) * toppar
+      } else {
+        scale <- a10scalparam / a10daylight
+      }
+    } else {
+      scale <- 0
+    }
+    
+    #  perform scaling on all carbon fluxes from lower canopy
+    ag[i] <- agc3 * scale
+    an[i] <- anc3 * scale
+    
+    
+    #________________________________________________________    
+    #c calculate canopy average surface co2 concentration
+    
+    csc <- max (1.05 * gamstar, co2conc - an[i] / gbco2l)
+    
+    {
+      
+      # Ball (1988) & Berry (1991) model [BBO] 'O' means original
+      if (gsmodel=="BBO") {
+        gsc <- coefm[i] * an[i] * rhdossel / csc + coefb[i] * stressc3c
+      }
+      
+      # BB after Leuning (1995) [BBL]
+      if (gsmodel=="BBL") {
+        gsc <-coefm[i] * an[i] / ((csc-gamstar)*(1+VPDSL/D0)) + coefb[i] * stressc3c
+      }
+      
+      # BB with the optimal stomatal control model of Cowan and Farquhar (1977) was proposed by Medlyn et al. (2011) [USO]
+      if (gsmodel=="USO") {
+        gsc <-  1.6 * (1 + coefm[i] / sqrt(rhdossel)) * (an[i] / csc)  
+        # check if rhdossel = D & where to include stressc3c
+      }
+      
+      # BB after Cuadra et al. (2021) [BBC]
+      if (gsmodel=="BBC") {
+        if (VPDSL >= VPDMIN) {
+          VPDFACTOR=1+VPDSLP*(VPDSL-VPDMIN)
+          # print(paste(rhdossel,VPDSL,VPDFACTOR),sep=" / ")
+        } else {
+          VPDFACTOR=1.0
+        }
+        VPDFACTOR=max(min(VPDFACTOR,1),0)
+        gsc <- (coefm[i]*an[i]*VPDFACTOR)/(csc-gamstar) + coefb[i] * stressc3c
+      }
+      
+    }
+    
+    gsc <- max (gsmin[i], coefb[i] * stressc3c, gsc)
+    
+    
+    
+    
+    # calculate canopy and boundary-layer total conductance for water vapor diffusion
+    
+    rwork <- 1 / airVegCoef   
+    dump  <- 1 / 0.029   
+    
+    if(gsc > 0) {  totcond[i] <- 1 / ( rwork + dump / gsc )}else{ totcond[i] = 0}
+    
+    
+    
+    # fwet effect on totcond is applyed at turvap       
+    rwork <- 1 - fwet
+    ag[i] <- rwork * ag[i]
+    an[i] <- rwork * an[i]
+    
+      
   } else {
     
+    ag[i] <- 0
+    an[i] <- 0
     cs[i] <- 0
     gs[i] <- 0
     ci[i] <- 0
-    agc3  <- 0
-    anc3  <- 0
-    
-  }
-  # # ---------------------------------------------------------------------
-  # # lower canopy scaling
-  # # ---------------------------------------------------------------------
-  # calculate the approximate extinction coefficient
-  extpar  <- (term[6] * scalcoef[1] + term[7] * scalcoef[2] - term[7] * scalcoef[3]) / max (scalcoef[4], epsilon)
-  extpar  <- max (1e-1, min (1e+1, extpar))
-  pxail   <- extpar * (l_lai + l_sai)  
-  plail   <- extpar * l_lai
-  zweight <- exp( - 1 / (10 * 86400 / dtime))
-  
-  if(plail > 0) {
-    if(toppar > 10) {
-      scale         <- (1 - exp( - pxail)) / plail
-      a10scalparam <- zweight * a10scalparam + (1 - zweight) * scale  * toppar
-      a10daylight  <- zweight * a10daylight +  (1 - zweight) * toppar
-    } else {
-      scale <- a10scalparam / a10daylight
-    }
-  } else {
-    scale <- 0
-  }
-  
-  # Usa a escala nas variáveis especificas
-  
-  ag[i] <- agc3 * scale
-  an[i] <- anc3 * scale
-  
-  if(croplive[i] == 1) {
-    
-    cscc3 <- max (1.05 * gamstar, co2conc - an[i] / gbco2l)
+    totcond[i] <- 0
 
-    gscc3 <- coefm[i] * an[i] * rh34 / cscc3 + coefb[i] * stressc3c
-  
-    gscc3 <- max (gsmin[i], coefb[i] * stressc3c, gscc3)
     
-    gscc3 <- gscc3 * greenfrac[i]
-    
-  } else {
-    cscc3 <- 0
-    gscc3 <- 0
   }
   
-  rwork <- 1 / airVegCoef   
-  dump  <- 1 / 0.029   
-  
-  if(gscc3 > 0)
-    totcond[i] <- 1 / ( rwork + dump / gscc3 )
-  
-  rwork <- 1 - fwet
-  
-  ag[i] <- rwork * ag[i]
-  
-  an[i] <- rwork * an[i]
-  
+ 
   
   assign("stressn", stressn, envir = env)
   assign("a10scalparaml", a10scalparaml, envir = env)

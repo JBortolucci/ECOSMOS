@@ -80,7 +80,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   environment(RESPIR)       <- env
   
   i <- index
-  greenfrac[i] <- 1.0 
+  pgreenfrac[i] <- 1.0 
   
   NLAYR <- nsoilay
   assign("NLAYR",NLAYR, envir = env)
@@ -804,24 +804,21 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     # ! and adapt partitioning of stem-storage organ accordingly
     
     # update vegetation's physical characteristics
-    # plai[i] <- cbiol[i] * specla[i] 
-    # plai[i]  <- max(XLAI,0.1)
+    { 
     peaklai[i]  <- max(peaklai[i]  ,plai[i] )
     
     #TODO Henrique: verify greenfrac parameter approach and effect! [2020-01-11]
     greenfrac[i] <- ifelse(RSTAGE >= 7,  XLAI/LAIMX, greenfrac[i])
-    #print(greenfrac[i])
-    #greenfrac[i] <- 1
+
+    #TODO Henrique: verificar necessidade [2020-01-18]
+    # keep track of aboveground annual npp
+    ayanpp[i] <- ayanpp[i] + adnpp[i] 
+
+    pgreenfrac[i] <- 1.0   
     
     biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbiop[i]
     
-    # keep track of aboveground annual npp
-    ayanpp[i] <- ayanpp[i] + adnpp[i] 
-    
-    
-    #TODO Henrique: verificar necessidade [2020-01-18]
-    #END TEST RICE MODEL FROM ORYZA
-    { 
+    #END TEST RICE MODEL FROM ORYZA    
     #____________________________________        
     
     #_____________________________________________
@@ -852,6 +849,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     }
     
     # END SOYBEAN CYCLE
+    
     if(cropy == 1) {
       
       if ( RSTAGE == 8 | frost ) {
@@ -862,11 +860,10 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         croplive[i]   <- 0.0
         cropy         <- 0.0
         idpp[i]       <- 0.0
-        greenfrac[i]  <- 0.0 # turn all vegetation to brown
+        pgreenfrac[i]  <- 0.0 # turn all vegetation to brown
         harvdate[i]   <- jday
         plai[i]       <- 0.01 # simulates remaining stubble/mulch
-        peaklai[i]    <- 0.0
-        endCycle      <- T
+        endCycle[i]   <- T
     
       }
     } else {
@@ -884,8 +881,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("endCycle", endCycle, envir = env)
   assign("ztopPft", ztopPft, envir = env)
   assign("greenfrac", greenfrac, envir = env)
+  assign("pgreenfrac", pgreenfrac, envir = env)
   assign("idpp", idpp, envir = env)
-  assign("idpe", idpe, envir = env)
   assign("aroot", aroot, envir = env)
   assign("aleaf", aleaf, envir = env)
   assign("astem", astem, envir = env)
@@ -896,14 +893,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("cbios", cbios, envir = env)
   assign("cbior", cbior, envir = env)
   assign("plai", plai, envir = env)
-  assign("peaklai", peaklai, envir = env)
   assign("aerial", aerial, envir = env)
-  assign("aybprod", aybprod, envir = env)
-  assign("ayabprod", ayabprod, envir = env)
-  assign("ayrprod", ayrprod, envir = env)
-  assign("aylprod", aylprod, envir = env)
-  assign("biomass", biomass, envir = env)
-  assign("ayanpp", ayanpp, envir = env)
   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
   assign("cropy", cropy, envir = env)

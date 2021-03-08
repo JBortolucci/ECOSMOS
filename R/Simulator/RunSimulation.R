@@ -67,6 +67,8 @@ source("R/Simulator/VariablesInicialization.R")
 VariablesInicialization()
 
 
+CreateBuiltInNatVegModels()
+
 # Run all simulations
 
 
@@ -132,21 +134,8 @@ GeneralModel <- function(simVars = NULL) {
     point   <- simVars$point
     config  <- simVars$config
     
-    ############################
-    #' Output provisorio Michel #
-    ############################
-    
-    # simVars$out_tower_hourly <-  file(paste0("output/outputHourly",config$id,".dat"), "w")
-    # varNames                  <- paste("ano","DOY","hora","NEE_S",  sep=",")
-    
-    # writeLines(varNames, simVars$out_tower_hourly)
-    
-    ################
-    ################
-    ################
-    
-    
-    # outputDailyFileName <- paste0("output/out_daily_tower_", config$id,".dat")
+    simVars$outputHourly  <-  file(paste0("output/outputHourly_",config$id,".dat"), "w")
+    simVars$dailyOutput   <- file(paste0("output/dailyOutput_", config$id,".dat"), "w")
     
     simVars$absStep <- 1
     
@@ -175,8 +164,6 @@ GeneralModel <- function(simVars = NULL) {
     simVars$isimfire   <- config$isimfire          
     simVars$isimco2    <- simVars$FIXED_CO2                
     simVars$irrigate   <- config$irrigate                  
-    simVars$gdddy      <- 1 #simVars$UPDATE_GDD_YEAR        
-    simVars$irotation  <- simVars$NONE                      
     simVars$overveg    <- simVars$COMPETE_CLIM_CONSTRAINTS  
     
     simVars$ffact      <- 1.0       
@@ -184,33 +171,17 @@ GeneralModel <- function(simVars = NULL) {
     simVars$co2init    <- 0.000380 # devem ir para os parâmetros globais
     simVars$o2init     <- 0.209000 
     
-    simVars$isoybean   <- 0
-    simVars$imaize     <- 0
-    simVars$iwheat     <- 0
-    simVars$isgc       <- 0
-    simVars$ieuca      <- 1
-    simVars$ipalm      <- 0
-    
-    simVars$ipast      <- 0
-    
     simVars$lat        <- point$coord$lat
     simVars$lon        <- point$coord$lon
-    
-    # por que setado aqui?
-    simVars$istyear    <- 1980      
-    simVars$istend     <- 2020  
     
     # Função de Configuração do output
     # createOutput(simVars)
     
     simVars$cropsums <- length(simVars$plantList)
-    
     # TODO: Para testar a planta, por causa dos if's, coloca como 0. Remover essa variável e os if's depois.
-    simVars$cropsums <- 1
+    simVars$cropsums <- 1 #Jair e Victor atencao na hora de testar o modelo
     
-    # simVars$cropsums <- simVars$imaize + simVars$isoybean + simVars$iwheat + simVars$isgc + simVars$ieuca + simVars$ipalm + simVars$irotation 
     
-
     simVars$iyrlast <- simVars$year0 - 1
     
     simVars$lonindex <- point$lonIndex
@@ -224,22 +195,19 @@ GeneralModel <- function(simVars = NULL) {
     simVars$xinveg   <- point$xinveg   #SCV/Jair - remover
     simVars$deltat   <- point$deltat   #SCV/Jair - remover
    
-    # TODO: Variáveis de culturas específicas? Se sim, remover daqui.
-    #### Variables without input files ####
-    simVars$fertmaize  <- matrix(5.76626, nrow = 1, ncol = 51)
-    simVars$fertsgc    <- simVars$fertmaize * 2
-    simVars$fertsoy    <- matrix(2.24803, nrow = 1, ncol = 51)
-    # simVars$fertwheat  <- matrix(3.15461, nrow = simVars$1, ncol = 51)
-    simVars$ndepfact   <- matrix(0.5, nrow = 1, ncol = 60)
-    
+
+
+      # Henrique e Leandro - Remover, colocar o valor default dentro da cultura, caso não seja lido do arquivo.
+    simVars$fertmaize  <- matrix(5.76626, nrow = 1, ncol = 51)           #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao
+    simVars$fertsgc    <- simVars$fertmaize * 2                          #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao
+    simVars$fertsoy    <- matrix(2.24803, nrow = 1, ncol = 51)           #SCV/Jair - alterar dentro dos modelos e depois substituir com a leitura da fertilizacao  
+
     simVars$co2conc    <- simVars$co2init
     simVars$o2conc     <- simVars$o2init
     
     simVars$precip <- numeric(1)
     
-    simVars$ncyears  <- 1  
-    simVars$cdays    <- 0   
-    simVars$pstart[] <- 999   
+    simVars$pstart[] <- 999  # Jair, essa, e as demais variávies, não deveria ser criadas dentro de um arquivo separado de inicializacao?
     
     simVars$soilType <- config$soilId # as.character(ptos.sim[ii,]$SOIL_BR) # Soil type information from database
     
@@ -273,9 +241,11 @@ GeneralModel <- function(simVars = NULL) {
     
     environment(PhenoUpdate)      <- simVars
     
+    config$stationIDH=""
+    if(file.exists(paste0("inst/input/",config$stationID,"H.csv"))==T) config$stationIDH=paste0("inst/input/",config$stationID,"H.csv")
     
-    if(config$stationID != "" & !is.na(config$stationID)) {
-      ReadMethourlyData(path = config$stationID) 
+    if(config$stationIDH != "" ) {
+      ReadMethourlyData(path = config$stationIDH) 
     } else {
       simVars$imetyear <- -999
       simVars$dmetyear <- -999
@@ -290,7 +260,8 @@ GeneralModel <- function(simVars = NULL) {
     # PFT_UPDATE: Depois de modularizar para cada tipo de planta, retirar essa variável "cropsums",
     #             pois o tipo será decidido pelo usuário e as configurações setadas antes de iniciar
     #             a simulação.
-    initialcrop()
+    # SVC - levei tudo para iniveg
+    # initialcrop()
     
     
     # determine the number of timesteps per day
@@ -300,7 +271,6 @@ GeneralModel <- function(simVars = NULL) {
     simVars$iy2     <- simVars$iyrlast + simVars$nrun
     
     # simVars$out_tower <- file(outputDailyFileName, "w")
-    
     
     flx <- array(0,  50)
     
@@ -315,14 +285,14 @@ GeneralModel <- function(simVars = NULL) {
     
     # TODO: Colocar em outro local, pois se a planta n inicia o ano crescendo e é colhida no meio do ano a próxima não é plantada.
     # Ativa planta caso esteja no ano de plantar (input da planilha de controle)
-    if(simVars$currentPlant <= length(simVars$plantList)) {
-      if(simVars$plantList[[simVars$currentPlant]]$startYear == year & !simVars$plantList[[simVars$currentPlant]]$active) {
-        simVars$plantList[[simVars$currentPlant]]$active <- T
-        simVars$exist[simVars$currentPlant]              <- 1
-      }
-    } else {
-      print("There is no plant configured to run in this simulation!")
-    }
+    # if(simVars$currentPlant <= length(simVars$plantList)) {
+    #   if(simVars$plantList[[simVars$currentPlant]]$startYear == year & !simVars$plantList[[simVars$currentPlant]]$active) {
+    #     simVars$plantList[[simVars$currentPlant]]$active <- T
+    #     simVars$exist[simVars$currentPlant]              <- 1
+    #   }
+    # } else {
+    #   print("There is no plant configured to run in this simulation!")
+    # }
     
     # OK
     # reset julian date
@@ -359,106 +329,25 @@ GeneralModel <- function(simVars = NULL) {
       
       for(day in seq(simVars$simulationStartDay, daypm(month, year))) {
         
-        simVars$day <- day
-        
-        # to do: Santiago ou Jair, achar lugar apropriado para levar ayanpp          
-        if(day == 1  && month == 1) { 
-          ayanpp <- array(0, 1)    
+        for(i in seq(1,simVars$npft)) {
+          if(simVars$plantList[[i]]$active) next
+          if(simVars$plantList[[i]]$startYear == year) {
+            simVars$plantList[[i]]$active <- T
+            simVars$exist[i]              <- 1
+          }
         }
+
         
+        simVars$day <- day
+
         simVars$jday <- simVars$jday + 1
         
-        
-        for(j in seq(1,simVars$npft)) {
-          if(!simVars$plantList[[j]]$active) next
-          if(simVars$plantList[[j]]$type == simVars$CROPS) {
-            if(day == simVars$pcd[j] && month == simVars$pcm[j] && simVars$exist[j] == 1) {
-              simVars$ncyears   <- 1  
-              simVars$cdays     <- 0   
-              simVars$pstart[j] <- 999   
-            }
-          }
-        }  
-        
-        simVars$cdays <- simVars$cdays + 1
+        print(paste("Simulation ",day, month, year,simVars$lai[1]*simVars$fl,simVars$lai[2]*simVars$fu,sep = " / "))
         
         UseDailyStationData(day, month, year)
-        UseDailyFertilizationData(day, month, year) # Henrique & Leandro: fertilization feature [2020-11-30]
+        UseDailyFertilizationData(day, month, year) # Henrique & Leandro: fertilization feature [2020-11-30] | move to CROPS? [2021-03-08]
         
-        
-        # TODO: Testando, comentar caso queira rodar o modelo corretamente (ou antes de terminar de testar)
-        # determine the daily vegetation cover characteristics
-        for(i in seq(1, simVars$npft)) {
-          # TODO: Descomentar linha e testar (Depois que estiver funcionando).
-          # if(!simVars$plantList[[i]]$active) next
-          if(simVars$plantList[[i]]$type == simVars$NATURAL_VEG && !is.null(simVars$plantList[[i]]$Model)) {
-            environment(simVars$plantList[[i]]$Model) <- simVars
-            simVars$plantList[[i]]$Model(simVars$jday, i)
-          }
-        }
-        
-        for(i in seq(1,simVars$npft)) {
-          if(!simVars$plantList[[i]]$active) next
-          if(simVars$plantList[[i]]$type == simVars$CROPS && !is.null(simVars$plantList[[i]]$Model)) {
-            environment(simVars$plantList[[i]]$Model) <- simVars
-            simVars$plantList[[i]]$Model(year, month, day, i)
-          }
-        } 
-        
-        ResetCropsAfterHarvest()
-        
-        CropPhenoUpdate()
-        
-        # Check if the cycle is complete
-        for(i in seq(1,simVars$npft)) {
-          
-          if(!simVars$plantList[[i]]$active) next
-          
-          if(simVars$endCycle) {
-            
-            
-            print(paste0("Harvest ", simVars$plantList[[i]]$name, " - cycle ", simVars$plantList[[i]]$currentCycle))
-            simVars$plantList[[i]]$currentCycle <- simVars$plantList[[i]]$currentCycle + 1
-            
-            # reset end cycle variable
-            simVars$endCycle <- F
-            
-            if(simVars$plantList[[i]]$currentCycle > simVars$plantList[[i]]$totalCycles) {
-              
-              print(paste0("Crop ", simVars$plantList[[i]]$name, " is finished"))
-              # turn off current plant
-              simVars$plantList[[simVars$currentPlant]]$active <- F
-              simVars$exist[simVars$currentPlant]              <- 0
-              # if exist a plant to simulate next, increase the currentPlant by one.
-              simVars$currentPlant <- simVars$currentPlant + 1
-              
-            }
-          }
-        }
-        
-        
-        # call soil biogeochemistry model
-        SoilbgcModel(year, month, day)
-        
-        # TODO: O que esse código faz?
-        plenmin <- 1 +  as.integer((4 * 3600 - 1) / simVars$dtime)
-        plenmax <- max(as.integer(24* 3600 / simVars$dtime), plenmin)
-        
-        if( (year < simVars$imetyear || year > simVars$imetend || (year == simVars$imetyear && simVars$jday < simVars$dmetyear) || (year == simVars$imetend && simVars$jday > simVars$dmetend))  ) {
-          plen <- min (plenmax, as.integer(plenmin + 0.5 * (plenmax-plenmin+1)))
-        } else {
-          plen <- 1
-        }
-        
-        plens  <- simVars$dtime * plen
-        
-        startp <- simVars$dtime * min (simVars$niter - plen, as.integer(0.5 * (simVars$niter-plen+1)))
-        endp   <- startp + plens
-        
-        ilens  <- simVars$dtime * (12.0 * 3600 / simVars$dtime)
-        starti <- simVars$dtime * (6.0  * 3600 / simVars$dtime)
-        endi   <- starti + ilens
-        
+
         for(j in seq(1,simVars$npft)) {
           if(!simVars$plantList[[j]]$active) next
           if(simVars$plantList[[j]]$type == simVars$CROPS) {
@@ -475,6 +364,8 @@ GeneralModel <- function(simVars = NULL) {
         
         for(step in seq(1, simVars$niter)) {
           
+          simVars$step <- step
+
           time <- (step - 1) * simVars$dtime
           
           if ( (year == simVars$imetyear && simVars$jday >= simVars$dmetyear) || 
@@ -483,26 +374,21 @@ GeneralModel <- function(simVars = NULL) {
             
             UseMethourlyData(year, simVars$jday, time)
             
-            diurnalmet(simVars, time, simVars$jday, plens, startp, endp, simVars$irrigate, ilens, starti, endi)
+            diurnalmet(simVars, time, simVars$jday, simVars$irrigate)
           } else {
             
-            diurnal(simVars, time, simVars$jday, plens, startp, endp, simVars$irrigate, ilens, starti, endi)
+            diurnal(simVars, time, simVars$jday, simVars$irrigate)
             
           }
           
-          
-          # JAIR: Não estão sendo utilizadas
-          simVars$t_sec    <- time
-          simVars$t_startp <- startp
           
           lsxmain(time, day, month, year, simVars$jday)
           
           sumnow() # codigo em R
           
           sumday(step, plens, year, simVars$jday)
-          summonth(step, day, month)
-          
-          sumyear(step, day, month)
+          #CSVC summonth(step, day, month)
+          #CSVC sumyear(step, day, month)
           
           nitrostress(step, day, month)
           
@@ -524,10 +410,70 @@ GeneralModel <- function(simVars = NULL) {
           # writeLines(output_hourly, simVars$out_tower_hourly)
           # 
           if(!is.null(simVars$OnEndHourlyStep))
-            simVars$OnEndHourlyStep(simVars,step)
+            simVars$OnEndHourlyStep(simVars)
           
           
         } # FIM DO LOOP HORÁRIO
+        
+        
+        
+#       Chama os modelos de vegetacao
+        
+        # TODO: Testando, comentar caso queira rodar o modelo corretamente (ou antes de terminar de testar)
+        # determine the daily vegetation cover characteristics
+        for(i in seq(1, simVars$npft)) {
+          if(!simVars$plantList[[i]]$active) next
+          if(simVars$plantList[[i]]$type == simVars$NATURAL_VEG && !is.null(simVars$plantList[[i]]$Model)) {
+            environment(simVars$plantList[[i]]$Model) <- simVars
+            simVars$plantList[[i]]$Model(simVars$jday, i)
+          }
+        }
+        
+        for(i in seq(1,simVars$npft)) {
+          if(!simVars$plantList[[i]]$active) next
+          if(simVars$plantList[[i]]$type == simVars$CROPS && !is.null(simVars$plantList[[i]]$Model)) {
+            environment(simVars$plantList[[i]]$Model) <- simVars
+            simVars$plantList[[i]]$Model(year, month, day, i)
+          }
+        } 
+        
+        
+        ResetCropsAfterHarvest()
+        
+#   Atualiza as propriedades da vegetacao 
+        CropPhenoUpdate()
+        
+        # Check if the cycle is complete
+        for(i in seq(1,simVars$npft)) {
+          
+          if(!simVars$plantList[[i]]$active || simVars$plantList[[i]]$type == simVars$NATURAL_VEG) next
+          
+          if(simVars$endCycle[i]) {
+            
+            print(paste0("Harvest ", simVars$plantList[[i]]$name, " - cycle ", simVars$plantList[[i]]$currentCycle))
+            simVars$plantList[[i]]$currentCycle <- simVars$plantList[[i]]$currentCycle + 1
+            
+            # reset end cycle variable
+            simVars$endCycle[i] <- F
+            
+            if(simVars$plantList[[i]]$currentCycle > simVars$plantList[[i]]$totalCycles) {
+              
+              print(paste0("Crop ", simVars$plantList[[i]]$name, " is finished"))
+              # turn off current plant
+              simVars$plantList[[i]]$active <- F
+              simVars$exist[i]              <- 0
+              # if exist a plant to simulate next, increase the currentPlant by one.
+              # simVars$currentPlant <- simVars$currentPlant + 1
+              
+            }
+          }
+        }
+        
+        
+        # call soil biogeochemistry model
+        SoilbgcModel(year, month, day)
+        
+        
         
         # # Divide todos os valor por 24 para calcular a média do dia 
         # for (variavel in simVars$outputDailyList) {

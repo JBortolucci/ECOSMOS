@@ -94,6 +94,9 @@
 # ywm       # woody metabolic litter decomposition
 # yws       # woody structural litter decomposition
 
+
+#TO DO: 2021, Precisamos rever todo o fluxo e C e N 
+
 soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinmax) {
   # Local arrays declaration
   outclm   <- 0
@@ -270,40 +273,50 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
   # parameter based on the average sand fraction of the top 1 m of
   # soil
   # ---------------------------------------------------------------------
+  
+  # fbpom = min(max(0.3, carfrac/0.4 * 0.7),0.7)
+  # fbpom <- 0.50
+
   #
-  rdepth <- 0
-  for(kk in 1: nslaym) { 
-    rdepth <- rdepth + hsoi[kk]
-  }
-  rdepth <- 1 / rdepth
-  carfrac <- 0
-  texfact <- 0 
-  
-  for(k in 1: nslaym) { 
-    if(k <= 6) {
-      msand <- round(sand[k])
-      mclay <- round(clay[k]) 
-    } else {
-      msand <- round(sand[6]) 
-      mclay <- round(clay[6]) 
-    }
-  }
-  
-  # top 1 m of soil -- 8 layers
-  for(kk in 1: nslaym) { 
-    lmin <- textcls(msand,mclay) 
-    
-    fsand <- texdat[1,lmin]
-    fclay <- texdat[3,lmin]
-    carfrac <- carfrac + fclay * hsoi[kk]
-    texfact <- texfact + fsand * hsoi[kk]
-  }
-  
-  carfrac <- carfrac * rdepth
-  texfact <- texfact * rdepth
-  
+  ### Michel: Updated - its is calculated only once in the "inisoil" routine using the soil database information
+
+  # rdepth <- 0
+  # for(kk in 1: nslaym) {
+  #   rdepth <- rdepth + hsoi[kk]
+  # }
+  # rdepth <- 1 / rdepth
+  # carfrac <- 0
+  # texfact <- 0
+  # 
+  # for(k in 1: nslaym) {
+  #   if(k <= 6) {
+  #     msand <- round(sand[k])
+  #     mclay <- round(clay[k])
+  #   } else {
+  #     msand <- round(sand[6])
+  #     mclay <- round(clay[6])
+  #   }
+  # }
+  # 
+  # # top 1 m of soil -- 8 layers
+  # for(kk in 1: nslaym) {
+  #   lmin <- textcls(msand,mclay)
+  # 
+  #   fsand <- texdat[1,lmin]
+  #   fclay <- texdat[3,lmin]
+  #   carfrac <- carfrac + fclay * hsoi[kk]
+  #   texfact <- texfact + fsand * hsoi[kk]
+  # }
+  # 
+  # carfrac <- carfrac * rdepth
+  # texfact <- texfact * rdepth
+
   fbpom <- 0.50
+
+  # ------------------------------------------------------------------------
+  # ------------------------------------------------------------------------
   
+ 
   # ------------------------------------------------------------------------
   # total soil carbon initialized to 0 at beginning of model run
   # used in calculation of soil co2 respiration from microbial decomposition 
@@ -773,11 +786,12 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
   # along with the amount of root respiration contributing to the flux from
   # calculations performed in stats.f
   # --------------------------------------------------------------------------
-  if(spin == spinmax) { 
+  
+  if(spin == spinmax) {
     # only count the last cycle in the spin - up for co2soi
     # when the iyear is less than the nspinsoil value...otherwise
     # an amount of CO2 respired will be about 10 times the actual
-    # value because this routine is called articially 10 extra times
+    # value because this routine is called artificially 10 extra times
     # each time step to spin up the soil carbon
     #
     # add n - deposition due to rainfall once each day, and
@@ -795,14 +809,9 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
     #           deposn[i] <- (0.21 + 0.0028 * (precip[i] * 0.1)) * 1e-3
     #           fixsoin[i] <- ( - 0.18 + 0.14 * (precip[i] * 0.1)) * 1e-3
     #
+    
     deposn <- (0.0005753 + 0.0028 * (precip * 0.1)) * 1e-3
-    #
-    # 7 - 06 - 05 CJK : modify rates for the US based on Simon's dataset that adjusts
-    # the rates each year (from actual data - 1940 - 1999)
-    if (iyear >= 1940 && iyear <= 1999) deposn <- deposn * ndepfact[iyear + 1-1940] 
-    
-    if (iyear > 1999) deposn <- deposn * ndepfact[60] 
-    
+
     fixsoin <- ( - 0.0004932 + 0.14 * (precip * 0.1)) * 1e-3
     
     # From Landsberg and Gower, 1997
@@ -834,11 +843,15 @@ soilbgc <- function  (iyear, iyear0, imonth, iday, jday, nspinsoil, spin, spinma
     # microbial flux and nmineralization rate will be applied
     # --------------------------------------------------------------------------
     # calculate daily co2 flux due to microbial decomposition
+    
+    # print(paste(tco2mic,totcbegin,totcin,totcend,cleach))
+    
     tco2mic <- totcbegin + totcin - totcend - cleach
     
     # convert co2 flux from kg C / day  (seconds in a daily timestep) to mol - C/s
     # based on .012 Kg C / mol
     tco2mic <- tco2mic / (86400 * 0.012)
+    
   }
   
   # Henrique: added to analyse the outputs [2021-02-12]

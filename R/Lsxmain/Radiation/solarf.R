@@ -135,7 +135,6 @@ solarfR <- function(envi, ib) {
       
       topparl[i] <- scalcoefl[4] * lai[i,1] / xail
     
-      
     }
   }
   

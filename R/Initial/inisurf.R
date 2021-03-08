@@ -152,14 +152,8 @@ inisurf <- function() {
   # specify the epsilon value for the model
   assign("epsilon", 1.0e-6, envir = env)
   
-  # initialize integer variables (can't use const for this)
-  # wet day / dry day flag initialized to dry day (0)
-  assign("iwet", array(0, 1), envir = env)
-  
-  
-  assign("iwetday", matrix(0, nrow = 1, ncol = 31), envir = env)
-  assign("precipday", matrix(0, nrow = 1, ncol = 31), envir = env)
-  
+
+
   # zero flux arrays, and global diagnostic arrays
   assign("asurd",  matrix(0, 1, nband), envir = env)
   assign("asuri", matrix(0, 1, nband), envir = env)
@@ -174,11 +168,7 @@ inisurf <- function() {
   assign("grunof", array(0, 1), envir = env)
   assign("gdrain", array(0, 1), envir = env)
 
-  
-  # initialize station data vars
-  assign("stinrad", array(-999, 1), envir = env)
-  
-  
+
   # initialize vegetation prognostic variables
   # initialize all temperature fields to 10 degrees C
   assign("tu", array(283.16, 1) , envir = env)
@@ -272,11 +262,7 @@ inisurf <- function() {
   #if (irestart == 0) {
     assign("tempu", array(1, 1), envir = env)
     assign("templs", array(1, 1), envir = env)
-    assign("greenfracl3", array(1, 1), envir = env)
-    assign("greenfracl4", array(1, 1), envir = env)
-    # TODO: Verificar valor do greenfrac para NaturalVeg
-    greenfrac[] <- 1
-    assign("greenfrac", greenfrac, envir = env)
+
     assign("onflagu", as.logical(array(F, 1)), envir = env)
     assign("onflagl3", as.logical(array(F, 1)), envir = env)
     assign("onflagl4", as.logical(array(F, 1)), envir = env)

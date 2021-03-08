@@ -13,10 +13,8 @@
 # wsoi
 # wisoi
 #-------------------------------------------------------------
-
+# TO DO: Remover
 coldstart <- function() {
-  # TODO: As variáveis wsoi, wisoi e tsoi são inicializadas 2 vezes, aqui, e dentro da função
-  # inisoil, pois removeu irestart. remover inicializacao de inisoil?
   nsnolay <- 3
   assign("nsnolay",  nsnolay, envir = env)
   

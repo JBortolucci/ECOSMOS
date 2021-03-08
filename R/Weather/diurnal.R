@@ -36,8 +36,7 @@
 # xirrig     # irrigated water application rate (mm/day) to crops
 # xirriga    # irrigated application rate per timestep
 
-diurnalR <- function (envi, time, jday, plens, startp, endp,
-                     irrigate, ilens, starti, endi) {
+diurnalR <- function (envi, time, jday, irrigate) {
   # ---------------------------------------------------------------------- 
   # *  *  * calendar and orbital calculations *  * *
   # ---------------------------------------------------------------------- 
@@ -65,6 +64,9 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
     0.002697 * cos(3 * orbit) +
     0.001480 * sin(3 * orbit)
   
+  
+  
+  
   # calculate the effective solar constant, including effects of eccentricity
   # ref: global physical climatology, hartmann, appendix a
   sw <- 1370 * (1.000110 +
@@ -78,46 +80,14 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   # ---------------------------------------------------------------------- 
   
   # calculate the latitude in radians
-  jj <- latindex
   xlat <- latscale * pi / 180
   
   # calculate the cosine of the solar zenith angle
   coszen <- max (0, (sin(xlat) * sin(xdecl) + cos(xlat) * cos(xdecl) * cos(angle)))
   
-  # find daylength to be used in pheno subroutine
-  daylength <- (180 / pi) * ((2 * 60) / 15) * (acos((coszen -  
-                                                       (sin(xlat) * sin(xdecl))) / (cos(xlat) * cos(xdecl))))
-  
-  if(is.nan(daylength)) {
-    daylength <- 0
-  }
-  
+
   # calculate the solar transmission through the atmosphere
-  # using simple linear function of tranmission and cloud cover
-  #
-  # note that the 'cloud cover' data is typically obtained from
-  # sunshine hours -- not direct cloud observations
-  #
-  # where, cloud cover <- 1 - sunshine fraction 
-  #
-  # different authors present different values for the slope and 
-  # intercept terms of this equation
-  #
-  # Friend, A: Parameterization of a global daily weather generator for
-  # terrestrial ecosystem and biogeochemical modelling, Ecological 
-  # Modelling
-  #
-  # Spitters et al., 1986: Separating the diffuse and direct component
-  # of global radiation and its implications for modeling canopy
-  # photosynthesis, Part I: Components of incoming radiation,
-  # Agricultural and Forest Meteorology, 38, 217 - 229
-  #
-  # A. Friend       : trans <- 0.251 + 0.509 * (1 - cloud[i])
-  # Spitters et al. : trans <- 0.200 + 0.560 * (1 - cloud[i])
-  #
-  # we are using the values from A. Friend
-  
-  
+
   if(time == 0) {
     ij <- ((24 * 3600 / dtime) - 1)
     
@@ -127,22 +97,28 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
                          cos(xlat) * cos(xdecl) *  
                          cos( (2 * pi * (j - 12) / 24) )))
       
-      trans <- 0.251 + 0.509 # * (1 - cloud[i]) - make trans <- 1 to calculate the maximum hipotetical radiation.
+      trans <- 1. #SVC, trans <- 1 to calculate the maximum hipotetical radiation.
       
       dailyrad <- dailyrad + (sw * cosz * trans) * (3600 / 10 ** 6)   
     }
+
+    trans <- max(0.251,min(stinrad/dailyrad,0.75)) # 0.251 + 0.509 * (1 - cloud)  
     
-    if(stinrad >= 0) {
-      cloud <- 0.76 * (1 - (stinrad / dailyrad)) / 0.509  #invert the original equation for trans
-      cloud <- max(0,min(cloud,1))
-      if(jday == 1)
-        print(paste0('be sure that is reading solar radiation (MJ / m2day) stinrad'))
-    }
+    # find daylength to be used in pheno subroutine
     
-    dailyrad <- 0
+    #Valores estavam errados
+    #SVC daylength <- (180 / pi) * ((2 * 60) / 15) * (acos((coszen -  (sin(xlat) * sin(xdecl))) / (cos(xlat) * cos(xdecl))))
+    
+    # SVC Solar Declination in degrees  
+    SD <- 23.45*sin((pi/180)*(360/365)*(284+jday))
+    H <- acos(-tan(xlat)*tan(SD*(pi/180)))
+    daylength <- (2/15)*( 0.83+(H*180/pi ) )
+    
+    if(is.nan(daylength)) { print("daylength = 0.0")
+      stop()  }
+    
   }
   
-  trans <- 0.251 + 0.509 * (1 - cloud) 
   
   # calculate the fraction of indirect (diffuse) solar radiation
   # based upon the cloud cover
@@ -161,7 +137,7 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   
   fdiffuse <- 1.0045 + 0.0435 * trans - 3.5227 * trans ** 2 + 2.6313 * trans ** 3
   
-  if (trans > 0.75) fdiffuse <- 0.166
+  fdiffuse <- max(0.166,min(fdiffuse,0.95))
   
   # do for each waveband
   for(ib in 1: nband) { 
@@ -173,8 +149,6 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
     
     solai[ib] <- sw * coszen * fracw * trans * fdiffuse
   }
-  
-  
   
   # ---------------------------------------------------------------------- 
   # *  *  * temperature calculations *  * *
@@ -258,14 +232,31 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   #
   # (1) clear sky contribution to downward ir radiation flux
   # (2) cloud contribution to downward ir radiation flux
-  fira <- (1 - cloud) * ea * stef * (ta - dtair  ) ** 4 + cloud * ec * stef * (ta - dtcloud) ** 4
+  
+  #SCV - Invert c Friend, A: Parameterization of a global daily weather generator for
+  #SCV - Invert c terrestrial ecosystem and biogeochemical modelling, Ecological 
+  #SCV - Invert c Modelling
+  #SCV - Invert c
+  #SCV - Invert c Spitters et al., 1986: Separating the diffuse and direct component
+  #SCV - Invert c of global radiation and its implications for modeling canopy
+  #SCV - Invert c photosynthesis, Part I: Components of incoming radiation,
+  #SCV - Invert c Agricultural and Forest Meteorology, 38, 217-229.
+  #SCV - Invert c
+  #SCV - Invert c A. Friend       : trans = 0.251 + 0.509 * (1.0 - cloud(i))
+  #SCV - Invert c Spitters et al. : trans = 0.200 + 0.560 * (1.0 - cloud(i))
+  #SCV - Invert c
+  #SCV - Invert c we are using the values from A. Friend
+  #SCV - Invert c
+  #SCV - Invert c trans = 0.251 + 0.509 * (1.0 - cloud(i))
+  
+  
+  truecloud <- max(0, min(1 - ((trans - 0.251) / 0.509),1)) 
+  fira <- (1 - truecloud) * ea * stef * (ta - dtair  ) ** 4 + truecloud * ec * stef * (ta - dtcloud) ** 4
   
   # ---------------------------------------------------------------------- 
   # *  *  * snow and rain calculations *  * *
   # ---------------------------------------------------------------------- 
   
-  repeat {
-    
     # reset snow and rain to zero
     snowa <- 0
     raina <- 0
@@ -276,31 +267,32 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
     # change the rain length when the amount of rainfall / timestep is
     # too high (at the first time step)
     
-    if(time  < dtime) {
-      plen <- plens / dtime
+
+    # adicionar variabilidade 
+    if(time == 0) {
       plenmin <- 1 + as.integer ((4 * 3600 - 1) / dtime)
       plenmax <- max (as.integer (24 * 3600 / dtime), plenmin)
-      checkP <- 0
+      plen <- min (plenmax, as.integer(plenmin + 0.5 * (plenmax-plenmin+1)))
+      # startp <- dtime  * min (niter - plen, (runif(1) * (niter - plen + 1)))
+      startp <- dtime  * min (niter - plen, (0.5 * (niter - plen + 1)))
+      endp <- startp + plen * dtime
+      plens  <- dtime  * plen
+            
+      add_Plen <- 0
       
       while(precip / plen > 95 && plen < plenmax) {
         plen <- plen + 1
-        checkP <- 1
-      }
+        add_Plen <- add_Plen + 1 }
       
-      if(checkP == 1) {
-        plens <- dtime  * plen
-        # startp <- dtime  * min (niter - plen, (runif(1) * (niter - plen + 1)))
-        startp <- dtime  * min (niter - plen, (0.5 * (niter - plen + 1)))
-        endp <- startp + plen * dtime
-      } else {
-        break
-      }
-    } else {
-      break
-    }
+        if(add_Plen >= 1) {
+          startp <- dtime  * max (startp - add_Plen, 1)
+          endp   <- startp + plen * dtime
+          plens  <- dtime  * plen
+        } 
   }
   
   
+
   
   # if precipitation event then calculate
   if(time  >= startp && time  < endp) {  
@@ -322,8 +314,15 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   # *  *  * irrigation calculations *  * *
   # ---------------------------------------------------------------------- 
   #
+  
+  
   # reset rate of irrigation application per timestep 
   xirriga <- 0
+  
+  ilens  <- dtime * (12.0 * 3600 / dtime)
+  starti <- dtime * (6.0  * 3600 / dtime)
+  endi   <- starti + ilens
+  
   
   # if precipitation event - then no irrigation that day 
   if(time  >= starti && time  < endi &&  
@@ -340,9 +339,9 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   
   
   daylength[is.nan(daylength)] <- 0
+  assign("trans", trans, envir = env)
   assign("coszen", coszen, envir = env)
   assign("daylength", daylength, envir = env)
-  assign("cloud", cloud, envir = env)
   assign("solad", solad, envir = env)
   assign("solai", solai, envir = env)
   assign("ta", ta, envir = env)
@@ -354,6 +353,9 @@ diurnalR <- function (envi, time, jday, plens, startp, endp,
   assign("raina", raina, envir = env)
   assign("xirriga", xirriga, envir = env)
   assign("totirrig", totirrig, envir = env)
+  assign("plens" , plens , envir = env)
+  assign("startp", startp, envir = env)
+  assign("endp"  , endp  , envir = env)
   
   return()
 }

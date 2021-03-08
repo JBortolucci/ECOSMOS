@@ -3,20 +3,18 @@
 initial <- function(isimveg) {  #  0 = static veg, 1 = dynamic veg, 2 = dynamic veg with cold start
 
 
-  environment(coldstart) <- env
   environment(inisurf)   <- env
   environment(inisnow)   <- env
   environment(inisoil)   <- env
   environment(iniveg)    <- env
   environment(inisum)    <- env
   
-  coldstart()
-  
+
   # initialize physical consts, dimensions, unit numbers, lsx model
   inisurf()
   
   # initialize snow model
-  inisnow()
+  inisnow()  
   
   # initialize soil model
   inisoil()

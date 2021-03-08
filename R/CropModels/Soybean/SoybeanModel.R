@@ -70,7 +70,7 @@ SoybeanModel <- function(year, month, day, index) {
 #   }
 #   assign("froot", froot, envir = env)
   
-  SoybeanPlanting(year0, year, month, day, jday, ffact, index)
+  SoybeanPlanting(year0, year, month, day, jday, index)
   
   SoybeanCROPGRO(year, year0, month, day, jday, index)
   

@@ -97,6 +97,9 @@ PhenoUpdate <- function() {
   lai[1] <- avglail / fl
   lai[2] <- avglaiu / fu
   
+  print(paste("PhenoUpdate",lai[1],avglail, fl,sep = " / "))
+  
+  
   # put a fix on canopy lais to avoid problems in physics
   
   lai[1] <- max(0.025, min (lai[1], 12.0) )

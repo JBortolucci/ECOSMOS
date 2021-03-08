@@ -88,7 +88,7 @@ GetPointsFromRect <- function(north, south, west, east) {
   north <- nearestLat
   west  <- nearestLon
   
-  print(paste(north, west))
+  print(paste(north, west, "netcdf",sep="/"))
   
   #############################################
   

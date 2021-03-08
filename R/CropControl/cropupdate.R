@@ -3,8 +3,6 @@
 ###############################
 
 # Global Vars:
-# ayanpp(npoi,npft)      # annual above-ground npp for each plant type(kg-c/m**2/yr)
-# ayanpptot(npoi)        # annual above-ground npp for ecosystem (kg-c/m**2/yr)
 # biomass(npoi,npft)     # total biomass of each plant functional type  (kg_C m-2)
 # cbiol(npoi,npft)       # carbon in leaf biomass pool (kg_C m-2)
 # croplive(npoi,npft)    # 0 crops have been planted and living : 1 crops not living
@@ -16,13 +14,11 @@
 # frac(npoi,npft)        # split of lignified litter material between protected/non-protected slow OM pools
 # greenfracl(npoi)       # não comentado
 # grnfraccrop(npoi,npft) # green fraction of aboveground vegetation for crops
-# htmx(npoi,2)           # maximum height attained by a crop during year
 # icropsum(npoi)         # index - number of crop types planted in each grid cell
 # lai(npoi,2)            # canopy single-sided leaf area index (area leaf/area veg)
 # laimx(npft)            # maximum LAI of each crop allowed
 # npoi                   # total number of land points
 # plai(npoi,npft)        # initial total LAI for each vegtype (used in iniveg)
-# plaimx(npoi,npft)      # annual maximum leaf area index of each plant functional type
 # rm                     # sugarcane relative maturity GDD/GDDmaturity
 # sai(npoi,2)            # current single-sided stem area index
 # scpft                  # starting index for crop pfts - C. Kucharik
@@ -43,6 +39,8 @@
 
 # to do: Santiago e Jair, essa rotina de atualizacao deve ser generica, independente se é uma cultura agricola
 
+# TO DO 2012: SVC e Jair, verificar se essa rotina esta' sendo chamada 
+
 Cropupdate <- function (jday) {
   
   
@@ -59,8 +57,6 @@ Cropupdate <- function (jday) {
     if(plantList[[j]]$type == CROPS) {
       if(exist[j] == 1 && croplive[j] == 1) {
         cbiol[j] <- max((exist[j] * xminlai / specla[j]), cbiol[j])
-        # check for maximum plant leaf area index
-        if (plai[j] > plaimx[j]) plaimx[j] <- plai[j]
       }
     }
   }
@@ -117,6 +113,7 @@ Cropupdate <- function (jday) {
   fl <- max(0.025, min(0.975, fl))
   lai[1] <- avglail / fl
 
+  print(paste("Cropupdate",lai[1],avglail, fl,sep = " / "))
   
   # fu <- totlaiu / 1  
   # fu <- max(0.025, min(0.975, fu))
@@ -140,7 +137,12 @@ Cropupdate <- function (jday) {
     if(!plantList[[j]]$active) next
     if(plantList[[j]]$type == CROPS & plantList[[j]]$canopy == LOWER)
         greenfracl <- greenfracl + frac[j] * greenfrac[j]
+    
+    print(paste("cropupdate ",j,greenfracl , frac[j] , greenfrac[j],sep = " / "))
+    
+    
   }
+  
   
   
   totbiol <- 0
@@ -175,8 +177,7 @@ Cropupdate <- function (jday) {
     }
   }
   
-  htmx[1] <- max(htmx[1], ztop[1])
-  ztop[1] <- max(0.05, max(htmx[1], ztop[1]))
+  ztop[1] <- max(0.05,  ztop[1])
   
   # TODO: Quando estiver rodando para apenas uma planta, não deixar verificar. Precisa testar isso.
   # Verifica se o topo do dossel inferior não ultrapassou a base do dossel superior 
@@ -192,6 +193,9 @@ Cropupdate <- function (jday) {
     }
   }
 
+  
+  #. SVC - Jair, pq não está usando ?
+  
   # UPPER
   # ztop[2] <- 0
   # for(i in 1:npft) {
@@ -213,13 +217,35 @@ Cropupdate <- function (jday) {
   #   }
   # }
   
-  # calculate annual aboveground npp total
-  ayanpptot <- 0
-  for(j in seq(1,npft)) {
-    if(!plantList[[j]]$active) next
-    if(plantList[[j]]$type == CROPS)
-          ayanpptot <- ayanpptot + ayanpp[j] 
-  }
+
+  
+  
+  
+  
+  
+  # To do: levar para o plant_params e fazer uma media ponderada pelo lai aqui
+ #  rhovegvlg 
+ #  rhovegvlb 
+ #  rhovegvu  
+ #  rhovegirlg
+ #  rhovegirlb
+ #  rhovegiru 
+ #  tauvegvlg 
+ #  tauvegvlb 
+ #  tauvegvu  
+ #  tauvegirlg
+ #  tauvegirlb
+ #  tauvegiru 
+  
+  
+  # oriev[1] <- max ( - chiflz, 0)
+  # oriev[2] <- max ( - chifuz, 0)
+  # 
+  # orieh[1] <- max ( chiflz, 0)
+  # orieh[2] <- max ( chifuz, 0)
+  
+  
+  
   
   
   assign("cbiol", cbiol, envir = env) 
@@ -233,12 +259,6 @@ Cropupdate <- function (jday) {
   assign("totbiol", totbiol, envir = env)        
   assign("zbot", zbot, envir = env)               
   assign("ztop", ztop, envir = env)               
-  assign("htmx", htmx, envir = env)              
   assign("sai", sai, envir = env)                 
-  assign("ayanpptot", ayanpptot, envir = env)     
-  
   
 }
-
-
-
