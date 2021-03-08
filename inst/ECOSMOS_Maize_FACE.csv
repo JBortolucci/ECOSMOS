@@ -1,0 +1,9 @@
+ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,planting day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
+DENIBW_Bare_Wet_AmbientCO2_2007,52.3,10.43333333,2007,119,2007,276,Maize_FACE,,0,0,1,0,0,maize,120,2007,10,75,5,155,1,Romario
+DENIBW_Bare_Wet_FACE_2007,52.3,10.43333333,2007,119,2007,276,Maize_FACE,,0,0,1,0,0,maize,120,2007,10,75,5,155,1,Romario
+DENIBW_Bare_Dry_AmbientCO2_2007,52.3,10.45,2007,119,2007,276,Maize_FACE,,0,0,1,0,0,maize,120,2007,10,75,5,155,1,Romario
+DENIBW_Bare_Dry_FACE_2007,52.3,10.45,2007,119,2007,276,Maize_FACE,,0,0,1,0,0,maize,120,2007,10,75,5,155,1,Romario
+DENIBW_Bare_Wet_AmbientCO2_2008,52.3,10.43333333,2008,129,2008,275,Maize_FACE,,0,0,1,0,0,maize,130,2008,10,75,5,144,1,Romario
+DENIBW_Bare_Wet_FACE_2008,52.3,10.43333333,2008,129,2008,275,Maize_FACE,,0,0,1,0,0,maize,130,2008,10,75,5,144,1,Romario
+DENIBW_Bare_Dry_AmbientCO2_2008,52.3,10.45,2008,129,2008,275,Maize_FACE,,0,0,1,0,0,maize,130,2008,10,75,5,144,1,Romario
+DENIBW_Bare_Dry_FACE_2008,52.3,10.45,2008,129,2008,275,Maize_FACE,,0,0,1,0,0,maize,130,2008,10,75,5,144,1,Romario
