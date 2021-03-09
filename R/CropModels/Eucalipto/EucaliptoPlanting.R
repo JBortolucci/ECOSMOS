@@ -29,7 +29,7 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, index) {
       cropy            <- 1
       gddmaturity[i]  <- hybgdd[i]
       
-      print(paste('1st Plant Eucalyptus ', jday, imonth, iyear,hybgdd[i],gddmaturity[i],sep=' / '))
+      print(paste('1st Plant Eucalyptus ', jday, imonth, iyear,hybgdd[i],gddmaturity[i],i,sep=' / '))
       
     }
     

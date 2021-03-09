@@ -331,7 +331,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       Deadleaves <- Fdecay * cbiol[i] * kg_C_M2_to_T_ha  #rever dif entre Leaves_Predicted  e Shoot_Predicted
       
-      print(Fdecay)
       #######################################################################
       ########################     ### #####     ############################
       ######################## ####### ##### ### ############################
