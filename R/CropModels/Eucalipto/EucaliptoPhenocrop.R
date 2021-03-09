@@ -216,10 +216,9 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       #Michel: Teste 4/3/21
       if(plai[i] <= 2.5 & idpp[i]<=450 ) {
         aleaf[i] <- max(aleaf,Alleafinit)
+      } else {
+       aleaf[i] <- max(aleaf[i],Alleafmin)
       }
-      
-      aleaf[i] <- max(aleaf[i],Alleafmin)
-      
       
       if ( (aroot[i] + aleaf[i] + abranch[i] + acroot[i]) > 1 ) {
         reductionfactor <- 1 / (aroot[i] + aleaf[i] + abranch[i] + acroot[i])
@@ -332,7 +331,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       Deadleaves <- Fdecay * cbiol[i] * kg_C_M2_to_T_ha  #rever dif entre Leaves_Predicted  e Shoot_Predicted
       
-      
+      print(Fdecay)
       #######################################################################
       ########################     ### #####     ############################
       ######################## ####### ##### ### ############################
