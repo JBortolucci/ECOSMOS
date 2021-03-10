@@ -123,7 +123,7 @@ inisoil <- function() {
     if(!is.na(SOIL.profile$SDUL[k])) {sfield[k]   <- (1 / poros[k]) * SOIL.profile$SDUL[k] } # field capacity as fraction of porosity (volume fraction)
     if(!is.na(SOIL.profile$SLLL[k])) {swilt[k]    <- (1 / poros[k]) * SOIL.profile$SLLL[k] } # wilting point as fraction of porosity  (volume fraction)
     if(!is.na(SOIL.profile$SSKS[k])) {hydraul[k]  <- SOIL.profile$SSKS[k] / (1000 * 3600)  } # SHC : saturated hydraulic conductivity (m s-1)
-    if(!is.na(SOIL.profile$SLLL[k])) {suction[k]  <- SOIL.profile$SSKS[k]*1.5              } # AEP : air entry potential (m-H20)
+    if(!is.na(SOIL.profile$SLLL[k])) {suction[k]  <- swilt[k] /1.5              } # AEP : air entry potential (m-H20)
     if(!is.na(SOIL.profile$BEXP[k])) {bex[k]      <- SOIL.profile$BEXP[k]                  } # Campbell's 'b' exponent
     if(!is.na(SOIL.profile$SRGF[k])) {SRGF[k]     <- SOIL.profile$SRGF[k]                  } # Root hospitality factor 
     if(!is.na(SOIL.profile$SBDM[k])) {bulkd[k]    <- SOIL.profile$SBDM[k]                  } # Bulk density
