@@ -186,7 +186,7 @@ StomataC3Crops <- function(i) {
       gsmodel <- "BBC" # BBO | BBL | USO | BBC
       
       D0 = 1.5 # BBL
-      VPDSLP = -0.9  # BBC slope
+      VPDSLP = -0.7  # BBC slope
       VPDMIN = 0.5   # BBC - Start
       
       # Ball (1988) & Berry (1991) model [BBO] 'O' means original

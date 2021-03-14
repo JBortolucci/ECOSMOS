@@ -129,7 +129,6 @@ EucaliptoModel <- function(year, month, day, index) {
   
   if(idpp[index]>1) { betag <- betag + 0.1*max(0.5,awc) }
   beta1[index] <- min(betamax*(1-beta1A*exp(-betag/12)), betamax) # funcao que altera densidade de raiz em função do tempo e quantidade de agua: Michel
- # beta1[index] <-  betamax
   # beta1[index] <- min(betamax*(1-0.05*exp(-betag/12)), betamax) # funcao que altera densidade de raiz em função do tempo e quantidade de agua: Michel
   #beta1[index] <- min((0.95+(0.045/180)*betag), 0.995) # funcao que altera densidade de raiz em função do tempo e quantidade de agua: Santiago
   #print(paste(idpp[index],0.995*(1-0.05*exp(-idpp[index]/120)),0.995*(1-0.05*exp(-betag/12)),0.95+(0.045/180)*betag,sep=" / "))

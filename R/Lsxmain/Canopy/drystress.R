@@ -119,21 +119,8 @@ drystressR <- function(envi, time,jday) {
     # stresstl(i) = 1.0   !No Stress effect due to moisture
     
   }
-  
-  # sant	print*, sfield(1,1), swilt(1,1),sfield(1,9), swilt(1,9)
-  
-  # if(time == 39600)
-  # >  write(225,34)jday,wsoi(1,1),wsoi(1,2),wsoi(1,3),wsoi(1,4),wsoi(1,5),wsoi(1,6),
-  # >wsoi(1,7),wsoi(1,8),wsoi(1,9),wsoi(1,10),wsoi(1,11), sfield(1,11),swilt(1,11)
-  
-  # if(time.eq.39600)
-  # >write(225,34)jday,stressl(1,1),stressl(1,2),stressl(1,3),stressl(1,4),stressl(1,5)
-  # >,stressl(1,6),stressl(1,7),stressl(1,8),stressl(1,9),stressl(1,10),stressl(1,11),stresstl(1)
-  
-  # 34   format (1x,i3,1x,13(1x,f4.2))
-  
-  # To do Henrique : if crop ==soybean stresstl= CROPGRO ???
-  stresstl = 1
+
+
     
     
   assign("stresstl", stresstl, envir = env)
