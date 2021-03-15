@@ -182,9 +182,10 @@ StomataC3Crops <- function(i) {
 
     # Stomatal conductance models [2020-11-18]
     {
+      #TODO global params
+      gsmodel <- "BBC" # BBO | BBL | USO | BBC 
       
-      gsmodel <- "BBC" # BBO | BBL | USO | BBC
-      
+      #TODO plantparams para todas as plantas
       D0 = 1.5 # BBL
       VPDSLP = -0.7  # BBC slope       [Soybean = -0.32; Eucalyptus = -0.9]
       VPDMIN = 1.5   # BBC - Start
