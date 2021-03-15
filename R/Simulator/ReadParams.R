@@ -170,6 +170,7 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
   assign("ynb", as.numeric(data[101,][2]), envir = envToSet)
   assign("za",  as.numeric(data[102,][2]), envir = envToSet)
   assign("isoilay",  as.numeric(data[103,][2]), envir = envToSet)
+  assign("gsmodel",  as.character(data[104,][2]), envir = envToSet) # TODO: achar melhor lugar para alterar 
 }
 
 
@@ -350,7 +351,10 @@ ReadPlantParamsFromFile <- function(path = "") {
       envToSet$tauvegvbin[indexOfPlant]  <- as.numeric(data[78,column])
       envToSet$tauvegirgin[indexOfPlant] <- as.numeric(data[79,column])
       envToSet$tauvegirbin[indexOfPlant] <- as.numeric(data[80,column])
-
+      envToSet$D0[indexOfPlant]          <- as.numeric(data[81,column])
+      envToSet$VPDSLP[indexOfPlant]      <- as.numeric(data[82,column])
+      envToSet$VPDMIN[indexOfPlant]      <- as.numeric(data[83,column])
+      
 
             
       # TODO: Estava calculando assim nas versões anteriores. Mantém fazendo esse calculo?
@@ -368,7 +372,7 @@ ReadPlantParamsFromFile <- function(path = "") {
       # TODO: Criar a lista de nomes no modelo. O usuário deve listar os parâmetros adicionais.
       # seta os parâmetros adicionais automaticamente
       # if(!is.na(as.numeric(data[71,column]))) {
-      n <- 82 # Henrique & Leandro: This must be carefully checked for 'additional' parameters especific for a given plant specie/cultivar [2021-03-09]
+      n <- 85 # Henrique & Leandro: This must be carefully checked for 'additional' parameters especific for a given plant specie/cultivar [2021-03-09]
       # funcao mandar em parametro nome da variavel em nome da coluna
       
       if (simInstances[[simId]]$config[[paste0("plant", i)]]$name == "soybean"){

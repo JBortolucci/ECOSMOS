@@ -182,14 +182,12 @@ StomataC3Crops <- function(i) {
 
     # Stomatal conductance models [2020-11-18]
     {
-      #TODO global params
-      gsmodel <- "BBC" # BBO | BBL | USO | BBC 
+      # gsmodel <- "BBC" # BBO | BBL | USO | BBC 
       
-      #TODO plantparams para todas as plantas
-      D0 = 1.5 # BBL
-      VPDSLP = -0.7  # BBC slope       [Soybean = -0.32; Eucalyptus = -0.9]
-      VPDMIN = 1.5   # BBC - Start
-      
+      # D0 = 1.5 # BBL
+      # VPDSLP = -0.7  # BBC slope       [Soybean = -0.32; Eucalyptus = -0.9]
+      # VPDMIN = 1.5   # BBC - Start
+
       # Ball (1988) & Berry (1991) model [BBO] 'O' means original
       if (gsmodel=="BBO") {
         gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 * rhdossel / cs[i] + coefb[i] * stressc3c)
@@ -197,7 +195,7 @@ StomataC3Crops <- function(i) {
       
       # BB after Leuning (1995) [BBL]
       if (gsmodel=="BBL") {
-        gs[i] <- 0.5*gs[i] + 0.5*(coefm[i] * anc3 / ((cs[i]-gamstar)*(1+VPDSL/D0)) + coefb[i] * stressc3c)
+        gs[i] <- 0.5*gs[i] + 0.5*(coefm[i] * anc3 / ((cs[i]-gamstar)*(1+VPDSL/D0[i])) + coefb[i] * stressc3c)
       }
       
       # BB with the optimal stomatal control model of Cowan and Farquhar (1977) was proposed by Medlyn et al. (2011) [USO]
@@ -208,8 +206,8 @@ StomataC3Crops <- function(i) {
       
       # BB after Cuadra et al. (2021) [BBC]
       if (gsmodel=="BBC") {
-        if (VPDSL >= VPDMIN) {
-          VPDFACTOR=1+VPDSLP*(VPDSL-VPDMIN)
+        if (VPDSL >= VPDMIN[i]) {
+          VPDFACTOR=1+VPDSLP[i]*(VPDSL-VPDMIN[i])
          # print(paste(rhdossel,VPDSL,VPDFACTOR),sep=" / ")
         } else {
           VPDFACTOR=1.0
@@ -275,7 +273,7 @@ StomataC3Crops <- function(i) {
       
       # BB after Leuning (1995) [BBL]
       if (gsmodel=="BBL") {
-        gsc <-coefm[i] * an[i] / ((csc-gamstar)*(1+VPDSL/D0)) + coefb[i] * stressc3c
+        gsc <-coefm[i] * an[i] / ((csc-gamstar)*(1+VPDSL/D0[i])) + coefb[i] * stressc3c
       }
       
       # BB with the optimal stomatal control model of Cowan and Farquhar (1977) was proposed by Medlyn et al. (2011) [USO]
@@ -286,8 +284,8 @@ StomataC3Crops <- function(i) {
       
       # BB after Cuadra et al. (2021) [BBC]
       if (gsmodel=="BBC") {
-        if (VPDSL >= VPDMIN) {
-          VPDFACTOR=1+VPDSLP*(VPDSL-VPDMIN)
+        if (VPDSL >= VPDMIN[i]) {
+          VPDFACTOR=1+VPDSLP[i]*(VPDSL-VPDMIN[i])
           # print(paste(rhdossel,VPDSL,VPDFACTOR),sep=" / ")
         } else {
           VPDFACTOR=1.0
