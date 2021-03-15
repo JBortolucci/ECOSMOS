@@ -1,5 +1,5 @@
 
-ForagePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
+ForagePlanting <- function(iyear0, iyear, imonth, iday, jday, index) {
   
   i <- index
   
@@ -7,74 +7,30 @@ ForagePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   # in order to only allow a crop to be planted once each year
   # initialize cropplant = 0, but hold it = 1 through the end of the year
   
-  if (iday == pdmin[i] && imonth == pmmin[i] && croplive[i] != 1 &&  exist[i] == 1 && ncyears >= 1) {
-    pstart[i] <- cdays
+  if (day == pdmin[i] && month == pmmin[i] && croplive[i] != 1 &&  exist[i] == 1){ pstart[i] <- 0             }
+  if (                                        croplive[i] != 1 &&  exist[i] == 1){ pstart[i] <- pstart[i] + 1 }
+  
+  
+  if(pstart[i] == 1  & exist[i] == 1 & croplive[i] != 1) {
+    print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i],sep=" / "))
   }
-  
-  
-  if(pstart[i] == cdays && exist[i] == 1 && croplive[i] != 1) {
-    print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i]," cdays ",cdays,sep=" / "))
-  }
-  
-  
-  #_______________________________________________________
-  #   reset variables at the beginning  of crop year   
-  
-  if (iday == pcd[i] && imonth == pcm[i]) {
-    
-    pdate[i]     <- 0
-    
-    
-    if (croplive[i] == 0) {
-      cropplant[i] <- 0
-    } 
-    
-    
-    harvdate[i]   <- 999
-    hdate[i]      <- 0
-    harvidx[i]    <- 0
-    croplaimx[i]  <- 0
-    grainn[i]     <- 0
-    cropyld[i]    <- 0
-    dmyield[i]    <- 0
-    dmleaf[i]     <- 0
-    dmstem[i]     <- 0
-    dmroot[i]     <- 0
-    dmresidue[i]  <- 0
-    dmcrop[i]     <- 0
-    residuen[i]   <- 0
-    nconcl[i]     <- 0
-    nconcs[i]     <- 0
-    nconcr[i]     <- 0
-    nconcg[i]     <- 0
-    cropn[i]      <- 0
-    cropfixn[i]   <- 0
-    cntops[i]     <- 40
-    cnroot[i]     <- 60
-    fertinput[i]  <- 0
-    idppout[i]    <- 0
-  } 
   
   
   #_______________________________________________________________    
   #__________________ Start Planting Block _______________________
   
   
-  if (exist[i] == 1 && croplive[i] != 1 && cropplant[i] == 0) {
+  if (exist[i] == 1 & croplive[i] != 1 ) {
     
     
-    # Plating block for Soybean, corn, and wheat
-    
-    
-    if(cropy == 0 && cdays >= pstart[i] && cdays <= (pstart[i]+180)) {
+    if(cropy == 0 &  pstart[i] >=1 & pstart[i] <= 180) {
       
       croplive[i]     <- 1        # initialize freeze kill function to 1 - crops living 
-      cropplant[i]    <- 1        # initialize freeze kill function to 1 - crops living 
-      idop[i]         <- jday    
+      pdate[i]         <- jday    
       cropy            <- 1
       gddmaturity[i]  <- hybgdd[i]
       
-      print(paste('1st Plant Forage ', jday, imonth, iyear,hybgdd[i],gddmaturity[i],sep=' / '))
+      print(paste('1st Plant Forage ', jday, imonth, iyear,sep=' / '))
       
     }
     
@@ -96,12 +52,12 @@ ForagePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
     # is planted this year...otherwise it will zero out the fertilizer
     # values for pfts 13, 14 if going through all pfts through 15 
     
-    if (jday == idop[i] && croplive[i] == 1 && exist[i] == 1) {
+    if (jday == pdate[i] & croplive[i] == 1 & exist[i] == 1) {
       
       if (iyear < 1950) {
         fertnitro[i] <- 0.0009       # sugarcane - kg_n m-2 y-1
       } else if(iyear > 2000) {
-        fertnitro[i] <- fertsgc[51]   * ffact * 1e-04 # sugarcane - kg_n m-2 y-1
+        fertnitro[i] <- fertsgc[51]   * 1e-04 # sugarcane - kg_n m-2 y-1
       } else {
         fertnitro[i] <- fertsgc[iyear+1-1950]   * 1e-04 # sugarcane - kg_n m-2 y-1
       }
@@ -122,44 +78,14 @@ ForagePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
     
   }
   
- 
-  assign("pstart", pstart, envir = env)
-  assign("pdate", pdate, envir = env)
-  assign("cropplant", cropplant, envir = env)
-  assign("cropy", cropy, envir = env)
-  assign("harvdate", harvdate, envir = env)
-  assign("hdate", hdate, envir = env)
-  assign("harvidx", harvidx, envir = env)
-  assign("croplaimx", croplaimx, envir = env)
-  assign("grainn", grainn, envir = env)
-  assign("cropyld", cropyld, envir = env)
-  assign("dmyield", dmyield, envir = env)
-  assign("dmleaf", dmleaf, envir = env)
-  assign("dmstem", dmstem, envir = env)
-  assign("dmroot", dmroot, envir = env)
-  assign("dmresidue", dmresidue, envir = env)
-  assign("dmcrop", dmcrop, envir = env)
-  assign("residuen", residuen, envir = env)
-  assign("nconcl", nconcl, envir = env)
-  assign("nconcs", nconcs, envir = env)
-  assign("nconcr", nconcr, envir = env)
-  assign("nconcg", nconcg, envir = env)
-  assign("cropn", cropn, envir = env)
-  assign("cropfixn", cropfixn, envir = env)
-  assign("cntops", cntops, envir = env)
-  assign("cnroot", cnroot, envir = env)
-  assign("fertinput", fertinput, envir = env)
-  assign("idppout", idppout, envir = env)
-  assign("croplive", croplive, envir = env)
-  assign("idop", idop, envir = env)
-  assign("soydop", soydop, envir = env)
-  assign("corndop", corndop, envir = env)
-  assign("whtdop", whtdop, envir = env)
+  
+  
+  assign("pstart", pstart, envir = env)  
+  assign("croplive", croplive, envir = env) 
+  assign("pdate", pdate, envir = env)    
+  assign("cropy", cropy, envir = env)   
   assign("gddmaturity", gddmaturity, envir = env)
-  assign("avehybrid", avehybrid, envir = env)
   assign("fertnitro", fertnitro, envir = env)
+  assign("fertinput", fertinput, envir = env)
   
 }
-  
-  
-  

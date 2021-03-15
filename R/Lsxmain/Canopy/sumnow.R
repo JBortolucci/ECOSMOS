@@ -269,7 +269,7 @@ sumnow <- function() {
   for(i in seq(1,npft)) {
     if(!plantList[[i]]$active) next
 
-    mcbior[i]  <- cbior[i]  * (funcb*rroot) #TODO checar [Henrique; 2020-02-11]
+    mcbior[i]  <- cbior[i]  * (funcb*rroot) #TODO checar [Henrique; 2021-02-11]
     mcbiog[i]  <- cbiog[i]  *  0.0
     mcbiop[i]  <- cbiop[i]  *  0.0 # TODO: Henrique, rever quanto sao esses valores de respiracao
     mcbiow[i]  <- cbiow[i]  * (sapfrac*rwood*funca)
@@ -399,6 +399,8 @@ sumnow <- function() {
 
   assign("a5tmin", a5tmin, envir = env)
   assign("a10tmin", a10tmin, envir = env)
+  
+  assign("smask", smask, envir = env)
   
   # return to main program
   return()

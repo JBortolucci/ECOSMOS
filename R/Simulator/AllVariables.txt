@@ -333,6 +333,8 @@ pcd vector npft 0
 gddsgcp 0 
 gddsgcr 0 
 iavepdate vector npft 0
+hdate vector npft 0
+idop vector npft 0
 harvdate vector npft 0
 corndop vector 2100 0
 soydop vector 2100 0
@@ -851,6 +853,7 @@ cbios vector npft 0
 cbiocr vector npft 0
 cbiob vector npft 0
 cbiop vector npft 0
+cbioc vector npft 0
 clitll 0 
 clitlm 0 
 clitls 0 
@@ -875,6 +878,7 @@ cdisturb 0
 biomass vector npft 0
 frac vector npft 0
 plai vector npft 0
+peaklai vector npft 0
 plaimx vector npft 0
 tnpp vector npft 0
 tan vector npft 0

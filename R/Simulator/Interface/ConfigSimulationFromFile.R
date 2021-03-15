@@ -48,33 +48,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     if(simConfigs[[i]]$soilic == 1) {
       tab.IC <- read.csv('inst/input/initial_conditions.csv',sep = ",")
       # when the user insert the initial conditions (nsoilay MUST be equal in both tab's [DSSAT & IC])
-      simInstances[[id]]$ic  <- subset(tab.IC, SimIDic == id)
-      #simInstances[[id]]$nsoilay <- length(simInstances[[id]]$ic$SimIDic) #it seems to be unnecessary here
-      
-      #TODO: verificar 'swic' com santiago [2021-03-08]
       simInstances[[id]]$swic  <- tab.IC$SWic[tab.IC$SimIDic == id]
-      
-    } else {
-      # when there isn't explicitily values for the initial conditions
-      simInstances[[id]]$ic <- data.frame(
-        SimIDic = rep(id, simInstances[[id]]$nsoilay),
-        SWic    = simInstances[[id]]$layers$SDUL,       # Soil water arbitrarily starting at field capacity (sfield) aka drained upper limit (DUL)
-        STic    = rep(20, simInstances[[id]]$nsoilay) ) # Soil temp arbitrarily set as 20 ºC
-    
-    
-    # Henrique & Leandro: including initial conditions (IC) [2020-11-04]
-    # tab.IC <- read.csv('inst/input/initial_conditions.csv',sep = ",")
-    # if(simConfigs[[i]]$soilic == 1) {
-    #   # when the user insert the initial conditions (nsoilay MUST be equal in both tab's [DSSAT & IC])
-    #   simInstances[[id]]$ic  <- subset(tab.IC, SimIDic == id)
-    #   #simInstances[[id]]$nsoilay <- length(simInstances[[id]]$ic$SimIDic) #it seems to be unnecessary here
-    # } else {
-    #   # when there isn't explicitily values for the initial conditions
-    #   simInstances[[id]]$ic <- data.frame(
-    #     SimIDic = rep(id, simInstances[[id]]$nsoilay),
-    #     SWic    = simInstances[[id]]$layers$SDUL,       # Soil water arbitrarily starting at field capacity (sfield) aka drained upper limit (DUL)
-    #     STic    = rep(20, simInstances[[id]]$nsoilay) ) # Soil temp arbitrarily set as 20 ºC
-    # }
     }
     
     simInstances[[id]][["tsoi"]]     <- numeric(simInstances[[id]]$nsoilay)
@@ -233,9 +207,9 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     ReadDailyStationData(pathw, simInstances[[id]]$point$coord$lat, simInstances[[id]]$point$coord$lon,  simInstances[[id]])
     
     #___________________________________________    
-    # READ HORLY STATION DATA
+    # READ HOURLY STATION DATA
     
-    
+    # Reading management actions
     assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])
     
     # Henrique & Leandro: irrigation feature [2020-11-06]

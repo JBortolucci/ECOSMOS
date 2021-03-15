@@ -44,7 +44,7 @@ simDataVars$CGRSD   <- 0
 simDataVars$CGRSH   <- 0
 simDataVars$CTONODR <- 0
 
-simDataVars$plotVARAUX <- 0
+#simDataVars$plotVARAUX <- 0
 simDataVars$DAYL   <- 0
 
 simDataVars$TMIN     <- 0
@@ -131,6 +131,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     ifelse(integr[3],  PAR <- VARAUX$PAR[VARAUX$DAS==DAS]                   ,      PAR <- adpar* (86400/1000000)* 4.59 ) # (86400/1000000) W/m2 para MJ/m2.d  and 4.59 # MJ/m2.d para mol/m2.d 
     ifelse(integr[4],  TMIN  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]    ,      TMIN <- tmin - 273.16 )
     ifelse(integr[5],  TAVG  <- VARAUX$TAVG[VARAUX$DAS==DAS]                ,      TAVG <- mean(ta_h) - 273.16 )
+    #browser()
     ifelse(integr[6],  TGRO  <- TGRO_T$V3[TGRO_T$V1==DAS]                   ,      TGRO <- ta_h - 273.16 )
     if (integr[7]) {   TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]          }else{   if(stresstl<=0.9) {TURFAC <- (1./RWUEP1) * stresstl} else {TURFAC=1} }
     if (integr[8]) {   SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]           }else{   if(stresstl<=0.9) {SWFAC  <- stresstl} else {SWFAC=1} }
@@ -154,7 +155,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign("NH4",   NH4   , envir = env)
     assign("TGRO",  TGRO  , envir = env)
     
-    plotVARAUX <- PG
+    #plotVARAUX <- PG
     
     # PAR     <- VARAUX$PAR[VARAUX$DAS==DAS]
     # AGEFAC  <- VARAUX$AGEFAC[VARAUX$DAS==DAS]  # To do: Henrique, implementar e linkar com o ECOSMOS
@@ -455,7 +456,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #     On day of emergence, initialize:
         #-----------------------------------------------------------------------
         GROW("EMERG",iyear,jday, ISWNIT,ISWSYM)
-        plai[i]  <- max(XLAI,0.1) # Henrique: atribui IAF inicial para ECOSMOS (2020-10-1)
+        plai[i]  <- max(XLAI,0.01) # Henrique: atribui IAF inicial para ECOSMOS (2020-10-1)
         
         #-----------------------------------------------------------------------
         #     Call to root growth and rooting depth routine
@@ -754,7 +755,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #     Call routine to integrate growth and damage
         #-----------------------------------------------------------------------
         GROW(DYNAMIC,iyear,jday, ISWNIT,ISWSYM)
-        plai[i]  <- max(XLAI,0.1) #TODO Henrique: verificar se aqui seria o lugar ideal dessa atribuição
+        plai[i]  <- max(XLAI,0.01) #TODO Henrique: verificar se aqu seria o lugar ideal dessa atribuição
         
         if ((WTLF+STMWT)> 0.0001) {
           PCNVEG <- (WTNLF+WTNST)/(WTLF+STMWT)*100.
@@ -798,54 +799,16 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     cbior[i] <- RTWT * 0.5 * (1/1000)
     cbiog[i] <- SDWT * 0.45 * (1/1000)
     cbiop[i] <- (PODWT - SDWT) * 0.45 * (1/1000)
-    
+    #cbioc[i] <- 0 #TODO Henrique: descobrir o que é e ajeitar isso [2021-03-09]
     
     # !----------Check sink limitation based on yesterday's growth rates
     # ! and adapt partitioning of stem-storage organ accordingly
     
     # update vegetation's physical characteristics
-    { 
-    peaklai[i]  <- max(peaklai[i]  ,plai[i] )
-    
-    #TODO Henrique: verify greenfrac parameter approach and effect! [2020-01-11]
-    greenfrac[i] <- ifelse(RSTAGE >= 7,  XLAI/LAIMX, greenfrac[i])
-
-    #TODO Henrique: verificar necessidade [2020-01-18]
-    # keep track of aboveground annual npp
-    ayanpp[i] <- ayanpp[i] + adnpp[i] 
-
-    pgreenfrac[i] <- 1.0   
-    
-    biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbiop[i]
-    
-    #END TEST RICE MODEL FROM ORYZA    
-    #____________________________________        
-    
-    #_____________________________________________
-    
-    # keep track of total biomass production for the entire year, and the
-    aybprod[i] <- aybprod[i] +
-      aleaf[i] * max(0.0,adnpp[i]) +
-      abranch[i] * max(0.0,adnpp[i]) +
-      aroot[i] * max(0.0,adnpp[i]) +
-      awood[i] * max(0.0,adnpp[i]) +
-      acroot[i] * max(0.0,adnpp[i])
-    
-    # aboveground value to calculate harvest index
-    ayabprod[i] <- ayabprod[i] +
-      aleaf[i] * max(0.0,adnpp[i]) +
-      abranch[i] * max(0.0,adnpp[i]) +
-      awood[i] * max(0.0,adnpp[i])
-    
-    # keep track of annual total root production carbon
-    ayrprod[i] <- ayrprod[i] +
-      aroot[i] * max(0.0,adnpp[i]) +
-      acroot[i] * max(0.0,adnpp[i])
-    
-    # keep track of total carbon allocated to
-    # leaves for litterfall calculation
-    aylprod[i] <- aylprod[i] +
-      aleaf[i] * max (0.0, adnpp[i])
+    {
+      #plai[i]  <- max(XLAI,0.1)
+      pgreenfrac[i] <- 1.0   
+      biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbiop[i]
     }
     
     # END SOYBEAN CYCLE
@@ -880,20 +843,19 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   
   assign("endCycle", endCycle, envir = env)
   assign("ztopPft", ztopPft, envir = env)
-  assign("greenfrac", greenfrac, envir = env)
   assign("pgreenfrac", pgreenfrac, envir = env)
   assign("idpp", idpp, envir = env)
-  assign("aroot", aroot, envir = env)
-  assign("aleaf", aleaf, envir = env)
-  assign("astem", astem, envir = env)
-  assign("arepr", arepr, envir = env)
+  # assign("aroot", aroot, envir = env)
+  # assign("aleaf", aleaf, envir = env)
+  # assign("astem", astem, envir = env)
+  # assign("arepr", arepr, envir = env)
   assign("cbiol", cbiol, envir = env)
   assign("cbiog", cbiog, envir = env)
   assign("cbiop", cbiop, envir = env)
   assign("cbios", cbios, envir = env)
   assign("cbior", cbior, envir = env)
+  #assign("cbioc", cbior, envir = env)
   assign("plai", plai, envir = env)
-  assign("aerial", aerial, envir = env)
   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
   assign("cropy", cropy, envir = env)
@@ -921,6 +883,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("SWFAC", SWFAC, envir = env)
   # assign("plotVARAUX", plotVARAUX, envir = env)
   assign("DAYL", DAYL, envir = env)
+  assign("PG", PG, envir = env)
 }
 
 

@@ -342,7 +342,7 @@ GeneralModel <- function(simVars = NULL) {
 
         simVars$jday <- simVars$jday + 1
         
-        print(paste("Simulation ",day, month, year,simVars$lai[1]*simVars$fl,simVars$lai[2]*simVars$fu,sep = " / "))
+        #print(paste("Simulation ",day, month, year,simVars$lai[1]*simVars$fl,simVars$lai[2]*simVars$fu,sep = " / "))
         
         UseDailyStationData(day, month, year)
         UseDailyFertilizationData(day, month, year) # Henrique & Leandro: fertilization feature [2020-11-30] | move to CROPS? [2021-03-08]

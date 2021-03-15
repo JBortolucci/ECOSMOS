@@ -1,16 +1,20 @@
-#to do: Santiago, residuo tem que ser indepente se é uma cultura agricola
+#TODO: Santiago, residuo tem que ser indepente se é uma cultura agricola
 # juntar com o residuo dos ecossistemas naturais
 
 ForageCropresidue <- function (year, year0, jday, index) {
   
-  deltay    <- plantList$rice$params$deltay 
-  
   j <- index
   
-  # zero out litter fall rates
-  
-  
+  # TODO: Henrique - to be done
+  # fall: serrapilheira, liteira, palhada, residuo...
   if(croplive[j] == 1) {
+    # Century (3 components): falll, fallr, fallw
+    # check if sheels and stem fits (or at least partially) in wood 
+    # senesced components (find them) in C (needs conversion) *usually endind with 'OT'*
+    # SENES.for: SSDOT, SLDOT, SLNDOT, SSNDOT (aboveground components)
+    # ROOTS.for: SENRT (each layer L), SRDOT
+    # NFIX.for: SENNOD (each layer L), NDTH
+    # TODO look at SENESCE's matrix for Century in DSSAT (Leandro elaborou algo, talvez falta apenas na colheita)
     falll <- falll   #+ DRLVTa*cbiol[j]
     fallr <- fallr + cbior[j] / tauroot[j]
   }
@@ -20,11 +24,8 @@ ForageCropresidue <- function (year, year0, jday, index) {
   # at this time  - this allows for the same crop (e.g., wheat) to be grown
   # across two consecutive calendar years   
   
-  if(exist[j] == 1 && harvdate[j] == jday) {
+  if(exist[j] == 1 & harvdate[j] == jday) {
     
-    pdate[j] <- idop[j]
-    idppout[j] <- idpp[j]
-    hdate[j] <- harvdate[j]
     
     ayabprod[j] <- max(cbiol[j], ayabprod[j])
     
@@ -33,7 +34,7 @@ ForageCropresidue <- function (year, year0, jday, index) {
     
     # adjust actual grain yield value (params.crp)
     dumg <- cbiog[j] 
-    cbiog[j] <- cbiog[j] * fyield[j] 
+    cbiog[j] <- cbiog[j] * fyield[j] #TODO: check fyield, but needs to be equal 1
     
     # add excess (i.e. pod of soybeans) to stem storage pool of plant 
     cbios[j] <- max(0, cbios[j] + (dumg - cbiog[j]))
@@ -62,13 +63,11 @@ ForageCropresidue <- function (year, year0, jday, index) {
     # calculate n in grain[kg / ha]
     grainn[j] <- (cbiog[j] / cfrac[j]) * fngrain[j] * 1e+04
     
-    # to do: Santiago, inserir um parametro inserido no params.crp 
+    # TODO: Santiago, inserir um parametro inserido no params.crp 
     #      que represente o conteudo de agua no material colhido   
     
     # calculate crop fresh yield  t / ha of fresh weight
-    cropyld[j] <- cbiog[j]  * (1 / 0.9) * 10 * (1 / cgrain[j])
-    
-    
+    cropyld[j] <- cbiog[j]  * 1.13 * 10 * (1 / cgrain[j])
     
     # calculate dry matter material (Mg / ha); yield in Mg / ha dry matter (sucrose carbon)
     dmyield[j] <- cbiog[j] * 10 / cgrain[j]  
@@ -88,7 +87,6 @@ ForageCropresidue <- function (year, year0, jday, index) {
     
     
     # calculate fractions for leaf and stem
-    # TODO: Checar divisão, RDM nao pode se 0
     fdml <- (aylprod[j] * 10 / cgrain[j]) / rdm 
     
     fdms <- (dmresidue[j] - dmleaf[j]) / rdm
@@ -128,12 +126,15 @@ ForageCropresidue <- function (year, year0, jday, index) {
       cnroot[j] <- 80
     }
     
+    #TODO: Henrique - estudar!!!
+    # tempo de residência (standing dead)
+    
     # assume that stem and leaf are both included in leaf litterfall value
     # these annual total values (falll, fallr, fallw) cannot be changed 
     # on a daily basis because biogeochem.f uses the annual total, split
     # between each day of the year equally 
     # carbon returned as residue
-    falll <- falll +  cbiol[j] + cbios[j]
+    falll <- falll + cbiol[j] + cbios[j] + cbiop[j]
     
     fallr <- fallr + cbior[j] 
     
@@ -145,14 +146,11 @@ ForageCropresidue <- function (year, year0, jday, index) {
     cbiop[j] <- 0.0
     cbios[j] <- 0.0
     
-    
-    
   }  # harvest <- jday
   
-  falll <- as.vector(falll )
-  fallr <- as.vector(fallr )
-  fallw <- as.vector(fallw )
-  
+  falll <- as.vector(falll)
+  fallr <- as.vector(fallr)
+  fallw <- as.vector(fallw)
   
   # assign("cnleaf", cnleaf, envir = env)
   # assign("cnfroot", cnfroot, envir = env)
@@ -161,20 +159,7 @@ ForageCropresidue <- function (year, year0, jday, index) {
   assign("falll", falll, envir = env)
   assign("fallw", fallw, envir = env)
   assign("fallr", fallr, envir = env)
-  assign("fallrsgc", fallrsgc, envir = env)
-  assign("crmclim", crmclim, envir = env)
-  assign("crmact", crmact, envir = env)
-  assign("crmplant", crmplant, envir = env)
-  assign("pdate", pdate, envir = env)
-  assign("idppout", idppout, envir = env)
-  assign("hdate", hdate, envir = env)
   assign("ayabprod", ayabprod, envir = env)
-  assign("cbiocr", cbiocr, envir = env)
-  assign("cbiob", cbiob, envir = env)
-  assign("harvidx", harvidx, envir = env)
-  assign("croplaimx", croplaimx, envir = env)
-  assign("grainn", grainn, envir = env)
-  assign("cropyld", cropyld, envir = env)
   assign("dmyield", dmyield, envir = env)
   assign("dmstem", dmstem, envir = env)
   assign("dmleaf", dmleaf, envir = env)
@@ -190,53 +175,6 @@ ForageCropresidue <- function (year, year0, jday, index) {
   assign("cropfixn", cropfixn, envir = env)
   assign("cntops", cntops, envir = env)
   assign("cnroot", cnroot, envir = env)
-  assign("plai", plai, envir = env)
-  assign("thrlai", thrlai, envir = env)
-  assign("peaklai", peaklai, envir = env)
-  assign("ccdays", ccdays, envir = env)
-  assign("cbior", cbior, envir = env)
-  assign("cbiol", cbiol, envir = env)
-  assign("cbiog", cbiog, envir = env)
-  assign("cbiop", cbiop, envir = env)
-  assign("cbios", cbios, envir = env)
-  assign("hui", hui, envir = env)
-  assign("aybprod", aybprod, envir = env)
-  assign("ayrprod", ayrprod, envir = env)
-  assign("aylprod", aylprod, envir = env)
-  assign("leafout", leafout, envir = env)
-  assign("htmx", htmx, envir = env)
-  assign("cumlvs", cumlvs, envir = env)
-  assign("plaimx", plaimx, envir = env)
-  assign("dpgf", dpgf, envir = env)
-  assign("biomass", biomass, envir = env)
-  assign("totnuptake", totnuptake, envir = env)
-  assign("tnplant", tnplant, envir = env)
-  assign("totnfix", totnfix, envir = env)
-  assign("idpp", idpp, envir = env)
-  assign("idpe", idpe, envir = env)
-  assign("gddplant", gddplant, envir = env)
-  assign("gddtsoi", gddtsoi, envir = env)
-  assign("sai", sai, envir = env)
-  assign("fu", fu, envir = env)
-  assign("lai", lai, envir = env)
-  assign("zbot", zbot, envir = env)
-  assign("ztop", ztop, envir = env)
-  assign("totbiol", totbiol, envir = env)
-  assign("totlail", totlail, envir = env)
-  assign("vf", vf, envir = env)
-  assign("acroot", acroot, envir = env)
-  assign("idop", idop, envir = env)
-  assign("grainday", grainday, envir = env)
-  assign("gddsgcp", gddsgcp, envir = env)
-  assign("gddsgcr", gddsgcr, envir = env)
-  assign("hybgdd"  ,hybgdd  , envir = env)  
-  # assign("gddwwh" ,gddwwh , envir = env) 
   assign("cropy", cropy, envir = env)
-  assign("croplive", croplive, envir = env)
-  assign("gddmaturity", gddmaturity, envir = env)
-  assign("avehybrid", avehybrid, envir = env)
   
 }
-
-
-  

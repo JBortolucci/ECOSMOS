@@ -186,8 +186,8 @@ StomataC3Crops <- function(i) {
       gsmodel <- "BBC" # BBO | BBL | USO | BBC
       
       D0 = 1.5 # BBL
-      VPDSLP = -0.7  # BBC slope
-      VPDMIN = 0.5   # BBC - Start
+      VPDSLP = -0.7  # BBC slope       [Soybean = -0.32; Eucalyptus = -0.9]
+      VPDMIN = 1.5   # BBC - Start
       
       # Ball (1988) & Berry (1991) model [BBO] 'O' means original
       if (gsmodel=="BBO") {
@@ -196,7 +196,6 @@ StomataC3Crops <- function(i) {
       
       # BB after Leuning (1995) [BBL]
       if (gsmodel=="BBL") {
-        
         gs[i] <- 0.5*gs[i] + 0.5*(coefm[i] * anc3 / ((cs[i]-gamstar)*(1+VPDSL/D0)) + coefb[i] * stressc3c)
       }
       
@@ -341,6 +340,8 @@ StomataC3Crops <- function(i) {
   assign("ag", ag, envir = env)
   assign("an", an, envir = env)
   assign("totcond", totcond, envir = env)
-  assign ("rdarkc3", rdarkc3, envir = env)
+  
+  assign("rdarkc3", rdarkc3, envir = env)
+  assign("tempvm", tempvm, envir = env)
   
 }

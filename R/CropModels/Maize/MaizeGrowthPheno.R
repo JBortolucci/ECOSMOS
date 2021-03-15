@@ -58,6 +58,7 @@ simDataVars$fcbiol <- 0
 simDataVars$ndaysS3 <- 0
 
 simDataVars$cbiols <- 0 #TODO check with the new version in 'refactoring_v0'
+simDataVars$acob <- 0
 simDataVars$lais <- 0
 
 MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
@@ -111,7 +112,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
                    '5to6' = (gddt-gdds)+gdds*1.00) # R5 to R6 (blacklayer, or physiological maturity)
   
   # Crop initiation
-  greenfrac[i] <- 0.0 #TODO pensar sobre cultura anterior ou setar 0 na initialização do ECOSMOS e não aqui [2021-01-20] 
+  pgreenfrac[i] <- 0.0 #TODO pensar sobre cultura anterior ou setar 0 na initialização do ECOSMOS e não aqui [2021-01-20] 
   
   if (croplive[i] == 1) {
     
@@ -498,7 +499,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         # C mass-based for ECOSMOS 
         cbiorg <- max(0.0, aroot * adnppr)
-        cbiocg <- max(0.0, acob  * adnppg)
+        cbiocg <- max(0.0, acob  * adnpps)
         cbiosg <- max(0.0, astem * adnpps)
         
         # sumP <- sumP + cbiorg + cbiocg + cbiosg
@@ -662,7 +663,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       #TODO verificar o comportamento do 'sen', que está meio estranho [2021-02-25]
       plai[i] <- max(0.01, cbiol[i] * specla[i])
       lais[i] <- cbiols[i] * specla[i] #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
-      greenfrac[i] <- max(0.01,1-lais[i]/plai[i])
+      pgreenfrac[i] <- max(0.01,1-lais[i]/plai[i])
       # print(c('lai' = plai[i]))
       peaklai[i]  <- max(peaklai[i], plai[i])
 
@@ -677,13 +678,13 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         aleaf[i] * max(0.0, adnppl) +
         aroot[i] * max(0.0, adnppr) +
         astem[i] * max(0.0, adnpps) +
-        acob[i]  * max(0.0, adnppg)
+        acob  * max(0.0, adnpps)
       
       # aboveground value to calculate harvest index
       ayabprod[i] <- ayabprod[i] +
         aleaf[i] * max(0.0, adnppl) +
         astem[i] * max(0.0, adnpps) +
-        acob[i]  * max(0.0, adnppg)
+        acob  * max(0.0, adnpps)
       
       
       # keep track of annual total root production carbon
@@ -770,7 +771,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         croplive[i]   <- 0.0
         cropy         <- 0.0
         idpp[i]       <- 0.0
-        greenfrac[i]  <- 0.0 # turn all vegetation to brown
+        pgreenfrac[i]  <- 0.0 # turn all vegetation to brown
         harvdate[i]   <- jday
         plai[i]       <- 0.01 # simulates remaining stubble/mulch
         lais[i]       <- 0
@@ -842,12 +843,13 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
 
   assign("endCycle" , endCycle , envir = env)
   assign("ztopPft"  , ztopPft  , envir = env)
-  assign("greenfrac", greenfrac, envir = env)
+  assign("pgreenfrac", pgreenfrac, envir = env)
   assign("idpp"     , idpp     , envir = env)
-  assign("idpe"     , idpe     , envir = env)
+  #assign("idpe"     , idpe     , envir = env)
   assign("aroot"    , aroot    , envir = env)
   assign("aleaf"    , aleaf    , envir = env)
   assign("astem"    , astem    , envir = env)
+  assign("acob"     , acob    , envir = env)
   assign("arepr"    , arepr    , envir = env)
   assign("cbiol"    , cbiol    , envir = env)
   assign("cbiog"    , cbiog    , envir = env)

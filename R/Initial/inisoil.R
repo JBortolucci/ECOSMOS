@@ -22,7 +22,7 @@ inisoil <- function() {
 
   
  
-  assign("wsoi",  matrix(0.5   , 1, nsoilay), envir = env)
+  assign("wsoi",  matrix(0.75   , 1, nsoilay), envir = env)
   assign("tsoi",  matrix(Tavgann+273.16, 1, nsoilay), envir = env)
   assign("wisoi", matrix(0     , 1, nsoilay), envir = env)
   assign("fi",  array(0, 1), envir = env)
@@ -116,14 +116,15 @@ inisoil <- function() {
     if(pedofunct == 1) {
       
       poros[k]   <- (50.5 - 3.7 * fracclay[k] - 14.2 * fracsand[k]) / 100 # porosity (fraction):
+      hydraul[k] <- 1.0 * 10 ** (-0.6 - 0.64 * fracclay[k] + 1.26 * fracsand[k]) * 0.0254 / (3600)
+      bex[k]     <- 3.10 + 15.7 * fracclay[k] - 0.3 * fracsand[k]
       sfield[k]  <- 1 / poros[k] * (50.5-3.7*fracclay[k]-14.2*fracsand[k])/100 * (1.157e-9 / hydraul[k])**(1/(2*bex[k]+3))
       swilt[k]   <- 1 / poros[k] * (50.5-3.7*fracclay[k]-14.2*fracsand[k])/100 *((10**(2.17-0.63*fracclay[k]-1.58*fracsand[k])*0.01)/(1500/9.80665))**(1/bex[k])
-      hydraul[k] <- 1.0 * 10 ** (-0.6 - 0.64 * fracclay[k] + 1.26 * fracsand[k]) * 0.0254 / (3600)
       suction[k] <- 10 ** (2.17 - 0.63 * fracclay[k] - 1.58 * fracsand[k]) * 0.01
-      bex[k]     <- 3.10 + 15.7 * fracclay[k] - 0.3 * fracsand[k]
       bperm      <- 0.01
       
-      print(paste('Calculated Soil Properties',poros[1],sfield[1],swilt[1],hydraul[1],suction[1],bex[1],SRGF[1],bulkd[1],bperm[1],sep=" / "))
+      # print(paste('Calculated Soil Properties  ',k,swilt[k]*poros[k],sfield[k]*poros[k],poros[k],
+      #             hydraul[k],bex[k],bperm,suction[k],sep=" / "))
       
     } 
     
@@ -131,11 +132,12 @@ inisoil <- function() {
     if(!is.na(SOIL.profile$SDUL[k])) {sfield[k]   <- (1 / poros[k]) * SOIL.profile$SDUL[k] } # field capacity as fraction of porosity (volume fraction)
     if(!is.na(SOIL.profile$SLLL[k])) {swilt[k]    <- (1 / poros[k]) * SOIL.profile$SLLL[k] } # wilting point as fraction of porosity  (volume fraction)
     if(!is.na(SOIL.profile$SSKS[k])) {hydraul[k]  <- SOIL.profile$SSKS[k] / (1000 * 3600)  } # SHC : saturated hydraulic conductivity (m s-1)
-    if(!is.na(SOIL.profile$SLLL[k])) {suction[k]  <- SOIL.profile$SSKS[k]*1.5              } # AEP : air entry potential (m-H20)
+    #if(!is.na(SOIL.profile$SLLL[k])) {suction[k]  <- swilt[k]/1.5                          } # AEP : air entry potential (m-H20)
+    #Falta incluir    if(!is.na(SOIL.profile$AEP[k]))  {suction[k]  <- SOIL.profile$AEP[k]                   } # AEP : air entry potential (m-H20)
     if(!is.na(SOIL.profile$BEXP[k])) {bex[k]      <- SOIL.profile$BEXP[k]                  } # Campbell's 'b' exponent
     if(!is.na(SOIL.profile$SRGF[k])) {SRGF[k]     <- SOIL.profile$SRGF[k]                  } # Root hospitality factor 
     if(!is.na(SOIL.profile$SBDM[k])) {bulkd[k]    <- SOIL.profile$SBDM[k]                  } # Bulk density
-    if(!is.na(SOIL.profile$Bperm[k])){bperm       <- SOIL.profile$Bperm[1]}                  # Soil hydraulic diffusivity lower b.c. (units???)
+    if(!is.na(SOIL.profile$Bperm[k])){bperm       <- SOIL.profile$Bperm[1]                 } # Soil hydraulic diffusivity lower b.c. (units???)
     
     ibex[k]     <- round(bex[k])
     soilbase[k] <- SOIL.profile$SLB[k]
@@ -163,10 +165,10 @@ inisoil <- function() {
     sice[k]   <- 0
     
     if(soilic==1){
-      if((swic[k]/ poros[k])>= (swilt[k]-0.01) && (swic[k]/ poros[k]) < 1.0) wsoi[k]<- swic[k]/poros[k]
+      if((swic[k]/ poros[k])>= (swilt[k]-0.01) && (swic[k]/ poros[k]) <= 1.0) wsoi[k]<- swic[k]/poros[k]
     }
     
-         wsoi[k] <- min(max(wsoi[k],wsoi[k]),sfield[k])
+         wsoi[k] <- min(max(wsoi[k],swilt[k]),sfield[k])
       
     print(paste('Soil Properties',k,bex[k],fracsand[k],fracclay[k],poros[k],sfield[k]*poros[k],swilt[k]*poros[k],
                 hydraul[k],wsoi[k],sep=" / "))

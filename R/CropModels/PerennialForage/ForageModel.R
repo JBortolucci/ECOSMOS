@@ -70,7 +70,7 @@ ForageModel <- function(year, month, day, index) {
   #   }
   #   assign("froot", froot, envir = env)
   
-  ForagePlanting(year0, year, month, day, jday, ffact, index)
+  ForagePlanting(year0, year, month, day, jday, index)
   
   ForageCROPGRO(year, year0, month, day, jday, index)
   

@@ -8,7 +8,7 @@ readSoybeanParams <-function(pathExcel = "a",filePath = "SBGRO047", simInstances
   
   # if(!(coluna %in% colnames(data))) stop(paste0("The column ",coluna, " does not exist in parameters table."))
   
-  n <-1
+  n <- 1
   
   while(!(is.na(as.character(data[n,"parameter"])) & is.na(as.character(data[n,"value"])))){
     # if(!(startsWith(as.character(data[n,"parameter"]), '!'))){
@@ -48,7 +48,6 @@ readSoybeanParams <-function(pathExcel = "a",filePath = "SBGRO047", simInstances
     n <- n + 1
   }
   data <- read_excel(pathExcel, sheet = paste0(filePath,'.CUL'))
-  
   simInstances[[simId]]$plantList[[i]]$params[["VARNAME"]] <- as.character(data[which(data$`VAR#` %in% column)[1],2])
   simInstances[[simId]]$plantList[[i]]$params[["ECO"]] 	   <- as.character(data[which(data$`VAR#` %in% column)[1],3])
   simInstances[[simId]]$plantList[[i]]$params[["CSDL"]]    <- as.numeric(data[which(data$`VAR#` %in% column)[1],4])

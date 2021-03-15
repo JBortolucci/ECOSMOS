@@ -639,7 +639,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   ROWSPC <- config$plant1$rowSpacing / 100 # 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
   
   
-  SDWTPL <- 1000 # equivalente ao [.SBX] *PLANTING DETAILS: PLWT | Henrique: levar para template [2020-11-26]
+  SDWTPL <- 2000 # equivalente ao [.SBX] *PLANTING DETAILS: PLWT | Henrique: levar para template [2020-11-26]
   
   TNCFAC   <- params$TNCFAC
   PLIGSR   <- params$PLIGSR

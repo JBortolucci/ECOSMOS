@@ -5,9 +5,10 @@ SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, index) {
   
   # crop plant functional types only
   # in order to only allow a crop to be planted once each year
-
-  if (day == pdmin[j] && month == pmmin[j] && croplive[j] != 1 &&  exist[j] == 1){ pstart[j] <- 0             }
-  if (                                        croplive[j] != 1 &&  exist[j] == 1){ pstart[j] <- pstart[j] + 1 }
+  # initialize cropplant = 0, but hold it = 1 through the end of the year
+  
+  if (day == pdmin[i] && month == pmmin[i] && croplive[i] != 1 &&  exist[i] == 1){ pstart[i] <- 0             }
+  if (                                        croplive[i] != 1 &&  exist[i] == 1){ pstart[i] <- pstart[i] + 1 }
   
   
   if(pstart[i] == 1  & exist[i] == 1 & croplive[i] != 1) {
@@ -29,7 +30,7 @@ SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, index) {
       cropy            <- 1
       gddmaturity[i]  <- hybgdd[i]
       
-      print(paste('1st Plant Soybean ', jday, imonth, iyear,hybgdd[i],gddmaturity[i],sep=' / '))
+      print(paste('1st Plant Soybean ', jday, imonth, iyear,sep=' / '))
       
     }
     

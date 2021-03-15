@@ -7,7 +7,7 @@ UseMethourlyData <- function(year, jday, time) {
   me_current <- met_hourly[keyName,]
   
   
-  if(length(me_current) == 0){paste0(" NO HORLY DATA FOR  ",keyNames)
+  if(length(me_current) == 0){paste0(" NO HOURLY DATA FOR  ",keyNames)
     stop()}
   
   # Calculate minimum and maximum temperature of the day

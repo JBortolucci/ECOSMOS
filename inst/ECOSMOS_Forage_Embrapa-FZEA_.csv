@@ -1,3 +1,0 @@
-ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,planting day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
-FZEA_Pasture_LowInput,-21.977738,-47.435375,2017,171,2018,278,FZEA_Forage1,,0,1,1,0,0,forage,171,2017,999,2,2,,1,B.brizantha1
-FZEA_Pasture_Renewed,-21.977738,-47.435375,2019,171,2020,365,FZEA_Forage2,,0,1,1,0,0,forage,171,2019,999,2,2,,1,B.brizantha1

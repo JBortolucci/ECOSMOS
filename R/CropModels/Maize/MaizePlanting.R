@@ -7,13 +7,12 @@ MaizePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   # in order to only allow a crop to be planted once each year
   # initialize cropplant = 0, but hold it = 1 through the end of the year
   
-  if (iday == pdmin[i] & imonth == pmmin[i] & croplive[i] != 1 &  exist[i] == 1 & ncyears >= 1) {
-    pstart[i] <- cdays
-  }
+  if (day == pdmin[i] && month == pmmin[i] && croplive[i] != 1 &&  exist[i] == 1){ pstart[i] <- 0             }
+  if (                                        croplive[i] != 1 &&  exist[i] == 1){ pstart[i] <- pstart[i] + 1 }
   
   
-  if(pstart[i] == cdays & exist[i] == 1 & croplive[i] != 1) {
-    print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i]," cdays ",cdays,sep=" / "))
+  if(pstart[i] == 1 && exist[i] == 1 && croplive[i] != 1) {
+    print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i],sep=" / "))
   }
   
   
@@ -66,7 +65,7 @@ MaizePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
     # Plating block for Soybean, corn, and wheat
     
     
-    if(cropy == 0 & cdays >= pstart[i] & cdays <= (pstart[i]+180)) {
+    if(cropy == 0 && pstart[i] >= 1 && pstart[i] <= 180) {
       
       croplive[i]     <- 1        # initialize freeze kill function to 1 - crops living 
       cropplant[i]    <- 1        # initialize freeze kill function to 1 - crops living 
@@ -124,6 +123,7 @@ MaizePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   
  
   assign("pstart", pstart, envir = env)
+  assign("croplive", croplive, envir = env) 
   assign("pdate", pdate, envir = env)
   assign("cropplant", cropplant, envir = env)
   assign("cropy", cropy, envir = env)
@@ -156,7 +156,7 @@ MaizePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   assign("corndop", corndop, envir = env)
   assign("whtdop", whtdop, envir = env)
   assign("gddmaturity", gddmaturity, envir = env)
-  assign("avehybrid", avehybrid, envir = env)
+  # assign("avehybrid", avehybrid, envir = env)
   assign("fertnitro", fertnitro, envir = env)
   
 }
