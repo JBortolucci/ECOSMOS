@@ -42,16 +42,16 @@ CropPhenoUpdate <- function() {
 
 #LOWER CANOPY
   ztop[1] <- 0
-  for(i in 1:npft) {
-    if(!plantList[[i]]$active) next
-    if(plantList[[i]]$canopy == LOWER) {
-      # ztop[1] <- ztop[1] + (plai[i] / lai[1] * ztopPft[i])
+  for(j in 1:npft) {
+    if(!plantList[[j]]$active) next
+    if(plantList[[j]]$canopy == LOWER) {
+      # ztop[1] <- ztop[1] + (plai[j] / lai[1] * ztopPft[j])
       ztopTemp <- lai[1] * 0.25
-      if(plantList[[i]]$type == CROPS)
-                    ztopTemp <- ztopPft[i]
+      if(plantList[[j]]$type == CROPS)
+                    ztopTemp <- ztopPft[j]
       
-      ztop[1] <- ztop[1] + ztopTemp * (plai[i] / lai[1])
-      # ztop[1] <- ztop[1] + ztopPft[i]
+      ztop[1] <- ztop[1] + ztopTemp * (plai[j] / lai[1])
+      # ztop[1] <- ztop[1] + ztopPft[j]
     }
   }
   
@@ -60,12 +60,12 @@ CropPhenoUpdate <- function() {
   
   # UPPER CANOPY
   ztop[2] <- 0
-  for(i in 1:npft) {
-    if(plantList[[i]]$canopy == UPPER) {
+  for(j in 1:npft) {
+    if(plantList[[j]]$canopy == UPPER) {
       ztopTemp <- lai[2] * 0.25
-      if(plantList[[i]]$type == CROPS)
-        ztopTemp <- ztopPft[i]
-      ztop[2] <- ztop[2] + ztopTemp * (plai[i] / lai[2])
+      if(plantList[[j]]$type == CROPS)
+        ztopTemp <- ztopPft[j]
+      ztop[2] <- ztop[2] + ztopTemp * (plai[j] / lai[2])
     }
   }
   
@@ -75,18 +75,18 @@ CropPhenoUpdate <- function() {
   
 
   sai[1] <- 0
-  for(i in 1:npft) {
-    if(!plantList[[i]]$active) next
-    if(plantList[[i]]$canopy == LOWER) {
-      sai[1] <- sai[1] + plai[i] * 0.10
+  for(j in 1:npft) {
+    if(!plantList[[j]]$active) next
+    if(plantList[[j]]$canopy == LOWER) {
+      sai[1] <- sai[1] + plai[j] * 0.10
     }
   }
   
   
   sai[2] <- 0
-  for(i in 1:npft) {
-    if(plantList[[i]]$canopy == UPPER) {
-      sai[2] <- sai[2] + plai[i] * 0.10
+  for(j in 1:npft) {
+    if(plantList[[j]]$canopy == UPPER) {
+      sai[2] <- sai[2] + plai[j] * 0.10
     }
   }
   
@@ -111,20 +111,21 @@ CropPhenoUpdate <- function() {
     tauvegvlb  <- 0
     chiflzavg  <- 0
 
-  for(i in 1:npft) {
-    if(!plantList[[i]]$active) next
-    if(plantList[[i]]$canopy == LOWER) {
+  for(j in 1:npft) {
+    if(!plantList[[j]]$active) next
+    if(plantList[[j]]$canopy == LOWER) {
       
-    greenfrac[1] <- greenfrac[1] + frac[i] * pgreenfrac[j]
-    rhovegvlg  <- rhovegvlg  + frac[i] * rhovegvgin[i]     # vis leaf reflectance, lower story, green leaves
-    rhovegvlb  <- rhovegvlb  + frac[i] * rhovegvbin[i]     # vis leaf reflectance, lower story, brown leaves     
-    rhovegirlg <- rhovegirlg + frac[i] * rhovegirgin[i]    # nir leaf reflectance, lower story, green leaves
-    rhovegirlb <- rhovegirlb + frac[i] * rhovegirbin[i]    # nir leaf reflectance, lower story, brown leaves  
-    tauvegirlg <- tauvegirlg + frac[i] * tauvegirgin[i]    # nir leaf transmittance, lower story, green leaves
-    tauvegirlb <- tauvegirlb + frac[i] * tauvegirbin[i]    # nir leaf transmittance, lower story, brown leaves
-    tauvegvlg  <- tauvegvlg  + frac[i] * tauvegvgin[i]     # vis leaf transmittance, lower story, green leaves
-    tauvegvlb  <- tauvegvlb  + frac[i] * tauvegvbin[i]     # vis leaf transmittance, lower story, brown leaves
-    chiflzavg  <- chiflzavg  + frac[i] * chiflz[j]
+
+    greenfrac[1] <- greenfrac[1] + frac[j] * pgreenfrac[j]
+    rhovegvlg  <- rhovegvlg  + frac[j] * rhovegvgin[j]     # vis leaf reflectance, lower story, green leaves
+    rhovegvlb  <- rhovegvlb  + frac[j] * rhovegvbin[j]     # vis leaf reflectance, lower story, brown leaves     
+    rhovegirlg <- rhovegirlg + frac[j] * rhovegirgin[j]    # nir leaf reflectance, lower story, green leaves
+    rhovegirlb <- rhovegirlb + frac[j] * rhovegirbin[j]    # nir leaf reflectance, lower story, brown leaves  
+    tauvegirlg <- tauvegirlg + frac[j] * tauvegirgin[j]    # nir leaf transmittance, lower story, green leaves
+    tauvegirlb <- tauvegirlb + frac[j] * tauvegirbin[j]    # nir leaf transmittance, lower story, brown leaves
+    tauvegvlg  <- tauvegvlg  + frac[j] * tauvegvgin[j]     # vis leaf transmittance, lower story, green leaves
+    tauvegvlb  <- tauvegvlb  + frac[j] * tauvegvbin[j]     # vis leaf transmittance, lower story, brown leaves
+    chiflzavg  <- chiflzavg  + frac[j] * chiflz[j]
     }
   }
     
@@ -163,21 +164,21 @@ CropPhenoUpdate <- function() {
       tauvegirub  <- 0
       chifuzavg   <- 0
       
-    for(i in 1:npft) {
-      if(!plantList[[i]]$active) next
-      if(plantList[[i]]$canopy == UPPER) {
+    for(j in 1:npft) {
+      if(!plantList[[j]]$active) next
+      if(plantList[[j]]$canopy == UPPER) {
 
    greenfrac[2] <- greenfrac[2] + frac[j] * pgreenfrac[j]
-   rhovegvug   <- rhovegvug  + frac[j] * rhovegvgin[i]      # vis leaf reflectance, upper story, green leaves
-   rhovegvub   <- rhovegvub  + frac[j] * rhovegvbin[i]      # vis leaf reflectance, upper story, green leaves
-   rhovegirug  <- rhovegirug + frac[j] * rhovegirgin[i]    # nir leaf reflectance, upper story, green leaves
-   rhovegirub  <- rhovegirub + frac[j] * rhovegirbin[i]    # nir leaf reflectance, upper story, green leaves
-   tauvegvug   <- tauvegvug  + frac[j] * tauvegvgin[i]     # vis leaf transmittance, upper story, green leaves
-   tauvegvub   <- tauvegvub  + frac[j] * tauvegvbin[i]     # vis leaf transmittance, upper story, green leaves
-   tauvegirug  <- tauvegirug + frac[j] * tauvegirgin[i]    # nir leaf transmittance, upper story, green leaves
-   tauvegirub  <- tauvegirub + frac[j] * tauvegirbin[i]    # nir leaf transmittance, upper story, green leaves
+   rhovegvug   <- rhovegvug  + frac[j] * rhovegvgin[j]      # vis leaf reflectance, upper story, green leaves
+   rhovegvub   <- rhovegvub  + frac[j] * rhovegvbin[j]      # vis leaf reflectance, upper story, green leaves
+   rhovegirug  <- rhovegirug + frac[j] * rhovegirgin[j]    # nir leaf reflectance, upper story, green leaves
+   rhovegirub  <- rhovegirub + frac[j] * rhovegirbin[j]    # nir leaf reflectance, upper story, green leaves
+   tauvegvug   <- tauvegvug  + frac[j] * tauvegvgin[j]     # vis leaf transmittance, upper story, green leaves
+   tauvegvub   <- tauvegvub  + frac[j] * tauvegvbin[j]     # vis leaf transmittance, upper story, green leaves
+   tauvegirug  <- tauvegirug + frac[j] * tauvegirgin[j]    # nir leaf transmittance, upper story, green leaves
+   tauvegirub  <- tauvegirub + frac[j] * tauvegirbin[j]    # nir leaf transmittance, upper story, green leaves
    
-   chifuzavg  <- chifuzavg + frac[j] * chifuz[i]
+   chifuzavg  <- chifuzavg + frac[j] * chifuz[j]
       }
     }
       
@@ -206,34 +207,34 @@ CropPhenoUpdate <- function() {
   #### Annual production
   #----------------------------
   # keep track of total biomass production for the entire year, and the
-  aybprod[i]   <- aybprod[i] +
-                  aleaf[i]   * max(0.0,adnpp[i]) +
-                  astem[j]   * max(0.0,adnpp[i]) +
-                  arepr[j]   * max(0.0,adnpp[i]) +
-                  abranch[i] * max(0.0,adnpp[i]) +
-                  aroot[i]   * max(0.0,adnpp[i]) +
-                  acroot[i]  * max(0.0,adnpp[i]) +
-                  awood[i]   * max(0.0,adnpp[i]) 
+  aybprod[j]   <- aybprod[j] +
+                  aleaf[j]   * max(0.0,adnpp[j]) +
+                  astem[j]   * max(0.0,adnpp[j]) +
+                  arepr[j]   * max(0.0,adnpp[j]) +
+                  abranch[j] * max(0.0,adnpp[j]) +
+                  aroot[j]   * max(0.0,adnpp[j]) +
+                  acroot[j]  * max(0.0,adnpp[j]) +
+                  awood[j]   * max(0.0,adnpp[j]) 
   
   # aboveground value to calculate harvest index
-  ayabprod[i]  <- ayabprod[i] +
-                  aleaf[i]   * max(0.0,adnpp[i]) +
-                  astem[j]   * max(0.0,adnpp[i]) +
-                  arepr[j]   * max(0.0,adnpp[i]) +
-                  abranch[i] * max(0.0,adnpp[i]) +
-                  awood[i]   * max(0.0,adnpp[i]) 
+  ayabprod[j]  <- ayabprod[j] +
+                  aleaf[j]   * max(0.0,adnpp[j]) +
+                  astem[j]   * max(0.0,adnpp[j]) +
+                  arepr[j]   * max(0.0,adnpp[j]) +
+                  abranch[j] * max(0.0,adnpp[j]) +
+                  awood[j]   * max(0.0,adnpp[j]) 
   
   # keep track of annual total root production carbon
-  ayrprod[i]  <- ayrprod[i] +
-                 aroot[i]  * max(0.0,adnpp[i]) +
-                 acroot[i] * max(0.0,adnpp[i])
+  ayrprod[j]  <- ayrprod[j] +
+                 aroot[j]  * max(0.0,adnpp[j]) +
+                 acroot[j] * max(0.0,adnpp[j])
   
   # keep track of total carbon allocated to
   # leaves for litterfall calculation
-  aylprod[i] <- aylprod[i] +
-                aleaf[i] * max (0.0, adnpp[i])
+  aylprod[j] <- aylprod[j] +
+                aleaf[j] * max (0.0, adnpp[j])
   
-  biomass[i] <- cbiol[i] + cbios[j] + cbiog[j] + cbiocr[i] + cbior[i] + cbiob[i] + cbiow[i]
+  biomass[j] <- cbiol[j] + cbios[j] + cbiog[j] + cbiocr[j] + cbior[j] + cbiob[j] + cbiow[j]
   
 
 # End track of total biomass production  

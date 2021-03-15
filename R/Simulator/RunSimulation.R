@@ -331,7 +331,7 @@ GeneralModel <- function(simVars = NULL) {
         
         for(i in seq(1,simVars$npft)) {
           if(simVars$plantList[[i]]$active) next
-          if(simVars$plantList[[i]]$startYear == year) {
+          if(simVars$plantList[[i]]$startYear == year) { #TO DO: Jair, se essa planta já completeu seu ciclo não pode mais entrar aqui (mesmo que ainda no mesmo ano)
             simVars$plantList[[i]]$active <- T
             simVars$exist[i]              <- 1
           }
@@ -450,7 +450,7 @@ GeneralModel <- function(simVars = NULL) {
           
           if(simVars$endCycle[i]) {
             
-            print(paste0("Harvest ", simVars$plantList[[i]]$name, " - cycle ", simVars$plantList[[i]]$currentCycle))
+            print(paste0("Harvest ", simVars$plantList[[i]]$name, " - cycles ", simVars$plantList[[i]]$currentCycle))
             simVars$plantList[[i]]$currentCycle <- simVars$plantList[[i]]$currentCycle + 1
             
             # reset end cycle variable

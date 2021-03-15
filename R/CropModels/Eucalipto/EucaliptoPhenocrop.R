@@ -24,6 +24,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   Cfracts      <- plantList[[index]]$params$Cfracts
   Coroot1      <- plantList[[index]]$params$Coroot1
   Coroot2      <- plantList[[index]]$params$Coroot2
+  acrootmin    <- plantList[[index]]$params$acrootmin
   deltay       <- plantList[[index]]$params$deltay 
   Density      <- plantList[[index]]$params$Density
   Fdecay1      <- plantList[[index]]$params$Fdecay1
@@ -88,7 +89,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         cbiol[i]  <- 0.005065926 /kg_C_M2_to_T_ha
         cbiocr[i] <- 0.000163217 /kg_C_M2_to_T_ha
         plai[i]   <- cbiol[i] * specla[i]  
-        plai[i]   <- max(plai[i],0.01)
+        plai[i]   <- max(plai[i],0.1)
         cbiol[i]  <- plai[i]/specla[i]    
         
         }
@@ -178,7 +179,9 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       if (Corootexp < 0.) Corootexp = 0.001
       acroot[i] = (0.5 + 0.5 * (1.- (cbiocr[i]*kg_C_M2_to_T_ha) / Corootexp ) / Allocsenscr )
-      acroot[i]<-max(min(acroot[i],1),0)
+      
+      
+      acroot[i]<-max(min(acroot[i],1),acrootmin)
       
       
       #---------------------
@@ -209,6 +212,32 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       
     
+      #===============================================================
+      #Michel: Teste 4/3/21
+      if(plai[i] <= 2.5 & idpp[i]<=450 ) {
+        aleaf[i] <- max(aleaf,Alleafinit)
+      } else {
+       aleaf[i] <- max(aleaf[i],Alleafmin)
+      }
+      
+      if ( (aroot[i] + aleaf[i] + abranch[i] + acroot[i]) > 1 ) {
+        reductionfactor <- 1 / (aroot[i] + aleaf[i] + abranch[i] + acroot[i])
+        aroot[i]        <- aroot[i]*reductionfactor
+        aleaf[i]        <- aleaf[i]*reductionfactor
+        abranch[i]      <- abranch[i]*reductionfactor
+        acroot[i]       <-acroot[i]*reductionfactor
+      }
+      
+      awood[i] <- 1 - (aroot[i] + aleaf[i] + abranch[i] + acroot[i])
+      
+      awood[i]     <- max(0.0, awood[i])
+      aroot[i]     <- max(0.0, aroot[i])
+      aleaf[i]     <- max(0.0, aleaf[i])
+      abranch[i]   <- max(0.0, abranch[i])
+      acroot[i]    <- max(0.0, acroot[i])
+      #===============================================================      
+      
+      
       
       ###############################################################################
       ######################    ###    ##    ##     ## #### #########################
@@ -301,7 +330,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         (1-(max(0,min(water/capac,1))) / Fdecay4)
       
       Deadleaves <- Fdecay * cbiol[i] * kg_C_M2_to_T_ha  #rever dif entre Leaves_Predicted  e Shoot_Predicted
-      
       
       #######################################################################
       ########################     ### #####     ############################
