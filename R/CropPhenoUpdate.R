@@ -137,12 +137,6 @@ CropPhenoUpdate <- function() {
     if(tauvegvlb  == 0 ) tauvegvlb  <- tauvegvbin[1] 
     if(chiflzavg  == 0 ) chiflzavg  <- chiflz[1]
   
-  print(paste( plai[j],totlail,frac[j],fl, greenfrac[1],
-                rhovegvlg ,
-                rhovegirlg,
-                tauvegirlg,
-                tauvegvlg ,
-              sep = " / "))
 
     # Define other vegetation properties    
     # leaf orientation factors ( - 1 vertical, 0 random, 1 horizontal)

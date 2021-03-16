@@ -65,7 +65,8 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         #_____________________________________________________________            
         # crop phenology from leaf emergence to start of leaf decline   
         
-        if (gddplant[j] < huileaf[j]) {
+        
+        if (gddplant[j] < huileaf[j] ) {
           gddemerg    <- gddplant[j]
           awood[j]    <- 0.0
           aroot[j]    <- 0.0
@@ -76,13 +77,28 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           rm          <- 0.0 
           pgreenfrac[j] <- 1.0  
           
-        } else if (gddplant[j] >= huileaf[j]) {
+        } else if (gddplant[j] >= huileaf[j]  ) {
           
           # Phase 1 completed: Emergence
           
           rm <- min(100., 100. * (gddplant[j] - gddemerg) / gddmaturity[j] )
           
+          
+          gddemerg    <- gddplant[j]
+          
+          if( gddemerg == gddplant[j] & cropy == 1) {
+            plai[j]  <- 0.01
+            cbiol[j] <-  plai[j]/ specla[j]
+            pgreenfrac[j]  <- 1.0 # turn all vegetation to brown
+          } 
+          if (gddemerg == gddplant[j] & cropy >= 1){
+            plai[j]  <- 0.25
+            cbiol[j] <-  plai[j]/ specla[j]
+            pgreenfrac[j]  <- 1.0 # turn all vegetation to brown     
+                    }
+          
 
+          
           
           # scheme based on CANEGRO model (Singels et al. 2005) 
           # if sugarcane is planted, it takes long to construct the 
@@ -92,6 +108,9 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           } else {
             aerial[j] <- (1 - arootf[j]) * min(1.0, ( 1 - exp(-rootd * rm))) 
           }
+          
+          
+          print(paste(rm,idpp[j],aerial[j],plai[j],sep = ' / '))
           
           
           aroot[j] <- 1. - aerial[j]
@@ -119,7 +138,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
             astem[j] <- min( max(0.,aerial[j] - aleaff[j]) ,astem[j] ) 
           }
           
-          aleaf[j]   <- aerial[j] - 0.95*astem[j]
+          aleaf[j]   <- aerial[j] - astem[j]
           
           ################ leaf / Stalk allocation ################
           
@@ -169,31 +188,12 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           astem[j] <- max(0.0, astem[j])
           arepr[j] <- max(0.0, arepr[j])
 
-############ END of leaf adjusts ###########
-############################################
-
           templai[j] <- (cbiol[j] * specla[j])
           
           plai[j]    <- (cbiol[j] * specla[j]) - (cbiol[j] * specla[j]) * ( (1. / tauleaf[j]) )
-          
-          #  test the APSIM (parametrization) - lai declines linear for temp lower than 10C till zero if td = 0C
-          if(td <= 278.16 && td >= 268.16) {
-            browser()
-            print(paste0('td[i] <    5 C',year,jday,i,td - 273.16,plai[j]))
-            plai[j] <- plai[j]* max(0.4,min(1.,0.5 + ((td - 268.16) / 20.) )) # let at least 10%
-            print(paste0('plai reduction',year,jday,1,max(0.4,min(1.,0.5 + ((td - 268.16) / 20.))),plai[j]))
-            
-          } else if(td < 268.16) {
-            plai[j] <- 0.01
-            print(paste0('temp < -5, sugarcane die (from APSIM) ',year,jday,1))
-          }
-          
-          plai[j] <- max(0.01,plai[j])
-          
-     
-          ############################################
-          ############ END of leaf adjusts ###########
-          ############################################
+############ END of leaf adjusts ###########
+############################################
+
         }
 
   
@@ -219,7 +219,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         
         
         # update vegetation's physical characteristics
-        plai[j] <- max(cbiol[j] * specla[j] , 0.01)
+        plai[j] <- cbiol[j] * specla[j] 
 
         # sencon try as function of GDD, age and self-shade
         if( rm <= 50 ) { pgreenfrac[j] <- 1.0 }else{ 
@@ -229,26 +229,16 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         
         
         
-        #  test the APSIM (parametrization) - lai declines linear for temp lower than 10C till zero if td = 0C
-        if(td <= 278.16 && td >= 268.16) {
-          print(paste0('td[i] <    5 C',year,jday,i,td - 273.16,plai[j]))
-          plai[j] <- plai[j]* max(0.4,min(1.,0.5 + ((td - 268.16) / 20.) )) # let at least 10%
-          print(paste0('plai reduction',year,jday,1,max(0.4,min(1.,0.5 + ((td - 268.16) / 20.))),plai[j]))
-        } else if(td < 268.16) {
-          plai[j] <- 0.01
-          print(paste0('temp < -5, sugarcane die (from APSIM) ',year,jday,1))
-        }
-        
-        
-        plai[j]  <- max(0.01,plai[j])
+
+#______ Check consistence _________________        
         cbiow[j] <- max(0.0, cbiow[j]) 
         cbior[j] <- max(0.0, cbior[j]) 
-        cbiol[j] <- max(plai[j] / specla[j], cbiol[j])
         cbios[j] <- max(0.0, cbios[j])
         cbiog[j] <- max(0.0, cbiog[j]) 
+        plai[j]  <- max(0.01,plai[j])
+        cbiol[j] <- max(plai[j] / specla[j], cbiol[j])
         
         
-       
         #####################################################################
         # check for climatic and phenological limits on maturity, growth, 
         # and harvest date
@@ -258,10 +248,19 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         # be damaged/killed.  This function is more for spring freeze events
         # or for early fall freeze events
         
-        if (tmin <= tkill[j]) { pstart[j] <- 0  
-              croplive[j]     <- 0.0
-              print(paste0('tkill!!!!!',1,year,jday,idpp[j]))
-              harvdate[j]     <- jday }
+        #  test the APSIM (parametrization) - lai declines linear for temp lower than 10C till zero if td = 0C
+        if(td <= 278.16 && td >= 268.16) {
+          print(paste0('td[i] <    5 C',year,jday,i,td - 273.16,plai[j]))
+          plai[j] <- plai[j]* max(0.4,min(1.,0.5 + ((td - 268.16) / 20.) )) # let at least 10%
+          print(paste0('plai reduction',year,jday,1,max(0.4,min(1.,0.5 + ((td - 268.16) / 20.))),plai[j]))
+          plai[j]  <- max(0.1,plai[j])
+          
+        } else if(td < tkill[j]) {
+          plai[j] <- 0.0
+          croplive[j]     <- 0.0
+          harvdate[j]     <- jday
+          print(paste0('temp < -5, sugarcane die (from APSIM) ',year,jday,1))
+           }
         
         
         #___________________________________________________
@@ -276,10 +275,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
             # year == 2016 && jday == 290   ) { # maximum harvest date
             # year == 2005 && jday == 104   ) { # maximum harvest date
             
-            croplive[j]     <- 0.0
-            pgreenfrac[j]    <- 0.0 # turn all vegetation to brown
-            if (harvdate[j] == 999) harvdate[j] <- jday 
-            plai[j]         <- 0.25 # simulates remaining stubble/mulch
+             if (harvdate[j] == 999) harvdate[j] <- jday 
             print(paste('Sug.Cane - 1st cycle = ',cropy, year, jday, idpp[j], gddplant[j], gddmaturity[j]))
           }
           
@@ -290,13 +286,8 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
              ((idpp[j] >= 335) &&
               (day == pdmin[j] && month == ((pmmin[j] + (mxmat[j] / 30.) - 1)%%12 + 1)))) { # maximum harvest date
             
-            croplive[j]   <- 0.0
-            pgreenfrac[j]  <- 0.0 # turn all vegetation to brown
-            
             if(harvdate[j] == 999) harvdate[j] <- jday 
-            plai[j]       <- 0.25 # simulates remaining stubble/mulch
-            
-            print(paste0('Sug.Cane - ratoon = ',cropy,year,jday,idpp[j],gddplant[j],gddmaturity[j]))
+               print(paste0('Sug.Cane - ratoon = ',cropy,year,jday,idpp[j],gddplant[j],gddmaturity[j]))
           }
         }
       }
