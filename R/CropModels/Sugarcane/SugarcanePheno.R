@@ -67,7 +67,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         
         
         if (gddplant[j] < huileaf[j] ) {
-          gddemerg    <- gddplant[j]
           awood[j]    <- 0.0
           aroot[j]    <- 0.0
           aerial[j]   <- 0.0
