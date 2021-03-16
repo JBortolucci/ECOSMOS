@@ -387,7 +387,7 @@ ReadPlantParamsFromFile <- function(path = "") {
           readForageParams(pathExcel = as.character(data[n,column]) ,simInstances = simInstances,column = column , simId = simId , i = i)#pathExcel = as.character(data[n,column]), filePath = "SBGRO047", coluna = column, varSolo = "BR0001", simInstances, simId, i)
           n <- n + 1
         }
-        ReadForageHarvData(simId, simInstances = simInstances[[simId]])
+        try(ReadForageHarvData(simId, simInstances = simInstances[[simId]]))
       } else if(simInstances[[simId]]$config[[paste0("plant", i)]]$name == "maize"){
         source("./R/CropModels/Maize/readMaizeParams.R")
         if(!is.na(as.character(data[n,column])) && (!grepl("^[0-9]*$", as.character(data[n,column]), perl = T))){
