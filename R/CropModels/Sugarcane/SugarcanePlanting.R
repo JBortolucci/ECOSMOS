@@ -31,7 +31,7 @@ SugarcanePlanting <- function(year0, year, month, day, jday, index) {
       croplive[j]     <- 1        # initialize freeze kill function to 1 - crops living 
       pdate[j]         <- jday    
       cropy          <- 1
-      
+      gddemerg <- 0
       gddmaturity[j]  <- min (gddsgcp, hybgdd[j])
       print(paste('Plant SugarCane in ',year, month, jday," GDD " ,gddsgcp, hybgdd[j], gddmaturity[j],sep=" / "))
       
@@ -99,6 +99,7 @@ SugarcanePlanting <- function(year0, year, month, day, jday, index) {
   assign("gddmaturity", gddmaturity, envir = env)
   assign("fertnitro", fertnitro, envir = env)
   assign("fertinput", fertinput, envir = env)
+  assign("gddemerg", gddemerg, envir = env)
   
   
   

@@ -67,7 +67,6 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         
         
         if (gddplant[j] < huileaf[j] ) {
-          gddemerg    <- gddplant[j]
           awood[j]    <- 0.0
           aroot[j]    <- 0.0
           aerial[j]   <- 0.0
@@ -77,14 +76,20 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           rm          <- 0.0 
           pgreenfrac[j] <- 1.0  
           
-        } else if (gddplant[j] >= huileaf[j]  ) {
+        } 
+        
+        
+        if (gddplant[j] >= huileaf[j]  ) {
+          
+          
+          if(gddemerg==0)gddemerg   <- gddplant[j]
+          
           
           # Phase 1 completed: Emergence
           
           rm <- min(100., 100. * (gddplant[j] - gddemerg) / gddmaturity[j] )
           
           
-          gddemerg    <- gddplant[j]
           
           if( gddemerg == gddplant[j] & cropy == 1) {
             plai[j]  <- 0.01
@@ -92,7 +97,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
             pgreenfrac[j]  <- 1.0 # turn all vegetation to brown
           } 
           if (gddemerg == gddplant[j] & cropy >= 1){
-            plai[j]  <- 0.25
+            plai[j]  <- 0.15
             cbiol[j] <-  plai[j]/ specla[j]
             pgreenfrac[j]  <- 1.0 # turn all vegetation to brown     
                     }
