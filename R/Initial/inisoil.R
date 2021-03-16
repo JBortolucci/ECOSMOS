@@ -90,8 +90,8 @@ inisoil <- function() {
   for(k in 1:nsoilay) {
     
     # Minimum information
-    fracclay[k] <- SOIL.profile$SLCL[k]/100               # clay content
-    fracsilt[k] <- SOIL.profile$SLSI[k]/100               # silt content
+    fracclay[k] <- as.integer(SOIL.profile$SLCL[k])/100               # clay content
+    fracsilt[k] <- as.integer(SOIL.profile$SLSI[k])/100               # silt content
     fracsand[k] <- 1- fracclay[k] - fracsilt[k]           # sand content 
     
     if(k==1) {  
@@ -171,7 +171,7 @@ inisoil <- function() {
          wsoi[k] <- min(max(wsoi[k],swilt[k]),sfield[k])
       
     print(paste('Soil Properties from Profile',k,swilt[k]*poros[k],sfield[k]*poros[k],poros[k],
-                hydraul[k],bex[k],bperm,suction[k],SRGF[k],bulkd[k],sep=" / "))
+                hydraul[k],bex[k],bperm,suction[k],SRGF[k],bulkd[k], wsoi[k],sep=" / "))
 
       }
   

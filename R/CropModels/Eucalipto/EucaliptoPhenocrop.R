@@ -89,7 +89,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         cbiol[i]  <- 0.005065926 /kg_C_M2_to_T_ha
         cbiocr[i] <- 0.000163217 /kg_C_M2_to_T_ha
         plai[i]   <- cbiol[i] * specla[i]  
-        plai[i]   <- max(plai[i],0.1)
+        plai[i]   <- max(plai[i],0.02)
         cbiol[i]  <- plai[i]/specla[i]    
         
         }
