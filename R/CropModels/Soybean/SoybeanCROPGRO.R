@@ -109,6 +109,14 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     SAT[L]   <- poros[L]
     WR[L]    <- SRGF[L]
     BD[L]    <- bulkd[L]
+    
+    #TODO: formatar propriedades estáticas do solo acimauma vez (dia de simulação 1) e não durante toda simulação [Henrique; 2021-03-15]
+    #TODO: trazer a média do wsoi, tsoi e stresstl, ao invés de um valor (último, das 24h?), apenas [Henrique; 2021-03-15]
+    # CROPGRO format
+    SW[L]  <- wsoi[L] * poros[L]
+    ST[L]  <- tsoi[L] - 273.16
+    assign("SW",    SW    , envir = env)
+    assign("ST",    ST    , envir = env)
   }
   #_______________________________________________________________________________  
   
@@ -456,7 +464,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #     On day of emergence, initialize:
         #-----------------------------------------------------------------------
         GROW("EMERG",iyear,jday, ISWNIT,ISWSYM)
-        plai[i]  <- max(XLAI,0.01) # Henrique: atribui IAF inicial para ECOSMOS (2020-10-1)
+        plai[i]  <- max(XLAI,0.05) # Henrique: atribui IAF inicial para ECOSMOS (2020-10-1)
         
         #-----------------------------------------------------------------------
         #     Call to root growth and rooting depth routine
@@ -755,7 +763,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #     Call routine to integrate growth and damage
         #-----------------------------------------------------------------------
         GROW(DYNAMIC,iyear,jday, ISWNIT,ISWSYM)
-        plai[i]  <- max(XLAI,0.01) #TODO Henrique: verificar se aqu seria o lugar ideal dessa atribuição
+        plai[i]  <- max(XLAI,0.05) #TODO Henrique: verificar se aqu seria o lugar ideal dessa atribuição
         
         if ((WTLF+STMWT)> 0.0001) {
           PCNVEG <- (WTNLF+WTNST)/(WTLF+STMWT)*100.
