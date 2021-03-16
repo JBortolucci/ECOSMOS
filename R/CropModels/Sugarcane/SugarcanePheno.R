@@ -79,12 +79,14 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           
         } else if (gddplant[j] >= huileaf[j]  ) {
           
+          if(gddemerg==0)gddemerg   <- gddplant[j]
+          
+          
           # Phase 1 completed: Emergence
           
           rm <- min(100., 100. * (gddplant[j] - gddemerg) / gddmaturity[j] )
           
           
-          gddemerg    <- gddplant[j]
           
           if( gddemerg == gddplant[j] & cropy == 1) {
             plai[j]  <- 0.01

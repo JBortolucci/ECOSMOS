@@ -135,6 +135,7 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
       cropy <- cropy + 1	
       croplive[j] <- 1   
       gddmaturity[j]  <- gddsgcr
+      gddemerg <- 0
       
 
 
@@ -183,5 +184,6 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
   assign("gddsgcr", gddsgcr, envir = env)
   assign("gddmaturity", gddmaturity, envir = env)
   assign("fallrsgc", fallrsgc, envir = env)
-
+  assign("gddemerg", gddemerg, envir = env)
+  
 }
