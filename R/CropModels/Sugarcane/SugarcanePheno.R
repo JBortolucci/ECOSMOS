@@ -111,7 +111,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           }
           
           
-          print(paste(rm,idpp[j],aerial[j],plai[j],sep = ' / '))
+#          print(paste(rm,idpp[j],aerial[j],plai[j],sep = ' / '))
           
           
           aroot[j] <- 1. - aerial[j]

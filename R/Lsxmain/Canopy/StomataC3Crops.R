@@ -1,4 +1,3 @@
-
 ###############################################################################
 # Parâmetros gerais  # (recebido como parâmetros, mas comuns a todos os tipos)
 # tau15
@@ -65,7 +64,6 @@
 # a10daylightl  /  a10daylightu 
 # scalcoefl     /  scalcoefu 
 
-
 StomataC3Crops <- function(i) {
   
   canopy <- plantList[[i]]$canopy
@@ -109,17 +107,14 @@ StomataC3Crops <- function(i) {
   kc     <- kc15 * exp( 6000 * rwork)
   ko     <- ko15 * exp( 1400 * rwork)
   tleaf  <- canopyTemp - 273.16
-  tempvm <- exp(3500 * rwork ) / ((1 + exp(0.40 * (  5 - tleaf))) * (1 + exp(0.40 * (tleaf - 50))))
   gamstar <- o2conc / (2 * tau)
   
   ci[i] <- max (1.05 * gamstar, min (cimax, ci[i]))  
-  
   gbco2l <- min (10, max (0.1, airVegCoef * 25.5))
+  
   esatdossel <- esat (airTemp)
   qsatdossel <- qsat (esatdossel, psurf)
   rhdossel <- max (0.05, airHumidity / qsatdossel)
-  
-  
   
   #(1) Ascertain the saturated vapour pressure (SVP) for a given temperature (see list below)
   #       Temperature (degC) - SVP (Pa)
@@ -130,22 +125,26 @@ StomataC3Crops <- function(i) {
   VPDSL = VPSAT*(1- (rhdossel ))
   
   
-  
-  # modelo começa a partir daqui
-  rdarkc3 <- 0
-  
   if(croplive[i] == 1) {
-    
-    rwork <- 3.47e-03 - 1 / canopyTemp # recalcula aqui
-    tleaf <- canopyTemp - 273.16       # recalcula aqui
     
     tempvm <- q10 ** ((tleaf - 15) / 10) / ((1 + exp(f1[i] * (lotemp[i] - tleaf))) * (1 + exp(f2[i] * (tleaf - hitemp[i]))))
     
-    stressc3c <-  min(1, stresst)
-  
-    #    vmax <- max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i]))
-    vmax <- min(max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i])), 200) # maxim value of 150: Michel
+    #_________________________________________________________________________________
+    #____________ SVC - devera' ser testado antes de ativado!!!! _____________________
+    #____________ Porem se aplicado aqui, desligar no anc3 !!!   _____________________    
+    #     c adjust drystress factor imposed on soybeans - on a scale of
+    #     c 0 (less) - 1.0 (more), these have a 0.8 rating compared to 0.65 for maize 
+    #     c and for wheat
+    #     c from Penning de Vries, "Simulation of ecophysiological processes of
+    # c growth in several annual crops"
+    #     c
+    #     c make average stress factor 25% higher to account for difference 
+    #     c
+    #     c       stressc3c = min(1.0, stresst * drought(idc))
+    stressc3c = 1.0
     
+    
+    vmax <- max(0, vmax_pft[i] * tempvm * min(stressc3c, stressn[i], croplive[i]))
     
     rdarkc3 <- gamma[i] * vmax_pft[i] * tempvm * croplive[i]
     
@@ -172,14 +171,13 @@ StomataC3Crops <- function(i) {
     dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
     
     agc3 <- min (dumq / duma, dumc / dumq)
-    anc3 <- agc3 - rdarkc3
-    # anc3 <- anc3 * stresst  
+    anc3 <- (agc3 - rdarkc3)* max(0, stresst)
     
     cs[i]   <- 0.5 * (cs[i] + co2conc - anc3 / gbco2l)
     
     cs[i] <- max (1.05 * gamstar, cs[i])
     
-
+    
     # Stomatal conductance models [2020-11-18]
     {
       # gsmodel <- "BBC" # BBO | BBL | USO | BBC 
@@ -187,7 +185,7 @@ StomataC3Crops <- function(i) {
       # D0 = 1.5 # BBL
       # VPDSLP = -0.7  # BBC slope       [Soybean = -0.32; Eucalyptus = -0.9]
       # VPDMIN = 1.5   # BBC - Start
-
+      
       # Ball (1988) & Berry (1991) model [BBO] 'O' means original
       if (gsmodel=="BBO") {
         gs[i] <- 0.5 * (gs[i] + coefm[i] * anc3 * rhdossel / cs[i] + coefb[i] * stressc3c)
@@ -208,7 +206,7 @@ StomataC3Crops <- function(i) {
       if (gsmodel=="BBC") {
         if (VPDSL >= VPDMIN[i]) {
           VPDFACTOR=1+VPDSLP[i]*(VPDSL-VPDMIN[i])
-         # print(paste(rhdossel,VPDSL,VPDFACTOR),sep=" / ")
+          # print(paste(rhdossel,VPDSL,VPDFACTOR),sep=" / ")
         } else {
           VPDFACTOR=1.0
         }
@@ -224,11 +222,10 @@ StomataC3Crops <- function(i) {
     
     ci[i] <- max (1.05 * gamstar, min (cimax, ci[i]))
     
-  
-#________________________________________________________________________
-# # Canopy scaling
-
-# calculate the approximate extinction coefficient
+    #________________________________________________________________________
+    # # Canopy scaling
+    # calculate the approximate extinction coefficient
+    
     extpar  <- (term[6] * scalcoef[1] + term[7] * scalcoef[2] - term[7] * scalcoef[3]) / max (scalcoef[4], epsilon)
     extpar  <- max (1e-1, min (1e+1, extpar))
     
@@ -240,7 +237,6 @@ StomataC3Crops <- function(i) {
     # canopy average photosynthesis
     
     zweight <- exp( - 1 / (10 * 86400 / dtime))
-    
     
     if(plail > 0) {
       if(toppar > 10) {
@@ -254,10 +250,9 @@ StomataC3Crops <- function(i) {
       scale <- 0
     }
     
-    #  perform scaling on all carbon fluxes from lower canopy
+    #  perform scaling on carbon fluxes
     ag[i] <- agc3 * scale
     an[i] <- anc3 * scale
-    
     
     #________________________________________________________    
     #c calculate canopy average surface co2 concentration
@@ -298,37 +293,46 @@ StomataC3Crops <- function(i) {
     
     gsc <- max (gsmin[i], coefb[i] * stressc3c, gsc)
     
+    # The following adjusts the above calculated values of an and ag according to what percentage of the
+    # canopy is green by weighting the above calculations by greenfrac
+    # terms. Only the green portion of the canopy performs photosynthesis.
     
+    an[i] <- an[i] * pgreenfrac[i]
+    ag[i] <- ag[i] * pgreenfrac[i]
+    gsc   <- gsc   * pgreenfrac[i]
     
     
     # calculate canopy and boundary-layer total conductance for water vapor diffusion
     
-    rwork <- 1 / airVegCoef   
+    rwork <- 1 / airVegCoef
     dump  <- 1 / 0.029   
     
     if(gsc > 0) {  totcond[i] <- 1 / ( rwork + dump / gsc )}else{ totcond[i] = 0}
     
     
+    # multiply canopy photosynthesis by wet fraction -- this calculation is
+    # done here and not earlier to avoid using within canopy conductance
     
-    # fwet effect on totcond is applyed at turvap       
+    
     rwork <- 1 - fwet
     ag[i] <- rwork * ag[i]
     an[i] <- rwork * an[i]
     
-      
+    
+    
   } else {
     
-    ag[i] <- 0
-    an[i] <- 0
-    cs[i] <- 0
-    gs[i] <- 0
-    ci[i] <- 0
+    ag[i]      <- 0
+    an[i]      <- 0
+    cs[i]      <- 0
+    gs[i]      <- 0
+    ci[i]      <- 0
     totcond[i] <- 0
-
-    
+    rdarkc3    <- 0
+    tempvm     <- 0
   }
   
- 
+  
   
   assign("stressn", stressn, envir = env)
   assign("a10scalparaml", a10scalparaml, envir = env)

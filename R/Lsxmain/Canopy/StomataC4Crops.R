@@ -1,183 +1,341 @@
+###############################################################################
+# Parâmetros gerais  # (recebido como parâmetros, mas comuns a todos os tipos)
+# tau15
+# kc15
+# ko15
+# cimax
+# co2conc
+
+
+###############################################################################
+# Parâmetros específicos relacionados ao tipos de planta (c3 / c4 / crop / veg)
+
+# alpha  - intrinsic quantum efficiency
+# beta   - photosynthesis coupling coefficient
+# theta  - photosynthesis coupling coefficient
+# gamma  - leaf respiration coefficients 
+# coefm  - 'm' coefficients for stomatal conductance relationship
+# coefb  - 'b' coefficients for stomatal conductance relationship
+# gsmin  - absolute minimum stomatal conductances
+
+###################
+# Outros parâmetros
+
+# vmax_pft - nominal vmax of top leaf at 15 C (mol-co2/m**2/s) 
+# lotemp   - low temperature threshold in tempvm equation 
+# f1       - constant used in tempvm equations 
+# f2       - constant used in tempvm equations 
+
+
+#############################################################################################  
+# Variáveis do modelo ( cada tipo de planta terá individualmente esse conjunto de variáveis )
+
+# ci      - Intercellular co2 concentration (mol_co2/mol_air)
+# cs      - Leaf boundary layer co2 concentration (mol_co2/mol_air)
+# gs      - Lower canopy stomatal conductance (mol_co2 m-2 s-1)
+# ag      - Canopy average gross photosynthesis rate (mol_co2 m-2 s-1)
+# an      - Canopy average net photosynthesis rate (mol_co2 m-2 s-1)
+# totcond 
+
+# greenfrac
+
+############################################################################# 
+# Inputs Lower - Upper (são os inputs que mudam se a planta é lower ou upper)
+
+# t34      /  t12
+# q34      /  q12
+# tl       /  tu
+# sl       /  su
+# topparl  /  topparu
+# stresstl /  stresstu
+# fwetl    /  fwetu
+
+###############
+# Outros inputs
+
+# psurf
+# stressn 
+
+# #######
+# SCALING
+
+# terml         /  termu 
+# a10scalparaml /  a10scalparamu 
+# a10daylightl  /  a10daylightu 
+# scalcoefl     /  scalcoefu 
+
 StomataC4Crops <- function(i) {
   
   canopy <- plantList[[i]]$canopy
   
   if(canopy == UPPER) {
     
-    airTemp     <- t12
-    airHumidity <- q12
-    canopyTemp  <- tu
-    airVegCoef  <- su
-    toppar      <- topparu
-    stresst     <- stresstu
-    fwet        <- fwetu
-    l_lai       <- lai[2]
-    l_sai       <- sai[2]
-    term        <- termu
-    scalcoef    <- scalcoefu
+    airTemp      <- t12
+    airHumidity  <- q12
+    canopyTemp   <- tu
+    airVegCoef   <- su
+    toppar       <- topparu
+    stresst      <- stresstu
+    fwet         <- fwetu
+    canopy_lai   <- lai[2]
+    canopy_sai   <- sai[2]
+    term         <- termu
+    scalcoef     <- scalcoefu
     a10scalparam <- a10scalparamu
     a10daylight  <- a10daylightu
     
   } else {
     
-    airTemp     <- t34
-    airHumidity <- q34
-    canopyTemp  <- tl
-    airVegCoef  <- sl
-    toppar      <- topparl
-    stresst     <- stresstl
-    fwet        <- fwetl
-    l_lai       <- lai[1]
-    l_sai       <- sai[1]
-    term        <- terml
-    scalcoef    <- scalcoefl
-    a10scalparam <- a10scalparaml
-    a10daylight  <- a10daylightl
+    airTemp       <- t34
+    airHumidity   <- q34
+    canopyTemp    <- tl
+    airVegCoef    <- sl
+    toppar        <- topparl
+    stresst       <- stresstl
+    fwet          <- fwetl
+    canopy_lai    <- lai[1]
+    canopy_sai    <- sai[1]
+    term          <- terml
+    scalcoef      <- scalcoefl
+    a10scalparam  <- a10scalparaml
+    a10daylight   <- a10daylightl
     
   }
   
   rwork  <- 3.47e-03 - 1 / canopyTemp
-  
   tau    <- tau15 * exp( - 5000 * rwork)
   kc     <- kc15 * exp( 6000 * rwork)
   ko     <- ko15 * exp( 1400 * rwork)
-  
   tleaf  <- canopyTemp - 273.16
-  
-  tempvm <- exp(3500 * rwork ) / ((1 + exp(0.40 * (  5 - tleaf))) * (1 + exp(0.40 * (tleaf - 50))))
-  
   gamstar <- o2conc / (2 * tau)
   
-  ci[i] <- max (0           , min (cimax, ci[i]))
-  
+  ci[i] <- max (0 , min (cimax, ci[i]))
   gbco2l <- min (10, max (0.1, airVegCoef * 25.5))
   
-  esat34 <- esat (airTemp)
-  qsat34 <- qsat (esat34, psurf)
-  rh34 <- max (0.30, airHumidity / qsat34)
+  esatdossel <- esat (airTemp)
+  qsatdossel <- qsat (esatdossel, psurf)
+  rhdossel <- max (0.05, airHumidity / qsatdossel)
   
-  # q10 <- 2.92 # Henrique: alterado após análise de dados de milho em Nebraska [2020-11-26] (talvez trazer como parâmetro?)
-                # TODO: Valor de q10 esta no arquivo PlantParams - 04/12/2020
-
-  rwork <- 3.47e-03 - 1 / canopyTemp
-  tleaf <- canopyTemp - 273.16
+  #(1) Ascertain the saturated vapour pressure (SVP) for a given temperature (see list below)
+  #       Temperature (degC) - SVP (Pa)
+  VPSAT = 610.78 * exp(17.269*(airTemp - 273.16)/((airTemp- 273.16)+237.30))/1000
   
-  tempvm <- q10 ** ((tleaf - 15) / 10) / ((1 + exp(f1[i] * (lotemp[i] - tleaf))) * (1 + exp(f2[i] * (tleaf - hitemp[i]))))
+  #2 - (2) As VPD is the saturated vapour pressure minus the actual vapour pressure (SVP - VPactual), 
+  # and VPactual = (RH*SVP)/100
+  VPDSL = VPSAT*(1- (rhdossel ))
   
-  stressc4c <- 1  
   
-  # TODO: Retirar isso daqui! Setar para cana em outro local.
-  # if(i == 1) stressn[i] <- 1
-  
-  vmax      <- max(0, vmax_pft[i] * tempvm * min(stressc4c, stressn[i], croplive[i]))
-  
-  rdarkc4 <- gamma[i] * vmax_pft[i] * tempvm * croplive[i]
-  
-  je <- toppar * 4.59e-06 * 0.067 
-  jc <- vmax
-  
-  kco2 <- 4e+03 * vmax    
-  
-  #duma <- thetac4
-  duma <- theta[i]
-  dumb <- je  + jc
-  dumc <- je  * jc
-  
-  dume <- max (dumb ** 2  - 4 * duma * dumc, 0)
-  dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
-  
-  jp <- min (dumq / duma, dumc / dumq)
-  ji <- kco2 * cic4
-  
-  # duma <- betac4
-  duma <- beta[i]
-  dumb <- jp + ji
-  dumc <- jp * ji
-  
-  dume <- max (dumb ** 2  - 4 * duma * dumc, 0)
-  dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
-  
-  agc4 <- min (dumq / duma, dumc / dumq)
-  anc4 <- agc4 - rdarkc4
-
-  anc4 <- anc4 * max(0, stresst) #TODO Henrique: verificar pq stresst está on aqui e não na C3 [2021-02-12]
-  
-  # csc4 <- 0.5 * (csc4 + co2conc - anc4 / gbco2l)  
-  cs[i] <- 0.5 * (cs[i] + co2conc - anc4 / gbco2l)
-  
-  # csc4 <- max (0, csc4)
-  cs[i] <- max (0, cs[i])
-  
-  # gsc4 <- 0.5 * (gsc4 + coefmc4 * anc4 * rh34 / csc4 + coefbc4 * stressc4c)  
-  gs[i] <- 0.5 * (gs[i] + coefm[i] * anc4 * rh34 / cs[i] + coefb[i] * stressc4c)
-  
-  # gsc4 <- max (gsc4min, coefbc4 * stressc4c, gsc4) 
-  gs[i] <- max (gsmin[i], coefb[i] * stressc4c, gs[i])
-  
-  # cic4 <- (1 / 3) * (cic4 * 2 + csc4 - 1.6 * anc4 / gsc4)
-  ci[i] <- (1 / 3) * (ci[i] * 2 + cs[i] - 1.6 * anc4 / gs[i])
-  # cic4 <- max (0, min (cimax, cic4))  
-  ci[i] <- max (0, min (cimax, ci[i]))
-  
-  # ---------------------------------------------------------------------
-  # lower canopy scaling
-  # ---------------------------------------------------------------------
-  # calculate the approximate extinction coefficient
-  
-  # PFT_UPDATE: Escala é comum para todos os tipos de planta, mudando apenas as variáveis upper ou lower
-  # Transformar numa função?
-  extpar  <- (term[6] * scalcoef[1] + term[7] * scalcoef[2] - term[7] * scalcoef[3]) / max (scalcoef[4], epsilon)
-  extpar  <- max (1e-1, min (1e+1, extpar))
-  pxail   <- extpar * (l_lai + l_sai)  
-  plail   <- extpar * l_lai
-  zweight <- exp( - 1 / (10 * 86400 / dtime))
-  
-  if(plail > 0) {
-    if(toppar > 10) {
-      scale         <- (1 - exp( - pxail)) / plail
-      a10scalparam <- zweight * a10scalparam + (1 - zweight) * scale  * toppar
-      a10daylight  <- zweight * a10daylight +  (1 - zweight) * toppar
-    } else {
-      scale <- a10scalparam / a10daylight
+  if(croplive[i] == 1) {
+    
+    tempvm <- q10 ** ((tleaf - 15) / 10) / ((1 + exp(f1[i] * (lotemp[i] - tleaf))) * (1 + exp(f2[i] * (tleaf - hitemp[i]))))
+    
+    #_________________________________________________________________________________
+    #____________ SVC - devera' ser testado antes de ativado!!!! _____________________
+    #____________ Porem se aplicado aqui, desligar no anc4 !!!   _____________________    
+    #     c adjust drystress factor imposed on soybeans - on a scale of
+    #     c 0 (less) - 1.0 (more), these have a 0.8 rating compared to 0.65 for maize 
+    #     c and for wheat
+    #     c from Penning de Vries, "Simulation of ecophysiological processes of
+    # c growth in several annual crops"
+    #     c
+    #     c make average stress factor 25% higher to account for difference 
+    #     c
+    #     c       stressc4c = min(1.0, stresst * drought(idc))
+    stressc4c = 1.0
+    
+    
+    vmax <- max(0, vmax_pft[i] * tempvm * min(stressc4c, stressn[i], croplive[i]))
+    
+    rdarkc4 <- gamma[i] * vmax_pft[i] * tempvm * croplive[i]
+    
+    je <- toppar * 4.59e-06 * 0.067 
+    jc <- vmax
+    
+    kco2 <- 4e+03 * vmax    
+    
+    #duma <- thetac4
+    duma <- theta[i]
+    dumb <- je  + jc
+    dumc <- je  * jc
+    
+    dume <- max (dumb ** 2  - 4 * duma * dumc, 0)
+    dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
+    
+    jp <- min (dumq / duma, dumc / dumq)
+    ji <- kco2 * cic4
+    
+    # duma <- betac4
+    duma <- beta[i]
+    dumb <- jp + ji
+    dumc <- jp * ji
+    
+    dume <- max (dumb ** 2  - 4 * duma * dumc, 0)
+    dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
+    
+    agc4 <- min (dumq / duma, dumc / dumq)
+    anc4 <- (agc4 - rdarkc4) * max(0, stresst) 
+    
+    cs[i] <- 0.5 * (cs[i] + co2conc - anc4 / gbco2l)
+    
+    cs[i] <- max (0, cs[i])
+    
+    # Stomatal conductance models [2020-11-18]
+    {
+      # gsmodel <- "BBC" # BBO | BBL | USO | BBC 
+      
+      # D0 = 1.5 # BBL
+      # VPDSLP = -0.7  # BBC slope       [Soybean = -0.32; Eucalyptus = -0.9]
+      # VPDMIN = 1.5   # BBC - Start
+      
+      # Ball (1988) & Berry (1991) model [BBO] 'O' means original
+      if (gsmodel=="BBO") {
+        gs[i] <- 0.5 * (gs[i] + coefm[i] * anc4 * rhdossel / cs[i] + coefb[i] * stressc4c)
+      }
+      
+      # BB after Leuning (1995) [BBL]
+      if (gsmodel=="BBL") {
+        gs[i] <- 0.5*gs[i] + 0.5*(coefm[i] * anc4 / ((cs[i]-gamstar)*(1+VPDSL/D0[i])) + coefb[i] * stressc4c)
+      }
+      
+      # BB with the optimal stomatal control model of Cowan and Farquhar (1977) was proposed by Medlyn et al. (2011) [USO]
+      if (gsmodel=="USO") {
+        gs[i] <- 0.5 * (gs[i] + 1.6 * (1 + coefm[i] / sqrt(rhdossel)) * (anc4 / cs[i]) ) 
+        # check if rhdossel = D & where to include stressc4c
+      }
+      
+      # BB after Cuadra et al. (2021) [BBC]
+      if (gsmodel=="BBC") {
+        if (VPDSL >= VPDMIN[i]) {
+          VPDFACTOR=1+VPDSLP[i]*(VPDSL-VPDMIN[i])
+          # print(paste(rhdossel,VPDSL,VPDFACTOR),sep=" / ")
+        } else {
+          VPDFACTOR=1.0
+        }
+        VPDFACTOR=max(min(VPDFACTOR,1),0)
+        gs[i] <- 0.5*gs[i] + 0.5 * ((coefm[i]*anc4*VPDFACTOR)/(cs[i]-gamstar) + coefb[i] * stressc4c)
+      }
+      
     }
+    
+    gs[i] <- max (gsmin[i], coefb[i] * stressc4c, gs[i])
+    
+    ci[i] <- 0.5 * (ci[i] + cs[i] - 1.6 * anc4 / gs[i])
+
+    ci[i] <- max (0, min (cimax, ci[i]))
+    
+    #________________________________________________________________________
+    # # Canopy scaling
+    # calculate the approximate extinction coefficient
+    
+    extpar  <- (term[6] * scalcoef[1] + term[7] * scalcoef[2] - term[7] * scalcoef[3]) / max (scalcoef[4], epsilon)
+    extpar  <- max (1e-1, min (1e+1, extpar))
+    
+    # calculate canopy average photosynthesis (per unit leaf area):
+    pxail   <- extpar * (canopy_lai + canopy_sai)  
+    plail   <- extpar * canopy_lai
+    
+    # scale is the parameter that scales from leaf-level photosynthesis to
+    # canopy average photosynthesis
+    
+    zweight <- exp( - 1 / (10 * 86400 / dtime))
+    
+    if(plail > 0) {
+      if(toppar > 10) {
+        scale         <- (1 - exp( - pxail)) / plail
+        a10scalparam <- zweight * a10scalparam + (1 - zweight) * scale  * toppar
+        a10daylight  <- zweight * a10daylight +  (1 - zweight) * toppar
+      } else {
+        scale <- a10scalparam / a10daylight
+      }
+    } else {
+      scale <- 0
+    }
+    
+    #  perform scaling on carbon fluxes
+    ag[i] <- agc4 * scale
+    an[i] <- anc4 * scale
+    
+    #________________________________________________________    
+    #c calculate canopy average surface co2 concentration
+    
+    csc <- max (1e-08       , co2conc - an[i] / gbco2l)
+    
+    {
+      
+      # Ball (1988) & Berry (1991) model [BBO] 'O' means original
+      if (gsmodel=="BBO") {
+        gsc <- coefm[i] * an[i] * rhdossel / csc + coefb[i] * stressc4c
+      }
+      
+      # BB after Leuning (1995) [BBL]
+      if (gsmodel=="BBL") {
+        gsc <-coefm[i] * an[i] / ((csc-gamstar)*(1+VPDSL/D0[i])) + coefb[i] * stressc4c
+      }
+      
+      # BB with the optimal stomatal control model of Cowan and Farquhar (1977) was proposed by Medlyn et al. (2011) [USO]
+      if (gsmodel=="USO") {
+        gsc <-  1.6 * (1 + coefm[i] / sqrt(rhdossel)) * (an[i] / csc)  
+        # check if rhdossel = D & where to include stressc4c
+      }
+      
+      # BB after Cuadra et al. (2021) [BBC]
+      if (gsmodel=="BBC") {
+        if (VPDSL >= VPDMIN[i]) {
+          VPDFACTOR=1+VPDSLP[i]*(VPDSL-VPDMIN[i])
+          # print(paste(rhdossel,VPDSL,VPDFACTOR),sep=" / ")
+        } else {
+          VPDFACTOR=1.0
+        }
+        VPDFACTOR=max(min(VPDFACTOR,1),0)
+        gsc <- (coefm[i]*an[i]*VPDFACTOR)/(csc-gamstar) + coefb[i] * stressc4c
+      }
+      
+    }
+    
+    gsc <- max (gsmin[i], coefb[i] * stressc4c, gsc)
+    
+    
+# The following adjusts the above calculated values of an and ag according to what percentage of the
+# canopy is green by weighting the above calculations by greenfrac
+# terms. Only the green portion of the canopy performs photosynthesis.
+    
+    an[i] <- an[i] * pgreenfrac[i]
+    ag[i] <- ag[i] * pgreenfrac[i]
+    gsc   <- gsc   * pgreenfrac[i]
+    
+
+# calculate canopy and boundary-layer total conductance for water vapor diffusion
+    
+    rwork <- 1 / airVegCoef
+    dump  <- 1 / 0.029   
+    
+    if(gsc > 0) {  totcond[i] <- 1 / ( rwork + dump / gsc )}else{ totcond[i] = 0}
+    
+
+# multiply canopy photosynthesis by wet fraction -- this calculation is
+# done here and not earlier to avoid using within canopy conductance
+
+    
+    rwork <- 1 - fwet
+    ag[i] <- rwork * ag[i]
+    an[i] <- rwork * an[i]
+    
+    
+    
+    
   } else {
-    scale <- 0
+    
+    ag[i] <- 0
+    an[i] <- 0
+    cs[i] <- 0
+    gs[i] <- 0
+    ci[i] <- 0
+    totcond[i] <- 0
+    
+    
   }
   
   
-  
-  # agcc4 <- agc4 * scale
-  ag[i] <- agc4 * scale
-  
-  # ancc4 <- anc4 * scale
-  an[i] <- anc4 * scale
-  
-  # cscc4 <- max (1e-08       , co2conc - ancc4 / gbco2l)
-  cscc4 <- max (1e-08       , co2conc - an[i] / gbco2l)
-  
-  # gscc4 <- coefmc4 * ancc4 * rh34 / cscc4 + coefbc4 * stressc4c
-  gscc4 <- coefm[i] * an[i] * rh34 / cscc4 + coefb[i] * stressc4c
-
-  gscc4 <- max (gsmin[i], coefb[i] * stressc4c, gscc4)
-
-  an[i] <- an[i] * pgreenfrac[i]
-  ag[i] <- ag[i] * pgreenfrac[i]
-  gscc4 <- gscc4 * pgreenfrac[i]
-  
-
-  rwork <- 1 / airVegCoef
-  dump <- 1 / 0.029   
-  
-  # totcondc4 <- 1 / ( rwork + dump / gscc4 )
-  totcond[i] <- 1 / ( rwork + dump / gscc4 )
-  
-  rwork <- 1 - fwet
-  
-  # agcc4 <- rwork * agcc4
-  ag[i] <- rwork * ag[i]
-  
-  # ancc4 <- rwork * ancc4
-  an[i] <- rwork * an[i]
   
   assign("stressn", stressn, envir = env)
   assign("ci", ci, envir = env)
