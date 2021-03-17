@@ -48,6 +48,12 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   Wdecay       <- plantList[[index]]$params$Wdecay
   Ht0          <- plantList[[index]]$params$Ht0
   Htpower      <- plantList[[index]]$params$Htpower
+  SdecayStart  <- plantList[[index]]$params$SdecayStart
+  Sdecayexp    <- plantList[[index]]$params$Sdecayexp
+  CRdecayStart <- plantList[[index]]$params$CRdecayStart
+  CRdecayexp   <- plantList[[index]]$params$CRdecayexp
+  
+  
   
   i <- index
   
