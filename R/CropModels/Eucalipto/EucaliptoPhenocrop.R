@@ -250,13 +250,20 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       # Mortality - Litterfall C fluxes
       # ---------------------
       #dead stem computation
-      if (rm > BdecayStart ) {    # progressive start of branch, coarse root and bark decay after age 1./Bdecay
-        # fdec         <- exp(2.*log(2.) * (rm - BdecayStart)) - 1
-        # fdec         <- max(min(fdec,1), 0)
-        # fdec         <- 2 * exp(log(1.4) * (rm - BdecayStart))
-        fdec         <- exp(log(1.27) * (rm - BdecayStart))
+      if (rm > SdecayStart ) {    # BdecayStart
+        # fdec         <- exp(log(1.27) * (rm - SdecayStart))
+        fdec         <- exp(log(Sdecayexp) * (rm - SdecayStart))
         fdec         <- max(min(fdec, 20), 0)
         Deadwood     <- fdec * Wdecay * Sapwood # Stock of dead branch that do not fall into the ground. It is assumed to start at 3 years old
+        
+      }
+      
+      
+      # ---------------------
+      #dead coarse root computation
+      if (rm > CRdecayStart ) {    # progressive start of branch, coarse root and bark decay after age 1./Bdecay
+        fdec         <- exp(log(CRdecayexp) * (rm - CRdecayStart))
+        fdec         <- max(min(fdec, 20), 0)
         Deadcoroots  <- fdec * Cdecay * cbiocr[i] * kg_C_M2_to_T_ha  # cm
         
       }
