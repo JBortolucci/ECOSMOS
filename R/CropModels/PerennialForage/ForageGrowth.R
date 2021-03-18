@@ -1,6 +1,6 @@
 simDataVars$TGRO     <- rep(1.,24)
 
-#------------------SENMOB & DORMANCY VARS---------------------
+#------------------FOR_SENMOB & FOR_DORMANCY VARS---------------------
 simDataVars$TSDNOS  <- 0
 simDataVars$TSDNOL  <- 0
 simDataVars$TSDNOM  <- 0
@@ -127,14 +127,14 @@ simDataVars$CASM <- 0
 
 simDataVars$ROW <- rep(0.0,6)
 simDataVars$PL  <- rep(0.0,6)
-#------------------END SENMOB & DORMANCY VARS---------------------
+#------------------END FOR_SENMOB & FOR_DORMANCY VARS---------------------
 
 
-#------------------CH2OREF VARS---------------------
+#------------------FOR_CH2OREF VARS---------------------
 simDataVars$CDEBIT  <-  0
-#------------------END CH2OREF VARS---------------------
+#------------------END FOR_CH2OREF VARS---------------------
 
-#------------------GROW VARS---------------------
+#------------------FOR_GROW VARS---------------------
 simDataVars$SWIDOT  <-  0 #input/output
 simDataVars$WLFDOT  <-  0 #input/output
 simDataVars$WSHIDT  <-  0 #input/output
@@ -317,9 +317,9 @@ simDataVars$STSENWT <- 0
 simDataVars$FHLEAF <- 0
 simDataVars$FHSTEM <- 0
 simDataVars$FHVSTG <- 0
-#----------------END GROW VARS-------------------
+#----------------END FOR_GROW VARS-------------------
 
-#-----------------ROOTS VARS---------------------
+#-----------------FOR_ROOTS VARS---------------------
 simDataVars$SATFAC <-  0
 simDataVars$SENRT  <- rep(0, 20) # rep(0, NL)
 simDataVars$SRDOT  <-  0
@@ -337,9 +337,9 @@ simDataVars$RLNSEN  <-  rep(0, 20)
 simDataVars$RLSEN  <-  rep(0, 20)
 simDataVars$RO  <-  0
 simDataVars$RP  <-  0
-#----------------END ROOTS VARS------------------
+#----------------END FOR_ROOTS VARS------------------
 
-#-----------------DEMAND VARS--------------------
+#-----------------FOR_DEMAND VARS--------------------
 simDataVars$AGRSD1  <-  0
 simDataVars$AGRSD2  <-  0
 simDataVars$AGRVG2  <-  0
@@ -413,9 +413,9 @@ simDataVars$SRSNMOB  <- 0
 simDataVars$STSCMOB  <- 0 
 simDataVars$STSNMOB  <- 0 
 simDataVars$WTNSR    <- 0
-#----------------END DEMAND VARS------------------
+#----------------END FOR_DEMAND VARS------------------
 
-#-------------------PODS VARS---------------------
+#-------------------FOR_PODS VARS---------------------
 simDataVars$AGRSD3  <-  0
 simDataVars$LAGSD   <-  0
 simDataVars$LNGPEG  <-  0
@@ -465,9 +465,9 @@ simDataVars$SDDES  <- rep(0, 300)
 simDataVars$MNESPM  <- 0
 simDataVars$SDVAR   <- 0
 simDataVars$SHVAR   <- 0
-#-----------------END PODS VARS-------------------
+#-----------------END FOR_PODS VARS-------------------
 
-#-------------------VEGGR VARS--------------------
+#-------------------FOR_VEGGR VARS--------------------
 simDataVars$AGRVG  <-  0 #TODO: VERIFICAR I/O
 simDataVars$FRLF  <-  0  #TODO: VERIFICAR I/O
 simDataVars$FRRT  <-  0  #TODO: VERIFICAR I/O
@@ -530,9 +530,9 @@ simDataVars$CHORECOVER  <-  0
 simDataVars$NLKSPENT  <-  0
 simDataVars$NLKNUSED  <-  0
 simDataVars$NLEAK  <-  0
-#-----------------END VEGGR VARS------------------
+#-----------------END FOR_VEGGR VARS------------------
 
-#-------------------PODDET VARS-------------------
+#-------------------FOR_PODDET VARS-------------------
 simDataVars$PODWTD  <-  1
 # NCOHORTS = 300
 # simDataVars$SDNO    <- rep(0, 300)
@@ -541,7 +541,7 @@ simDataVars$PODWTD  <-  1
 # simDataVars$WSHIDT  <-  0
 # simDataVars$WTSD    <- rep(0, 300)
 # simDataVars$WTSHE   <- rep(0, 300)
-#-----------------END PODDET VARS-----------------
+#-----------------END FOR_PODDET VARS-----------------
 
 #-------------------SENES VARS--------------------
 simDataVars$SLDOT  <- 0
@@ -551,15 +551,15 @@ simDataVars$SSNDOT <- 0
 simDataVars$SWFCAB <- rep(0,5)
 #-----------------END SENES VARS------------------
 
-#-------------------FREEZE VARS-------------------
+#-------------------FOR_FREEZE VARS-------------------
 # simDataVars$MDATE  <- 0  #VERIFICAR INPUT/OUTPUT não se encaixa aqui
 # simDataVars$WLFDOT  <-  0
 simDataVars$frost    <-  F
 simDataVars$PSRSRFD  <-  0
 simDataVars$PSRLYRD  <-  0
-#-----------------END FREEZE VARS-----------------
+#-----------------END FOR_FREEZE VARS-----------------
 
-#-------------------INCOMP VARS-------------------
+#-------------------FOR_INCOMP VARS-------------------
 simDataVars$AGRLF   <-  0
 simDataVars$AGRNOD  <-  0
 simDataVars$AGRRT   <-  0
@@ -571,9 +571,9 @@ simDataVars$AGRSTM  <-  0
 # simDataVars$AGRVG   <-  0
 # simDataVars$AGRVG2  <-  0
 simDataVars$SDPROR  <-  0
-#-----------------END INCOMP VARS-----------------
+#-----------------END FOR_INCOMP VARS-----------------
 
-#-------------------NUPTAK VARS-------------------
+#-------------------FOR_NUPTAK VARS-------------------
 simDataVars$TRNH4U <- 0
 # TODO: nsoilay : RNH4U <- rep(0, nsoilay) - RNO3U <- rep(0, 20)
 simDataVars$RNH4U  <- rep(0, 20)
@@ -587,17 +587,17 @@ simDataVars$UNO3   <- 0
 simDataVars$NUPNH4 <- rep(0, 20)
 simDataVars$NUPNO3 <- rep(0, 20)
 simDataVars$TSNMOB <- 0 
-#-----------------END NUPTAK VARS-----------------
+#-----------------END FOR_NUPTAK VARS-----------------
 
-#--------------------MOBIL VARS-------------------
+#--------------------FOR_MOBIL VARS-------------------
 simDataVars$NMINEA  <-  0
 simDataVars$NRUSLF  <-  0
 simDataVars$NRUSRT  <-  0
 simDataVars$NRUSSH  <-  0
 simDataVars$NRUSST  <-  0
-#------------------END MOBIL VARS-----------------
+#------------------END FOR_MOBIL VARS-----------------
 
-#--------------------NFIX VARS--------------------
+#--------------------FOR_NFIX VARS--------------------
 simDataVars$CNOD   <-  0
 # simDataVars$DWNOD  <-  0
 # simDataVars$DWNODA <-  0
@@ -612,18 +612,18 @@ simDataVars$SWMEM     <- rep(0, 9)
 simDataVars$KG2PPM   <- rep(0,20)
 simDataVars$SNO3     <- rep(0,20)
 simDataVars$SNH4     <- rep(0,20)
-#-------------------END NFIX VARS-----------------
+#-------------------END FOR_NFIX VARS-----------------
 
-#------------------RESPIR VARS---------------------
+#------------------FOR_RESPIR VARS---------------------
 simDataVars$MAINR  <-  0 #output
-#-----------------END RESPIR VARS------------------
+#-----------------END FOR_RESPIR VARS------------------
 
 
 
-#----------------GROW FUNCTION--------------------
-GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
-  
-  environment(STRESS) <- env
+#----------------FOR_GROW FUNCTION--------------------
+FOR_GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
+
+  environment(FOR_STRESS) <- env
   params <- plantList$forage$params
   
   # TODO: Nitrogen
@@ -2409,13 +2409,13 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #-----------------------------------------------------------------------
     if (STRWT < 0.00001) {
       if (TOPWT < 0.00001 || STMWT < 0.00001) {
-        STRESS(AGEFAC, iyear, jday)
+        FOR_STRESS(AGEFAC, iyear, jday)
         return()
       }
       
       if (IHARI != 'R' & IHARI != 'D') {
         if ((RTWT < 0.00001) || (WTLF < 0.00001)) {
-          STRESS(AGEFAC, iyear, jday)
+          FOR_STRESS(AGEFAC, iyear, jday)
           return()
         }
       }
@@ -2576,7 +2576,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   return()
 }   
 
-STRESS <- function(AGEFAC, iyear, jday) {
+FOR_STRESS <- function(AGEFAC, iyear, jday) {
   
   #-----------------------------------------------------------------------
   #     Set Ending Plant Weights, Dates of Stages if Plants Died
@@ -2609,10 +2609,10 @@ STRESS <- function(AGEFAC, iyear, jday) {
 }  
 #--------------END GROW FUNCTION-----------------
 
-#---------------ROOTS FUNCTION-------------------
-ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT) { 
+#---------------FOR_ROOTS FUNCTION-------------------
+FOR_ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT) { 
   
-  environment(INROOT) <- env
+  environment(FOR_INROOT) <- env
   params <- plantList$forage$params
   
   NLAYR <- nsoilay
@@ -2670,7 +2670,7 @@ ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT) {
     #   day of emergence.  (GROW emergence initialization
     #   must preceed call to INROOT.)
     #-----------------------------------------------------------------------
-    INROOT()
+    FOR_INROOT()
     
     #***********************************************************************
     #***********************************************************************
@@ -2913,7 +2913,7 @@ ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT) {
   return()
 } 
 
-INROOT <- function (){  
+FOR_INROOT <- function (){  
   
   params <- plantList$forage$params
   
@@ -2992,12 +2992,12 @@ INROOT <- function (){
   assign("RTDEP", RTDEP, envir = env)
   return()
 }
-#--------------END ROOTS FUNCTION----------------
+#--------------END FOR_ROOTS FUNCTION----------------
 
-#---------------DEMAND FUNCTION------------------
-DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
+#---------------FOR_DEMAND FUNCTION------------------
+FOR_DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
   
-  environment(SDCOMP) <- env
+  environment(FOR_SDCOMP) <- env
   params <- plantList$forage$params
   
   TS <- 24
@@ -3342,7 +3342,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
         #-----------------------------------------------------------------------
         #     Call seed composition routine
         #-----------------------------------------------------------------------
-        SDCOMP(TAVG)
+        FOR_SDCOMP(TAVG)
         
         NDMSD  <- FNINSD * GDMSD
         #-----------------------------------------------------------------------
@@ -3815,7 +3815,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
   return()
 }
 
-SDCOMP <- function (TAVG) {
+FOR_SDCOMP <- function (TAVG) {
   params <- plantList$forage$params
   
   #______________________________________________________________        
@@ -3903,12 +3903,12 @@ SDCOMP <- function (TAVG) {
   
   return()
 }
-#--------------END DEMAND FUNCTION---------------
+#--------------END FOR_DEMAND FUNCTION---------------
 
-#----------------PODS FUNCTION-------------------
-PODS <- function(DYNAMIC, DAS, NAVL, ISWWAT, iyear, jday, PGAVL) {
+#----------------FOR_PODS FUNCTION-------------------
+FOR_PODS <- function(DYNAMIC, DAS, NAVL, ISWWAT, iyear, jday, PGAVL) {
   
-  environment(PODCOMP) <- env
+  environment(FOR_PODCOMP) <- env
   params <- plantList$forage$params
   
   TS <- 24
@@ -3968,7 +3968,7 @@ PODS <- function(DYNAMIC, DAS, NAVL, ISWWAT, iyear, jday, PGAVL) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
-    PODCOMP(DYNAMIC, NAVL)
+    FOR_PODCOMP(DYNAMIC, NAVL)
     
     #-----------------------------------------------------------------------
     #     Set minimum days for phenological events under optimum conditions
@@ -4049,7 +4049,7 @@ PODS <- function(DYNAMIC, DAS, NAVL, ISWWAT, iyear, jday, PGAVL) {
       AVTEM[NPP] <- 0.0
     }
     
-    PODCOMP(DYNAMIC, NAVL)
+    FOR_PODCOMP(DYNAMIC, NAVL)
     
     #***********************************************************************
     #***********************************************************************
@@ -4185,7 +4185,7 @@ PODS <- function(DYNAMIC, DAS, NAVL, ISWWAT, iyear, jday, PGAVL) {
             #     Detailed seed composition calculations
             #-----------------------------------------------------------------------
             
-            PODCOMP(DYNAMIC, NAVL)
+            FOR_PODCOMP(DYNAMIC, NAVL)
             
             #-----------------------------------------------------------------------
             #     Grow seed cohorts
@@ -4573,7 +4573,7 @@ PODS <- function(DYNAMIC, DAS, NAVL, ISWWAT, iyear, jday, PGAVL) {
   return() #PODS
 }
 
-PODCOMP <- function(DYNAMIC, NAVL) {
+FOR_PODCOMP <- function(DYNAMIC, NAVL) {
   params <- plantList$forage$params
   
   #______________________________________________________________        
@@ -4829,13 +4829,13 @@ PODCOMP <- function(DYNAMIC, NAVL) {
   
   return()
 }
-#--------------END PODS FUNCTION---------------
+#--------------END FOR_PODS FUNCTION---------------
 
-#---------------VEGGR FUNCTION-----------------
-VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {                 
+#---------------FOR_VEGGR FUNCTION-----------------
+FOR_VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {                 
   
-  environment(CANOPY) <- env
-  environment(NLKDIST) <- env
+  environment(FOR_CANOPY) <- env
+  environment(FOR_NLKDIST) <- env
   params <- plantList$forage$params
   
   TS <- 24
@@ -4912,7 +4912,7 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {
     #-----------------------------------------------------------------------
     #    Call CANOPY for input
     #-----------------------------------------------------------------------
-    # CANOPY(DYNAMIC,DAS, PAR, TGRO)
+    # FOR_CANOPY(DYNAMIC,DAS, PAR, TGRO)
     
     CADLF   <- 0.0  
     CADST   <- 0.0  
@@ -4961,7 +4961,7 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {
     FNINSRG <- PROSRG * 0.16
     CUMTUR  <- 1.0             
     
-    CANOPY(DYNAMIC, DAS, PAR, TGRO)
+    FOR_CANOPY(DYNAMIC, DAS, PAR, TGRO)
     
     #***********************************************************************
     #***********************************************************************
@@ -5526,7 +5526,7 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {
     
     if (NLEAK > 0.0) {
       
-      auxRetorno   <- NLKDIST(CHORECOVER, NLKSPENT, NLKNUSED, NLEAK)
+      auxRetorno   <- FOR_NLKDIST(CHORECOVER, NLKSPENT, NLKNUSED, NLEAK)
       CHORECOVER   <- auxRetorno$CHORECOVER
       NLKSPENT     <- auxRetorno$NLKSPENT
       NLKNUSED     <- auxRetorno$NLKNUSED
@@ -5555,7 +5555,7 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {
     #     function of VSTAGE, air temperature, drought stress (TURFAC),
     #     daylenght and radiation (PAR).
     #-----------------------------------------------------------------------
-    CANOPY(DYNAMIC,DAS, PAR, TGRO)
+    FOR_CANOPY(DYNAMIC,DAS, PAR, TGRO)
     
     #***********************************************************************
     #***********************************************************************
@@ -5628,7 +5628,7 @@ VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {
 #        N for that new growth, no excess.
 #-----------------------------------------------------------------------
 # TODO: Verificar Parâmetros da Função
-NLKDIST <- function (CHORECOVER, NLKSPENT, NLKNUSED, NLEAK) {
+FOR_NLKDIST <- function (CHORECOVER, NLKSPENT, NLKNUSED, NLEAK) {
   
   params  <- plantList$forage$params
   
@@ -5802,7 +5802,7 @@ NLKDIST <- function (CHORECOVER, NLKSPENT, NLKNUSED, NLEAK) {
 
 
 
-CANOPY <- function (DYNAMIC, DAS, PAR, TGRO) {
+FOR_CANOPY <- function (DYNAMIC, DAS, PAR, TGRO) {
   params <- plantList$forage$params
   
   #-----------------------------------------------------------------------
@@ -5936,10 +5936,10 @@ CANOPY <- function (DYNAMIC, DAS, PAR, TGRO) {
   
   return()
 }
-#--------------END VEGGR FUNCTION--------------
+#--------------END FOR_VEGGR FUNCTION--------------
 
-#---------------PODDET FUNCTION----------------
-PODDET <- function(DYNAMIC, iyear, jday) {         #Input
+#---------------FOR_PODDET FUNCTION----------------
+FOR_PODDET <- function(DYNAMIC, iyear, jday) {         #Input
   params <- plantList$forage$params
   TS <- 24
   
@@ -6148,7 +6148,7 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
   
   return()
 }
-#--------------END PODDET FUNCTION-------------
+#--------------END FOR_PODDET FUNCTION-------------
 
 #---------------SENES FUNCTION-----------------
 SENES <- function (DYNAMIC, DAS, PAR) {
@@ -6306,8 +6306,8 @@ SENES <- function (DYNAMIC, DAS, PAR) {
 }
 #--------------END SENES FUNCTION--------------
 
-#---------------FREEZE FUNCTION----------------
-FREEZE <- function(TMIN, iyear, jday) {
+#---------------FOR_FREEZE FUNCTION----------------
+FOR_FREEZE <- function(TMIN, iyear, jday) {
   params <- plantList$forage$params
   
   FRZDC   <- params$FRZDC
@@ -6387,10 +6387,10 @@ FREEZE <- function(TMIN, iyear, jday) {
   
   return()
 }
-#--------------END FREEZE FUNCTION-------------
+#--------------END FOR_FREEZE FUNCTION-------------
 
-#---------------INCOMP FUNCTION----------------
-INCOMP <- function(DYNAMIC) {
+#---------------FOR_INCOMP FUNCTION----------------
+FOR_INCOMP <- function(DYNAMIC) {
   params <- plantList$forage$params
   
   ECONO   <- params$ECONO
@@ -6497,7 +6497,7 @@ INCOMP <- function(DYNAMIC) {
   }
   #-----------------------------------------------------------------------
   #RETURN
-  #END ! SUBROUTINE INCOMP
+  #END ! SUBROUTINE FOR_INCOMP
   assign("AGRLF", AGRLF, envir = env)
   assign("AGRNOD", AGRNOD, envir = env)
   assign("AGRRT", AGRRT, envir = env)
@@ -6514,10 +6514,10 @@ INCOMP <- function(DYNAMIC) {
   
   return()
 }
-#--------------END INCOMP FUNCTION-------------
+#--------------END FOR_INCOMP FUNCTION-------------
 
-#---------------NUPTAK FUNCTION----------------
-NUPTAK <- function (DYNAMIC, PGAVL) {
+#---------------FOR_NUPTAK FUNCTION----------------
+FOR_NUPTAK <- function (DYNAMIC, PGAVL) {
   params <- plantList$forage$params
   
   RNH4C  <- params$RNH4C
@@ -6791,10 +6791,10 @@ NUPTAK <- function (DYNAMIC, PGAVL) {
   
   return()
 }
-#--------------END NUPTAK FUNCTION-------------
+#--------------END FOR_NUPTAK FUNCTION-------------
 
-#---------------- MOBIL FUNCTION---------------
-MOBIL <- function(DYNAMIC) {
+#---------------- FOR_MOBIL FUNCTION---------------
+FOR_MOBIL <- function(DYNAMIC) {
   params <- plantList$forage$params
   #!*RESPIRATION PARAMETERS (.SPE), mas não usado, aparentemente
   RPRO   <- params$RPRO   #0.360 
@@ -6909,7 +6909,7 @@ MOBIL <- function(DYNAMIC) {
   }
   #***********************************************************************
   #  RETURN
-  #END ! SUBROUTINE MOBIL
+  #END ! SUBROUTINE FOR_MOBIL
   assign("NMINEA", NMINEA, envir = env)
   assign("NRUSLF", NRUSLF, envir = env)
   assign("NRUSRT", NRUSRT, envir = env)
@@ -6929,10 +6929,10 @@ MOBIL <- function(DYNAMIC) {
   
   return()
 }
-#----------------END MOBIL FUNCTION------------
+#----------------END FOR_MOBIL FUNCTION------------
 
-#----------------NFIX FUNCTION-----------------
-NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, DLAYR, NLAYR,SAT, ST, SW 
+#----------------FOR_NFIX FUNCTION-----------------
+FOR_NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, DLAYR, NLAYR,SAT, ST, SW 
   params <- plantList$forage$params
   #______________________________________________________________
   # *PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -7171,10 +7171,10 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, 
   
   return()
 }
-#----------------END NFIX FUNCTION---------------
+#----------------END FOR_NFIX FUNCTION---------------
 
-#----------------RESPIR FUNCTION---------------
-RESPIR <- function (DAS, PG) {
+#----------------FOR_RESPIR FUNCTION---------------
+FOR_RESPIR <- function (DAS, PG) {
   params <- plantList$forage$params
   
   MRSWITCH  <- params$MRSWITCH
@@ -7242,12 +7242,12 @@ RESPIR <- function (DAS, PG) {
   assign("RP", RP, envir = env)
   return()
 }
-#--------------END RESPIR FUNCTION-------------
+#--------------END FOR_RESPIR FUNCTION-------------
 
 
 simDataVars$CDEBIT  <-  0
 
-CH2OREF <- function(DYNAMIC, PG, PGAVL){
+FOR_CH2OREF <- function(DYNAMIC, PG, PGAVL){
   
   params <- plantList$forage$params
   
@@ -7470,7 +7470,7 @@ CH2OREF <- function(DYNAMIC, PG, PGAVL){
 # TYPLREF        Shape of CURV response for refilling mobile CH2O to LAI
 # TYPPREF        Shape of CURV response for refilling mobile CH2O to canopy PG rate
 
-#--------------END CH2OREF FUNCTION-------------
+#--------------END FOR_CH2OREF FUNCTION-------------
 
 
 #=======================================================================
@@ -7488,7 +7488,7 @@ CH2OREF <- function(DYNAMIC, PG, PGAVL){
 #  Calls    : None
 #=======================================================================
 
-DORMANCY <- function (DYNAMIC, DAYL) {
+FOR_DORMANCY <- function (DYNAMIC, DAYL) {
   
   params <- plantList$forage$params
   
@@ -7696,7 +7696,7 @@ DORMANCY <- function (DYNAMIC, DAYL) {
   assign("PPTFAC",PPTFAC, envir = env)
   assign("DAYLY",DAYLY, envir = env)
   return()
-  #END    #SUBROUTINE DORMANCY
+  #END    #SUBROUTINE FOR_DORMANCY
 }
 
 #-----------------------------------------------------------------------
@@ -7793,7 +7793,7 @@ DORMANCY <- function (DYNAMIC, DAYL) {
 #  Called : CROPGRO
 #  Calls  : ERROR, FIND, IGNORE
 #========================================================================
-SENMOB <- function (DYNAMIC, DAS, ISWWAT, PAR) {
+FOR_SENMOB <- function (DYNAMIC, DAS, ISWWAT, PAR) {
   
   params    <- plantList$forage$params
   
