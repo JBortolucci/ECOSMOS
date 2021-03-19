@@ -93,7 +93,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
             pgreenfrac[j]  <- 1.0 # turn all vegetation to brown
           } 
           if (gddemerg == gddplant[j] & cropy >= 1){
-            plai[j]  <- 0.25
+            plai[j]  <- 0.1
             cbiol[j] <-  plai[j]/ specla[j]
             pgreenfrac[j]  <- 1.0 # turn all vegetation to brown     
                     }
