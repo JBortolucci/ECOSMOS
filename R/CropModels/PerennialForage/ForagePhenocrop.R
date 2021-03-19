@@ -69,11 +69,11 @@ simDataVars$MNFLHM   <- 0
 
 simDataVars$YRPLT    <- 0
 
-PHENOL <- function (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT){
+FOR_PHENOL <- function (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT){
   
   
-  environment(VSTAGES) <- env
-  environment(RSTAGES) <- env
+  environment(FOR_VSTAGES) <- env
+  environment(FOR_RSTAGES) <- env
   
   params <- plantList$forage$params
   
@@ -255,12 +255,12 @@ PHENOL <- function (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT){
     FT     <- rep(0,20)
     FUDAY  <- rep(0,20)
     
-    RSTAGES (DAS,DYNAMIC,
+    FOR_RSTAGES (DAS,DYNAMIC,
              FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
              PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM)      # Input
     
     
-    VSTAGES (DAS, DTX, EVMODC, MNEMV1, NDVST,             # Input
+    FOR_VSTAGES (DAS, DTX, EVMODC, MNEMV1, NDVST,             # Input
              NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
              TURFAC, XPOD, YRDOY, YRPLT,                     # Input
              DYNAMIC)                                       # Control
@@ -440,7 +440,7 @@ PHENOL <- function (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT){
     #-----------------------------------------------------------------------
     #    Calculate rate of V-stage change for height and width determination
     #-----------------------------------------------------------------------
-    VSTAGES( DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
+    FOR_VSTAGES( DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
              NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
              TURFAC, XPOD, YRDOY, YRPLT,                     # Input
              DYNAMIC)                                         # Control
@@ -456,7 +456,7 @@ PHENOL <- function (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT){
     #----------------------------------------------------------------------
     #     Check to see if stages occur today, if so set them in RSTAGES
     #----------------------------------------------------------------------
-    RSTAGES(DAS,DYNAMIC,
+    FOR_RSTAGES(DAS,DYNAMIC,
             FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,    # Input
             PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM)      # Input
     
@@ -486,7 +486,7 @@ PHENOL <- function (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT){
     #-----------------------------------------------------------------------
     #     Calculate V-stages
     #-----------------------------------------------------------------------
-    VSTAGES( DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
+    FOR_VSTAGES( DAS, DTX, EVMODC, MNEMV1, NDVST,                # Input
              NVEG0, NVEG1, PHZACC, PLME, TRIFOL,             # Input
              TURFAC, XPOD, YRDOY, YRPLT,                     # Input
              DYNAMIC)                                         # Control
@@ -528,7 +528,7 @@ PHENOL <- function (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT){
   #     End Subroutine PHENOL
   #-----------------------------------------------------------------------
   
-} # END PHENOL
+} # END FOR_PHENOL
 
 
 
@@ -553,7 +553,7 @@ PHENOL <- function (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT){
 #     Calls:          None
 #=======================================================================
 
-VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,         
+FOR_VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,         
                     NVEG0, NVEG1, PHZACC, PLME, TRIFOL,      
                     TURFAC, XPOD, YRDOY, YRPLT,DYNAMIC) {                        
   
@@ -642,7 +642,7 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
   assign("VSTAGE", VSTAGE, envir = env)
   assign("VSTGED", VSTGED, envir = env)
   assign("VSTAGP", VSTAGP, envir = env)
-} # END SUBROUTINE VSTAGES
+} # END SUBROUTINE FOR_VSTAGES
 
 
 
@@ -665,7 +665,7 @@ VSTAGES <- function(DAS, DTX, EVMODC, MNEMV1, NDVST,
 #************************************************************************
 #************************************************************************
 
-RSTAGES <- function (DAS,DYNAMIC,
+FOR_RSTAGES <- function (DAS,DYNAMIC,
                      FNSTR, FPSTR, FSW, FT, FUDAY, ISIMI, NPRIOR,  
                      PHTHRS, PLME, SDEPTH, YRDOY, YRPLT, YRSIM)   {
   
