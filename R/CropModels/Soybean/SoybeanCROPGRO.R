@@ -14,10 +14,11 @@ simDataVars$DSSATdb <- read.table(file = 'C:/DSSAT47/Soybean/INTEGRACAO_CONTROLE
 # simDataVars$NAVLCount  <- 1
 
 # Ligando/Desligando a conexão com o DSSAT/CROPGRO
-# T <- DSSAT/fortran, F <- Ecosmos 
+# T <- DSSAT/fortran, F <- ECOSMOS 
                       # PG  DAYL PAR  TMIN TAVG TGRO TURFAC SWFAC  SW  ST  NO3  NH4
 simDataVars$integr <- c(F  ,F   ,F   ,F   ,F   ,F   ,F     ,F     ,F  ,F  ,F   ,F)
 # simDataVars$integr <- c(T  ,T   ,T   ,T   ,T   ,T   ,T     ,T     ,T  ,T  ,T   ,T)
+# simDataVars$integr <- c(F  ,F   ,F   ,F   ,F   ,F   ,F     ,F     ,F  ,F  ,T   ,T) # Efeito T início USNE3 Rainfed
                       # OK  OK   OK   OK   OK   !   OK      OK
 
 NL <- 20
@@ -56,6 +57,7 @@ simDataVars$DUL      <- rep(0, simDataVars$NLAYR)
 simDataVars$SAT      <- rep(0, simDataVars$NLAYR)
 simDataVars$WR       <- rep(0, simDataVars$NLAYR)
 simDataVars$BD       <- rep(0, simDataVars$NLAYR)
+simDataVars$AWC       <- rep(0, simDataVars$NLAYR)
 
 # Carregando subrotinas necessárias
 source("R/CropModels/Soybean/SoybeanPhenocrop.R")
@@ -109,14 +111,15 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     SAT[L]   <- poros[L]
     WR[L]    <- SRGF[L]
     BD[L]    <- bulkd[L]
+    AWC[L]   <- min (1.0, max (0.0, (wsoi[L]*(1 - wisoi[L]) - swilt[L]) / (sfield[L] - swilt[L])))
     
     #TODO: formatar propriedades estáticas do solo acimauma vez (dia de simulação 1) e não durante toda simulação [Henrique; 2021-03-15]
     #TODO: trazer a média do wsoi, tsoi e stresstl, ao invés de um valor (último, das 24h?), apenas [Henrique; 2021-03-15]
     # CROPGRO format
-    SW[L]  <- wsoi[L] * poros[L]
-    ST[L]  <- tsoi[L] - 273.16
-    assign("SW",    SW    , envir = env)
-    assign("ST",    ST    , envir = env)
+    # SW[L]  <- wsoi[L] * poros[L]
+    # ST[L]  <- tsoi[L] - 273.16
+    # assign("SW",    SW    , envir = env)
+    # assign("ST",    ST    , envir = env)
   }
   #_______________________________________________________________________________  
   
@@ -139,10 +142,14 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     ifelse(integr[3],  PAR <- VARAUX$PAR[VARAUX$DAS==DAS]                   ,      PAR <- adpar* (86400/1000000)* 4.59 ) # (86400/1000000) W/m2 para MJ/m2.d  and 4.59 # MJ/m2.d para mol/m2.d 
     ifelse(integr[4],  TMIN  <- TGRO_T$V7[TGRO_T$V1==DAS & TGRO_T$V2==1]    ,      TMIN <- tmin - 273.16 )
     ifelse(integr[5],  TAVG  <- VARAUX$TAVG[VARAUX$DAS==DAS]                ,      TAVG <- mean(ta_h) - 273.16 )
-    #browser()
     ifelse(integr[6],  TGRO  <- TGRO_T$V3[TGRO_T$V1==DAS]                   ,      TGRO <- ta_h - 273.16 )
-    if (integr[7]) {   TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]          }else{   if(stresstl<=0.9) {TURFAC <- (1./RWUEP1) * stresstl} else {TURFAC=1} }
-    if (integr[8]) {   SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]           }else{   if(stresstl<=0.9) {SWFAC  <- stresstl} else {SWFAC=1} }
+    #if (integr[7]) {   TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]          }else{   if(stresstl<=0.9) {TURFAC <- (1./RWUEP1) * stresstl} else {TURFAC=1} }
+    #if (integr[7]) {   TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]          }else{   if(stresstl<=0.9) {SWFAC <- stresstl} else {SWFAC=1} }
+    #browser()
+    if (integr[7]) {   TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]          }else{   TURFAC <- stresstlT}
+    if (integr[8]) {   SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]           }else{   SWFAC  <- stresstl}
+    # if (integr[7]) {   TURFAC  <- VARAUX$TURFAC[VARAUX$DAS==DAS]          }else{   TURFAC <- min(1, mean(AWC[1:NLAYR])/0.7) }
+    # if (integr[8]) {   SWFAC   <- VARAUX$SWFAC[VARAUX$DAS==DAS]           }else{   SWFAC  <- min(1, mean(AWC[1:NLAYR])/0.5) }
     if (integr[9]) {   SW <- as.double(SW_T[DAS,][-1])                    }else{   for (L in 1:NLAYR) {SW[L]  <- wsoi[L] * poros[L]}}
     if (integr[10]){   ST <- as.double(ST_T[DAS,][-1])                    }else{   for (L in 1:NLAYR) {ST[L]  <- tsoi[L] - 273.16}}
     if (integr[11]){   NO3 <- as.double(NO3_T[DAS,][-1])                  }else{   for (L in 1:NLAYR) {NO3[L]  <- 10}}
@@ -464,7 +471,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #     On day of emergence, initialize:
         #-----------------------------------------------------------------------
         GROW("EMERG",iyear,jday, ISWNIT,ISWSYM)
-        plai[i]  <- max(XLAI,0.05) # Henrique: atribui IAF inicial para ECOSMOS (2020-10-1)
+        plai[i]  <- max(XLAI,0.01) # Henrique: atribui IAF inicial para ECOSMOS (2020-10-1)
         
         #-----------------------------------------------------------------------
         #     Call to root growth and rooting depth routine
@@ -763,7 +770,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #     Call routine to integrate growth and damage
         #-----------------------------------------------------------------------
         GROW(DYNAMIC,iyear,jday, ISWNIT,ISWSYM)
-        plai[i]  <- max(XLAI,0.05) #TODO Henrique: verificar se aqu seria o lugar ideal dessa atribuição
+        plai[i]  <- max(XLAI,0.01) #TODO Henrique: verificar se aqu seria o lugar ideal dessa atribuição
         
         if ((WTLF+STMWT)> 0.0001) {
           PCNVEG <- (WTNLF+WTNST)/(WTLF+STMWT)*100.
@@ -777,15 +784,8 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
         #-----------------------------------------------------------------------
       }
       #-----------------------------------------------------------------------
-    
-    
-    # parametros
-    
-    # Função precisaremos para integração com o balanço de carbono
-    # (Henrique, 2020-08-25)
-    # HARVRES e/ou HRes_CGRO
-    
-    #_________ FIM DAS CHAMADAS DO CROPGRO _______________________
+
+    #_________ CROPGRO calls ending_______________________
     #_____________________________________________________________    
     
     # aroot<- min(max((1 -    FSHTBa),0),1)
@@ -795,32 +795,26 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     # update carbon reservoirs using an analytical solution
     # to the original carbon balance differential equation
-    # cbior[i] <- cbior[i] * exp(-1.0 / tauroot[i]) + aroot[i] * tauroot[i] * max(0.0,adnpp[i]) * (1.0 - exp(-1.0 / tauroot[i]))
-    
-    # cbiol[i] <- cbiol[i] + aleaf[i] * max (0.0, adnpp[i])  # - ??*cbiol[i]
-    # cbios[i] <- cbios[i] + astem[i] * max (0.0, adnpp[i]) 
-    # cbiop[i] <- cbiop[i] + arepr[i] * max (0.0, adnpp[i]) 
-    
     # Agro-IBIS reference: 0.50 for plant components and 0.45 for grain and shell
     cbiol[i] <- WTLF * 0.5 * (1/1000)
     cbios[i] <- STMWT * 0.5 * (1/1000)
     cbior[i] <- RTWT * 0.5 * (1/1000)
     cbiog[i] <- SDWT * 0.45 * (1/1000)
     cbiop[i] <- (PODWT - SDWT) * 0.45 * (1/1000)
-    #cbioc[i] <- 0 #TODO Henrique: descobrir o que é e ajeitar isso [2021-03-09]
+    # cbioc[i] <- 0 #TODO Henrique: isto é cob pro milho? [2021-03-09]
     
     # !----------Check sink limitation based on yesterday's growth rates
     # ! and adapt partitioning of stem-storage organ accordingly
     
     # update vegetation's physical characteristics
     {
-      #plai[i]  <- max(XLAI,0.1)
       pgreenfrac[i] <- 1.0   
       biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbiop[i]
+      #TODO Henrique: verificar se isso precisará ser modificado qdo crescendo 2 plantas [2021-01-18]
+      ztopPft[i] <- min(CANHT,ztopmxPft[i])
     }
     
     # END SOYBEAN CYCLE
-    
     if(cropy == 1) {
       
       if ( RSTAGE == 8 | frost ) {
@@ -843,11 +837,6 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     }
     
   }
-  
-  #TODO Henrique: verificar se isso precisará ser modificado qdo crescendo 2 plantas [2020-01-18]
-  ztopPft[i] <- (min(plai[i]/5, 1)) * ztopmxPft[i] 
-  
-  
   
   assign("endCycle", endCycle, envir = env)
   assign("ztopPft", ztopPft, envir = env)
@@ -891,7 +880,7 @@ SoybeanCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("SWFAC", SWFAC, envir = env)
   # assign("plotVARAUX", plotVARAUX, envir = env)
   assign("DAYL", DAYL, envir = env)
-  assign("PG", PG, envir = env)
+  # assign("PG", PG, envir = env)
 }
 
 

@@ -7413,6 +7413,7 @@ FOR_CH2OREF <- function(DYNAMIC, PG, PGAVL){
   assign("STCDEBT",STCDEBT, envir = env)
   return()
 }
+
 # CADPV    Maximum fraction of PGAVL for vegetative growth that can be 
 #            allocated to mobile carbohydrate storage under non-stress   
 #            conditions during vegetative growth stages. ( fraction)

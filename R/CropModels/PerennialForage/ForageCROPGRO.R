@@ -1163,6 +1163,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("SWFAC", SWFAC, envir = env)
   # assign("plotVARAUX", plotVARAUX, envir = env)
   assign("DAYL", DAYL, envir = env)
+  # assign("PG", PG, envir = env)
 }
 
 

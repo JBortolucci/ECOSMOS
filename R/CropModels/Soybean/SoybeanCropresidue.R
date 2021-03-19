@@ -5,7 +5,9 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
   
   j <- index
   
-  # TODO: Henrique - to be done
+  # TODO: Henrique (2020-08-25) - to be done
+  # Função precisaremos para integração com o balanço de carbono
+  # HARVRES e/ou HRes_CGRO
   # fall: serrapilheira, liteira, palhada, residuo...
   if(croplive[j] == 1) {
     # Century (3 components): falll, fallr, fallw
@@ -14,9 +16,10 @@ SoybeanCropresidue <- function (year, year0, jday, index) {
        # SENES.for: SSDOT, SLDOT, SLNDOT, SSNDOT (aboveground components)
        # ROOTS.for: SENRT (each layer L), SRDOT
        # NFIX.for: SENNOD (each layer L), NDTH
-    # TODO look at SENESCE's matrix for Century in DSSAT (Leandro elaborou algo, talvez falta apenas na colheita)
+    # TODO look at SENESCE's matrix for Century in DSSAT?
     falll <- falll   #+ DRLVTa*cbiol[j]
     fallr <- fallr + cbior[j] / tauroot[j]
+    # fallw <- 
   }
   
   
