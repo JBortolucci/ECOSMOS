@@ -879,28 +879,28 @@ calc_dtt <- function(dpp, jday, ldtt, udtt) {
   dtt <- 0.0
   ldtt <- ldtt + 273.15
   udtt <- udtt + 273.15
-  
+
   tmean  <- (tmax + tmin) / 2.0
   alpha  <- (tmax - tmin) / 2.0
   
   theta1 <- asin((pi / 180) * (ldtt - tmean) / alpha)
   theta2 <- asin((pi / 180) * (udtt - tmean) / alpha)
   
-  if(tmin >= ldtt & tmax <= udtt) {
+  if(tmin >= ldtt & tmax <= udtt) {                                       #(3) Entirely between both thresholds TL and TU:
     dtt <- tmean - ldtt
-  } else if (tmin >= ldtt & tmax > udtt) {
-    dtt <- (1/pi) * ((tmean - ldtt) * (theta2 - theta1) +
-                       (udtt - ldtt) * ((pi/2) - theta2) - cos(theta2))
-  } else if (tmin < ldtt & tmax <= udtt) {
-    dtt <- (1/pi) * ((udtt - ldtt) * ((pi/2)-theta2) +
-                       alpha * cos(theta2))
-  } else if (tmin < ldtt & tmax > udtt) {
-    dtt <- (1/pi) * ((tmean - ldtt) * (theta2 - theta1) +
-                       alpha * (cos(theta1) - cos(theta2)) +
-                       (udtt - ldtt) * ((pi/2) - theta2))
-  } else if (tmin > udtt & tmax > udtt) {
+  } else if (tmin >= ldtt & tmax > udtt) {                                #(2) Intercepted by the upper threshold TU:
+# SVC ERRADO  dtt <- (1/pi) * ((tmean - ldtt) * (theta2 - theta1) +
+              dtt <- (1/pi) * ((tmean - ldtt) * (theta2 + (pi/2)) + 
+                       (udtt - ldtt) * ((pi/2) - theta2) - cos(theta2))   
+  } else if (tmin < ldtt & tmax <= udtt) {                                # (4) Intercepted by the lower threshold TL:
+# SVC ERRADO  dtt <- (1/pi) * ((udtt - ldtt) * ((pi/2)-theta2) +  alpha * cos(theta2)) 
+      dtt <- (1/pi) * ((tmean - ldtt) * ((pi/2)-theta1) +  alpha * cos(theta1))
+  } else if (tmin < ldtt & tmax > udtt) {                                 # (1) Intercepted by both thresholds TL and TU:
+    dtt <- (1/pi) * ((tmean - ldtt) * (theta2 - theta1) + alpha * (cos(theta1) 
+                      - cos(theta2)) + (udtt - ldtt) * ((pi/2) - theta2))
+  } else if (tmin > udtt & tmax > udtt) {                                 # (5) Completely above both thresholds TL and TU:
     dtt <- udtt - ldtt
-  } else if (tmin < ldtt & tmax < ldtt){
+  } else if (tmin < ldtt & tmax < ldtt){                                  # (6) Completely below both thresholds TL and TU:
     dtt <- 0.0
   }
   
