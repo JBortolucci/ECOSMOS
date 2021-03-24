@@ -23,7 +23,6 @@ simDataVars$dtt8  <-  0
 simDataVars$dtt10  <-  0
 simDataVars$tlno  <-  30
 simDataVars$P3  <-  0
-simDataVars$fr  <-  0
 simDataVars$slfc  <-  0
 simDataVars$slft  <-  0
 simDataVars$lsr  <-  0
@@ -40,21 +39,20 @@ simDataVars$cobwg  <-  0
 simDataVars$dm <- list('leaf' = 0.0, 'stem' = 0.0, 'root' = 0.0, 'cob' = 0.0, 'grain' = 0.0, 'sleaf' = 0)
 simDataVars$date_germ <- 0
 simDataVars$date_emerg <- 0
-simDataVars$coleog <- 0
-simDataVars$vstage <- 0
-simDataVars$rstage <- 0
-simDataVars$sen <- 0
-simDataVars$fsen <- 0
-simDataVars$senmaxstage2 <- 0
-simDataVars$senmaxstage3 <- 0
-simDataVars$sumP <- 0
-simDataVars$psker <- 0
-simDataVars$gpp <- 0 
-simDataVars$RGfill <- 0
-simDataVars$transs <- 0
-simDataVars$transl <- 0
-simDataVars$fcbios <- 0
-simDataVars$fcbiol <- 0
+simDataVars$coleog  <- 0
+simDataVars$stage   <- 0
+simDataVars$vstage  <- 0
+simDataVars$rstage  <- 0
+simDataVars$sen     <- 0
+simDataVars$fsen    <- 0
+simDataVars$sumP    <- 0
+simDataVars$psker   <- 0
+simDataVars$gpp     <- 0 
+simDataVars$RGfill  <- 0
+simDataVars$transs  <- 0
+simDataVars$transl  <- 0
+simDataVars$fcbios  <- 0
+simDataVars$fcbiol  <- 0
 simDataVars$ndaysS3 <- 0
 
 simDataVars$cbiols <- 0 #TODO check with the new version in 'refactoring_v0'
@@ -79,7 +77,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   gddf           <- params$gddf         # 170     # P5 in CERES-MAIZE and in the manual??? GDD (base 8ºC) from silking to effective grain filling
   gddt           <- params$gddt         # 1600    # GDD (base 10ºC) required from germination to maturity (default = 1500?)
   laic           <- params$laic         # 4       # critical LAI for light competition (condition for SLFC have a chance to affect leaf expansion)
-  laim           <- params$laim         # 0.7     # fraction of LAI at maturity of the maximum LAI
+  laim           <- params$laim         # 0.7     # LAI at maturity 
   sg             <- params$sg           # 4.0     # ‘stay-green’ factor, which controls how fast leaf senesces proceeds after silking
   phyl           <- params$phyl         # 38.9    #TODO Victor, o que significa esse parametro? vc 'criou' ele? [2021-01-20]
   dsstop         <- params$dsstop       # 1.15  # development stage when root growth stops
@@ -88,12 +86,21 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   G2             <- params$G2           # 676 # the potential number of grains per plantkernels ear⁻¹ (default = 676)
   G5             <- params$G5           # 8.7 # the potential grain filling rate (mg d-1 kernel-1) (default = 8.7)
   efftrans       <- params$efftrans     # 0.26 # Efficiency of carbon translocation from leaves/stem to grain filling
+  P5 <- 800 #TODO: levar para o plant_params
   
   gdds <- (0.41 * gddt) + 145.4         # GDD (base 10ºC) required from silking to physiological maturity
   gdds <- 100+0.4451*gddt -50           # last page in the manual
   gddv <- c(ph1, ph2)
   
-  rgrowth <- 0.30 #TODO vamos ter que pensar a respeito desse parâmetro ('rgrowthc' é dos crops)... [2021-01-20]
+  # Fatores de conversao 
+  m2kgC_cm2gDM   <- (100*100)*(1/1000)*(1/0.45)
+  gDMPlant_kgCm2 <- (30/12) * pden / 1e3 # g-DM(CH2O)/plant to kg-C/m^2
+  
+  
+  # adgpp <- adgpp[i]* (30/12) * 1000  # converter kg C / m2.d para g CH2O / m2.d
+  
+  rgrowth <- 0.30 # default ECOSMOS growth respiration
+  irgrowth <- 1.0 / (1.0 - rgrowth) # 1/ rgrowth  - (crop growth respiration)
   
   # daily maintenance respiration parameters maize basic morphological components
   #TODO Pensar levamos para plantparams (não vejo necessidade, por hora) [2021-01-20]
@@ -148,10 +155,12 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       rest   <- 0.0
       vstage <- 0.0
       rstage <- 0
+      plas <- 0
       sen    <- 0
       fsen   <- 0
-      senmaxstage2 <- 0
-      senmaxstage3 <- 0
+      senf <-array(0,4)
+
+      gddvcum<-gddv[1]
       
       dm <- list('leaf' = 0.0, 'stem' = 0.0, 'root' = 0.0, 'cob' = 0.0, 'grain' = 0.0, 'sleaf' = 0)
       
@@ -228,7 +237,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         cumPh <- 1.0
         xn <- 3.0
         
-        cbiol[i]  <- 2 * pden * 0.4 * 1e-3  # primeiro termo seria a massa inicial
+        cbiol[i]  <- 2 * gDMPlant_kgCm2 # primeiro termo seria a massa inicial
         plai[i]   <- cbiol[i] * specla[i]
         
         cbiols[i] <- 0
@@ -248,24 +257,22 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       #     Stage 3: from silking to effective grain filling
       #     Stage 4: from effective grain filling to physiological maturity.
       
-      sen <- list()
-      
+
       ph <- ifelse(test = vstage < 10, yes = 1, no = 2)
       
-      if(rest >= gdd10%%gddv[ph] & gdd10 < gdds) {
+      if( gdd10 >= gddvcum & gdd10 < gdds) {
         vstage <- vstage + 1
+        gddvcum<-gddvcum+gddv[ph]
       }
-      rest <- gdd10%%gddv[ph]
-      
-      fr <- 1.0 / (1.0 - rgrowth) # check rgrowth comment previously mentioned
+
       
       # TODO CO2 assimilation in HM does not seem to be penalised by water stress [Henrique; 2021-02-26]
       #     read sections 4.1.2, 4.1.3 & 4.2.4 in the manual
       #     should we include the 'stress' variable from ECOSMOS here, in addition to that applied to leaf expansion?
-      adnppl <- adnpp[i] * fr / (1 + fresp$leaf)
-      adnpps <- adnpp[i] * fr / (1 + fresp$stem)
-      adnppr <- adnpp[i] * fr / (1 + fresp$root)
-      adnppg <- adnpp[i] * fr / (1 + fresp$grain)
+      adnppl <- adnpp[i] * irgrowth / (1 + fresp$leaf)
+      adnpps <- adnpp[i] * irgrowth / (1 + fresp$stem)
+      adnppr <- adnpp[i] * irgrowth / (1 + fresp$root)
+      adnppg <- adnpp[i] * irgrowth / (1 + fresp$grain)
       
       dtt8  <- calc_dtt(dpp = idpp[i], jday = jday, ldtt =  8, udtt = 34)
       dtt10 <- calc_dtt(dpp = idpp[i], jday = jday, ldtt = 10, udtt = 34)
@@ -281,7 +288,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         pc <- 1
       }
       
-      tiphyl <- dtt8 / (phyl * pc)
+      tiphyl <- dtt8 / (phyl * pc)   # DTT8 is daily accumulation of GDD8, obs. manual is GDD8 (DTT8 is the correct)
       cumPh <- cumPh + tiphyl
       xn <- max(xn, cumPh + 1)
       
@@ -292,14 +299,16 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       # PC is an intermediate variable
       # Note: at emergence cumPh = 1 and XN = 3.
       
-      # SLFC and SLFT are the leaf stress factors due to competition for light and low temperature, respectively.
+      
+      # Daily leaf senescence due to competition for light and temperature stress (PLAS, cm2 plant-1 d-1)
+      # is computed from a stress rate factor (LSR, 0~1):
       slfc <- ifelse(test = plai[i] < laic,
                      yes  = 1.0,
                      no   = min(1.0, max(0.0, 1.0 - 0.008 * (plai[i] - laic))))
       
       slft <- ifelse(test = tmean > 279.15, #TODO pensar se o limiar de 6º C possa ser um parametro, futuramente. [2021-01-20]
                      yes  = 1.0,
-                     no   = min(1.0, max(0.0, 1.0 - (279.15 - tmean) / 279.15)))
+                     no   = min(1.0, max(0.0, 1.0 - (279.15 - tmean) / 6)))
       
       # LSR is the stress rate factor (0-1) | 0 means no stress and 1 full stress
       lsr <- ifelse(test = slfc <= slft,
@@ -311,12 +320,11 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       # SVC -> gdd10 / gdds = 1 when GDD10 reaches GDD10silking (i.e., when total duration of Stages 1 and 2)
       tlno <- (gdd8 / 21) + 6    
       P3 <- (tlno - 2.0) * phyl + 96 - gdd8   #GDD8 is for the duration of Stage 2, and
-      gdd10+P3
-      
+
       if ((gdd10+P3 <= gdds) & (gdd10 < gdds)) { 
-        #SVC  if (gdd8 / (gdd8 + P3) > gdd10 / gdds) { 
+        #SVC  if (gdd8 / (gdd8 + P3) > gdd10 / gdds) { #verificar com os dados observados ou nas publicacoes
         
-        
+        stage <- 1
         ################################################
         # STAGE 1: from emergence to tassel initiation #  *** Stages 1 & 2 in CERES ***
         ################################################
@@ -337,7 +345,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # this parameter remains as 0 in CERES in stages 1 & 2
         P3 <- (tlno - 2.0) * phyl + 96 - gdd8   #GDD8 is for the duration of Stage 2, and
         
-        plag <- ifelse(test = xn < 4,
+          # Daily expansion of leaf area (PLAG), PLA (cm2 plant-1)
+          plag <- ifelse(test = xn < 4,
                        yes  = 3.0 * xn * tiphyl,
                        no   = 3.5 * (xn^2) * tiphyl)
         
@@ -346,8 +355,10 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         #    CEREs also includes waterlogging, and seems to be accomodated for K and P [*AMIN1(TURFAC,(1.0-SATFAC),PStres2, KSTRES)]
         
         pla <- pla + plag
+        
         #TODO CERES-MAIZE includes **1.25 in leafwt (XLFWT)
-        leafwt <- pla / (specla[i] * 10) # 10 (convertion SPECLA from m²/kg DM to cm²/g DM)
+        # SLA (cm2 g-1, ≤ 400 cm2 g-1) -> g of DM
+        leafwt <- pla / (specla[i] * m2kgC_cm2gDM) # 10 (convertion SPECLA from m²/kg DM to cm²/g DM)
         #TODO CERES-MAIZE has an intermediate variable called LFWT which is used XLFWT  = AMAX1 (XLFWT,LFWT)
         leafwg <- leafwt - leafwb
         leafwb <- leafwt
@@ -360,11 +371,15 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # leafWt is the leaf biomass of the previous day
         # leafWtGrow (g plant-1) is the daily growth in leaf biomass
         
-        sen$slan <- gdd8 * pla / 1e4
-        sen$plas <- plag * lsr
-        sen <- max(unlist(sen))
-        fsen <- sen / pla
-        pla <- max(0, pla - sen)
+        slan <- gdd8 * pla / 1e4
+        plas <- plas + plag * lsr
+        
+        fsen <- (max(plas,slan)- sen) / plag
+        
+        
+        sen <- max(plas,slan)
+        
+        
         leafwg <- leafwg / (1.0 + fresp$leaf)
         #TODO CERES uses a different approach here
         #TODO includes 'CumLeafSenes' now
@@ -373,37 +388,33 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # PLAS (cm2 plant-1 d-1) is the daily leaf senescence due to competition for light and temperature stress (affected by )
         # PLAG (cm2 plant-1 d-1) is the daily expansion of leaf area
         
-        # Root growth #
+        # Root Allocation #
         ds <- max(0.0, min(1.0, gdd10 / gdds))
-        aroot <- max(0.0, min(0.5, arooti - (ds * (arooti / dsstop))))
+        aroot[i] <- max(0.0, min(0.5, arooti - arooti*(ds/dsstop) ))
+        print(paste(idpp[i],aroot[i],ds,gdd10,gdds,arooti,ds,dsstop,sep=" / "))
+        
         # aroot equals to ACroot at emergence (=biomass allocation coefficient for root at emergence).
         # DSstop is the development stage when root growth stops
         # The default values for ACEroot and DSstop are 0.35 and 1.15, respectively.
         
-        aleaf <- max(0.0, 1.0 - aroot)
+        aleaf[i] <- max(0.0, 1.0 - aroot[i])
         
         # C mass-based for ECOSMOS 
-        cbiorg <- max(0.0, aroot * adnppr)
-        cbiolg <- max(0.0, aleaf * adnppl)
+        cbiorg <- max(0.0, aroot[i] * adnppr)
+        cbiolg <- max(0.0, aleaf[i] * adnppl)
         cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot)
         cbiol[i] <- cbiol[i] + cbiolg - (cbiol[i] * fsen)
         cbiols[i] <- cbiols[i] + cbiol[i]*fsen
         
-        # DM mass-based for model evaluation
-        dm$leaf <- dm$leaf + leafwg - sen / (specla[i] * 10)
-        dm$sleaf <- dm$sleaf + sen / (specla[i] * 10) #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
-        dm$root <- dm$root + (cbiorg * 1e3 / (pden * 0.40)) - (dm$root / tauroot)
-        #TODO Victor, a taxa de morte da raiz está sendo considerada via tauroot ? [2021-01-20]
         
-        # cat('\nStage 1\n')
-        # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
+        senf[1] <- sen
         
       } else if ( gdd10 < gdds ) {
         
         ##############################################
         # STAGE 2: from tassel initiation to silking #
         ##############################################
-        
+        stage <- 2
         # Leaf Growth and Senescence #
         
         # Stem and Root Growth #
@@ -431,32 +442,30 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # XNTI is the value of XN at the end of Stage 1
         # Note that both PLAG and leafWtGrow are the values projected based on temperature, but whether they can be realized depends on (a) availability of net carbohydrate from photosynthesis and (b) crop water stress (Section 4.2.4).
         # Leaf growth stops at the end of Stage 2 when silking occurs.
+
         
-        leafwg <- leafwg / (1.0 + fresp$leaf)
-        stemwg <- stemwg / (1.0 + fresp$stem)
+        slan <- gdd8 * pla / 1e4
+        plas <- plas + plag * lsr #TODO includes water 'stress' here following Keating et al. (2003) in pages 69-70 [Henrique; 2021-02-26]
         
-        sen$slan <- gdd8 * pla / 1e4
-        sen$plas <- plag * lsr #TODO includes water 'stress' here following Keating et al. (2003) in pages 69-70 [Henrique; 2021-02-26]
-        sen <- max(unlist(sen))
+        fsen <- (max(plas,slan)- sen) / plag
         
-        senmaxstage2 <- sen #dummy variable to avoid starting with low fsen in stage 3
+        sen <- max(slan,plas)
         
-        fsen <- sen / pla
-        pla <- max(0, pla - sen)
-        
+
         ds <- max(0.0, min(1.0, gdd10 / gdds))
-        # aroot equals to ACroot at emergence (=biomass allocation coefficient for root at emergence).
+        # aroot[i] equals to ACroot at emergence (=biomass allocation coefficient for root at emergence).
         # DSstop is the development stage when root growth stops
         # The default values for ACEroot and DSstop are 0.35 and 1.15, respectively.
         
-        aroot <- max(0.0, min(0.50, arooti - (ds * (arooti / dsstop))))
-        aleaf <- max(0.0, (1.0 - aroot) * (leafwg / (leafwg + stemwg)))
-        astem <- max(0.0, 1.0 - aroot - aleaf)
+        aroot[i] <- max(0.0, min(0.50, arooti - (ds * (arooti / dsstop))))
+        
+        aleaf[i] <- max(0.0, (1.0 - aroot[i]) * (leafwg / (leafwg + stemwg)))
+        astem[i] <- max(0.0, 1.0 - aroot[i] - aleaf[i])
         
         # C mass-based for ECOSMOS 
-        cbiorg <- max(0.0, aroot * adnppr)
-        cbiolg <- max(0.0, aleaf * adnppl)
-        cbiosg <- max(0.0, astem * adnpps)
+        cbiorg <- max(0.0, aroot[i] * adnppr)
+        cbiolg <- max(0.0, aleaf[i] * adnppl)
+        cbiosg <- max(0.0, astem[i] * adnpps)
         
         cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot[i])
         cbiol[i] <- cbiol[i] + cbiolg - (cbiol[i] * fsen)
@@ -464,62 +473,49 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         cbios[i] <- cbios[i] + cbiosg
         
         # DM mass-based for model evaluation
-        dm$leaf <- dm$leaf + leafwg - sen / (specla[i] * 10)
-        dm$sleaf <- dm$sleaf + sen / (specla[i] * 10) #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
-        dm$root <- dm$root + (cbiorg * 1e3 / (pden * 0.40)) - (dm$root / tauroot)
-        dm$stem <- dm$stem + stemwg
+        dm$stem <- dm$stem +  pden *stemwg/1000  # convert stemwg (g DM plant-1) to kg DM/m^2
         
         # cat('\nStage 2\n')
         # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
         
         dum8 <- gdd8 # GDD8 to reach Stage 3
-        plaf <- pla
+        plaf <- max(pla,plaf)
+        senf[2] <- sen
         
       } else if (gdd8 > dum8 & gdd8 <= dum8 + gddf) { 
         
         ####################################################
         # STAGE 3: from silking to effective grain filling #
         ####################################################
-        
+        stage <- 3
         # Leaf Growth and Senescence #
+ 
+# SVC e  VHB               
+         slan <- pla / 1e3 #  Warning: divergence between HM Manual and Yang et al. in FCR 87 (2004) [Henrique/Victor; 2021-03-03]
+#        plas <- plas + plag * lsr #TODO includes water 'stress' here following Keating et al. (2003) in pages 69-70 [Henrique; 2021-02-26]
+         sen <- senf[2] + slan
         
-        #sen$slan <- pla / 1e3 #  Warning: divergence between HM Manual and Yang et al. in FCR 87 (2004) [Henrique/Victor; 2021-03-03]
-        #CERES-MAIZE sen$slan <- plaf * 0.05 *(1+(sumgdd8/gddf))
-        
-        sumgdd8 <- sumgdd8 + (dtt8 / (1 - lsr))
-        #sf <- laim * min(1, ((sumgdd8 / gddf) ^ sg)) # gddf = P5 in model's manual ? | had to limit to avoid excessive sen [Henrique/Victor; 2021-03-03]
-        sf <- laim * min(1, ((sumgdd8 / gdds) ^ sg)) #TODO gdds = P5 in model's manual (?) is base 10! e AGORA?
-        sen$plas <- plaf * sf # plaf antes & ver fator temp
-        sen <- max(unlist(sen))
-        
-        #TODO LAI still decreasing rapidly after R1 compared to Yang et al. in FCR 87 (2004) 131–154 [Henrique; 2021-02-26]
-        #TODO verify this manipulation. perhaps 'lsr', 'plag' & 'plaf' calculations should be included here again [Henrique; 2021-02-26]
-        #TODO includes water 'stress' here following Keating et al. (2003) in page 70 [Henrique; 2021-02-26]
-        # check manipulation to avoid low sen & fsen values between stages 2 & 3 [Henrique; 2021-02-26]
-        sen <- max(senmaxstage2, sen)
-        
-        pla <- max(0, pla - sen)
-        fsen <- sen / plaf
+        fsen <- slan / pla
         
         # SF (0 to 1) is the fraction of senesced leaf of the maximum green leaf area, which is achieved at silking
         # LAImature is the fraction of LAI at maturity of the maximum LAI
         # SG is a ‘stay-green’ factor, which controls how fast leaf senesces proceeds after silking
         
         # Stem, Cob and Root Growth #
-        stemwg <- 0.220 * dtt8 / (1.0 + fresp$stem)
-        cobwg  <- 0.088 * dtt8 / (1.0 + fresp$cob)
+        stemwg <- 0.220 * dtt8 
+        cobwg  <- 0.088 * dtt8 
         
         # The course of crop development is measured by development stage (DS)
         #   on a scale ranging from 0 to 2, with 1 at silking.
         ds <- max(1.0, min(2.0, 1.0 + (gdd10 - gdds)/(gddt - gdds)))
         
-        aroot <- max(0.0, min(0.50, arooti - (ds * (arooti / dsstop))))
-        acob  <- max(0.0, cobwg * (1.0 - aroot) / (cobwg + stemwg))
-        astem <- max(0.0, 1.0 - aroot - acob)
+        aroot[i] <- max(0.0, min(0.50, arooti - (ds * (arooti / dsstop))))
+        acob[i]  <- max(0.0, (1.0 - aroot[i]) * (cobwg/ (cobwg + stemwg)))
+        astem[i] <- max(0.0, 1.0 - aroot[i] - acob[i])
         
         # C mass-based for ECOSMOS 
-        cbiorg <- max(0.0, aroot * adnppr)
-        cbiocg <- max(0.0, acob  * adnpps)
+        cbiorg <- max(0.0, aroot[i] * adnppr)
+        cbiocg <- max(0.0, acob[i]  * adnpps)
         cbiosg <- max(0.0, astem * adnpps)
         
         # sumP <- sumP + cbiorg + cbiocg + cbiosg
@@ -535,43 +531,37 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         cbiol[i] <- cbiol[i] - cbiol[i] * fsen
         cbiols[i] <- cbiols[i] + cbiol[i]*fsen
         
-        ndaysS3 <- ndaysS3 + 1
         
-        fcbios <- cbios[i] * 0.60
+        fcbios <- fcbios + cbiosg * 0.60
         fcbiol <- cbiol[i] * 0.15
         
         # DM mass-based for model evaluation per plant here
-        dm$leaf <- dm$leaf - sen / (specla[i] * 10)
-        dm$sleaf <- dm$sleaf + sen / (specla[i] * 10) #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
-        dm$root <- dm$root + (cbiorg * 1e3 / (pden * 0.40)) - (dm$root / tauroot)
-        dm$stem <- dm$stem + stemwg
-        dm$cob  <- dm$cob + cobwg
+        dm$stem <- dm$stem +  pden *stemwg/1000  # convert stemwg (g DM plant-1) to kg DM/m^2
+        dm$cob  <- dm$cob  + pden *cobwg/1000   # convert cobwg (g DM plant-1) to kg DM/m^2
         
-        sumP = sumP + adnpp[i] * 1e3 / (pden * 0.40) # g C to g CH2O per plant
-        senmaxstage3 <- sen 
+        sumP = sumP + adnpp[i] /gDMPlant_kgCm2 # g C to g CH2O per plant
+        ndaysS3 <- ndaysS3 + 1
         
         # cat('\nStage 3\n')
         # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
+        
+        senf[3] <- sen
+        
         
       } else if ( (gdd8 > dum8 + gddf) & (gdd10 < gddt) ) {
         
         ###################################################################
         # STAGE 4: from effective grain filling to physiological maturity #
         ###################################################################
-        
+        stage <- 4
         # Leaf senescence # (leaf growth stops from here onwards)
         sumgdd8 <- sumgdd8 + (dtt8 / (1 - lsr))
-        # CERES-MAIZE: sen$slan <- plaf * (0.1+0.8*((sumgdd8/gddf)^3)) 
-        #sf <- laim * min(1, ((sumgdd8 / gddf) ^ sg)) # gddf = P5 in model's manual? | had to limit to avoid excessive sen [Henrique/Victor; 2021-03-03]
-        sf <- laim * min(1, ((sumgdd8 / gdds) ^ sg)) #TODO gdds = P5 in model's manual (?) is base 10! e AGORA?
-        sen$plas <- plaf * sf  # plaf antes & fator temp
-        sen <- max(unlist(sen))
-        #if(idpp==115)browser()
-        #sen <- ifelse(sen < senmaxstage3, sen+senmaxstage3, sen)
-        sen <- max(senmaxstage3, sen)
         
-        pla <- max(0, pla - sen)
-        fsen <- sen / plaf
+
+        #sf <- laim * min(1, ((sumgdd8 / gddf) ^ sg)) # gddf = P5 in model's manual? | had to limit to avoid excessive sen [Henrique/Victor; 2021-03-03]
+        sf <- (laim*plaf) * min(1, ((sumgdd8 / P5) ^ sg)) #TODO gdds = P5 in model's manual (?) is base 10! e AGORA?
+        sen <- senf[3] + sf
+        
         
         # grainGrow is the actual grain filling rate(g plant-1 day-1)
         # GPP is the number of viable grain per plant (assuming one ear per plant) -> most likely from Fig. 3. in Andrade et al. Crop Sci. 39:453-459 (1999)
@@ -590,15 +580,16 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # psker = sumP * 1000 / ndaysS3 * 3.4 / 5
         # gpp = G2 * (psker - 195) / (1213.2 + psker - 195)
         
-        # NEW manual?
-        # psker <- sumP / (1 + fresp$grain) * 1e3 / ndaysS3 * 3.4 / 5.0 # we don't know the mathematical manipulation here
-        # gpp <- G2 - 676 / (psker/1e3) # mg as in the manual, but it may be wrong! 
-        
-        # Our version
+        # Our version (Pq Henrique??)
         # KNP = 573 - 676/PGR
         #    where, KNP in # kernels per plant with one ear; PGR = g/d per plant [0-15 +-]
-        psker <- sumP / ndaysS3
-        gpp <- min(max(0, G2 - 676 / psker), G2)
+        # psker <- sumP / ndaysS3
+        # gpp <- min(max(0, G2 - 676 / psker), G2)
+        
+         psker <- sumP *(1 / (1 + fresp$grain)) * (1e3 / ndaysS3) * (3.4 / 5.0) # we don't know the mathematical manipulation here
+         psker <- min(psker,1000) # The threshold value of PSKER for grain setting is 1000 mg d-1 plant-1
+         gpp <- G2 - 676 / (psker/1e3) # mg as in the manual, but it may be wrong! 
+        
         
         # CERES-MAIZE
         # PSKER = SUMP*1000.0/IDURP*3.4/5.0
@@ -621,42 +612,46 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         }))
         
         grainwg <- (RGfill * gpp * G5 * filleffi * 0.001) #TODO CERES-MAIZE applies *(0.45+0.55*SWFAC) here too
-        grainwg <- 0.40 * grainwg * pden / 1e3 # convert from g-DM plant⁻¹ day⁻¹ to kg-C m⁻² day⁻¹
+        grainwg <-  grainwg * gDMPlant_kgCm2  # convert from g-DM plant⁻¹ day⁻¹ to kg-C m⁻² day⁻¹
         #TODO Victor, a unidade do 'grain' ainda está bem diferente das demais... [2021-01-21]
         
         transs <- 0.0
         transl <- 0.0
         
+        #Potential DM at grain 
+        dm$grain <- dm$grain + (grainwg /cfrac[i]) # kg DM/m^2
+        
+        
         # C mass-based for ECOSMOS 
         #if(idpp==79) browser()
-        if (grainwg > adnppg & fcbios >= abs(grainwg - adnppg)) {
-          transs <- abs(grainwg - adnppg)
-          grainwg <- grainwg + efftrans * transs
-          fcbios <- fcbios - efftrans * transs
-          cbios[i] <- cbios[i] - transs * efftrans
-        } else {
-          transl <- min(0.005 * fcbiol, abs(grainwg - adnppg))
-          grainwg <- grainwg + efftrans * transl
-          fcbiol <- fcbiol - efftrans * transl
-          cbiol[i] <- cbiol[i] - transl * efftrans
+        if (grainwg > adnpp[i] & fcbios > 0 ) {
+          transs <- min(fcbios,abs(grainwg - adnpp[i]))
+          grainwg <- adnpp[i] + efftrans * transs
+          fcbios <- fcbios - transs
+          cbios[i] <- cbios[i] - transs
+        } else if (grainwg > adnpp[i] & fcbiol > 0 ) {
+          transl <- min(0.005 * fcbiol, abs(grainwg - adnpp[i]))
+          grainwg <- adnpp[i] + efftrans * transl
+          fcbiol <- fcbiol - transl
+          cbiol[i] <- cbiol[i] - transl
         }
         
-        if (grainwg < adnppg) {
-          fcbios <- fcbios + abs(grainwg - adnppg)
-          cbios[i] <- cbios[i] + abs(grainwg - adnppg)
+        if (grainwg < adnpp[i]) {
+          fcbios   <- fcbios   + abs(grainwg - adnpp[i])
+          cbios[i] <- cbios[i] + abs(grainwg - adnpp[i])
+          dm$stem  <- dm$stem  + abs(grainwg - adnpp[i])/cfrac[i]  # convert kg-C/m^2 to kg DM/m^2
         }
         
         cbiog[i] <- cbiog[i] + grainwg
-        cbiols[i] <- cbiols[i] + fsen*cbiol[i]
+        #convert sf (cm2 plant-1) to kg-C/m2 
+        cbiol[i]  <- cbiol[i]  - sf * pden * (1/(100*100))*(1 / specla[i] )
+        cbiols[i] <- cbiols[i] + sf * pden * (1/(100*100))*(1 / specla[i] )
         
-        # DM mass-based for model evaluation
-        dm$leaf  <- dm$leaf - (efftrans * transl * 1e3 / (pden * 0.40))
-        dm$sleaf <- dm$sleaf + sen / (specla[i] * 10) #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
-        dm$stem  <- dm$stem - (efftrans * transs * 1e3 / (pden * 0.40))
-        dm$grain <- dm$grain + (grainwg * 1e3 / (pden * 0.40))
-        
+
         # cat('\nStage 4\n')
         # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
+        
+        senf[4] <- sen
         
       }
       
@@ -683,10 +678,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       #TODO verificar o comportamento do 'sen', que está meio estranho [2021-02-25]
       plai[i] <- max(0.01, cbiol[i] * specla[i])
       lais[i] <- cbiols[i] * specla[i] #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
-      pgreenfrac[i] <- max(0.01,1-lais[i]/plai[i])
-      # print(c('lai' = plai[i]))
-      peaklai[i]  <- max(peaklai[i], plai[i])
-      
+      pgreenfrac[i] <- max(0.01,plai[i]/(plai[i]+0.1*lais[i]))
+
       biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbioc[i]
       # print(c('biomass' = biomass[i]))
       
@@ -698,13 +691,13 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         aleaf[i] * max(0.0, adnppl) +
         aroot[i] * max(0.0, adnppr) +
         astem[i] * max(0.0, adnpps) +
-        acob  * max(0.0, adnpps)
+        acob[i]  * max(0.0, adnpps)
       
       # aboveground value to calculate harvest index
       ayabprod[i] <- ayabprod[i] +
         aleaf[i] * max(0.0, adnppl) +
         astem[i] * max(0.0, adnpps) +
-        acob  * max(0.0, adnpps)
+        acob[i]  * max(0.0, adnpps)
       
       
       # keep track of annual total root production carbon
@@ -715,7 +708,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       # keep track of total carbon allocated to
       # leaves for litterfall calculation
       aylprod[i] <- aylprod[i] +
-        aleaf[i] * max(0.0, adnppl * fr / (1 + fresp$leaf))
+        aleaf[i] * max(0.0, adnppl)
       
       #####################################################################
       # check for climatic and phenological limits on maturity, growth,
@@ -741,18 +734,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       #___________________________________________________
       #       Harvest
       
-      # flag to export or not the following csv that Victor uses
-      export <- F 
-      if(export) {
-        fileout <- paste("Maize_DAILY.csv")
-        
-        if(idpp[i] == 1) ID <- paste0(jday, iyear)
-        # write(x = unlist(dm), file = fileout, append = T, sep = '\t')
-        write(x = paste(ID, idpp[i], aroot[i], aleaf[i], astem[i], cbior[i], cbiol[i], cbios[i], cbioc[i], cbiog[i], plai[i], sep = ";"),
-              file = fileout,
-              append = TRUE,
-              sep = "\n")
-      }
+     
       
     }
     
@@ -775,18 +757,18 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     assign('rstage'    , rstage    , envir = env)
     
+    
     if(cropy == 1) {
       if ( gdd10 >= gddt ) { # physiological maturity predicted by the model
         
-        # print(paste('Harvest Maize ',ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai[i],cbiog[i],sep = " ; "    ))
+         print(paste('Harvest Maize ',ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,cbiog[i],sep = " ; "    ))
         
-        # Victor, 'desliguei' o print e os outputs por hora aqui pras minhas simulações [2021-01-20]
-        # cat('\nDates: Germination:',date_germ,'| Emergence:',date_emerg)
+         cat('\nDates: Germination:',date_germ,'| Emergence:',date_emerg)
         # 
-        # fileout <- paste("Maize_SEASON.csv")
-        # write(paste(ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai,cbiog[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
+         fileout <- paste("Maize_SEASON.csv")
+         write(paste(ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai,cbiog[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
         # 
-        # cat('\nMaize harvested! Harvest date:', paste(sprintf('%04d',year), sprintf('%02d', month), sprintf('%02d', day), sep = '-'),'\n')
+         cat('\nMaize harvested! Harvest date:', paste(sprintf('%04d',year), sprintf('%02d', month), sprintf('%02d', day), sep = '-'),'\n')
         
         croplive[i]   <- 0.0
         cropy         <- 0.0
@@ -795,7 +777,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         harvdate[i]   <- jday
         plai[i]       <- 0.01 # simulates remaining stubble/mulch
         lais[i]       <- 0
-        peaklai[i]    <- 0.0
         endCycle      <- T
         
         dm$root <- 0
@@ -811,6 +792,15 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       stop()
     }
     
+    
+    # Potential DM mass-based on Hybrid-Maize
+    dm$leaf  <- pden * (pla / (specla[i] * m2kgC_cm2gDM))/1000  #kg DM m2
+    dm$sleaf <- pden * (sen / (specla[i] * m2kgC_cm2gDM))/1000  #kg DM m2
+    dm$root  <- cbior[i]/cfrac[i]
+
+
+    assign("plas" , plas , envir = env)
+    assign("gddvcum" , gddvcum , envir = env)
     assign('gdd8'      , gdd8      , envir = env)
     assign('gdd10'     , gdd10     , envir = env)
     assign('cumPh'     , cumPh     , envir = env)
@@ -833,20 +823,18 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign('date_emerg', date_emerg, envir = env)
     assign('date_germ' , date_germ , envir = env)
     assign('plaf'      , plaf      , envir = env)
-    assign('fr', fr, envir = env)
     assign('slfc', slfc, envir = env)
     assign('slft', slft, envir = env)
     assign('lsr', lsr, envir = env)
     assign('plag', plag, envir = env)
+    assign('stage'    , stage    , envir = env)
     assign('vstage'    , vstage    , envir = env)
-    # assign('rstage'    , rstage    , envir = env)
-    assign('rest'      , rest      , envir = env)
+    assign('rstage'    , rstage    , envir = env)
     assign('dm'        , dm        , envir = env)
     assign('coleog'    , coleog    , envir = env)
     assign('sen'       , sen       , envir = env)
     assign('fsen'      , fsen      , envir = env)
-    assign('senmaxstage2'      , senmaxstage2      , envir = env)
-    assign('senmaxstage3'      , senmaxstage3      , envir = env)
+    assign('senf'       , senf       , envir = env)
     assign('dtt8'      , dtt8      , envir = env)
     
     assign('psker' , psker , envir = env)
@@ -854,8 +842,34 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign('RGfill', RGfill, envir = env)
     assign('transs', transs, envir = env)
     assign('transl', transl, envir = env)
-    
+
     assign('lais', lais, envir = env)
+    
+    
+    
+    # flag to export or not the following csv that Victor uses
+    export <- T 
+    if(export) {
+      fileout <- paste("Maize_DAILY.csv")
+      ID <- paste0(jday, iyear)
+      if(idpp[i] == 1){ 
+      write(x = paste(ID, idpp[i],gdd10,gdd8,stage ,vstage,rstage, aroot[i], aleaf[i], astem[i],
+                      cbior[i]/cfrac[i], cbiol[i]/cfrac[i], cbios[i]/cfrac[i],
+                      cbioc[i]/cfrac[i], cbiog[i]/cfrac[i],dm$root,dm$leaf,dm$stem,dm$cob,dm$grain, plai[i],pla,sen, sep = ";"),
+            file = fileout,
+            append = F,
+            sep = "\n")}else{
+      
+      # write(x = unlist(dm), file = fileout, append = T, sep = '\t')
+              write(x = paste(ID, idpp[i],gdd10,gdd8,stage ,vstage,rstage, aroot[i], aleaf[i], astem[i],
+                              cbior[i]/cfrac[i], cbiol[i]/cfrac[i], cbios[i]/cfrac[i],
+                              cbioc[i]/cfrac[i], cbiog[i]/cfrac[i],dm$root,dm$leaf,dm$stem,dm$cob,dm$grain, plai[i],pla,sen, sep = ";"),
+            file = fileout,
+            append = TRUE,
+            sep = "\n")
+            }
+    }
+    
     
   }
   
@@ -878,7 +892,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("cbios"    , cbios    , envir = env)
   assign("cbior"    , cbior    , envir = env)
   assign("plai"     , plai     , envir = env)
-  assign("peaklai"  , peaklai  , envir = env)
   assign("aerial"   , aerial   , envir = env)
   assign("aybprod"  , aybprod  , envir = env)
   assign("ayabprod" , ayabprod , envir = env)

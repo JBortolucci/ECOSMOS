@@ -123,74 +123,23 @@ sumnow <- function() {
   # PFT_UPDATE: upper canopy
   for(i in seq(1,npft)) {
     nppdummy[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$canopy == UPPER,  frac[i] * an[i] * lai[2] * fu, nppdummy[i])
-    # if(!plantList[[i]]$active) next
-    # if(plantList[[i]]$canopy == UPPER)
-        # nppdummy[i] <- frac[i] * an[i] * lai[2] * fu
   }
-  # nppdummy[1] <- frac[1] * ancub * lai[2] * fu
-  # nppdummy[2] <- frac[2] * ancub * lai[2] * fu
-  # nppdummy[3] <- frac[3] * ancub * lai[2] * fu
-  # nppdummy[4] <- frac[4] * ancuc * lai[2] * fu
-  # nppdummy[5] <- frac[5] * ancub * lai[2] * fu
-  # nppdummy[6] <- frac[6] * ancuc * lai[2] * fu
-  # nppdummy[7] <- frac[7] * ancub * lai[2] * fu
-  # nppdummy[8] <- frac[8] * ancub * lai[2] * fu
-  
 
-  
   # PFT_UPDATE: lower canopy
   for(i in seq(1,npft)) {
-    # if(!plantList[[i]]$active) next
-    # if(plantList[[i]]$canopy == LOWER)
-    #   nppdummy[i]  <- frac[i] * an[i] * lai[1] * fl * smask
     nppdummy[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$canopy == LOWER,  frac[i] * an[i] * lai[1] * fl * smask, nppdummy[i])
   }
-  # nppdummy[9]  <- frac[9]  * an[9] * lai[1] * fl * smask
-  # nppdummy[10] <- frac[10] * an[10] * lai[1] * fl * smask
-  # nppdummy[11] <- frac[11] * an[11] * lai[1] * fl * smask
-  # nppdummy[12] <- frac[12] * an[12] * lai[1] * fl * smask
-  # nppdummy[13] <- frac[13] * an[17] * lai[1] * fl * smask
-  # nppdummy[14] <- frac[14] * an[14] * lai[1] * fl * smask
-  # nppdummy[15] <- frac[15] * an[17] * lai[1] * fl * smask
-  # nppdummy[16] <- frac[16] * an[16] * lai[1] * fl * smask
-  # nppdummy[17] <- frac[17] * an[17] * lai[1] * fl * smask
-  # nppdummy[18] <- frac[18] * an[17] * lai[1] * fl * smask 
-  
-  
+
   # PFT_UPDATE: upper canopy
   for(i in seq(1,npft)) {
-    # if(!plantList[[i]]$active) next
-    # if(plantList[[i]]$canopy == UPPER)
-    #    tgpp[i] <- frac[i] * ag[i] * lai[2] * fu
-    tgpp[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$canopy == LOWER,  frac[i] * ag[i] * lai[2] * fu, tgpp[i])
+    tgpp[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$canopy == UPPER,  frac[i] * ag[i] * lai[2] * fu, tgpp[i])
   }
-  
-  # tgpp[1] <- frac[1] * agcub * lai[2] * fu
-  # tgpp[2] <- frac[2] * agcub * lai[2] * fu
-  # tgpp[3] <- frac[3] * agcub * lai[2] * fu
-  # tgpp[4] <- frac[4] * agcuc * lai[2] * fu
-  # tgpp[5] <- frac[5] * agcub * lai[2] * fu
-  # tgpp[6] <- frac[6] * agcuc * lai[2] * fu
-  # tgpp[7] <- frac[7] * agcub * lai[2] * fu
-  # tgpp[8] <- frac[8] * agcub * lai[2] * fu
   
   # PFT_UPDATE: lower canopy
   for(i in seq(1,npft)) {
-    # if(!plantList[[i]]$active) next
-    # if(plantList[[i]]$canopy == LOWER)
-    #     tgpp[i]  <- frac[i] * ag[i] * lai[1] * fl * smask
     tgpp[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$canopy == LOWER,   frac[i] * ag[i] * lai[1] * fl * smask, tgpp[i])
   }
-  # tgpp[9]  <- frac[9] * agcls * lai[1] * fl * smask
-  # tgpp[10] <- frac[10] * agcls * lai[1] * fl * smask
-  # tgpp[11] <- frac[11] * agcl4 * lai[1] * fl * smask
-  # tgpp[12] <- frac[12] * agcl3 * lai[1] * fl * smask
-  # tgpp[13] <- frac[13] * agcc3 * lai[1] * fl * smask
-  # tgpp[14] <- frac[14] * agcc4 * lai[1] * fl * smask
-  # tgpp[15] <- frac[15] * agcc3 * lai[1] * fl * smask
-  # tgpp[16] <- frac[16] * agcc4 * lai[1] * fl * smask
-  # tgpp[17] <- frac[17] * agcc3 * lai[1] * fl * smask
-  # tgpp[18] <- frac[18] * agcc3 * lai[1] * fl * smask
+
   
   # PFT_UPDATE
   # calculate total gridcell gpp
@@ -293,9 +242,11 @@ sumnow <- function() {
   for(i in seq(1,npft)) {
     # if(!plantList[[i]]$active) next
     # tnpp[i] <- nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i]
-    tan[i] <- ifelse(plantList[[i]]$active, nppdummy[i] , tnpp[i])
+    tan[i] <- ifelse(plantList[[i]]$active, nppdummy[i] , tnpp[i]) #Aqui NAO e' necessario ifelse
     
-    tnpp[i] <- ifelse(plantList[[i]]$active, nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiop[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i], tnpp[i])
+    tnpp[i] <- ifelse(plantList[[i]]$active,                        #Aqui E' necessario ifelse, pois se tnpp = 0, segue 0 e não um valor negativo
+                      nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiop[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i], tnpp[i])
+    
   }
 
   

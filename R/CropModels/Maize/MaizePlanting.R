@@ -32,7 +32,6 @@ MaizePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
     harvdate[i]   <- 999
     hdate[i]      <- 0
     harvidx[i]    <- 0
-    croplaimx[i]  <- 0
     grainn[i]     <- 0
     cropyld[i]    <- 0
     dmyield[i]    <- 0
@@ -130,7 +129,6 @@ MaizePlanting <- function(iyear0, iyear, imonth, iday, jday, ffact, index) {
   assign("harvdate", harvdate, envir = env)
   assign("hdate", hdate, envir = env)
   assign("harvidx", harvidx, envir = env)
-  assign("croplaimx", croplaimx, envir = env)
   assign("grainn", grainn, envir = env)
   assign("cropyld", cropyld, envir = env)
   assign("dmyield", dmyield, envir = env)
