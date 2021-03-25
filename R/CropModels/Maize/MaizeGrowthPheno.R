@@ -168,13 +168,9 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       plaf <- 0.0
       
-      #TODO check if 'tlno' and 'P3' are dynamic or static [Henrique; 2021-03-04]
-      tlno <- 30
+      tlno <- 0
       P3 <- 0
-      # tlno <- (gdd8 / (phyl * 0.5)) + 6
-      # P3 <- (tlno - 2.0) * phyl + 96 - gdd8
-      # TLNO is the total number of leaves that will eventually appear (#)
-      # P3: "The duration of Stage 2 in terms of GDD equals P3 whose value is determined at the end of Stage 1"
+
       
     }
     
@@ -237,7 +233,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         cumPh <- 1.0
         xn <- 3.0
         
-        cbiol[i]  <- 2 * gDMPlant_kgCm2 # primeiro termo seria a massa inicial
+        cbiol[i]  <- 0.06 * gDMPlant_kgCm2 # primeiro termo seria a massa inicial
         plai[i]   <- cbiol[i] * specla[i]
         
         cbiols[i] <- 0
@@ -316,10 +312,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
                     no   = 1.0 - slft)
       
       
-      #SVC - minha interpretacao do manual
-      # SVC -> gdd10 / gdds = 1 when GDD10 reaches GDD10silking (i.e., when total duration of Stages 1 and 2)
-      tlno <- (gdd8 / 21) + 6    
-      P3 <- (tlno - 2.0) * phyl + 96 - gdd8   #GDD8 is for the duration of Stage 2, and
 
       if ((gdd10+P3 <= gdds) & (gdd10 < gdds)) { 
         #SVC  if (gdd8 / (gdd8 + P3) > gdd10 / gdds) { #verificar com os dados observados ou nas publicacoes
@@ -362,9 +354,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         #TODO CERES-MAIZE has an intermediate variable called LFWT which is used XLFWT  = AMAX1 (XLFWT,LFWT)
         leafwg <- leafwt - leafwb
         leafwb <- leafwt
-        xnti <- xn
-        #TODO include roots?
-        
+
         # PLA (cm2 plant-1) is the total leaf area per plant
         # SLA (cm2 g-1, ≤ 400 cm2 g-1) is the specific leaf area
         # leafWtToday (g plant-1) is the leaf biomass after update
@@ -374,7 +364,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         slan <- gdd8 * pla / 1e4
         plas <- plas + plag * lsr
         
-        fsen <- (max(plas,slan)- sen) / plag
+        fsen <- (max(plas,slan)- sen) / pla
         
         
         sen <- max(plas,slan)
@@ -391,7 +381,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # Root Allocation #
         ds <- max(0.0, min(1.0, gdd10 / gdds))
         aroot[i] <- max(0.0, min(0.5, arooti - arooti*(ds/dsstop) ))
-        print(paste(idpp[i],aroot[i],ds,gdd10,gdds,arooti,ds,dsstop,sep=" / "))
         
         # aroot equals to ACroot at emergence (=biomass allocation coefficient for root at emergence).
         # DSstop is the development stage when root growth stops
@@ -408,6 +397,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         
         senf[1] <- sen
+        xnti <- xn
         
       } else if ( gdd10 < gdds ) {
         
@@ -434,7 +424,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
           leafwg <- 0.00116 * plag * pla^0.25
           stemwg <- 10.85 * tiphyl
         }
-        
+
         #TODO includes water and others 'stress' in plag following... [Henrique; 2021-02-26]
         #    Keating et al. (2003) in pages 69-70 and/or CERES-MAIZE
         #    CEREs also includes waterlogging, and seems to be accomodated for K and P [*AMIN1(TURFAC,(1.0-SATFAC),PStres2, KSTRES)]
@@ -447,7 +437,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         slan <- gdd8 * pla / 1e4
         plas <- plas + plag * lsr #TODO includes water 'stress' here following Keating et al. (2003) in pages 69-70 [Henrique; 2021-02-26]
         
-        fsen <- (max(plas,slan)- sen) / plag
+        fsen <- (max(plas,slan)- sen) / pla
         
         sen <- max(slan,plas)
         
@@ -855,7 +845,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       if(idpp[i] == 1){ 
       write(x = paste(ID, idpp[i],gdd10,gdd8,stage ,vstage,rstage, aroot[i], aleaf[i], astem[i],
                       cbior[i]/cfrac[i], cbiol[i]/cfrac[i], cbios[i]/cfrac[i],
-                      cbioc[i]/cfrac[i], cbiog[i]/cfrac[i],dm$root,dm$leaf,dm$stem,dm$cob,dm$grain, plai[i],pla,sen, sep = ";"),
+                      cbioc[i]/cfrac[i], cbiog[i]/cfrac[i],dm$root,dm$leaf,dm$stem,dm$cob,dm$grain, plai[i],pla,sen,fsen,cbiols[i]/cfrac[i], sep = ";"),
             file = fileout,
             append = F,
             sep = "\n")}else{
@@ -863,7 +853,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       # write(x = unlist(dm), file = fileout, append = T, sep = '\t')
               write(x = paste(ID, idpp[i],gdd10,gdd8,stage ,vstage,rstage, aroot[i], aleaf[i], astem[i],
                               cbior[i]/cfrac[i], cbiol[i]/cfrac[i], cbios[i]/cfrac[i],
-                              cbioc[i]/cfrac[i], cbiog[i]/cfrac[i],dm$root,dm$leaf,dm$stem,dm$cob,dm$grain, plai[i],pla,sen, sep = ";"),
+                              cbioc[i]/cfrac[i], cbiog[i]/cfrac[i],dm$root,dm$leaf,dm$stem,dm$cob,dm$grain, plai[i],pla,sen,fsen,cbiols[i]/cfrac[i], sep = ";"),
             file = fileout,
             append = TRUE,
             sep = "\n")
