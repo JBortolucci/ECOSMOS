@@ -1,9 +1,5 @@
 # building simdatavars
-simDataVars$ndiasV6    <- 0
-simDataVars$ndiasR0    <- 0
-simDataVars$ndiasR4    <- 0
-simDataVars$ndiasR9    <- 0
-simDataVars$DVS        <- 0
+
 simDataVars$TMAXC      <- 0
 simDataVars$TMINC      <- 0
 simDataVars$TTSUM      <- 0
@@ -523,7 +519,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # C mass-based for ECOSMOS 
         cbiorg <- max(0.0, aroot[i] * adnppr)
         cbiocg <- max(0.0, acob[i]  * adnpps)
-        cbiosg <- max(0.0, astem * adnpps)
+        cbiosg <- max(0.0, astem[i] * adnpps)
         
         if(cbioc[i] == 0.0) {
           cbioc[i] <- cbios[i] * 0.167
@@ -564,11 +560,9 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # Leaf senescence # (leaf growth stops from here onwards)
         sumgdd8 <- sumgdd8 + (dtt8 / (1 - lsr))
         
-        
-        #sf <- laim * min(1, ((sumgdd8 / gddf) ^ sg)) # gddf = P5 in model's manual? | had to limit to avoid excessive sen [Henrique/Victor; 2021-03-03]
-        sf <- (laim*plaf) * min(1, ((sumgdd8 / P5) ^ sg)) #TODO gdds = P5 in model's manual (?) is base 10! e AGORA?
-        sen <- senf[3] + sf
-        
+        sf <- (laim * plaf) * min(1, ((sumgdd8 / P5) ^ sg)) #TODO gdds = P5 in model's manual (?) is base 10! e AGORA?
+        dl <- sf - sen
+        sen <- sf
         
         # grainGrow is the actual grain filling rate(g plant-1 day-1)
         # GPP is the number of viable grain per plant (assuming one ear per plant) -> most likely from Fig. 3. in Andrade et al. Crop Sci. 39:453-459 (1999)
@@ -647,97 +641,35 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         cbiog[i] <- cbiog[i] + grainwg 
         #convert sf (cm2 plant-1) to kg-C/m2 
-        cbiol[i]  <- cbiol[i]  - sf * pden * (1/(100*100))*(1 / specla[i] )
-        cbiols[i] <- cbiols[i] + sf * pden * (1/(100*100))*(1 / specla[i] )
+        cbiol[i]  <- cbiol[i]  - dl * pden * (1/(100*100))*(1 / specla[i] )
+        cbiols[i] <- cbiols[i] + dl * pden * (1/(100*100))*(1 / specla[i] )
         
-
-        # cat('\nStage 4\n')
-        # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
-        
-        senf[4] <- sen
+              senf[4] <- sen
         
       }
       
-      #TODO Victor, o que precisamos pensar e eventualmente fazer: [2021-01-20]
-      # 1) se vamos usar o froot ou vamos adaptar ele pro item 4.2.1. Rooting Depth and Water Uptake Weighting Factor do manual
-      #    aqui teria parâmetros novos, como: 
-      #    - Depthmax (represents the depth of soil without physical or chemical restrictions to root growth) default = 150 cm 
-      #    - VDC (is the vertical distribution coefficient that determines) default = 3
-      # 2) se vamos trazer a parte de absorção de água e penalização de por estresse hídrico que é ~ DSSAT
-      # 3) trazer as condições e cálculos do gdd10 ou gdd8 (aquele lance da empresa de melhoramento/pesquisa)
-      #    - item 4.3. Correlations of total GDD to RM and GDD-to-silking to total GDD
-      #    - um dia procurei saber se tem algo pros híbridos daqui do GDD8, mas nada
-      #    - tem a maturidade relativa (RM), que daria pra usar a equação da fig 4.1 como aproximação
-      #    - podemos ver com Santiago se ele descobre algo com pessoal da Embrapa Milho & Sorgo
-      # 4) retornar os R stages, usando as proporções que virão dos valores da pagina 69 (pdf) [Ok]
-      
-      # Victor, 'desliguei' o print por hora aqui pras minhas simulações [2021-01-20]
-      # print('\n')
-      # print(unlist(dm, use.names = T))
-      
-      # update vegetation's physical characteristics
-      # plai[i] <- min(max(0.0, cbiol[i] * specla[i]),5) #TODO check
-      #TODO verificar na relação folha verde/folha seca [2021-01-20]
-      #TODO verificar o comportamento do 'sen', que está meio estranho [2021-02-25]
+
       plai[i] <- max(0.01, cbiol[i] * specla[i])
       lais[i] <- cbiols[i] * specla[i] #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
       pgreenfrac[i] <- max(0.01,plai[i]/(plai[i]+0.1*lais[i]))
       
       biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbioc[i]
-      # print(c('biomass' = biomass[i]))
-      
-      # keep track of aboveground annual npp
+
+      # keep track annual npp
       ayanpp[i] <- ayanpp[i] + adnpp[i]
       
-      # keep track of total biomass production for the entire year, and the
-      aybprod[i] <- aybprod[i] +
-        aleaf[i] * max(0.0, adnppl) +
-        aroot[i] * max(0.0, adnppr) +
-        astem[i] * max(0.0, adnpps) +
-        acob[i]  * max(0.0, adnpps)
-      
       # aboveground value to calculate harvest index
-      ayabprod[i] <- ayabprod[i] +
-        aleaf[i] * max(0.0, adnppl) +
-        astem[i] * max(0.0, adnpps) +
-        acob[i]  * max(0.0, adnpps)
-      
+      ayabprod[i] <- ayabprod[i] + max(0.0, adnpp[i] * (1 - aroot[i]))  *irgrowth/(1+fresp$grain) # considering fresp$grain as average
       
       # keep track of annual total root production carbon
-      ayrprod[i] <- ayrprod[i] +
-        aroot[i] * max(0.0, adnppr)
+      ayrprod[i] <- ayrprod[i] +  max(0.0, adnpp[i]*irgrowth/(1+fresp$root))
       
+      # keep track of total biomass production for the entire year, and the
+      aybprod[i] <- ayabprod[i] + ayrprod[i]
       
       # keep track of total carbon allocated to
       # leaves for litterfall calculation
-      aylprod[i] <- aylprod[i] +
-        aleaf[i] * max(0.0, adnppl)
-      
-      #####################################################################
-      # check for climatic and phenological limits on maturity, growth,
-      # and harvest date
-      #
-      
-      #    if (tmin <= tkill[i]) {
-      #      ccdays[i] <- ccdays[i] + 1
-      #    } else {
-      #      ccdays[i] <- 0
-      #    }
-      #
-      #    if (ccdays[i] >= 1 &&
-      #        hui[i] >= 0.6 * gddmaturity[i] &&
-      #        croplive[i] == 1) {
-      #      croplive[i]     <- 0.0
-      #      print(paste0('tkill!!!!!',1,iyear,jday,idpp[i]))
-      #      harvdate[i]     <- jday
-      #    }
-      
-      
-      
-      #___________________________________________________
-      #       Harvest
-      
-      
+      aylprod[i] <- aylprod[i] +  max(0.0, adnpp[i]*irgrowth/(1+fresp$leaf)) #Applying 
       
     }
     
@@ -759,20 +691,18 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     }
     
     assign('rstage'    , rstage    , envir = env)
-    
-    
+ 
     if(cropy == 1) {
-      if ( gdd10 >= gddt ) { # physiological maturity predicted by the model
+      if ( gdd10 >= gddt | tmin <= tkill[i] ) { # physiological maturity predicted by the model
         
-        print(paste('Harvest Maize ',ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,cbiog[i],sep = " ; "    ))
+        if(tmin <= tkill[i]){ print(paste('Forst-Harvest Maize Yield (t/ha)',ID,idpp[i],10*1.14*cbiog[i]/cfrac[i],sep = " ; "    ))}else{
+                              print(paste('Harvest Maize Yield (t/ha)',ID,idpp[i],10*1.14*cbiog[i]/cfrac[i],sep = " ; "    ))}
         
-        cat('\nDates: Germination:',date_germ,'| Emergence:',date_emerg)
         # 
         fileout <- paste("Maize_SEASON.csv")
-        write(paste(ID,idpp[i],ndiasV6,ndiasR0,ndiasR4,ndiasR9,DVS,peaklai,cbiog[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
+        write(paste(ID,idpp[i],cbiog[i]/cfrac[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
         # 
-        cat('\nMaize harvested! Harvest date:', paste(sprintf('%04d',year), sprintf('%02d', month), sprintf('%02d', day), sep = '-'),'\n')
-        
+
         croplive[i]   <- 0.0
         cropy         <- 0.0
         idpp[i]       <- 0.0
@@ -887,7 +817,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("aleaf"    , aleaf    , envir = env)
   assign("astem"    , astem    , envir = env)
   assign("acob"     , acob    , envir = env)
-  assign("arepr"    , arepr    , envir = env)
   assign("cbiol"    , cbiol    , envir = env)
   assign("cbiog"    , cbiog    , envir = env)
   assign('cbioc'    , cbioc    , envir = env)
