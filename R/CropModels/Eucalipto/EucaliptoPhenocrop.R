@@ -60,8 +60,8 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   if (croplive[i]==1) {
     
     
-    
-    #! available inorganic nitrogen in soil profile for plant growth (kg_n m-2 y-1)     
+
+#! available inorganic nitrogen in soil profile for plant growth (kg_n m-2 y-1)     
     aplantn <- 0.0
     
     for(k in 1:nsoilay) {
@@ -73,15 +73,15 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     if (croplive[i] == 1.0) {
       
-      
+
       # accumulate growing degree days for planted crops past planting
       gddplant[i] <- gddplant[i] + max(0, min(td - baset[i], mxtmp[i]))
-      
+
       pgreenfrac[i] <- 1.0
       
       idpp[i]    <- idpp[i] + 1
       
-      
+
       ######################################################################
       ########## Start Allocation to Perenial (Eucalyptus) crops ############
       ######################################################################
@@ -98,10 +98,10 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         plai[i]   <- max(plai[i],0.02)
         cbiol[i]  <- plai[i]/specla[i]    
         
-      }
+        }
       
-      
-      
+
+        
       rm          <- min(mxmat[i]/365, idpp[i]/365)
       hsum        <- 0
       water       <- 0
@@ -174,7 +174,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       if (Branchexp < 0.)  Branchexp <- 0.001
       abranch[i] <-  (0.5 + 0.5 * (1.- (cbiob[i]*kg_C_M2_to_T_ha) / Branchexp ) / Allocsensb )
-      
+
       abranch[i]<-max(min(abranch[i],1),0)
       
       
@@ -189,9 +189,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       acroot[i]<-max(min(acroot[i],1),acrootmin)
       
-      if(idpp[i]>=450 ) {
-        acroot[i] <- min(acroot[i],acrootmin)
-      }
       
       #---------------------
       #Stem (G'DAY) C allocation or Wood (ECOSMOS)
@@ -220,13 +217,13 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       acroot[i]    <- max(0.0, acroot[i])
       
       
-      
+    
       #===============================================================
       #Michel: Teste 4/3/21
       if(plai[i] <= 2.5 & idpp[i]<=450 ) {
         aleaf[i] <- max(aleaf,Alleafinit)
       } else {
-        aleaf[i] <- max(aleaf[i],Alleafmin)
+       aleaf[i] <- max(aleaf[i],Alleafmin)
       }
       
       if ( (aroot[i] + aleaf[i] + abranch[i] + acroot[i]) > 1 ) {
@@ -318,7 +315,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       #   Deadbranch  <- max(Deadbranch,0)
       #   # print(paste("teste-4",fdec,DBranch*kg_C_M2_to_T_ha,DeadGbranch,Deadbranch,sep="/"))
       # 
-      
+
       DBranch     <- max((DeadGbranch-Deadbranch),0)
       # print(paste(DeadGbranch,DBranch,Deadbranch,sep="///"))
       
@@ -347,6 +344,25 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       Deadleaves <- Fdecay * cbiol[i] * kg_C_M2_to_T_ha  #rever dif entre Leaves_Predicted  e Shoot_Predicted
       
+     
+      
+      #########################################################################
+      ############## ### ##    ####   ####     ##     ##     ##################
+      ############## ### ## ### ### ##  ## ### #### #### ######################
+      ############## ### ##    #### ### ##     #### ####     ##################
+      ############## ### ## ####### ##  ## ### #### #### ######################
+      ##############     ## #######   #### ### #### ####     ##################
+      #########################################################################
+      #---------------------
+      #C Pool update
+      #---------------------
+      cbiow[i]  <- cbiow[i] + (awood[i]    * max (0.0, adnpp[i]))  - (deltay * Deadwood      / kg_C_M2_to_T_ha)
+      cbiob[i]  <- cbiob[i] + (abranch[i]  * max (0.0, adnpp[i]))  - (deltay * Deadbranch    / kg_C_M2_to_T_ha)
+      cbior[i]  <- cbior[i] + (aroot[i]    * max (0.0, adnpp[i]))  - (deltay * Deadfineroots / kg_C_M2_to_T_ha)
+      cbiol[i]  <- cbiol[i] + (aleaf[i]    * max (0.0, adnpp[i]))  - (deltay * Deadleaves    / kg_C_M2_to_T_ha)
+      cbiocr[i] <- cbiocr[i] + (acroot[i] * max (0.0, adnpp[i]))  - (deltay * Deadcoroots   / kg_C_M2_to_T_ha)
+      
+      
       #######################################################################
       ########################     ### #####     ############################
       ######################## ####### ##### ### ############################
@@ -366,37 +382,9 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       # print(paste(Signew,ztop[1],sep="//"))
       
       #computation of new LAI from G'DAY  (not using, see bellow that LAI is re-calculated)
-      # Deadleaves/Shoot = fraction of leaf mass which turns over; it is assumed that the same fraction of leaf area turns over.
-      # plai[i] <- plai[i] + (deltay * ((aleaf[i] * max (0.0, adnpp[i]))
-      #                                 * Signew * M2_AS_HA / KG_AS_TONNES / Cfracts  - Deadleaves
-      #                                 * plai[i] / (cbiol[i]+1E-15)))
-      
-      # plai[i]    <- (cbiol[i] * specla[i])
-      # plai[i] <- max(plai[i],0.01)
-      plai[i]   <- max(cbiol[i]*specla[i]/ Cfracts,0.02)
-      
-      # ## Forcando o plai
-      # if(plai[i] <= 2 & idpp[i]>=450 ) {
-      #   plai[i] <- max(plai[i],2)
-      # }
-      # print(paste("Teste do plai",plai[i]))
-      #########################################################################
-      ############## ### ##    ####   ####     ##     ##     ##################
-      ############## ### ## ### ### ##  ## ### #### #### ######################
-      ############## ### ##    #### ### ##     #### ####     ##################
-      ############## ### ## ####### ##  ## ### #### #### ######################
-      ##############     ## #######   #### ### #### ####     ##################
-      #########################################################################
-      #---------------------
-      #C Pool update
-      #---------------------
-      cbiow[i]  <- cbiow[i] + (awood[i]    * max (0.0, adnpp[i]))  - (deltay * Deadwood      / kg_C_M2_to_T_ha)
-      cbiob[i]  <- cbiob[i] + (abranch[i]  * max (0.0, adnpp[i]))  - (deltay * Deadbranch    / kg_C_M2_to_T_ha)
-      cbior[i]  <- cbior[i] + (aroot[i]    * max (0.0, adnpp[i]))  - (deltay * Deadfineroots / kg_C_M2_to_T_ha)
-      cbiol[i]  <- cbiol[i] + (aleaf[i]    * max (0.0, adnpp[i]))  - (deltay * Deadleaves    / kg_C_M2_to_T_ha)
-      cbiocr[i] <- cbiocr[i] + (acroot[i] * max (0.0, adnpp[i]))  - (deltay * Deadcoroots   / kg_C_M2_to_T_ha)
-      # plai[i]   <- max(cbiol[i]*Segnew/ Cfracts,0.02)
-      
+      # plai[i]   <- max(cbiol[i]*Signew/ Cfracts,0.02)
+       plai[i]    <- max((cbiol[i] * specla[i]),0.01)
+
       
       #---------------------
       # Sapwood update
@@ -413,7 +401,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       Heartwood <- cbiow[i]*kg_C_M2_to_T_ha - Sapwood
       
       
-      
+  
       #####################################################################
       # check for climatic and phenological limits on maturity, growth,
       # and harvest date
@@ -494,7 +482,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("cbiob", cbiob, envir = env)
   assign("cbior", cbior, envir = env)
   assign("cbiow", cbiow, envir = env)
-  assign("croplive", croplive, envir = env)
+   assign("croplive", croplive, envir = env)
   assign("harvdate", harvdate, envir = env)
   assign("Deadwood",Deadwood      , envir = env)
   assign("Deadbranch",Deadbranch    , envir = env)
