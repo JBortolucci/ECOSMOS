@@ -47,8 +47,6 @@ MaizeCropresidue <- function (year, year0, jday, index) {
     # to do: Santiago, verificar essa bloco                
     harvidx[j] <- cbios[j] / ayabprod[j]
     
-    croplaimx[j] <- plaimx[j]
-    
  #  if(harvidx[j] > maxhi[j]) {
  #    harvidx[j] <- maxhi[j] 
  #    dumg <- cbiocr[j] 

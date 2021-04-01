@@ -344,6 +344,25 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       Deadleaves <- Fdecay * cbiol[i] * kg_C_M2_to_T_ha  #rever dif entre Leaves_Predicted  e Shoot_Predicted
       
+     
+      
+      #########################################################################
+      ############## ### ##    ####   ####     ##     ##     ##################
+      ############## ### ## ### ### ##  ## ### #### #### ######################
+      ############## ### ##    #### ### ##     #### ####     ##################
+      ############## ### ## ####### ##  ## ### #### #### ######################
+      ##############     ## #######   #### ### #### ####     ##################
+      #########################################################################
+      #---------------------
+      #C Pool update
+      #---------------------
+      cbiow[i]  <- cbiow[i] + (awood[i]    * max (0.0, adnpp[i]))  - (deltay * Deadwood      / kg_C_M2_to_T_ha)
+      cbiob[i]  <- cbiob[i] + (abranch[i]  * max (0.0, adnpp[i]))  - (deltay * Deadbranch    / kg_C_M2_to_T_ha)
+      cbior[i]  <- cbior[i] + (aroot[i]    * max (0.0, adnpp[i]))  - (deltay * Deadfineroots / kg_C_M2_to_T_ha)
+      cbiol[i]  <- cbiol[i] + (aleaf[i]    * max (0.0, adnpp[i]))  - (deltay * Deadleaves    / kg_C_M2_to_T_ha)
+      cbiocr[i] <- cbiocr[i] + (acroot[i] * max (0.0, adnpp[i]))  - (deltay * Deadcoroots   / kg_C_M2_to_T_ha)
+      
+      
       #######################################################################
       ########################     ### #####     ############################
       ######################## ####### ##### ### ############################
@@ -363,32 +382,9 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       # print(paste(Signew,ztop[1],sep="//"))
       
       #computation of new LAI from G'DAY  (not using, see bellow that LAI is re-calculated)
-      # Deadleaves/Shoot = fraction of leaf mass which turns over; it is assumed that the same fraction of leaf area turns over.
-     # plai[i] <- plai[i] + (deltay * ((aleaf[i] * max (0.0, adnpp[i]))
-     #                                 * Signew * M2_AS_HA / KG_AS_TONNES / Cfracts  - Deadleaves
-     #                                 * plai[i] / (cbiol[i]+1E-15)))
-      plai[i]    <- (cbiol[i] * specla[i])
-      
-      plai[i] <- max(plai[i],0.01)
-      
-      
-      #########################################################################
-      ############## ### ##    ####   ####     ##     ##     ##################
-      ############## ### ## ### ### ##  ## ### #### #### ######################
-      ############## ### ##    #### ### ##     #### ####     ##################
-      ############## ### ## ####### ##  ## ### #### #### ######################
-      ##############     ## #######   #### ### #### ####     ##################
-      #########################################################################
-      #---------------------
-      #C Pool update
-      #---------------------
-      cbiow[i]  <- cbiow[i] + (awood[i]    * max (0.0, adnpp[i]))  - (deltay * Deadwood      / kg_C_M2_to_T_ha)
-      cbiob[i]  <- cbiob[i] + (abranch[i]  * max (0.0, adnpp[i]))  - (deltay * Deadbranch    / kg_C_M2_to_T_ha)
-      cbior[i]  <- cbior[i] + (aroot[i]    * max (0.0, adnpp[i]))  - (deltay * Deadfineroots / kg_C_M2_to_T_ha)
-      cbiol[i]  <- cbiol[i] + (aleaf[i]    * max (0.0, adnpp[i]))  - (deltay * Deadleaves    / kg_C_M2_to_T_ha)
-      cbiocr[i] <- cbiocr[i] + (acroot[i] * max (0.0, adnpp[i]))  - (deltay * Deadcoroots   / kg_C_M2_to_T_ha)
-      plai[i]   <- max(cbiol[i]*Signew/ Cfracts,0.02)
-      
+      # plai[i]   <- max(cbiol[i]*Signew/ Cfracts,0.02)
+       plai[i]    <- max((cbiol[i] * specla[i]),0.01)
+
       
       #---------------------
       # Sapwood update
