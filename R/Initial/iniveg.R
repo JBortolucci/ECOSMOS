@@ -250,7 +250,9 @@ iniveg <- function (isimveg) {
   # ************************************************************************
   # set minimum lai for each existing plant type
   for(j in 1:npft) {
-    plai[j] <- max (plai[j] , exist[j] * xminlai) 
+    # plai[j] <- max (plai[j] , exist[j] * xminlai) 
+    plai[j] <- max (plai[j] , xminlai)
+    
   }
   
   # set sapwood fraction and biomass characteristics
@@ -290,7 +292,7 @@ iniveg <- function (isimveg) {
     wood <- wood + cbiow[j]
     
   }
-  
+
   # ************************************************************************
   # determine basic vegetation structure characteristics
   # ************************************************************************
