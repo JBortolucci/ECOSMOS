@@ -14,25 +14,25 @@ CropPhenoUpdate <- function() {
   for(j in 1:npft) {
     if(!plantList[[j]]$active) next
     if(plantList[[j]]$canopy == LOWER) {
-      plai[j]<- max( plai[j],0.01)
+      plai[j]<- max( plai[j],0.005)
       totlail <- totlail + plai[j] * temp[j]
     } else {
-      plai[j]<- max( plai[j],0.01)
+      plai[j]<- max( plai[j],0.005)
       totlaiu <- totlaiu + plai[j] * temp[j]
     }
   }
   
   totlail <- max(totlail, 0.005)
-  totlaiu <- max(totlaiu, epsilon)
+  totlaiu <- max(totlaiu, 0.005)
   
-  fu <- totlaiu / 1.0
+  fu <- totlaiu / 1.5
   fu <- max(0.001, min(0.98, fu))
   lai[2] <- totlaiu / fu
   lai[2] <- max(0.005, min (lai[2], 12.0) )
 
     
   totlail <- max(totlail, 0.005)
-  fl <- totlail/1.0 # antigo 1.0 [SVC/HBD; 2021-03-19]
+  fl <- totlail/1.5 # antigo 1.0 [SVC/HBD; 2021-03-19]
   #fl <- totlail/1.5
   fl <- max(0.001, min(0.99, fl))
   # fl <- max(0.025, min(0.975, fl)) # antigo [SVC/HBD; 2021-03-12]

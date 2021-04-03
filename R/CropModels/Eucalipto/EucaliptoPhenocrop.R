@@ -382,8 +382,8 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       # print(paste(Signew,ztop[1],sep="//"))
       
       #computation of new LAI from G'DAY  (not using, see bellow that LAI is re-calculated)
-      # plai[i]   <- max(cbiol[i]*Signew/ Cfracts,0.02)
-       plai[i]    <- max((cbiol[i] * specla[i]),0.01)
+       plai[i]   <- max(cbiol[i]*Signew/ Cfracts,0.02)
+      # plai[i]    <- max((cbiol[i] * specla[i]),0.01)
 
       
       #---------------------

@@ -24,6 +24,7 @@ simDataVars$slft  <-  0
 simDataVars$lsr  <-  0
 simDataVars$plag  <-  0
 simDataVars$plaf  <-  0
+simDataVars$laistg3  <-  0
 simDataVars$leafwt  <-  0
 simDataVars$leafwb  <-  0
 simDataVars$xnti  <-  0
@@ -38,6 +39,8 @@ simDataVars$stage   <- 0
 simDataVars$vstage  <- 0
 simDataVars$rstage  <- 0
 simDataVars$sen     <- 0
+simDataVars$senstg4     <- 0
+simDataVars$senstg4l     <- 0
 simDataVars$fsen    <- 0
 simDataVars$sumP    <- 0
 simDataVars$psker   <- 0
@@ -65,29 +68,34 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   
   # Crop Parameters
   params <- plantList$maize$params
-  gddgerm        <- params$gddgerm      # 15  # GDD (base 10ºC) required for germination (default = 15)
-  gddemerg       <- params$gddemerg     # 6.0 # GDD (base 10ºC) required for emergence per cm depth (default = 6) [we believe this is in cm/day]
-  emerg_limit    <- params$emerg_limit  # 25 # maximum days allowed from sowing to emergence (default = 25)
+  gddgerm        <- params$gddgerm      # 15      # GDD (base 10ºC) required for germination (default = 15)
+  gddemerg       <- params$gddemerg     # 6.0     # GDD (base 10ºC) required for emergence per cm depth (default = 6) [we believe this is in cm/day]
+  emerg_limit    <- params$emerg_limit  # 25      # maximum days allowed from sowing to emergence (default = 25)
   gddf           <- params$gddf         # 170     # P5 in CERES-MAIZE and in the manual??? GDD (base 8ºC) from silking to effective grain filling
   gddt           <- params$gddt         # 1600    # GDD (base 10ºC) required from germination to maturity (default = 1500?)
+  gddsfrac       <- params$gddsfrac         # 1600    # GDD (base 10ºC) required from germination to maturity (default = 1500?)
   laic           <- params$laic         # 4       # critical LAI for light competition (condition for SLFC have a chance to affect leaf expansion)
   laim           <- params$laim         # 0.7     # LAI at maturity 
   sg             <- params$sg           # 4.0     # ‘stay-green’ factor, which controls how fast leaf senesces proceeds after silking
-  phyl           <- params$phyl         # 38.9    #TODO Victor, o que significa esse parametro? vc 'criou' ele? [2021-01-20]
-  dsstop         <- params$dsstop       # 1.15  # development stage when root growth stops
+  phyl           <- params$phyl         # 38.9    # Phylochron interval; the interval in thermal time (degree days)
+  phyl           <- 35 #38.9 #SVC - the equations are based on this potential
+  dsstop         <- params$dsstop       # 1.15    # development stage when root growth stops
   ph1            <- params$ph1          # 47
   ph2            <- params$ph2          # 28
   G2             <- params$G2           # 676 # the potential number of grains per plantkernels ear⁻¹ (default = 676)
   G5             <- params$G5           # 8.7 # the potential grain filling rate (mg d-1 kernel-1) (default = 8.7)
   efftrans       <- params$efftrans     # 0.26 # Efficiency of carbon translocation from leaves/stem to grain filling
-  P5 <- 800 #TODO: levar para o plant_params
+  P5 <- 900 # Calculando abaixo SVC (03/04/2021) 
   
-  gdds <- (0.41 * gddt) + 145.4         # GDD (base 10ºC) required from silking to physiological maturity
-  gdds <- 100+0.4451*gddt -50           # last page in the manual
+    # gdds <- (0.41 * gddt) + 145.4         # GDD (base 10ºC) required from silking to physiological maturity
+  # gdds <- 100+0.4451*gddt -50           # last page in the manual
+   gdds <- gddt*gddsfrac
+  
+
   gddv <- c(ph1, ph2)
   
   # Fatores de conversao 
-  m2kgC_cm2gDM   <- (100*100)*(1/1000)*(1/0.45)
+  m2.kgC_cm2.gDM   <- (100*100)*(1/1000)*(1/(1/0.45))
   gDMPlant_kgCm2 <- (12/30) * pden / 1e3 # g-DM(CH2O)/plant to kg-C/m^2
   
   
@@ -151,6 +159,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       rstage <- 0
       plas <- 0
       sen    <- 0
+      senstg4 <- 0
+      senstg4l <- 0
       fsen   <- 0
       senf <-array(0,4)
       
@@ -161,6 +171,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       #gddemerg <- gddemerg * pdpt # gddgerm taking into account the sowing depth already here
       
       plaf <- 0.0
+      laistg3 <- 0.0
       
       tlno <- 0
       P3 <- 0
@@ -226,10 +237,9 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # Initialize variables at emergence
         cumPh <- 1.0
         xn <- 3.0
-        
+        vstage <- 1
         cbiol[i]  <- 0.06 * gDMPlant_kgCm2 # primeiro termo seria a massa inicial
         plai[i]   <- cbiol[i] * specla[i]
-        
         cbiols[i] <- 0
         lais[i] <- 0
       }
@@ -353,7 +363,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         #TODO CERES-MAIZE includes **1.25 in leafwt (XLFWT)
         # SLA (cm2 g-1, ≤ 400 cm2 g-1) -> g of DM
-        leafwt <- pla / (specla[i] * m2kgC_cm2gDM) # 10 (convertion SPECLA from m²/kg DM to cm²/g DM)
+        leafwt <- pla / (specla[i] * m2.kgC_cm2.gDM) # 10 (convertion SPECLA from m²/kg DM to cm²/g DM)
         #TODO CERES-MAIZE has an intermediate variable called LFWT which is used XLFWT  = AMAX1 (XLFWT,LFWT)
         leafwg <- leafwt - leafwb
         leafwb <- leafwt
@@ -473,10 +483,10 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # print(c('dpp' = idpp, 'cbior' = cbior[i], 'cbiol' = cbiol[i], 'cbios' = cbios[i], 'cbioc' = cbioc[i], 'cbiog' = cbiog[i], 'lai' = plai[i]))
         
         dum8 <- gdd8 # GDD8 to reach Stage 3
-        plaf <- max(pla,plaf)
-        senf[2] <- sen
         
-        print(paste(idpp[i],stage,leafwg,stemwg,grainwg,sep = " /\ "))
+        plaf <- max(pla,plaf)
+
+        senf[2] <- sen
         
         #average plant growth rate (PSKER) during a critical kernel set window of 340 sumDTT8 centered on silking date
         if(gdd8 >= (gdd8stg1+P3-(340/2))){ 
@@ -548,8 +558,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
           ndaysS3 <- ndaysS3 + 1
         }
         
-        
-        print(paste(idpp[i],stage,leafwg,stemwg,grainwg,sep = " /\ "))
+        #SVC (03/04/2021) -> 0.15 is allocated to be translocated 
+        laistg3 <- max((1.-0.15)*cbiol[i] * specla[i],laistg3)
         
       } else if ( (gdd8 > dum8 + gddf) & (gdd10 < gddt) ) {
         
@@ -557,12 +567,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # STAGE 4: from effective grain filling to physiological maturity #
         ###################################################################
         stage <- 4
-        # Leaf senescence # (leaf growth stops from here onwards)
-        sumgdd8 <- sumgdd8 + (dtt8 / (1 - lsr))
+
         
-        sf <- (laim * plaf) * min(1, ((sumgdd8 / P5) ^ sg)) #TODO gdds = P5 in model's manual (?) is base 10! e AGORA?
-        dl <- sf - sen
-        sen <- sf
         
         # grainGrow is the actual grain filling rate(g plant-1 day-1)
         # GPP is the number of viable grain per plant (assuming one ear per plant) -> most likely from Fig. 3. in Andrade et al. Crop Sci. 39:453-459 (1999)
@@ -640,18 +646,35 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         }
         
         cbiog[i] <- cbiog[i] + grainwg 
+        
+        
+#______________________________________________        
+# Leaf senescence # (leaf growth stops from here onwards)
+        sumgdd8 <- sumgdd8 + (dtt8 / (1 - lsr))
+        
+        sf <- (laistg3) * min(1, ((sumgdd8 / (150+P5)) ^ sg)) #
+        if(plai[i]<=laim) sf = 0
+         dl <- max(0,sf - senstg4l)
+        senstg4l <- sf
+        cbiol[i]  <- cbiol[i]  - dl*(1 / specla[i] )
+        cbiols[i] <- cbiols[i] + dl*(1 / specla[i] )    
+        
+        sf <- (laim * plaf) * min(1, ((sumgdd8 / P5) ^ sg)) #TODO gdds = P5 in model's manual (?) is base 10! e AGORA?
+        dl <- sf - senstg4
+        senstg4 <- sf 
+        sen <- senf[3]+sf
         #convert sf (cm2 plant-1) to kg-C/m2 
-        cbiol[i]  <- cbiol[i]  - dl * pden * (1/(100*100))*(1 / specla[i] )
-        cbiols[i] <- cbiols[i] + dl * pden * (1/(100*100))*(1 / specla[i] )
+        #cbiol[i]  <- cbiol[i]  - dl * pden * (1/(100*100))*(1 / specla[i] )
+        #cbiols[i] <- cbiols[i] + dl * pden * (1/(100*100))*(1 / specla[i] )
         
               senf[4] <- sen
         
       }
       
 
-      plai[i] <- max(0.01, cbiol[i] * specla[i])
+      plai[i] <- max(0.005, cbiol[i] * specla[i])
       lais[i] <- cbiols[i] * specla[i] #TODO think about reducing the specla for dead leaves [Henrique/Victor; 2021-03-03]
-      pgreenfrac[i] <- max(0.01,plai[i]/(plai[i]+0.1*lais[i]))
+      pgreenfrac[i] <- max(0.01,plai[i]/(plai[i]+0.3*lais[i]))
       
       biomass[i] <- cbiol[i] +  cbior[i] + cbios[i] + cbioc[i]
 
@@ -727,8 +750,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     
     # Potential DM mass-based on Hybrid-Maize
-    dm$leaf  <- pden * (pla / (specla[i] * m2kgC_cm2gDM))/1000  #kg DM m2
-    dm$sleaf <- pden * (sen / (specla[i] * m2kgC_cm2gDM))/1000  #kg DM m2
+    dm$leaf  <- pden * (pla / (specla[i] * m2.kgC_cm2.gDM))/1000  #kg DM m2
+    dm$sleaf <- pden * (sen / (specla[i] * m2.kgC_cm2.gDM))/1000  #kg DM m2
     dm$root  <- cbior[i]/cfrac[i]
     
     
@@ -756,6 +779,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign('date_emerg', date_emerg, envir = env)
     assign('date_germ' , date_germ , envir = env)
     assign('plaf'      , plaf      , envir = env)
+    assign('laistg3'   , laistg3      , envir = env)
     assign('slfc', slfc, envir = env)
     assign('slft', slft, envir = env)
     assign('lsr', lsr, envir = env)
@@ -766,6 +790,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign('dm'        , dm        , envir = env)
     assign('coleog'    , coleog    , envir = env)
     assign('sen'       , sen       , envir = env)
+    assign('senstg4'   , senstg4       , envir = env)
+    assign('senstg4l'   , senstg4l       , envir = env)
     assign('fsen'      , fsen      , envir = env)
     assign('senf'       , senf       , envir = env)
     assign('dtt8'      , dtt8      , envir = env)
@@ -785,18 +811,20 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     if(export) {
       fileout <- paste("Maize_DAILY.csv")
       ID <- paste0(jday, iyear)
-      if(idpp[i] == 1){ 
-        write(x = paste(ID, idpp[i],gdd10,gdd8,stage ,vstage,rstage, aroot[i], aleaf[i], astem[i],
+      if(file.exists(fileout)==F){ 
+        write(x = paste(iyear,jday, idpp[i],gdd10,gdd8,stage ,vstage,rstage, aroot[i], aleaf[i], astem[i],
                         cbior[i]/cfrac[i], cbiol[i]/cfrac[i], cbios[i]/cfrac[i],
-                        cbioc[i]/cfrac[i], cbiog[i]/cfrac[i],dm$root,dm$leaf,dm$stem,dm$cob,dm$grain, plai[i],pla,sen,fsen,cbiols[i]/cfrac[i], sep = ";"),
+                        cbioc[i]/cfrac[i], cbiog[i]/cfrac[i],dm$root,dm$leaf,dm$stem,dm$cob,dm$grain,
+                        plai[i],pla*pden/(100*100),sen*pden/(100*100),cbiols[i]*specla[i],cbiols[i]/cfrac[i], sep = ";"),
               file = fileout,
               append = F,
               sep = "\n")}else{
                 
                 # write(x = unlist(dm), file = fileout, append = T, sep = '\t')
-                write(x = paste(ID, idpp[i],gdd10,gdd8,stage ,vstage,rstage, aroot[i], aleaf[i], astem[i],
+                write(x = paste(iyear,jday, idpp[i],gdd10,gdd8,stage ,vstage,rstage, aroot[i], aleaf[i], astem[i],
                                 cbior[i]/cfrac[i], cbiol[i]/cfrac[i], cbios[i]/cfrac[i],
-                                cbioc[i]/cfrac[i], cbiog[i]/cfrac[i],dm$root,dm$leaf,dm$stem,dm$cob,dm$grain, plai[i],pla,sen,fsen,cbiols[i]/cfrac[i], sep = ";"),
+                                cbioc[i]/cfrac[i], cbiog[i]/cfrac[i],dm$root,dm$leaf,dm$stem,dm$cob,dm$grain,
+                                plai[i],pla*pden/(100*100),sen*pden/(100*100),cbiols[i]*specla[i],cbiols[i]/cfrac[i], sep = ";"),
                       file = fileout,
                       append = TRUE,
                       sep = "\n")

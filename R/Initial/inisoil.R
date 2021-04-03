@@ -106,9 +106,10 @@ inisoil <- function() {
     
 
     if( (fracclay[k] + fracsilt[k] + fracsand[k])!= 1 | hsoi[k]< 0.01 ){
-      print('Check the Texture and soil layers depth in the inst/input/SOIL.csv')
+      print('WARNING: Texture does not sum 1 or hsoil <=0.01') 
+      print('Check soil layers depth in the inst/input/SOIL.csv')
       print(paste(fracclay[k],fracsilt[k],fracsand[k],hsoi[k],sep=" / "))
-      stop()   }
+        }
     
     # Apply Pedotransfer function    
     pedofunct <- 1 # the PTF option
