@@ -391,10 +391,10 @@ simDataVars$MAINR  <-  0 #output
 
 
 #----------------GROW FUNCTION--------------------
-GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
+GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM, index)  {
   
   environment(STRESS) <- env
-  params <- plantList$soybean$params
+  params <- plantList[[index]]$params
   
   #  Nitrogen
   N <- 1
@@ -403,9 +403,9 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   
   PLME   <- 'S' # equivalente ao [.SBX] *PLANTING DETAILS: PLME  
   IHARI  <- 'M' # TODO VERIFICAR (provável que pertença ao '[.SBX] *HARVEST DETAILS')
-  PLTPOP <- config$plant1$plantPop  #40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
+  PLTPOP <- plantList[[index]]$controlConfigs$plantPop  #40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
   
-  ROWSPC <- config$plant1$rowSpacing / 100 # 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
+  ROWSPC <- plantList[[index]]$controlConfigs$rowSpacing / 100 # 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
   
   
   SDWTPL <- -99 # equivalente ao [.SBX] *PLANTING DETAILS: PLDS
@@ -1365,14 +1365,14 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
     #     Terminate growth if stress causes extremely low plant weights
     #-----------------------------------------------------------------------
     if (TOPWT < 0.00001 | STMWT < 0.00001) {
-      STRESS(AGEFAC, iyear,jday)
+      STRESS(AGEFAC, iyear,jday, index)
       
       return()
     }
     
     if (IHARI != 'R' & IHARI != 'D') {
       if (RTWT  < 0.00001 | WTLF  < 0.00001) {
-        STRESS(AGEFAC, iyear,jday)
+        STRESS(AGEFAC, iyear,jday, index)
         
         return()
       }
@@ -1525,7 +1525,7 @@ GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   return()
 }   
 
-STRESS <- function(AGEFAC, iyear,jday) {
+STRESS <- function(AGEFAC, iyear,jday, index) {
   
   #-----------------------------------------------------------------------
   #     Set Ending Plant Weights, Dates of Stages if Plants Died
@@ -1557,10 +1557,10 @@ STRESS <- function(AGEFAC, iyear,jday) {
 #--------------END GROW FUNCTION-----------------
 
 #---------------ROOTS FUNCTION-------------------
-ROOTS <- function(DYNAMIC,CROP,  ISWWAT) { 
+ROOTS <- function(DYNAMIC,CROP,  ISWWAT, index) { 
   
   environment(INROOT) <- env
-  params <- plantList$soybean$params
+  params <- plantList[[index]]$params
   
   NLAYR <- nsoilay
   
@@ -1617,7 +1617,7 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
     #   day of emergence.  (GROW emergence initialization
     #   must preceed call to INROOT.)
     #-----------------------------------------------------------------------
-    INROOT(RFAC1)
+    INROOT(RFAC1, index)
     
     RFAC3 <- RFAC1
     
@@ -1882,9 +1882,9 @@ ROOTS <- function(DYNAMIC,CROP,  ISWWAT) {
   return()
 } 
 
-INROOT <- function (RFAC1){  
+INROOT <- function (RFAC1, index){  
   
-  params <- plantList$soybean$params
+  params <- plantList[[index]]$params
   
   NL       <- 20  #!Maximum number of soil layers 
   
@@ -1928,10 +1928,10 @@ INROOT <- function (RFAC1){
 #--------------END ROOTS FUNCTION----------------
 
 #---------------DEMAND FUNCTION------------------
-DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
+DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG, index) {
   
   environment(SDCOMP) <- env
-  params <- plantList$soybean$params
+  params <- plantList[[index]]$params
   
   # YREND  <- 0 # aparentemente usado para uma msg de erro
   
@@ -2209,7 +2209,7 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
         #-----------------------------------------------------------------------
         #     Call seed composition routine
         #-----------------------------------------------------------------------
-        SDCOMP(TAVG)
+        SDCOMP(TAVG, index)
         
         NDMSD  <- FNINSD * GDMSD
         #-----------------------------------------------------------------------
@@ -2573,13 +2573,13 @@ DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL,RPROAV, TAVG) {
   return()
 }
 
-SDCOMP <- function (TAVG) {
-  params <- plantList$soybean$params
+SDCOMP <- function (TAVG, index) {
+  params <- plantList[[index]]$params
   
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   SDLIP <- params$SDLIP   #0.200 #Fraction oil in seeds (g(oil)/g(seed)) 
-  SDPRO <- params$SDPRO   #0.400 #Fraction protein in seeds (g(protein)/g(seed)) 
+  SDPRO <- params$SDPRO   #0.400 #Fraction protein in seeds (g(protein)/g(seed))
   
   #______________________________________________________________        
   # *SOYBEAN ECOTYPE COEFFICIENTS: CRGRO047 MODEL
@@ -2663,10 +2663,10 @@ SDCOMP <- function (TAVG) {
 #--------------END DEMAND FUNCTION---------------
 
 #----------------PODS FUNCTION-------------------
-PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
+PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL, index) {
   
   environment(PODCOMP) <- env
-  params <- plantList$soybean$params
+  params <- plantList[[index]]$params
   
   TS <- 24
   
@@ -2723,7 +2723,7 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   #***********************************************************************
   if (DYNAMIC == 'SEASINIT') {
     #-----------------------------------------------------------------------
-    PODCOMP(DYNAMIC,NAVL)
+    PODCOMP(DYNAMIC,NAVL, index)
     
     #-----------------------------------------------------------------------
     #     Set minimum days for phenological events under optimum conditions
@@ -2805,7 +2805,7 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
       AVTEM[NPP] <- 0.0
     }
     
-    PODCOMP(DYNAMIC, NAVL)
+    PODCOMP(DYNAMIC, NAVL, index)
     
     #***********************************************************************
     #***********************************************************************
@@ -2940,7 +2940,7 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
             #     Detailed seed composition calculations
             #-----------------------------------------------------------------------
             
-            PODCOMP(DYNAMIC, NAVL)
+            PODCOMP(DYNAMIC, NAVL, index)
             
             #-----------------------------------------------------------------------
             #     Grow seed cohorts
@@ -3335,8 +3335,8 @@ PODS <- function(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday, PGAVL) {
   return() #PODS
 }
 
-PODCOMP <- function(DYNAMIC, NAVL) {
-  params <- plantList$soybean$params
+PODCOMP <- function(DYNAMIC, NAVL, index) {
+  params <- plantList[[index]]$params
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -3598,10 +3598,10 @@ PODCOMP <- function(DYNAMIC, NAVL) {
 #--------------END PODS FUNCTION---------------
 
 #---------------VEGGR FUNCTION-----------------
-VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) {                 
+VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL, index) {                 
   
   environment(CANOPY) <- env
-  params <- plantList$soybean$params
+  params <- plantList[[index]]$params
   
   TS <- 24
   
@@ -3609,7 +3609,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   
   YRDOY   <- paste0(iyear,sprintf("%03d", jday))
   
-  ROWSPC <- config$plant1$rowSpacing / 100 #0.50 
+  ROWSPC <- plantList[[index]]$controlConfigs$rowSpacing / 100 #0.50 
   
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -3675,7 +3675,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     WRDOTN <- 0.0  
     WSDOTN <- 0.0  
     
-    CANOPY(DYNAMIC,DAS, PAR, TGRO)
+    CANOPY(DYNAMIC,DAS, PAR, TGRO, index)
     
     #***********************************************************************
     #***********************************************************************
@@ -3689,7 +3689,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     FNINSG <- PROSTG * 0.16   
     CUMTUR <- 1.0             
     
-    CANOPY(DYNAMIC,DAS, PAR, TGRO)
+    CANOPY(DYNAMIC,DAS, PAR, TGRO, index)
     
     #***********************************************************************
     #***********************************************************************
@@ -3915,7 +3915,7 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
     #     function of VSTAGE, air temperature, drought stress (TURFAC),
     #     daylenght and radiation (PAR).
     #-----------------------------------------------------------------------
-    CANOPY(DYNAMIC,DAS, PAR, TGRO)
+    CANOPY(DYNAMIC,DAS, PAR, TGRO, index)
     
     #***********************************************************************
     #***********************************************************************
@@ -3957,11 +3957,11 @@ VEGGR <- function(DYNAMIC,DAS,iyear,jday, CMINEP, CSAVEV, NAVL, PAR, PG, PGAVL) 
   return()
 }
 
-CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
-  params <- plantList$soybean$params
+CANOPY <- function (DYNAMIC,DAS, PAR, TGRO, index) {
+  params <- plantList[[index]]$params
   
   #-----------------------------------------------------------------------
-  ROWSPC <- config$plant1$rowSpacing / 100 #0.50 
+  ROWSPC <- plantList[[index]]$controlConfigs$rowSpacing / 100 #0.50 
   
   TS <- 24
   #______________________________________________________________        
@@ -4072,8 +4072,8 @@ CANOPY <- function (DYNAMIC,DAS, PAR, TGRO) {
 #--------------END VEGGR FUNCTION--------------
 
 #---------------PODDET FUNCTION----------------
-PODDET <- function(DYNAMIC, iyear, jday) {         #Input
-  params <- plantList$soybean$params
+PODDET <- function(DYNAMIC, iyear, jday, index) {         #Input
+  params <- plantList[[index]]$params
   TS <- 24
   
   #-----------------------------------------------------------------------
@@ -4284,8 +4284,8 @@ PODDET <- function(DYNAMIC, iyear, jday) {         #Input
 #--------------END PODDET FUNCTION-------------
 
 #---------------SENES FUNCTION-----------------
-SENES <- function (DYNAMIC,DAS,PAR) {
-  params <- plantList$soybean$params
+SENES <- function (DYNAMIC,DAS,PAR, index) {
+  params <- plantList[[index]]$params
   #______________________________________________________________        
   # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*LEAF SENESCENCE FACTORS
@@ -4439,8 +4439,8 @@ SENES <- function (DYNAMIC,DAS,PAR) {
 #--------------END SENES FUNCTION--------------
 
 #---------------FREEZE FUNCTION----------------
-FREEZE <- function(TMIN, iyear, jday) {
-  params <- plantList$soybean$params
+FREEZE <- function(TMIN, iyear, jday, index) {
+  params <- plantList[[index]]$params
   #______________________________________________________________        
   # SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*LEAF SENESCENCE FACTORS
@@ -4482,8 +4482,8 @@ FREEZE <- function(TMIN, iyear, jday) {
 #--------------END FREEZE FUNCTION-------------
 
 #---------------INCOMP FUNCTION----------------
-INCOMP <- function(DYNAMIC) {
-  params <- plantList$soybean$params
+INCOMP <- function(DYNAMIC, index) {
+  params <- plantList[[index]]$params
   #______________________________________________________________        
   # *SOYBEAN GENOTYPE COEFFICIENTS: CRGRO047 MODEL
   SDLIP <- params$SDLIP  #0.200 #Fraction oil in seeds (g(oil)/g(seed))  
@@ -4589,8 +4589,8 @@ INCOMP <- function(DYNAMIC) {
 #--------------END INCOMP FUNCTION-------------
 
 #---------------NUPTAK FUNCTION----------------
-NUPTAK <- function (DYNAMIC) {
-  params <- plantList$soybean$params
+NUPTAK <- function (DYNAMIC, index) {
+  params <- plantList[[index]]$params
   #______________________________________________________________        
   # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*ROOT PARAMETERS
@@ -4746,8 +4746,8 @@ NUPTAK <- function (DYNAMIC) {
 #--------------END NUPTAK FUNCTION-------------
 
 #---------------- MOBIL FUNCTION---------------
-MOBIL <- function(DYNAMIC) {
-  params <- plantList$soybean$params
+MOBIL <- function(DYNAMIC, index) {
+  params <- plantList[[index]]$params
   #!*RESPIRATION PARAMETERS (.SPE), mas não usado, aparentemente
   RPRO   <- params$RPRO   #0.360 
   
@@ -4814,8 +4814,8 @@ MOBIL <- function(DYNAMIC) {
 #----------------END MOBIL FUNCTION------------
 
 #----------------NFIX FUNCTION-----------------
-NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
-  params <- plantList$soybean$params
+NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD, index) {
+  params <- plantList[[index]]$params
   #______________________________________________________________
   # *SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*NITROGEN FIXATION PARAMETERS
@@ -4846,7 +4846,7 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
   EFINOC <- ifelse(EFINOC <= 0.0, 1.0, EFINOC) 
   EFNFIX <- ifelse(EFNFIX <= 0.0, 1.0, EFNFIX) 
   
-  PLTPOP <- config$plant1$plantPop #40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
+  PLTPOP <- plantList[[index]]$controlConfigs$plantPop #40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
   
   NLAYR <- nsoilay
   
@@ -5044,8 +5044,8 @@ NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) {
 #----------------END NFIX FUNCTION---------------
 
 #----------------RESPIR FUNCTION---------------
-RESPIR <- function (DAS, PG) {
-  params <- plantList$soybean$params
+RESPIR <- function (DAS, PG, index) {
+  params <- plantList[[index]]$params
   #*SOYBEAN SPECIES COEFFICIENTS: CRGRO047 MODEL
   #*RESPIRATION PARAMETERS
   RES30C <- params$RES30C   #3.5E-04

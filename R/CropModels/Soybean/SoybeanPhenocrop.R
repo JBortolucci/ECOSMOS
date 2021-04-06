@@ -71,12 +71,12 @@ simDataVars$MNFLHM   <- 0
 
 
 
-PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
+PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC, index){
   
   
   environment(VSTAGES)             <- env
   environment(RSTAGES)             <- env
-  params <- plantList$soybean$params
+  params <- plantList[[index]]$params
   
   #_______________________________________________________________________________  
   # Vars that are solverd by ECOSMOS  
@@ -137,7 +137,7 @@ PHENOL <- function (iyear, iyear0, jday,DAS,DYNAMIC){
   
   # Find and Read Planting Details Section 
   PLME <- 'S'  
-  SDEPTH <- config$plant1$plantingDepht #2.5  # PLPD from .SBX
+  SDEPTH <- plantList[[index]]$controlConfigs$plantingDepht #2.5  # PLPD from .SBX
   SDAGE <-  -99.0  # ! SDAGE     Transplant age (days)
   ATEMP <-  -99.0 
   

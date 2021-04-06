@@ -621,10 +621,10 @@ simDataVars$MAINR  <-  0 #output
 
 
 #----------------FOR_GROW FUNCTION--------------------
-FOR_GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
+FOR_GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM, index)  {
 
   environment(FOR_STRESS) <- env
-  params <- plantList$forage$params
+  params <- plantList[[index]]$params
   
   # TODO: Nitrogen
   N = 1
@@ -633,10 +633,10 @@ FOR_GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   
   PLME   <- 'T' # equivalente ao [.SBX] *PLANTING DETAILS: PLME | Henrique: levar para template [2020-11-26]
   IHARI  <- 'M' # TODO VERIFICAR (provável que pertença ao '[.SBX] *HARVEST DETAILS')
-  PLTPOP <- config$plant1$plantPop  #40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
+  PLTPOP <- plantList[[index]]$controlConfigs$plantPop  #40  # equivalente ao [.SBX] *PLANTING DETAILS: PPOE
   
   # TODO: ROWSPC - precisa dividir por 100?
-  ROWSPC <- config$plant1$rowSpacing / 100 # 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
+  ROWSPC <- plantList[[index]]$controlConfigs$rowSpacing / 100 # 0.5 # equivalente ao [.SBX] *PLANTING DETAILS: TPLRS
   
   
   SDWTPL <- 2000 # equivalente ao [.SBX] *PLANTING DETAILS: PLWT | Henrique: levar para template [2020-11-26]
@@ -2576,7 +2576,7 @@ FOR_GROW <- function (DYNAMIC,iyear,jday, ISWNIT,ISWSYM)  {
   return()
 }   
 
-FOR_STRESS <- function(AGEFAC, iyear, jday) {
+FOR_STRESS <- function(AGEFAC, iyear, jday, index) {
   
   #-----------------------------------------------------------------------
   #     Set Ending Plant Weights, Dates of Stages if Plants Died
@@ -2610,10 +2610,10 @@ FOR_STRESS <- function(AGEFAC, iyear, jday) {
 #--------------END GROW FUNCTION-----------------
 
 #---------------FOR_ROOTS FUNCTION-------------------
-FOR_ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT) { 
+FOR_ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT, index) { 
   
   environment(FOR_INROOT) <- env
-  params <- plantList$forage$params
+  params <- plantList[[index]]$params
   
   NLAYR <- nsoilay
   
@@ -2670,7 +2670,7 @@ FOR_ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT) {
     #   day of emergence.  (GROW emergence initialization
     #   must preceed call to INROOT.)
     #-----------------------------------------------------------------------
-    FOR_INROOT()
+    FOR_INROOT(index)
     
     #***********************************************************************
     #***********************************************************************
@@ -2913,9 +2913,9 @@ FOR_ROOTS <- function(DYNAMIC, CROP, PG, ISWWAT) {
   return()
 } 
 
-FOR_INROOT <- function (){  
+FOR_INROOT <- function (index){  
   
-  params <- plantList$forage$params
+  params <- plantList[[index]]$params
   
   NL        <- 20  #!Maximum number of soil layers 
   
@@ -2995,10 +2995,10 @@ FOR_INROOT <- function (){
 #--------------END FOR_ROOTS FUNCTION----------------
 
 #---------------FOR_DEMAND FUNCTION------------------
-FOR_DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
+FOR_DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG, index) {
   
   environment(FOR_SDCOMP) <- env
-  params <- plantList$forage$params
+  params <- plantList[[index]]$params
   
   TS <- 24
   
@@ -3815,8 +3815,8 @@ FOR_DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG) {
   return()
 }
 
-FOR_SDCOMP <- function (TAVG) {
-  params <- plantList$forage$params
+FOR_SDCOMP <- function (TAVG, index) {
+  params <-plantList[[index]]$params
   
   #______________________________________________________________        
   # *PERENNIAL FORAGES GENOTYPE COEFFICIENTS: CRGRO047 MODEL
@@ -3906,10 +3906,10 @@ FOR_SDCOMP <- function (TAVG) {
 #--------------END FOR_DEMAND FUNCTION---------------
 
 #----------------FOR_PODS FUNCTION-------------------
-FOR_PODS <- function(DYNAMIC, DAS, NAVL, ISWWAT, iyear, jday, PGAVL) {
+FOR_PODS <- function(DYNAMIC, DAS, NAVL, ISWWAT, iyear, jday, PGAVL, index) {
   
   environment(FOR_PODCOMP) <- env
-  params <- plantList$forage$params
+  params <- plantList[[index]]$params
   
   TS <- 24
   
@@ -4573,8 +4573,8 @@ FOR_PODS <- function(DYNAMIC, DAS, NAVL, ISWWAT, iyear, jday, PGAVL) {
   return() #PODS
 }
 
-FOR_PODCOMP <- function(DYNAMIC, NAVL) {
-  params <- plantList$forage$params
+FOR_PODCOMP <- function(DYNAMIC, NAVL, index) {
+  params <- plantList[[index]]$params
   
   #______________________________________________________________        
   # PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
@@ -4832,11 +4832,11 @@ FOR_PODCOMP <- function(DYNAMIC, NAVL) {
 #--------------END FOR_PODS FUNCTION---------------
 
 #---------------FOR_VEGGR FUNCTION-----------------
-FOR_VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {                 
+FOR_VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL, index) {                 
   
   environment(FOR_CANOPY) <- env
   environment(FOR_NLKDIST) <- env
-  params <- plantList$forage$params
+  params <- plantList[[index]]$params
   
   TS <- 24
   
@@ -4847,7 +4847,7 @@ FOR_VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {
   #TODO: AVISO verificar com Santiago padrão ECOSMOS -> YREMRG, NR1
   
   # TODO: ROWSPC - precisa dividir por 100?
-  ROWSPC <- config$plant1$rowSpacing / 100 #0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
+  ROWSPC <- plantList[[index]]$controlConfigs$rowSpacing / 100 #0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
   
   
   CADSRF  <- params$CADSRF
@@ -4961,7 +4961,7 @@ FOR_VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {
     FNINSRG <- PROSRG * 0.16
     CUMTUR  <- 1.0             
     
-    FOR_CANOPY(DYNAMIC, DAS, PAR, TGRO)
+    FOR_CANOPY(DYNAMIC, DAS, PAR, TGRO, index)
     
     #***********************************************************************
     #***********************************************************************
@@ -5526,7 +5526,7 @@ FOR_VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {
     
     if (NLEAK > 0.0) {
       
-      auxRetorno   <- FOR_NLKDIST(CHORECOVER, NLKSPENT, NLKNUSED, NLEAK)
+      auxRetorno   <- FOR_NLKDIST(CHORECOVER, NLKSPENT, NLKNUSED, NLEAK, index)
       CHORECOVER   <- auxRetorno$CHORECOVER
       NLKSPENT     <- auxRetorno$NLKSPENT
       NLKNUSED     <- auxRetorno$NLKNUSED
@@ -5555,7 +5555,7 @@ FOR_VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {
     #     function of VSTAGE, air temperature, drought stress (TURFAC),
     #     daylenght and radiation (PAR).
     #-----------------------------------------------------------------------
-    FOR_CANOPY(DYNAMIC,DAS, PAR, TGRO)
+    FOR_CANOPY(DYNAMIC,DAS, PAR, TGRO, index)
     
     #***********************************************************************
     #***********************************************************************
@@ -5628,9 +5628,9 @@ FOR_VEGGR <- function(DYNAMIC, DAS, iyear, jday, CSAVEV, NAVL, PAR, PG, PGAVL) {
 #        N for that new growth, no excess.
 #-----------------------------------------------------------------------
 # TODO: Verificar Parâmetros da Função
-FOR_NLKDIST <- function (CHORECOVER, NLKSPENT, NLKNUSED, NLEAK) {
+FOR_NLKDIST <- function (CHORECOVER, NLKSPENT, NLKNUSED, NLEAK, index) {
   
-  params  <- plantList$forage$params
+  params  <- plantList[[index]]$params
   
   NSTFAC  <- params$NSTFAC
   PROLFI  <- params$PROLFI
@@ -5802,12 +5802,12 @@ FOR_NLKDIST <- function (CHORECOVER, NLKSPENT, NLKNUSED, NLEAK) {
 
 
 
-FOR_CANOPY <- function (DYNAMIC, DAS, PAR, TGRO) {
-  params <- plantList$forage$params
+FOR_CANOPY <- function (DYNAMIC, DAS, PAR, TGRO, index) {
+  params <- plantList[[index]]$params
   
   #-----------------------------------------------------------------------
   # TODO: ROWSPC - precisa dividir por 100?
-  ROWSPC <- config$plant1$rowSpacing / 100 #0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
+  ROWSPC <- plantList[[index]]$controlConfigs$rowSpacing / 100 #0.50 #TODO: ARQUIVO DE MANEJO ROWSPC -> Row spacing (m)
   
   TS <- 24
   
@@ -5939,8 +5939,8 @@ FOR_CANOPY <- function (DYNAMIC, DAS, PAR, TGRO) {
 #--------------END FOR_VEGGR FUNCTION--------------
 
 #---------------FOR_PODDET FUNCTION----------------
-FOR_PODDET <- function(DYNAMIC, iyear, jday) {         #Input
-  params <- plantList$forage$params
+FOR_PODDET <- function(DYNAMIC, iyear, jday, index) {         #Input
+  params <- plantList[[index]]$params
   TS <- 24
   
   #-----------------------------------------------------------------------
@@ -6151,8 +6151,8 @@ FOR_PODDET <- function(DYNAMIC, iyear, jday) {         #Input
 #--------------END FOR_PODDET FUNCTION-------------
 
 #---------------SENES FUNCTION-----------------
-SENES <- function (DYNAMIC, DAS, PAR) {
-  params <- plantList$forage$params
+SENES <- function (DYNAMIC, DAS, PAR, index) {
+  params <- plantList[[index]]$params
   #______________________________________________________________        
   # *PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*LEAF SENESCENCE FACTORS
@@ -6307,8 +6307,8 @@ SENES <- function (DYNAMIC, DAS, PAR) {
 #--------------END SENES FUNCTION--------------
 
 #---------------FOR_FREEZE FUNCTION----------------
-FOR_FREEZE <- function(TMIN, iyear, jday) {
-  params <- plantList$forage$params
+FOR_FREEZE <- function(TMIN, iyear, jday, index) {
+  params <- plantList[[index]]$params
   
   FRZDC   <- params$FRZDC
   FREEZ1  <- params$FREEZ1
@@ -6390,8 +6390,8 @@ FOR_FREEZE <- function(TMIN, iyear, jday) {
 #--------------END FOR_FREEZE FUNCTION-------------
 
 #---------------FOR_INCOMP FUNCTION----------------
-FOR_INCOMP <- function(DYNAMIC) {
-  params <- plantList$forage$params
+FOR_INCOMP <- function(DYNAMIC, index) {
+  params <- plantList[[index]]$params
   
   ECONO   <- params$ECONO
   ECOTYP  <- params$ECOTYP
@@ -6517,8 +6517,8 @@ FOR_INCOMP <- function(DYNAMIC) {
 #--------------END FOR_INCOMP FUNCTION-------------
 
 #---------------FOR_NUPTAK FUNCTION----------------
-FOR_NUPTAK <- function (DYNAMIC, PGAVL) {
-  params <- plantList$forage$params
+FOR_NUPTAK <- function (DYNAMIC, PGAVL, index) {
+  params <- plantList[[index]]$params
   
   RNH4C  <- params$RNH4C
   RNO3C  <- params$RNO3C
@@ -6794,8 +6794,8 @@ FOR_NUPTAK <- function (DYNAMIC, PGAVL) {
 #--------------END FOR_NUPTAK FUNCTION-------------
 
 #---------------- FOR_MOBIL FUNCTION---------------
-FOR_MOBIL <- function(DYNAMIC) {
-  params <- plantList$forage$params
+FOR_MOBIL <- function(DYNAMIC, index) {
+  params <- plantList[[index]]$params
   #!*RESPIRATION PARAMETERS (.SPE), mas não usado, aparentemente
   RPRO   <- params$RPRO   #0.360 
   
@@ -6932,8 +6932,8 @@ FOR_MOBIL <- function(DYNAMIC) {
 #----------------END FOR_MOBIL FUNCTION------------
 
 #----------------FOR_NFIX FUNCTION-----------------
-FOR_NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta linkar, DLAYR, NLAYR,SAT, ST, SW 
-  params <- plantList$forage$params
+FOR_NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD, index) { #TODO Santiago # falta linkar, DLAYR, NLAYR,SAT, ST, SW 
+  params <- plantList[[index]]$params
   #______________________________________________________________
   # *PERENNIAL FORAGES SPECIES COEFFICIENTS: CRGRO047 MODEL
   #!*NITROGEN FIXATION PARAMETERS
@@ -7174,8 +7174,8 @@ FOR_NFIX <- function(DYNAMIC, DAS, CNODMN, CTONOD) { #TODO Santiago # falta link
 #----------------END FOR_NFIX FUNCTION---------------
 
 #----------------FOR_RESPIR FUNCTION---------------
-FOR_RESPIR <- function (DAS, PG) {
-  params <- plantList$forage$params
+FOR_RESPIR <- function (DAS, PG, index) {
+  params <- plantList[[index]]$params
   
   MRSWITCH  <- params$MRSWITCH
   TRSWITCH  <- params$TRSWITCH
@@ -7247,9 +7247,9 @@ FOR_RESPIR <- function (DAS, PG) {
 
 simDataVars$CDEBIT  <-  0
 
-FOR_CH2OREF <- function(DYNAMIC, PG, PGAVL){
+FOR_CH2OREF <- function(DYNAMIC, PG, PGAVL, index){
   
-  params <- plantList$forage$params
+  params <- plantList[[index]]$params
   
   TYPCREF   <- params$TYPCREF
   TYPLREF   <- params$TYPLREF
@@ -7489,9 +7489,9 @@ FOR_CH2OREF <- function(DYNAMIC, PG, PGAVL){
 #  Calls    : None
 #=======================================================================
 
-FOR_DORMANCY <- function (DYNAMIC, DAYL) {
+FOR_DORMANCY <- function (DYNAMIC, DAYL, index) {
   
-  params <- plantList$forage$params
+  params <- plantList[[index]]$params
   
   TYPPGD <- params$TYPPGD
   TYPPTD <- params$TYPPTD
@@ -7794,9 +7794,9 @@ FOR_DORMANCY <- function (DYNAMIC, DAYL) {
 #  Called : CROPGRO
 #  Calls  : ERROR, FIND, IGNORE
 #========================================================================
-FOR_SENMOB <- function (DYNAMIC, DAS, ISWWAT, PAR) {
+FOR_SENMOB <- function (DYNAMIC, DAS, ISWWAT, PAR, index) {
   
-  params    <- plantList$forage$params
+  params    <- plantList[[index]]$params
   
   TYPLMOB   <- params$TYPLMOB
   TYPNMOB   <- params$TYPNMOB

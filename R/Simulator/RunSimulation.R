@@ -329,23 +329,27 @@ GeneralModel <- function(simVars = NULL) {
       
       for(day in seq(simVars$simulationStartDay, daypm(month, year))) {
         
+        simVars$day <- day
+
+        simVars$jday <- simVars$jday + 1
+        
         for(i in seq(1,simVars$npft)) {
           if(simVars$plantList[[i]]$active) next
-          if(simVars$plantList[[i]]$startYear == year) { #TO DO: Jair, se essa planta já completeu seu ciclo não pode mais entrar aqui (mesmo que ainda no mesmo ano)
+          if(simVars$plantList[[i]]$startYear == year && !simVars$endCycle[i] && simVars$jday >= simVars$plantList[[i]]$controlConfigs$plantJday ) { #TO DO: Jair, se essa planta já completeu seu ciclo não pode mais entrar aqui (mesmo que ainda no mesmo ano)
             simVars$plantList[[i]]$active <- T
             simVars$exist[i]              <- 1
           }
         }
 
         
-        simVars$day <- day
-
-        simVars$jday <- simVars$jday + 1
         
-        print(paste("Simulation ",day, month, year,simVars$lai[1]*simVars$fl,simVars$lai[2]*simVars$fu,sep = " / "))
+        # print(paste("Simulation ",day, month, year,simVars$lai[1]*simVars$fl,simVars$lai[2]*simVars$fu,sep = " / "))
         
         UseDailyStationData(day, month, year)
-        UseDailyFertilizationData(day, month, year) # Henrique & Leandro: fertilization feature [2020-11-30] | move to CROPS? [2021-03-08]
+        for(i in seq(1,simVars$npft)) {
+          if(simVars$plantList[[i]]$active) next
+          UseDailyFertilizationData(day, month, year, i) # Henrique & Leandro: fertilization feature [2020-11-30] | move to CROPS? [2021-03-08]
+        }
         
 
         for(j in seq(1,simVars$npft)) {
@@ -411,7 +415,7 @@ GeneralModel <- function(simVars = NULL) {
           # 
           
          if(!is.null(simVars$OnEndHourlyStep))
-           simVars$OnEndHourlyStep(simVars) #Henrique & Leandro added to export hourly data [2021-03-08]
+           simVars$OnEndHourlyStep(simVars, step) #Henrique & Leandro added to export hourly data [2021-03-08]
           
           
         } # FIM DO LOOP HORÁRIO
@@ -448,14 +452,13 @@ GeneralModel <- function(simVars = NULL) {
         for(i in seq(1,simVars$npft)) {
           
           if(!simVars$plantList[[i]]$active || simVars$plantList[[i]]$type == simVars$NATURAL_VEG) next
-          
           if(simVars$endCycle[i]) {
             
             print(paste0("Harvest ", simVars$plantList[[i]]$name, " - cycles ", simVars$plantList[[i]]$currentCycle))
             simVars$plantList[[i]]$currentCycle <- simVars$plantList[[i]]$currentCycle + 1
             
             # reset end cycle variable
-            simVars$endCycle[i] <- F
+            # simVars$endCycle[i] <- F
             
             if(simVars$plantList[[i]]$currentCycle > simVars$plantList[[i]]$totalCycles) {
               
@@ -465,6 +468,9 @@ GeneralModel <- function(simVars = NULL) {
               simVars$exist[i]              <- 0
               # if exist a plant to simulate next, increase the currentPlant by one.
               # simVars$currentPlant <- simVars$currentPlant + 1
+              
+            } else {
+              simVars$endCycle[i] <- F
               
             }
           }

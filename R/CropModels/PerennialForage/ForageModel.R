@@ -12,6 +12,14 @@ source("R/CropModels/PerennialForage/ForageCropresidue.R")
 # TODO: remover index depois, passar as variáveis automaticamente.
 ForageModel <- function(year, month, day, index) {
   
+  # CROP    <- 'BR'
+  # ISWDIS  <- 'N'
+  # ISWWAT  <- 'Y'
+  # ISWNIT  <- 'Y'
+  # ISWSYM  <- 'N'
+  # PLME    <- 'T'
+  # IHARI   <- 'M'
+  
   
   
   # TODO: Verificar se há uma maneira de fazer isso automaticamente para funções do usuário.
@@ -22,10 +30,11 @@ ForageModel <- function(year, month, day, index) {
   #' 
   #' Indica que o modelo soybeanPlanting está dentro de soybeanModel.
   #' AddSubModel(soybeanPlanting, soybeanModel)
-  #'
   
-  b1 <- plantList$forage$params$b1 # não usando
-  b2 <- plantList$forage$params$b2 # não usando 
+  
+  
+  b1 <- plantList[[index]]$params$b1 # não usando
+  b2 <- plantList[[index]]$params$b2 # não usando 
   
   
   environment(ForagePlanting)    <- env

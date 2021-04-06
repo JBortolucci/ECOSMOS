@@ -16,7 +16,7 @@ simDataVars$DSSATdb <- read.table(file = 'C:/DSSAT47/Brachiaria/INTEGRACAO_CONTR
 
 # Ligando/Desligando a conexão com o DSSAT/CROPGRO
 # T <- DSSAT/fortran, F <- Ecosmos 
-                      # PG  DAYL PAR  TMIN TAVG TGRO TURFAC SWFAC  SW  ST  NO3  NH4
+# PG  DAYL PAR  TMIN TAVG TGRO TURFAC SWFAC  SW  ST  NO3  NH4
 # simDataVars$integr <- c(T  ,T   ,T   ,T   ,T   ,T   ,T     ,T     ,T  ,T  ,T   ,T)
 simDataVars$integr <- c(F  ,F   ,F   ,F   ,F   ,F   ,F     ,F     ,F  ,F  ,F   ,F)
 # OK  OK   OK   OK   OK   !   OK      OK
@@ -99,7 +99,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
   assign("NLAYR",NLAYR, envir = env)
   
   # Carregando os parâmetros genéticos da cultura (Cultivar, Ecótipo & Espécie) + aqueles oriundos do Ecosmos
-  params <- plantList$forage$params
+  params <- plantList[[index]]$params
   
   #_______________________________________________________________________________  
   # ATRIBUTOS DO SOLO
@@ -353,14 +353,14 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       DYNAMIC <- 'SEASINIT'
       
-      FOR_PHENOL (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT)
+      FOR_PHENOL (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT, index)
       
       #-----------------------------------------------------------------------
       #-----------------------------------------------------------------------
       #     Seasonal initialization for Dormancy processes
       #-----------------------------------------------------------------------
       
-      FOR_DORMANCY(DYNAMIC, DAYL)
+      FOR_DORMANCY(DYNAMIC, DAYL, index)
       
       #-----------------------------------------------------------------------
       #     Initialize pest coupling point and damage variables, first day only
@@ -387,7 +387,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #         FRRT, and FRSTM for use in those routines)  chp 9/22/98
       #-----------------------------------------------------------------------
       
-      FOR_DEMAND(DYNAMIC,DAS , CROP, PAR, PGAVL,RPROAV, TAVG)
+      FOR_DEMAND(DYNAMIC,DAS , CROP, PAR, PGAVL,RPROAV, TAVG, index)
       
       #-----------------------------------------------------------------------
       #     Call plant COMPosition INitialization
@@ -395,36 +395,36 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #         initialize value of SDPROR for use in that routine) chp 9/22/98
       #-----------------------------------------------------------------------
       if (CROP != 'FA') {
-        FOR_INCOMP(DYNAMIC)
+        FOR_INCOMP(DYNAMIC, index)
       }
       
       #-----------------------------------------------------------------------
-      FOR_GROW(DYNAMIC,iyear,jday, ISWNIT,ISWSYM)
+      FOR_GROW(DYNAMIC,iyear,jday, ISWNIT,ISWSYM, index)
       
       #-----------------------------------------------------------------------
       #      09/23/05 SJR Added subroutine
       #    Call Subroutine to calculate Nitrogen mobilized from natural 
       #      senescence and light stress
       #-----------------------------------------------------------------------
-      FOR_SENMOB(DYNAMIC, DAS, ISWWAT, PAR)
+      FOR_SENMOB(DYNAMIC, DAS, ISWWAT, PAR, index)
       #-----------------------------------------------------------------------
       
       #-----------------------------------------------------------------------
       if (ISWNIT == 'Y') {
-        FOR_NUPTAK(DYNAMIC, PGAVL)
+        FOR_NUPTAK(DYNAMIC, PGAVL, index)
       }
       
       #-----------------------------------------------------------------------
-      FOR_MOBIL(DYNAMIC)
+      FOR_MOBIL(DYNAMIC, index)
       
       #-----------------------------------------------------------------------
-      FOR_NFIX(DYNAMIC, DAS, CNODMN, CTONOD) 
+      FOR_NFIX(DYNAMIC, DAS, CNODMN, CTONOD, index) 
       
       #-----------------------------------------------------------------------
-      FOR_PODS(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday,PGAVL)
+      FOR_PODS(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday,PGAVL, index)
       
       #-----------------------------------------------------------------------
-      FOR_VEGGR (DYNAMIC,DAS,iyear,jday,CSAVEV,NAVL,PAR,PG,PGAVL)
+      FOR_VEGGR (DYNAMIC,DAS,iyear,jday,CSAVEV,NAVL,PAR,PG,PGAVL, index)
       
       #-----------------------------------------------------------------------
       #     Call leaf senescence routine for initialization
@@ -434,7 +434,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #-----------------------------------------------------------------------
       #     Call to root growth and rooting depth routine
       #-----------------------------------------------------------------------
-      FOR_ROOTS(DYNAMIC,CROP, PG, ISWWAT)
+      FOR_ROOTS(DYNAMIC,CROP, PG, ISWWAT, index)
       
     }
     
@@ -474,7 +474,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #     CALL vegetative and reproductive development subroutine
     #-----------------------------------------------------------------------
     if (CROP != 'FA') {
-      FOR_PHENOL (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT)
+      FOR_PHENOL (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT, index)
     }
     
     
@@ -482,7 +482,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #     Call Dormancy module to determine today's
     #     dormancy status and adjustment factors.
     #-----------------------------------------------------------------------
-    FOR_DORMANCY(DYNAMIC, DAYL)
+    FOR_DORMANCY(DYNAMIC, DAYL, index)
     
     
     if (ISWDIS == 'Y') {
@@ -531,13 +531,13 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #     Need to set NVEG0 before test for DAS = NVEG0, otherwise,
     #     initialization on day of emergence will never occur.
     #-----------------------------------------------------------------------
-    FOR_PHENOL (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT)
+    FOR_PHENOL (iyear, iyear0, jday, DAS, DYNAMIC, TAVG, ISWWAT, index)
     
     # -----------------------------------------------------------------------
     #      Compute adjustment factors for Dormancy processes
     # -----------------------------------------------------------------------
     
-    FOR_DORMANCY(DYNAMIC, DAYL)
+    FOR_DORMANCY(DYNAMIC, DAYL, index)
     
     
     #-----------------------------------------------------------------------
@@ -545,22 +545,22 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #----------------------------------------------------------------------
       #     On day of emergence, initialize:
       #-----------------------------------------------------------------------
-      FOR_DEMAND("EMERG", CROP, PAR, PGAVL,RPROAV, TAVG)
+      FOR_DEMAND("EMERG", DAS,CROP, PAR, PGAVL,RPROAV, TAVG, index)
       
-      FOR_GROW("EMERG",iyear,jday, ISWNIT,ISWSYM)
+      FOR_GROW("EMERG",iyear,jday, ISWNIT,ISWSYM, index)
       plai[i]  <- max(XLAI,0.1) # Henrique: atribui IAF inicial para ECOSMOS (2020-10-1)
       
       #-----------------------------------------------------------------------
       #     Call to root growth and rooting depth routine
       #-----------------------------------------------------------------------
-      FOR_ROOTS("EMERG",CROP, PG, ISWWAT)
+      FOR_ROOTS("EMERG",CROP, PG, ISWWAT, index)
       
       #-----------------------------------------------------------------------
       #       DYNAMIC = EMERG (not INTEGR) here
       #-----------------------------------------------------------------------
-      FOR_PODS("EMERG", DAS, NAVL,ISWWAT,iyear,jday,PGAVL)
+      FOR_PODS("EMERG", DAS, NAVL,ISWWAT,iyear,jday,PGAVL, index)
       #-----------------------------------------------------------------------
-      FOR_VEGGR ("EMERG",DAS,iyear,jday, CSAVEV,   NAVL,  PAR, PG, PGAVL)
+      FOR_VEGGR ("EMERG",DAS,iyear,jday, CSAVEV,   NAVL,  PAR, PG, PGAVL, index)
       
       #-----------------------------------------------------------------------
     }
@@ -614,7 +614,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #      senescence and light stress
       #-----------------------------------------------------------------------
       
-      FOR_SENMOB(DYNAMIC, DAS, ISWWAT, PAR)
+      FOR_SENMOB(DYNAMIC, DAS, ISWWAT, PAR, index)
       
       #-----------------------------------------------------------------------
       # New code to deal with forages and dormancy
@@ -678,7 +678,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #-----------------------------------------------------------------------
       #       Compute maintenance respiration and subtract from available CH2O
       #-----------------------------------------------------------------------
-      FOR_RESPIR(DAS,PG) 
+      FOR_RESPIR(DAS,PG, index) 
       
       if (MAINR > PGAVL) {
         PGAVL  = 0.0
@@ -731,7 +731,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       
       if (DAS < NR1) {
-        FOR_CH2OREF(DYNAMIC, PG, PGAVL)
+        FOR_CH2OREF(DYNAMIC, PG, PGAVL, index)
         
       } else {
         CADVG <- 0.0
@@ -752,7 +752,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #-----------------------------------------------------------------------
       #    Call Subroutine to calculate Nitrogen and Carbon Demand for new growth
       #-----------------------------------------------------------------------
-      FOR_DEMAND(DYNAMIC,DAS, CROP, PAR, PGAVL,RPROAV, TAVG)
+      FOR_DEMAND(DYNAMIC,DAS, CROP, PAR, PGAVL,RPROAV, TAVG, index)
       
       # if (YRDOY == YREND) return()
       
@@ -777,7 +777,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #    If ISWNIT = N - Do not call soil N routines, N assumed to be limited by C
       #-----------------------------------------------------------------------
       if (ISWNIT == 'Y') {
-        FOR_NUPTAK(DYNAMIC, PGAVL)
+        FOR_NUPTAK(DYNAMIC, PGAVL, index)
         
         #-----------------------------------------------------------------------
         #    Account for C Used to reduce N Uptake to protein
@@ -803,7 +803,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #    CALL Nitrogen mobilization subroutine
       #    to compute availability of N from other tissue (NMINEA)
       #-----------------------------------------------------------------------
-      FOR_MOBIL(DYNAMIC)
+      FOR_MOBIL(DYNAMIC, index)
       
       #-----------------------------------------------------------------------
       #    Accumulate NAVL for growth, reduce PGAVL by protein re-synthesis cost
@@ -856,7 +856,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #-----------------------------------------------------------------------
       if (ISWNIT == 'Y' & ISWSYM == 'Y') {
         if (VSTAGE > TTFIX) {
-          FOR_NFIX(DYNAMIC, DAS, CNODMN, CTONOD)
+          FOR_NFIX(DYNAMIC, DAS, CNODMN, CTONOD, index)
         }
       }
       #-----------------------------------------------------------------------
@@ -883,7 +883,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #-----------------------------------------------------------------------
       #     Call routine to compute actual seed and shell growth
       #-----------------------------------------------------------------------
-      FOR_PODS(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday,PGAVL)
+      FOR_PODS(DYNAMIC, DAS, NAVL,ISWWAT,iyear,jday,PGAVL, index)
       
       #-----------------------------------------------------------------------
       #     Call specific routines for peanut to determine
@@ -892,7 +892,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #         Pod Detachment
       #-----------------------------------------------------------------------
       if (DETACH == 'Y' & DAS >= NR1) {
-        FOR_PODDET(DYNAMIC, iyear, jday)
+        FOR_PODDET(DYNAMIC, iyear, jday, index)
       }
       
       #-----------------------------------------------------------------------
@@ -921,7 +921,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #-----------------------------------------------------------------------
       #     Call routine to compute actual vegetative growth, C to mine or add
       #-----------------------------------------------------------------------
-      FOR_VEGGR (DYNAMIC,DAS,iyear,jday, CSAVEV,   NAVL,  PAR, PG, PGAVL)
+      FOR_VEGGR (DYNAMIC,DAS,iyear,jday, CSAVEV,   NAVL,  PAR, PG, PGAVL, index)
       
       #-----------------------------------------------------------------------
       #     Compute C required for LF, ST, and RT growth, and remaining C and N
@@ -950,7 +950,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #     Call freeze damage routine if TMIN is less than FREEZ1 deg C
       #-----------------------------------------------------------------------
       if ((TMIN < FREEZ1) | (TMIN < FREEZ2)) {
-        FOR_FREEZE(TMIN, iyear, jday)
+        FOR_FREEZE(TMIN, iyear, jday, index)
       } else {
         WLFDOT  <- 0.0
         WSRFDOT <- 0.0
@@ -959,7 +959,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #-----------------------------------------------------------------------
       #     Call to root growth and rooting depth routine
       #-----------------------------------------------------------------------
-      FOR_ROOTS(DYNAMIC,CROP, PG, ISWWAT)
+      FOR_ROOTS(DYNAMIC,CROP, PG, ISWWAT, index)
       
       #-----------------------------------------------------------------------
       #     Compute total C cost for growing seed, shell, and vegetative tissue
@@ -988,7 +988,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       #-----------------------------------------------------------------------
       #     Call routine to integrate growth and damage
       #-----------------------------------------------------------------------
-      FOR_GROW(DYNAMIC,iyear,jday, ISWNIT,ISWSYM)
+      FOR_GROW(DYNAMIC,iyear,jday, ISWNIT,ISWSYM, index)
       plai[i]  <- max(XLAI,0.1) #TODO Henrique: verificar se aqui seria o lugar ideal dessa atribuição
       
       
@@ -1091,23 +1091,34 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #              aroot[i],aleaf[i],astem[i],arepr[i],cbior[i],cbiol[i],cbios[i],cbiog[i],cbiop[i],plai[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
     
     
-    
     if(cropy == 1) {
       
-      if ( RSTAGE == 8 | frost ) { #TODO Henrique: adapt for Perennial Forages (perhaps take a look at cane may help) [2020-11-26]
-        # frost is when TMIN < FREEZE2 (Temperature below which plant growth stops completely)
-        # R8 is the physiological maturity, usually when growers should harvest the crop
-        # TODO 3rd option to be implemented: user chooses the harvesting date
-        
+      if (is.na(plantList[[i]]$controlConfigs$cycleLength)){
+        if (frost){
+          # frost is when TMIN < FREEZE2 (Temperature below which plant growth stops completely)
+          # R8 is the physiological maturity, usually when growers should harvest the crop
+          
+          croplive[i]   <- 0.0
+          cropy         <- 0.0
+          idpp[i]       <- 0.0
+          pgreenfrac[i] <- 0.0 # turn all vegetation to brown
+          harvdate[i]   <- jday
+          plai[i]       <- 0.01 # simulates remaining stubble/mulch
+          endCycle[i]   <- T
+          exist[i]      <- F
+        }
+      } else if(idpp[i] > plantList[[i]]$controlConfigs$cycleLength | frost){
+        # 3rd option to be implemented: user chooses the harvesting date (controlado pelo cycleLength)
         croplive[i]   <- 0.0
         cropy         <- 0.0
         idpp[i]       <- 0.0
-        pgreenfrac[i]  <- 0.0 # turn all vegetation to brown
+        pgreenfrac[i] <- 0.0 # turn all vegetation to brown
         harvdate[i]   <- jday
         plai[i]       <- 0.01 # simulates remaining stubble/mulch
-        endCycle      <- T
-        
+        endCycle[i]   <- T
+        exist[i]      <- F
       }
+      
     } else {
       print('Forage has only one cycle - Stop')
       stop()

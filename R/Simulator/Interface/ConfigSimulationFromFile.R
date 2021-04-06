@@ -138,6 +138,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
           
           # NOVO: A planta agora é ativada no loop, dependendo do ano que deve iniciar
           simInstances[[id]]$plantList[[paste0(name,j)]]$active         <- F
+          simInstances[[id]]$plantList[[paste0(name,j)]]$endCycle       <- F
           simInstances[[id]]$plantList[[paste0(name,j)]]$controlConfigs <- simConfigs[[i]][[paste0("plant",j)]]
           simInstances[[id]]$plantList[[paste0(name,j)]]$bioma          <- F
           # TODO: Agora a vegetação natural também é afetada pelos ciclos

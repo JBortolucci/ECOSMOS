@@ -8,9 +8,9 @@ simDataVars$MonthMOW   <- c()
 simDataVars$YearMOW    <- c()
 simDataVars$fhtot      <- 0 # Henrique: added on 2020-12-18
 
-forage_harvest <- function(day, month, year, FHTOTN){
+forage_harvest <- function(day, month, year, FHTOTN, index){
   
-  params <- plantList$forage$params
+  params <- plantList[[index]]$params
   
   # DATE     <- params$DATE
   # MOW      <- params$MOW
