@@ -32,7 +32,7 @@ CropPhenoUpdate <- function() {
 
     
   totlail <- max(totlail, 0.005)
-  fl <- totlail/1.5 # antigo 1.0 [SVC/HBD; 2021-03-19]
+  fl <- totlail/2.0 # antigo 1.0 [SVC/HBD; 2021-03-19]
   #fl <- totlail/1.5
   fl <- max(0.001, min(0.99, fl))
   # fl <- max(0.025, min(0.975, fl)) # antigo [SVC/HBD; 2021-03-12]

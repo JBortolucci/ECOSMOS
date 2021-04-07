@@ -1,5 +1,4 @@
 ID,LAT,LON,startY,startOfSimulation,endY,endOfSimulation,SOILID,StationID,Soil initial conditions,soilcspin,isimveg,isimfire,irrigate,P1,planting day,start year,plant population,row spacing,planting depth,cycle length,cycles,params
-NES2_2001,41.1649,-96.4701,2001,130,2001,320,IBAFlUSNe2,USNEME2,0,0,1,0,0,maize,131,2001,8.24,75,5.1,200,1,Pn_33P67
 NES2_2003,41.1649,-96.4701,2003,110,2003,320,IBAFlUSNe2,USNEME2,0,0,1,0,0,maize,134,2003,7.8,75,5.1,200,1,Pn_33B51
 NES2_2005,41.1649,-96.4701,2005,110,2005,320,IBAFlUSNe2,USNEME2,0,0,1,0,0,maize,122,2005,7.63,75,5.1,200,1,Pn_33B51
 NES2_2007,41.1649,-96.4701,2007,110,2007,320,IBAFlUSNe2,USNEME2,0,0,1,0,0,maize,122,2007,7.76,75,5.1,200,1,Pn_31N28
