@@ -219,11 +219,12 @@ sumnow <- function() {
     if(!plantList[[i]]$active) next
 
     mcbior[i]  <- cbior[i]  * (funcb*rroot) #TODO checar [Henrique; 2021-02-11]
-    mcbiog[i]  <- cbiog[i]  *  0.0
-    mcbiop[i]  <- cbiop[i]  *  0.0 # TODO: Henrique, rever quanto sao esses valores de respiracao
     mcbiow[i]  <- cbiow[i]  * (sapfrac*rwood*funca)
-    mcbios[i]  <- cbios[i]  * (rwood*funca) 
     mcbiob[i]  <- cbiob[i]  * (rwood*funca)
+    mcbios[i]  <- cbios[i]  * (rwood*funca) 
+#SVC: Bellow Maintenance respiration are applied in each crop model    
+    mcbiog[i]  <- cbiog[i]  *  0.0
+    mcbiop[i]  <- cbiop[i]  *  0.0 
 
   }
   # JAIR: Já alterei as variáveis apenas no modelo eucalipto. Nas outras partes do código que elas aparecem foi mantido,
@@ -247,6 +248,7 @@ sumnow <- function() {
     tnpp[i] <- ifelse(plantList[[i]]$active,                        #Aqui E' necessario ifelse, pois se tnpp = 0, segue 0 e não um valor negativo
                       nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiop[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i], tnpp[i])
     
+    tnpp[i] <- max(tnpp[i],0.0)  
   }
 
   
