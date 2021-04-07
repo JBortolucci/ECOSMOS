@@ -409,9 +409,11 @@ GeneralModel <- function(simVars = NULL) {
           # output_hourly <- paste(year, simVars$jday, step, - simVars$tneetot * 1e6 , sep=',')
           # writeLines(output_hourly, simVars$out_tower_hourly)
           # 
-          
-         if(!is.null(simVars$OnEndHourlyStep))
-           simVars$OnEndHourlyStep(simVars) #Henrique & Leandro added to export hourly data [2021-03-08]
+          for(i in seq(1, simVars$npft)) {
+            if(!simVars$plantList[[i]]$active) next
+            if(!is.null(simVars$OnEndHourlyStep))
+            simVars$OnEndHourlyStep(simVars, i) #Henrique & Leandro added to export hourly data [2021-03-08]
+          }
           
           
         } # FIM DO LOOP HORÁRIO
@@ -485,8 +487,11 @@ GeneralModel <- function(simVars = NULL) {
         #   outputC(simVars, paste(year, month, day, sep = '-'), simVars$NO_HOURLY)
         
         
-        if(!is.null(simVars$OnEndDailyStep)) 
-          simVars$OnEndDailyStep(simVars)
+        for(i in seq(1, simVars$npft)) {
+          if(!simVars$plantList[[i]]$active) next
+          if(!is.null(simVars$OnEndDailyStep)) 
+                simVars$OnEndDailyStep(simVars, i)
+        }
         
         
         if(year == simVars$iy2 && month == simVars$simulationEndMonth && day == simVars$simulationEndDay){
