@@ -122,7 +122,7 @@ StomataC3Crops <- function(i) {
   
   #2 - (2) As VPD is the saturated vapour pressure minus the actual vapour pressure (SVP - VPactual), 
   # and VPactual = (RH*SVP)/100
-  VPDSL = VPSAT*(1- (rhdossel ))
+  VPDSL = VPSAT *(1- (rhdossel))
   
   
   if(croplive[i] == 1) {
