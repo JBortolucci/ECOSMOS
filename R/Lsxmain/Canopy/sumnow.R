@@ -242,7 +242,7 @@ sumnow <- function() {
   # NOVA versão
   for(i in seq(1,npft)) {
     # if(!plantList[[i]]$active) next
-    tan[i] <- ifelse(plantList[[i]]$active, nppdummy[i] , tan[i]) #Aqui NAO e' necessario ifelse
+    tan[i] <- ifelse(plantList[[i]]$active, nppdummy[i] , tnpp[i]) #Aqui NAO e' necessario ifelse
     
     tnpp[i] <- ifelse(plantList[[i]]$active,                        #Aqui E' necessario ifelse, pois se tnpp = 0, segue 0 e não um valor negativo
                       nppdummy[i] - mcbior[i] - mcbiog[i] - mcbiop[i] - mcbiow[i] - mcbios[i] - mcbiocr[i] - mcbiob[i], tnpp[i])

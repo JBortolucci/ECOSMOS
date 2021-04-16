@@ -26,6 +26,8 @@ simDataVars$lsr  <-  0
 simDataVars$plag  <-  0
 simDataVars$plaf  <-  0
 simDataVars$laistg3  <-  0
+simDataVars$gdd10stg3  <-  0
+simDataVars$gdd10vstg5 <-0
 simDataVars$leafwt  <-  0
 simDataVars$leafwb  <-  0
 simDataVars$xnti  <-  0
@@ -80,16 +82,16 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   sg             <- params$sg           # 4.0     # ‘stay-green’ factor, which controls how fast leaf senesces proceeds after silking
   phyl           <- params$phyl         # 38.9    # Phylochron interval; the interval in thermal time (degree days)
   dsstop         <- params$dsstop       # 1.15    # development stage when root growth stops
-  ph1            <- params$ph1          # 47
-  ph2            <- params$ph2          # 28
   G2             <- params$G2           # 676 # the potential number of grains per plantkernels ear⁻¹ (default = 676)
   G5             <- params$G5           # 8.7 # the potential grain filling rate (mg d-1 kernel-1) (default = 8.7)
   efftrans       <- params$efftrans     # 0.26 # Efficiency of carbon translocation from leaves/stem to grain filling
   SLAi           <- params$SLAi         # Initial SLA (Specific Leaf Area - m^2 kg-C^-1 )
-  SLAf           <- params$SLAf         # Initial SLA (Specific Leaf Area - m^2 kg-C^-1 )
+  SLAf           <- params$SLAf         # Final SLA (Specific Leaf Area - m^2 kg-C^-1 )
+  SLAk           <- params$SLAk         # Exponential coef. SLA (Specific Leaf Area - m^2 kg-C^-1 )
+  MALA         <- params$MALA       # Potential Leaf Area (cm2/leaf)
   
-  
-  
+  #SVC - in the manual says if (vstage < 10 ) {phyl = 47}else{phyl =  28}
+   if (vstage < 6 ){phyl<-phyl*1.3}else{phyl<-phyl*0.7}
 
     gdds <- gddt*gddsfrac
   # gdds <- (0.41 * gddt) + 145.4         # GDD (base 10ºC) required from silking to physiological maturity
@@ -102,7 +104,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
   
   
 
-  gddv <- c(ph1, ph2)
   
   # Fatores de conversao 
   m2.kgC_cm2.gDM   <- (100*100)*(1/1000)*(1/(1/0.45))
@@ -170,14 +171,16 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       fsen   <- 0
       senf <-array(0,4)
       
-      gddvcum<-gddv[1]
+      gddvcum<- 47
       
       dm <- list('leaf' = 0.0, 'stem' = 0.0, 'root' = 0.0, 'cob' = 0.0, 'grain' = 0.0, 'sleaf' = 0)
       
       #gddemerg <- gddemerg * pdpt # gddgerm taking into account the sowing depth already here
       
-      plaf <- 0.0
-      laistg3 <- 0.0
+      plaf      <- 0.0
+      laistg3   <- 0.0
+      gdd10stg3 <- 0.0
+      gdd10vstg5 <- 0
       
       tlno <- 0
       P3 <- 0
@@ -261,13 +264,6 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       
       
-      ph <- ifelse(test = vstage < 10, yes = 1, no = 2)
-      
-      if( gdd10 >= gddvcum & gdd10 < gdds) {
-        vstage <- vstage + 1
-        gddvcum<-gddvcum+gddv[ph]
-      }
-      
       
       # TODO CO2 assimilation in HM does not seem to be penalised by water stress [Henrique; 2021-02-26]
       #     read sections 4.1.2, 4.1.3 & 4.2.4 in the manual
@@ -287,36 +283,47 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       
       tmean  <- (tmax + tmin) / 2.0 #TODO talvez usamos do ECOSMOS direto e não precisemos esse passo toda vez [2021-01-20]
       
-      # Leaf Growth and Senescence #
+      
+
+      
+      if( gdd10 < gdds) {
+      # Leaf Growth at stage 1 #
       if (cumPh < 5.0) {
         pc <- 0.66 + 0.068 * cumPh
       } else {
         pc <- 1
       }
       
-      tiphyl <- dtt8 / (phyl * pc)   # DTT8 is daily accumulation of GDD8, obs. manual is GDD8 (DTT8 is the correct)
-      cumPh <- cumPh + tiphyl
-      xn <- max(xn, cumPh + 1)
+      tiphyl <- dtt8 / (phyl * pc)   # fraction of daily increase in leaf number 
+      cumPh <- cumPh + tiphyl        # Number of fully expanded leaves
+      xn <- max(xn, cumPh + 1)       # Leaf number (V)
       
-      # TI is the fraction of daily increase in leaf number
-      #     'ti' here had to be changed to 'tiphyl' because the same term is used in 'turvap' subroutine [Henrique; 2021-03-04]
-      # cumPh is the number of fully expanded leaves
-      # XN is the leaf number of the oldest expanding leaf
-      # PC is an intermediate variable
-      # Note: at emergence cumPh = 1 and XN = 3.
+#_______________________________________________________________________________________________________________________      
+#The simulation of V stages and R stages are based largely on Nielson RL (2001) and Hicks, DR (2004), respectively. 
+# Basically, the interval is 47 GDD10 between appearance of each leaf from emergence to V10, 
+# while the interval drops to 28 GDD10 thereafter till silking (i.e., the final leaf).      
+#SVC - ORIGINAL      gddv <- c(47, 28)
+#SVC - ORIGINAL      ph <- ifelse(test = vstage < 10, yes = 1, no = 2)
+#SVC - ORIGINAL      if( gdd10 >= gddvcum ) {  vstage <- vstage + 1
+#SVC - ORIGINAL                                gddvcum<-gddvcum+gddv[ph]      }
+      vstage <- as.integer(cumPh) # SVC - Coupling the leaf growth process and leaf number
+#_____________________________________________________________________________________________      
       
       
+      
+      
+      }
+
       # Daily leaf senescence due to competition for light and temperature stress (PLAS, cm2 plant-1 d-1)
-      # is computed from a stress rate factor (LSR, 0~1):
       slfc <- ifelse(test = plai[i] < laic,
                      yes  = 1.0,
                      no   = min(1.0, max(0.0, 1.0 - 0.008 * (plai[i] - laic))))
-      
-      slft <- ifelse(test = tmean > 279.15, #TODO pensar se o limiar de 6º C possa ser um parametro, futuramente. [2021-01-20]
+      # Low temperature effect on leaf 
+      slft <- ifelse(test = tmean > 279.15, 
                      yes  = 1.0,
                      no   = min(1.0, max(0.0, 1.0 - (279.15 - tmean) / 6)))
       
-      # LSR is the stress rate factor (0-1) | 0 means no stress and 1 full stress
+      # Stress rate factor (0-1) | 0 means no stress and 1 full stress
       lsr <- ifelse(test = slfc <= slft,
                     yes  = 1.0 - slfc,
                     no   = 1.0 - slft)
@@ -327,101 +334,120 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
       cobwg   <-  0
       grainwg <-  0
       
+      
+#CSV       specla[i] <- max(SLAf,SLAi - (SLAi-SLAf)* min(gdd10/gdds,1)) #SVC - Linear modelo
+      specla[i] <- max(SLAf,SLAi*exp(SLAk*min(gdd10/gdds,1)))           #SVC - Exponential decay
+      
 
-      #
-      #     Phenological stages used in the Hybrid-Maize after emergence:
-      #     Stage 1: from emergence to tassel initiation                   *** Stages 1 & 2 in CERES ***
-      #     Stage 2: from tassel initiation to silking
-      #     Stage 3: from silking to effective grain filling
-      #     Stage 4: from effective grain filling to physiological maturity.
+      if( gdd10 <= gdds*0.5){        
+        
+        # if(gdd10vstg5==0)gdd10vstg5<-gdd10
+
+                Leaf_area <-min(MALA,(MALA/4.)+(MALA-(MALA/4.))*min(gdd10 /gdds*0.5,1))
+
+      }else if ((gdd10 > gdds*0.5) & (gdd10 <= gdds*0.75)){ 
+        
+                Leaf_area <- 1.5 * MALA
+        
+      } else {
+                Leaf_area <-  0.5 * MALA
+      }
+        
+          # Leaf_area <-  min(MALA,100+(MALA-100)*min(cumPh/5,1)) 
+
+#____________________________________________________________________________________________________
+#     Phenological stages used in the Hybrid-Maize after emergence:
+#     Stage 1: from emergence to tassel initiation                   *** Stages 1 & 2 in CERES ***
+#     Stage 2: from tassel initiation to silking
+#     Stage 3: from silking to effective grain filling
+#     Stage 4: from effective grain filling to physiological maturity.
+#____________________________________________________________________________________________________
       
       
-      specla[i] <- max(SLAf,SLAi - (SLAi-SLAf)* min(gdd10/(gdds),1))
-      
-      
-      if ((gdd10+P3 <= gdds) & (gdd10 < gdds)) { 
+
+
+    #SVC - ORIGINAL -> if ((gdd10+P3 <= gdds) & (gdd10 < gdds)) { 
+        if ((vstage <= 5) & (gdd10 < gdds)) { 
         
         stage <- 1
         ################################################
         # STAGE 1: from emergence to tassel initiation #  *** Stages 1 & 2 in CERES ***
         ################################################
         
-        # Leaf Growth and Senescence #
-        # The daily expansion of leaf area (PLAG) and growth of leaf biomass is driven by temperature, and the choice of functions depends on growth stage.
+
+        # CERES equations (OBS, in stages 1 & 2 = Stage 1 here)
+         tlno <- (gdd8 / (phyl * 0.5)) + 6   
+         #P3   <- ((tlno + 0.5) * phyl) - gdd8
         
-        # Testings after CERES-MAIZE review [Henrique; 2021-03-04]
-        #VEGPHASE <- gddt-gdds
-        #tlno <- (VEGPHASE / (phyl * 0.5)) + 6
-        # tlno <- (gdds / (phyl * 0.5)) + 6
-        # P3 <- (tlno - 2.0) * phyl + 96 - gdds
-        
-        #The duration of Stage 2 in terms of GDD equals P3 whose value is determined at the end of Stage 1:
-        # this parameter is fixed as 30 in CERES in stages 1 & 2
-        #SVC tlno <- (gdd8 / (phyl * 0.5)) + 6      
-        tlno <- (gdd8 / 21) + 6    
-        # this parameter remains as 0 in CERES in stages 1 & 2
-        P3 <- (tlno - 2.0) * phyl + 96 - gdd8   #GDD8 is for the duration of Stage 2, and
+        #SVC - ORIGINAL  tlno <- (gdd8 / 21) + 6    #Potential leaf number
+        #SVC - ORIGINAL  ##The duration of Stage 2 in terms of GDD equals P3 whose value is determined at the end of Stage 1:
+        #SVC - ORIGINAL  P3 <- (tlno - 2.0) *38.9 + 96 - gdd8   #Here we use 38.9 (instead of phyl because model eqs were adjusted with it)
         
         # Daily expansion of leaf area (PLAG), PLA (cm2 plant-1)
-        plag <- ifelse(test = xn < 4,
-                       yes  = 3.0 * xn * tiphyl,
-                       no   = 3.5 * (xn^2) * tiphyl)
+        #SVC - ORIGINAL plag <- ifelse(test = xn < 4,
+        #SVC - ORIGINAL                yes  = 3.0 * xn * tiphyl,
+        #SVC - ORIGINAL                no   = 3.5 * (xn^2) * tiphyl)
+           plag <- tiphyl * Leaf_area
         
         #TODO includes water and others 'stress' in plag following... [Henrique; 2021-02-26]
         #    Keating et al. (2003) in pages 69-70 and/or CERES-MAIZE
         #    CEREs also includes waterlogging, and seems to be accomodated for K and P [*AMIN1(TURFAC,(1.0-SATFAC),PStres2, KSTRES)]
         
-        pla <- pla + plag
+        pla <- pla + plag      # PLA (cm2 plant-1) is the Plant Leaf Area 
         
-        #TODO CERES-MAIZE includes **1.25 in leafwt (XLFWT)
-        # SLA (cm2 g-1, ≤ 400 cm2 g-1) -> g of DM
-        leafwt <- pla / (SLAf * m2.kgC_cm2.gDM) # 10 (convertion SPECLA from m²/kg DM to cm²/g DM)
-        #TODO CERES-MAIZE has an intermediate variable called LFWT which is used XLFWT  = AMAX1 (XLFWT,LFWT)
-        leafwg <- leafwt - leafwb
-        leafwb <- leafwt
+        #Check - CERES-MAIZE includes **1.25 in leafwt (XLFWT)
+        leafwt <- pla / (SLAf * m2.kgC_cm2.gDM) #leaf Weight Today (g plant-1); m2.kgC_cm2.gDM converts SPECLA (from m²/kg DM to cm²/g DM)
+        leafwg <- leafwt - leafwb  # leaf Grow (g plant-1) is the daily growth in leaf biomass
+       
+        #leafwg <- leafwg / (1.0 + fresp$leaf) #SVC (the net leaf growth as to be leafwg, and the An translocation = leafwg*(1+fresp$leaf)
         
-        # PLA (cm2 plant-1) is the total leaf area per plant
-        # SLA (cm2 g-1, ≤ 400 cm2 g-1) is the specific leaf area
-        # leafWtToday (g plant-1) is the leaf biomass after update
-        # leafWt is the leaf biomass of the previous day
-        # leafWtGrow (g plant-1) is the daily growth in leaf biomass
-        
-        slan <- gdd8 * pla / 1e4
-        plas <- plas + plag * lsr
-        
-        fsen <- (max(plas,slan)- sen) / pla
+        leafwb <- leafwt # the day before needed to compute gain
         
         
-        sen <- max(plas,slan)
-        
-        
-        leafwg <- leafwg / (1.0 + fresp$leaf)
-        #TODO CERES uses a different approach here
-        #TODO includes 'CumLeafSenes' now
-        
-        # SLAN (cm2 plant-1) is the accumulated leaf senescence caused by natural development
+        #SLAN (cm2 plant-1) is the accumulated leaf senescence caused by natural development
+        slan <- gdd8 * pla / 1e4  
         # PLAS (cm2 plant-1 d-1) is the daily leaf senescence due to competition for light and temperature stress (affected by )
-        # PLAG (cm2 plant-1 d-1) is the daily expansion of leaf area
+        plas <- plas + plag * lsr # lsr Stress rate factor (0-1) | 0 means no stress and 1 full stress
+        
+        fsen <- (max(plas,slan)- sen) / pla  #Fraction of the total LAI (PLA) senesced today
+        
+        sen <- max(plas,slan) #Have to keep the day before because the plas and slan are cumulative
         
         # Root Allocation #
         ds <- max(0.0, min(1.0, gdd10 / gdds))
-        aroot[i] <- max(0.0, min(0.5, arooti - arooti*(ds/dsstop) ))
+        aroot[i] <- max(0.0, min(0.5, arooti - arooti*(ds/dsstop) ))# DSstop is the development stage when root growth stops
         
-        # aroot equals to ACroot at emergence (=biomass allocation coefficient for root at emergence).
-        # DSstop is the development stage when root growth stops
-        # The default values for ACEroot and DSstop are 0.35 and 1.15, respectively.
+       #______________original__________________________  
+       #SVC - original -> aleaf[i] <- max(0.0, 1.0 - aroot[i])
+       #SVC - original -> # Carbon pull update (ECOSMOS plant state variables) 
+       #SVC - original -> cbiorg <- max(0.0, aroot[i] * adnppr)
+       #SVC - original -> cbiolg <- max(0.0, aleaf[i] * adnppl)
+       #SVC - original -> cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot)
+       #SVC - original -> cbiol[i] <- cbiol[i] + cbiolg - (cbiol[i] * fsen)
+       #SVC - original -> cbiols[i] <- cbiols[i] + cbiol[i]*fsen
+       #SVC - original -> xnti <- xn
+       #______________original__________________________  
         
-        aleaf[i] <- max(0.0, 1.0 - aroot[i])
-        
+        #____________Modified_____________________________________________________________________
+        #SVC included (orignal does not have stem growth at stage one, but CERES predicts end stage 1 at ~ V3, not V5)
+        if(vstage >= 2)stemwg <- leafwg * 0.0182 * (cumPh-1)^2
+        aleaf[i] <- max(0.0, (1.0 - aroot[i]) * (leafwg / (leafwg + stemwg)))
+        astem[i] <- max(0.0, 1.0 - aroot[i] - aleaf[i])
         # C mass-based for ECOSMOS 
         cbiorg <- max(0.0, aroot[i] * adnppr)
         cbiolg <- max(0.0, aleaf[i] * adnppl)
+        cbiosg <- max(0.0, astem[i] * adnpps)
         cbior[i] <- cbior[i] + cbiorg - (cbior[i] / tauroot)
         cbiol[i] <- cbiol[i] + cbiolg - (cbiol[i] * fsen)
         cbiols[i] <- cbiols[i] + cbiol[i]*fsen
+        cbios[i] <- cbios[i] + cbiosg
+        # DM mass-based for model evaluation
+        dm$stem <- dm$stem +  pden *stemwg/1000  # convert stemwg (g DM plant-1) to kg DM/m^2
+        xnti <- 3.0 #initial value 
+        #_________________________________________________________________
+        
         
         senf[1] <- sen
-        xnti <- xn
         gdd8stg1 <- gdd8
         
       } else if ( gdd10 < gdds ) {
@@ -433,22 +459,31 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         # Leaf Growth and Senescence #
         
         # Stem and Root Growth #
-        if (xn <= 12) {
-          plag <- 3.5 * xn^2 * tiphyl
-          pla <- pla + plag
-          leafwg <- 0.00116 * plag * pla^0.25
-          stemwg <- leafwg * 0.0182 * (xn - xnti)^2
-        } else if (xn > 12 & xn <= tlno - 3) {
-          plag <- 595 * tiphyl
-          pla <- pla + plag
-          leafwg <- 0.00116 * plag * pla^0.25
-          stemwg <- leafwg * 0.0182 * (xn - xnti)^2
-        } else if(xn > tlno - 3) {
-          plag <- 595 * tiphyl / sqrt(xn + 5 - tlno)
-          pla <- pla + plag
-          leafwg <- 0.00116 * plag * pla^0.25
-          stemwg <- 10.85 * tiphyl
-        }
+        
+        
+        plag <- tiphyl * Leaf_area
+        
+        pla <- pla + plag
+        leafwt <- pla / (SLAf * m2.kgC_cm2.gDM) #leaf Weight Today (g plant-1); m2.kgC_cm2.gDM converts SPECLA (from m²/kg DM to cm²/g DM)
+        leafwg <- leafwt - leafwb  # leaf Grow (g plant-1) is the daily growth in leaf biomass
+        leafwb <- leafwt # the day before needed to compute gain
+        
+        #if (xn <= 12) {
+          #SVC ORIGINAL -> plag <- 3.5 * xn^2 * tiphyl
+          #SVC ORIGINAL -> pla <- pla + plag
+          #SVC ORIGINAL -> leafwg <- 0.00116 * plag * pla^0.25
+          stemwg <- leafwg * 0.0182 * (cumPh-1)^2
+       #} else if (xn > 12 & xn <= tlno - 3) {
+       #  #SVC ORIGINAL -> plag <- 595 * tiphyl
+       #  #SVC ORIGINAL -> pla <- pla + plag
+       #  #SVC ORIGINAL -> leafwg <- 0.00116 * plag * pla^0.25
+       #  stemwg <- leafwg * 0.0182 * (xn - xnti)^2
+       #} else if(xn > tlno - 3) {
+       #  #SVC ORIGINAL -> plag <- 595 * tiphyl / sqrt(xn + 5 - tlno)
+       #  #SVC ORIGINAL -> pla <- pla + plag
+       #  #SVC ORIGINAL -> leafwg <- 0.00116 * plag * pla^0.25
+       #  stemwg <- 10.85 * tiphyl
+       #}
         
         #TODO includes water and others 'stress' in plag following... [Henrique; 2021-02-26]
         #    Keating et al. (2003) in pages 69-70 and/or CERES-MAIZE
@@ -518,10 +553,7 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         
         fsen <- slan / pla
         
-        # SF (0 to 1) is the fraction of senesced leaf of the maximum green leaf area, which is achieved at silking
-        # LAImature is the fraction of LAI at maturity of the maximum LAI
-        # SG is a ‘stay-green’ factor, which controls how fast leaf senesces proceeds after silking
-        
+    
         # Stem, Cob and Root Growth #
         stemwg <- 0.220 * dtt8 
         cobwg  <- 0.088 * dtt8 
@@ -566,7 +598,9 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
         }
         
         #SVC (03/04/2021) -> 0.15 is allocated to be translocated 
-        laistg3 <- max((1.-0.15)*cbiol[i] * specla[i],laistg3)
+        # laistg3 <- max((1.-0.15)*cbiol[i] * specla[i],laistg3)
+        laistg3 <- max(cbiol[i] * specla[i],laistg3) #considering all, and reduce translocation
+        gdd10stg3 <- gdd10
         
       } else if ( (gdd8 > dum8 + gddf) & (gdd10 < gddt) ) {
         
@@ -653,28 +687,42 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
 #______________________________________________        
 # Leaf senescence # (leaf growth stops from here onwards)
         
+        # SF (0 to 1) is the fraction of senesced leaf of the maximum green leaf area, which is achieved at silking
+        # LAImature is the fraction of LAI at maturity of the maximum LAI
+        # SG is a ‘stay-green’ factor, which controls how fast leaf senesces proceeds after silking
+        
         sumgdd10 <- sumgdd10 + (dtt10 / max(0.05,(1 - lsr)))  # LSR is the stress rate factor (0-1) | 0 means no stress and 1 full stress
         
-        P5 <- gddt - gdds    # P5 is the GDD from silking to maturity
+        P5 <- gddt - gdd10stg3    # P5 is the GDD from silking to maturity
         
         sf <- (laistg3) * min(1, ((sumgdd10 / (P5)) ^ sg)) #
         if(plai[i]<=0.01) sf = 0
          dl <- max(0,sf - senstg4l)
         senstg4l <- sf
       
-        cbiols[i] <- cbiols[i] + min(dl*(1 / specla[i] ),cbiol[i])    
-        cbiol[i]  <- cbiol[i]  - min(dl*(1 / specla[i] ),cbiol[i])
 
-        sumgdd8 <- sumgdd8 + (dtt8 / max(0.05,(1 - lsr)))  # LSR is the stress rate factor (0-1) | 0 means no stress and 1 full stress
-        P5 <-  800  # set as 800, we don't know P5 (GDD from silking to maturity) for GDD8
-        sf <- (laim * plaf) * min(1, ((sumgdd8 / P5) ^ sg)) #TODO gdds = P5 in model's manual (?) is base 10! e AGORA?
-        dl <- sf - senstg4
-        senstg4 <- sf 
-        sen <- senf[3]+sf
+       if ( cbiol[i] < cbiolr & cbiolr > min(dl*(1 / specla[i] ),cbiol[i]) ) {
+        cbiolr    <- cbiolr    - min(dl*(1 / specla[i] ),cbiol[i])
+        cbiol[i]  <- cbiol[i]  - min(dl*(1 / specla[i] ),cbiol[i])
+        cbiols[i] <- cbiols[i] + min(dl*(1 / specla[i] ),cbiol[i])
+       } else { 
+         cbiol[i]  <- cbiol[i]  - min(dl*(1 / specla[i] ),cbiol[i])
+         cbiols[i] <- cbiols[i] + min(dl*(1 / specla[i] ),cbiol[i])
+         }
+      
+        
+        
+        #Original Hybrid-Mayze
+         sumgdd8 <- sumgdd8 + (dtt8 / max(0.05,(1 - lsr)))  # LSR is the stress rate factor (0-1) | 0 means no stress and 1 full stress
+         P5 <-  800  # set as 800, we don't know P5 (GDD from silking to maturity) for GDD8
+         sf <- (laim * plaf) * min(1, ((sumgdd8 / P5) ^ sg)) #TODO gdds = P5 in model's manual (?) is base 10! e AGORA?
+         dl <- sf - senstg4
+         senstg4 <- sf 
         #convert sf (cm2 plant-1) to kg-C/m2 
         #cbiol[i]  <- cbiol[i]  - dl * pden * (1/(100*100))*(1 / specla[i] )
         #cbiols[i] <- cbiols[i] + dl * pden * (1/(100*100))*(1 / specla[i] )
         
+         sen <- senf[3]+sf       
               senf[4] <- sen
         
       } # END OF PHENOLOGICAL GROWTH STAGES PHASES BLOCKS
@@ -795,6 +843,8 @@ MaizeGrowthPheno <- function(iyear, iyear0, imonth, iday, jday, index) {
     assign('date_germ' , date_germ , envir = env)
     assign('plaf'      , plaf      , envir = env)
     assign('laistg3'   , laistg3      , envir = env)
+    assign('gdd10stg3'   , gdd10stg3      , envir = env)
+    assign('gdd10vstg5'   , gdd10vstg5      , envir = env)
     assign('slfc', slfc, envir = env)
     assign('slft', slft, envir = env)
     assign('lsr', lsr, envir = env)

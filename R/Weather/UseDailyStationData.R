@@ -38,6 +38,8 @@ UseDailyStationData <- function(day, month, year) {
   RH <- data_station$RHUM[which(data_station$day == useDay &  data_station$month == month  & data_station$year == useYear)]
   U2 <- data_station$WIND[which(data_station$day == useDay &  data_station$month == month  & data_station$year == useYear)]
   
+  # Runoff Curve number
+  # PR <- PR -(PR-0.2*(25400/RCN-254))^2/(PR+0.8*(25400/RCN-254))
   
   if( is.na(TN)==T |  is.na(TX)==T | is.na(PR)==T | is.na(RS)==T | is.na(RH)==T | is.na(U2)==T ) { 
             print(paste0("No daily weather file ",day,"/",month,"/",year))
