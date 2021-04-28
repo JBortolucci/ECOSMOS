@@ -16,16 +16,19 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
   
   stinrad   <- c() # daily Station Solar Radiation (MJ/m2/day)
   
-  latc <- gsub("\\.", "", sprintf('%.3f', lat + 0.125))
-  lonc <- gsub("\\.", "", sprintf('%.3f', lon - 0.125))
+  # latc <- gsub("\\.", "", sprintf('%.3f', lat + 0.125))
+  # lonc <- gsub("\\.", "", sprintf('%.3f', lon - 0.125))
+  latc <- gsub("\\.", "", sprintf('%.3f', lat ))
+  lonc <- gsub("\\.", "", sprintf('%.3f', lon ))
+  print(paste(latc,lonc,"Data Xavier",sep="/"))
   
   #### Get csv filename for current coordinate ####
-  file_wth_TN_nm <- paste0(path, "Xavier_Tmin_", lonc, latc, ".csv")
-  file_wth_TX_nm <- paste0(path, "Xavier_Tmax_", lonc, latc, ".csv")
-  file_wth_PR_nm <- paste0(path, "Xavier_prec_", lonc, latc, ".csv")
-  file_wth_RS_nm <- paste0(path, "Xavier_Rs_", lonc, latc, ".csv")
-  file_wth_RH_nm <- paste0(path, "Xavier_RH_", lonc, latc, ".csv")
-  file_wth_U2_nm <- paste0(path, "Xavier_u2_", lonc, latc, ".csv")
+  file_wth_TN_nm <- paste0(path, "Xavier_Tmin_", lonc, latc, ".csv") # Minimal temperature (C)
+  file_wth_TX_nm <- paste0(path, "Xavier_Tmax_", lonc, latc, ".csv") # Maximum temperature (C)
+  file_wth_PR_nm <- paste0(path, "Xavier_prec_", lonc, latc, ".csv") # Precipiration (mm)
+  file_wth_RS_nm <- paste0(path, "Xavier_Rs_", lonc, latc, ".csv")   # Solar radiation ()
+  file_wth_RH_nm <- paste0(path, "Xavier_RH_", lonc, latc, ".csv")   # Relative humidity (%)
+  file_wth_U2_nm <- paste0(path, "Xavier_u2_", lonc, latc, ".csv")   # Wind speed (m s-1)
   
   #### Read csv file for current coordinate ####
   intmin   <- read.csv(file_wth_TN_nm, header = T, sep = ";", stringsAsFactors = F, dec = ".")
@@ -59,7 +62,19 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
   }
   intd     <- intmin
   intd$var <- (intmin$var + intmax$var) / 2
-
+  
+  # ### Start Irrigation
+  # if (irrigate==1){
+  # irrig       <- read.csv("C:/Michel/ECOSMOS/inst/irrigation.csv", header = T, sep = ";", stringsAsFactors = F, dec = ".")
+  # inprec      <- merge(inprec, irrig, by = "mydate", all.x = T)
+  # inprec[is.na(inprec[,6]),][6] <- 0
+  # inprec[,5]  <- inprec[,5] + inprec[,6]
+  # inprec      <- inprec[,c(1,2,3,4,5)]
+  # colnames(inprec)[5] <- "var"
+  # inprec      <-inprec[order(inprec$mydate),]
+  # }
+  # ### End Irrigation
+  # print(inprec[11690:11750,])
   
   # Assign to global environment
   assign("intmin", intmin, envir = instanceEnv)

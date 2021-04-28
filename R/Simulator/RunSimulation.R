@@ -138,8 +138,8 @@ GeneralModel <- function(simVars = NULL) {
     #' Output provisorio Michel #
     ############################
     
-    simVars$out_tower_hourly <-  file(paste0("output/outputHourly",config$id,".dat"), "w")
-    # varNames                  <- paste("ano","DOY","hora","NEE_S",  sep=",")
+    simVars$outputHourly  <-  file(paste0("output/outputHourly_",config$id,".dat"), "w")
+    simVars$dailyOutput   <- file(paste0("output/dailyOutput_", config$id,".dat"), "w")
     
     # writeLines(varNames, simVars$out_tower_hourly)
     
@@ -148,7 +148,7 @@ GeneralModel <- function(simVars = NULL) {
     ################
     
     
-    outputDailyFileName <- paste0("output/out_daily_tower_", config$id,".dat")
+    # outputDailyFileName <- paste0("output/out_daily_tower_", config$id,".dat")
     
     simVars$absStep <- 1
     
@@ -310,7 +310,7 @@ GeneralModel <- function(simVars = NULL) {
     simVars$iy1     <- simVars$iyrlast + 1
     simVars$iy2     <- simVars$iyrlast + simVars$nrun
     
-    simVars$out_tower <- file(outputDailyFileName, "w")
+    # simVars$out_tower <- file(outputDailyFileName, "w")
     
     
     flx <- array(0,  50)
@@ -465,6 +465,7 @@ GeneralModel <- function(simVars = NULL) {
         
         for(step in seq(1, simVars$niter)) {
           
+          simVars$step <- step
           time <- (step - 1) * simVars$dtime
           
           if ( (year == simVars$imetyear && simVars$jday >= simVars$dmetyear) || 

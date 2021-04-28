@@ -8,7 +8,7 @@ SugarcanePlanting <- function(year0, year, month, day, jday, ffact, index) {
     # in order to only allow a crop to be planted once each year
     # initialize cropplant = 0, but hold it = 1 through the end of the year
     
-    if (day == pdmin[j] && month == pmmin[j] && croplive[j] != 1 &&  exist[j] == 1){# && ncyears >= 1) {
+    if (day == pdmin[j] && month == pmmin[j] && croplive[j] != 1 &&  exist[j] == 1){
       pstart[j] <- cdays
     }
     
