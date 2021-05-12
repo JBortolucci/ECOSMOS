@@ -287,7 +287,7 @@ ik vector npft 0
 qgalho 0 
 cdays 0 
 pstart vector npft 0
-cropy 0 
+cropy vector npft 0 
 nplant 0
 iniday 0 
 endday 0 

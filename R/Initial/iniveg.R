@@ -669,7 +669,7 @@ iniveg <- function (isimveg) {
   assign("zbot", zbot, envir = env)               
   assign("ztop", ztop, envir = env)               
   assign("sai", sai, envir = env)  
-  assign("cropy", array(0, 1), envir = env)
+  assign("cropy", array(0, npft), envir = env)
   
   
   assign("rhovegvlg",rhovegvlg  , envir = env)

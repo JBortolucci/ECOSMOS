@@ -23,11 +23,11 @@ SoybeanPlanting <- function(iyear0, iyear, imonth, iday, jday, index) {
   if (exist[i] == 1 & croplive[i] != 1 ) {
     
 
-    if(cropy == 0 &  pstart[i] >=1 & pstart[i] <= 180) {
+    if(cropy[i] == 0 &  pstart[i] >=1 & pstart[i] <= 180) {
       
       croplive[i]     <- 1        # initialize freeze kill function to 1 - crops living 
       pdate[i]         <- jday    
-      cropy            <- 1
+      cropy[i]            <- 1
       gddmaturity[i]  <- hybgdd[i]
       
       print(paste('1st Plant Soybean ', jday, imonth, iyear,sep=' / '))

@@ -47,7 +47,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
       
       if (croplive[j] == 1) {
         
-        if(cropy == 1) {
+        if(cropy[j] == 1) {
           
           huileaf[j]  <- lfemerg[j]  * gddmaturity[j]
 
@@ -87,12 +87,12 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           
           
           
-          if( gddemerg == gddplant[j] & cropy == 1) {
+          if( gddemerg == gddplant[j] & cropy[j] == 1) {
             plai[j]  <- 0.01
             cbiol[j] <-  plai[j]/ specla[j]
             pgreenfrac[j]  <- 1.0 # turn all vegetation to brown
           } 
-          if (gddemerg == gddplant[j] & cropy >= 1){
+          if (gddemerg == gddplant[j] & cropy[j] >= 1){
             plai[j]  <- 0.1
             cbiol[j] <-  plai[j]/ specla[j]
             pgreenfrac[j]  <- 1.0 # turn all vegetation to brown     
@@ -104,7 +104,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
           # scheme based on CANEGRO model (Singels et al. 2005) 
           # if sugarcane is planted, it takes long to construct the 
           # root system, if ratoon leaves develop faster 
-          if(cropy == 1) {
+          if(cropy[j] == 1) {
             aerial[j] <- (1 - arootf[j]) * min(1.0, ( 1 - exp(-rootd * 0.5 * rm))) 
           } else {
             aerial[j] <- (1 - arootf[j]) * min(1.0, ( 1 - exp(-rootd * rm))) 
@@ -268,7 +268,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
         #       Harvest  sugarcane
         
         # planted
-        if(cropy == 1) {
+        if(cropy[j] == 1) {
           #          if ( (gddplant[j] >= gddmaturity[j]) && (idpp[j] >= mxmat[j] - 15) || 
           if ( (gddplant[j] >= gddmaturity[j]) && (idpp[j] >= mxmat[j] - 15) || 
                ( idpp[j] >= mxmat[j] + 15)){# ||
@@ -277,7 +277,7 @@ SugarcanePheno <- function(year, iyear0, month, day, jday, index) {
             # year == 2005 && jday == 104   ) { # maximum harvest date
             
              if (harvdate[j] == 999) harvdate[j] <- jday 
-            print(paste('Sug.Cane - 1st cycle = ',cropy, year, jday, idpp[j], gddplant[j], gddmaturity[j]))
+            print(paste('Sug.Cane - 1st cycle = ',cropy[j], year, jday, idpp[j], gddplant[j], gddmaturity[j]))
           }
           
         } else {

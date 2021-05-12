@@ -75,7 +75,7 @@ initialcrop <- function() {
     
   }
   
-  assign("cropy", array(0, 1), envir = env)
+  assign("cropy", array(0, npft), envir = env)
   assign("sai", matrix(0, 1, 2), envir = env)
   assign("fu", array(0, 1), envir = env)
   assign("lai", matrix(0, 1, 2), envir = env)

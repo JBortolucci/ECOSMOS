@@ -22,7 +22,7 @@ SugarcanePlanting <- function(year0, year, month, day, jday, index) {
   if (exist[j] == 1 && croplive[j] != 1 ) {
     
 
-    if(    (cropy == 0 && j == j) &&
+    if(    (cropy[j] == 0 && j == j) &&
            a10td > ptemp[j] &&       # 10-day average soil temperature
            a10tmin > pmintemp[j] &&
            pstart[j] >=1 && pstart[j] < 180 ) { # impose earliest planting date 
@@ -30,7 +30,7 @@ SugarcanePlanting <- function(year0, year, month, day, jday, index) {
       # sant- to avoid that a crop that was killed by a frost be planted again in the same year. 
       croplive[j]     <- 1        # initialize freeze kill function to 1 - crops living 
       pdate[j]         <- jday    
-      cropy          <- 1
+      cropy[j]          <- 1
       gddemerg <- 0
       
       gddmaturity[j]  <- min (gddsgcp, hybgdd[j])

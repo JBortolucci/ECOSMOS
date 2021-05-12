@@ -3342,7 +3342,7 @@ FOR_DEMAND <- function(DYNAMIC, DAS, CROP, PAR, PGAVL, RPROAV, TAVG, index) {
         #-----------------------------------------------------------------------
         #     Call seed composition routine
         #-----------------------------------------------------------------------
-        FOR_SDCOMP(TAVG)
+        FOR_SDCOMP(TAVG, index)
         
         NDMSD  <- FNINSD * GDMSD
         #-----------------------------------------------------------------------

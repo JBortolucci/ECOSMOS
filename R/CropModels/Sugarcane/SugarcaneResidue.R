@@ -107,7 +107,7 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
       }
 
     
-    if( cropy <= nratoon) {
+    if( cropy[j] <= nratoon) {
 
       fallr <- fallr + cbior[j] * 0.30 * sumfroot[1,2] # Michel: 28-Dez
       fallrsgc[1] <- cbior[j] * 0.70
@@ -123,16 +123,16 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
     #______________________________________________________
     #__________ Update GDD ________________________________
     
-    if( cropy == 1) {
+    if( cropy[j] == 1) {
       gddsgcp <- (gddsgcp + gddmaturity[j]) / 2  
     }
-    if( cropy > 1)  { 
+    if( cropy[j] > 1)  { 
       gddsgcr <- (gddsgcr + gddmaturity[j]) / 2  
     }
     
     
-    if( cropy <= nratoon) {
-      cropy <- cropy + 1	
+    if( cropy[j] <= nratoon) {
+      cropy[j] <- cropy[j] + 1	
       croplive[j] <- 1   
       gddmaturity[j]  <- gddsgcr
       gddemerg <- 0
@@ -143,13 +143,13 @@ SugarcaneResidue <- function(year, iyear0, jday, index) {
       # temperature has fallen below freeze 
       if(tmin <= tkill[j]) {
         croplive[j] <- 0    
-        cropy       <- 0     
+        cropy[j]       <- 0     
         print(paste0('sugarcane planted didnt get the minimum of development, start to planting again'))
       }
       
-    } else if ( cropy > nratoon) {
+    } else if ( cropy[j] > nratoon) {
       croplive[j] <- 0    
-      cropy       <- 0
+      cropy[j]       <- 0
       endCycle[i] <- T
     }  
     

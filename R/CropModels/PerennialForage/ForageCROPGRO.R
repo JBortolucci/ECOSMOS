@@ -1091,7 +1091,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
     #              aroot[i],aleaf[i],astem[i],arepr[i],cbior[i],cbiol[i],cbios[i],cbiog[i],cbiop[i],plai[i],sep=";"),file =fileout,append=TRUE,sep = "\n")
     
     
-    if(cropy == 1) {
+    if(cropy[i] == 1) {
       
       if (is.na(plantList[[i]]$controlConfigs$cycleLength)){
         if (frost){
@@ -1099,7 +1099,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
           # R8 is the physiological maturity, usually when growers should harvest the crop
           
           croplive[i]   <- 0.0
-          cropy         <- 0.0
+          cropy[i]         <- 0.0
           idpp[i]       <- 0.0
           pgreenfrac[i] <- 0.0 # turn all vegetation to brown
           harvdate[i]   <- jday
@@ -1110,7 +1110,7 @@ ForageCROPGRO <- function(iyear, iyear0, imonth, iday, jday, index) {
       } else if(idpp[i] > plantList[[i]]$controlConfigs$cycleLength | frost){
         # 3rd option to be implemented: user chooses the harvesting date (controlado pelo cycleLength)
         croplive[i]   <- 0.0
-        cropy         <- 0.0
+        cropy[i]         <- 0.0
         idpp[i]       <- 0.0
         pgreenfrac[i] <- 0.0 # turn all vegetation to brown
         harvdate[i]   <- jday
