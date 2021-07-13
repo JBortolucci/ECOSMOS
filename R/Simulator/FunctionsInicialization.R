@@ -108,6 +108,8 @@ source("R/Lsxmain/Radiation/solalb.R")
 source("R/Lsxmain/Radiation/solset.R")
 source("R/Lsxmain/Soil/setsoi.R")
 
+source("R/Lsxmain/Soil/soilctlR.R")
+
 ## Natural veg
 source("R/PhenoUpdate.R")
 

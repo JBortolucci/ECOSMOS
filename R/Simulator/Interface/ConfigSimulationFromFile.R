@@ -7,8 +7,9 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
   assign("simConfigs", simConfigs, env = globalenv())
   
   simDataVars$gridSolved <- F
-
+  
   len <- length(simConfigs)
+  
   for(i in seq(1,len)) {
     
     id <- simConfigs[[i]]$id
@@ -24,7 +25,6 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]]$env <- simInstances[[id]]
     
     # resize variables of specific instance based on input configuration file
-  
     
     # rezise nband (nband = 2)
     simInstances[[id]][["rhoveg"]] <- matrix(0, simInstances[[id]]$nband, 2)
@@ -34,10 +34,11 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]][["asurd"]]  <- numeric(simInstances[[id]]$nband)
     simInstances[[id]][["asuri"]]  <- numeric(simInstances[[id]]$nband)
     
+    
     tab.SOIL <- read.csv('inst/input/SOIL.csv',sep = ",")
     if(!is.na(simConfigs[[i]]$soilId)) {
       simInstances[[id]]$SOIL.profile <- subset(tab.SOIL, SOILID == simConfigs[[i]]$soilId)
-      simInstances[[id]]$nsoilay  <- length(simInstances[[id]]$SOIL.profile$SOILID)
+      simInstances[[id]]$nsoilay      <- length(simInstances[[id]]$SOIL.profile$SOILID)
     }else{
       print('SID not defined in the Simulation Template or not found in the SOIL.csv')
       stop()
@@ -91,12 +92,11 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     simInstances[[id]][["anuptake"]] <- numeric(simInstances[[id]]$nsoilay)
     simInstances[[id]][["wflo"]]     <- numeric(simInstances[[id]]$nsoilay+1)
     simInstances[[id]][["froot"]]    <- matrix(0, simInstances[[id]]$nsoilay, 2)
-
+    
     
     # Criando na instancia da simulação a lista de plantas que serão simuladas
     for(j in seq(1, simConfigs[[i]]$npft)) {
       
-
       name  <- simConfigs[[i]][[paste0("plant",j)]]$name
       
       simInstances[[id]][['biomeName']] <- name
@@ -106,7 +106,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
       #
       if(IsBioma(name)) {
         
-
+        
         controlConfigs <- simConfigs[[i]][[paste0("plant",j)]]
         
         models <- biomaModels[[name]]
@@ -119,15 +119,15 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
           
           controlConfigs$name <- modelName
           simInstances[[id]]$plantList[[modelName]]$controlConfigs <- controlConfigs
-            
+          
           # flag para verificar se a planta faz parte de um bioma
           simInstances[[id]]$plantList[[modelName]]$bioma  <- T
           
         }
         
-      #
-      # Para modelos isolados
-      #  
+        #
+        # Para modelos isolados
+        #  
       } else {
         
         model <- basePlantList[[name]]
@@ -161,49 +161,57 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
       simInstances[[id]][[name]] <- numeric(simInstances[[id]]$npft)
     }
     
-
     # create endCycle for each plant
     simInstances[[id]]$endCycle <- numeric(simInstances[[id]]$npft)
-
+    
     # Passa a configuração para a instancia da simulação
     simInstances[[id]]$config <- simConfigs[[i]]
     
     # Coord info
     simInstances[[id]]$point <- GetPointsFromRect(simConfigs[[i]]$coord$lat, simConfigs[[i]]$coord$lat,
                                                   simConfigs[[i]]$coord$lon, simConfigs[[i]]$coord$lon)$point1
-    
-    
+ 
     # TODO: Nessa prieira versão uma planta roda após a outra, tal como especificado no arquivo de configuração.
     #       Depois, fazer um jeito de definir plantas rodando ao mesmo tempo.
     ReadPlantParamsFromFile(path = paramsPath)
     
     #___________________________________________    
     # READ DAILY STATION DATA
-    
-    if(file.exists(paste0("inst/input/",simConfigs[[i]]$stationID,".csv"))==T) {
-      
-      pathw <- paste0("inst/input/",simConfigs[[i]]$stationID,".csv")
-      
-    }else{
+    # print(simConfigs[[i]]$stationID)
+
+    # if(file.exists(paste0("inst/input/",simConfigs[[i]]$stationID,".csv"))) {
+    #   
+    #   pathw <- paste0("inst/input/",simConfigs[[i]]$stationID,".csv")
+    #   
+    # } else {
       
       latc <-  simInstances[[id]]$point$coord$lat + 0.125
       lonc <-  simInstances[[id]]$point$coord$lon - 0.125
       lons<-substr(lonc*1000,2,5)
       
       if(latc*1000>0){
-        if(latc*1000<1000){lats<-paste0("N0",substr(latc*1000,1,2))}else{lats<-paste0("N",substr(latc*1000,1,3)) }}else{
-          if(latc*1000>(-10*1000)){lats<-paste0("0",substr(latc*1000,2,4))}else{lats<-substr(latc*1000,2,5)}
+        if(latc*1000<1000) { 
+          lats<-paste0("N0",substr(latc*1000,1,2)) 
+        } else { 
+          lats<-paste0("N",substr(latc*1000,1,3)) 
+        } 
+      } else {
+        if(latc*1000>(-10*1000)) { 
+          lats <- paste0("0",substr(latc*1000,2,4)) 
+        } else { 
+          lats<-substr(latc*1000,2,5) 
         }
+      }
       
-      wth<- as.character(sprintf("%4s%4s",lats,lons))
-      wth<-gsub(' ','0',wth)
+      wth <- as.character(sprintf("%4s%4s",lats,lons))
+      wth <- gsub(' ','0',wth)
       
-      pathw<- paste0(stationDataPath,wth,".csv")
+      pathw <- paste0(stationDataPath,wth,".csv")
+
       if(file.exists(pathw)==F){print(paste0('FILE ',pathw ,'DOES NOT EXIST'))
         stop()}
-    }
+    # }
     
-
     ReadDailyStationData(pathw, simInstances[[id]]$point$coord$lat, simInstances[[id]]$point$coord$lon,  simInstances[[id]])
     
     #___________________________________________    
@@ -214,7 +222,7 @@ ConfigSimulationFromFile <- function(configFilePath, paramsPath, stationDataPath
     
     # Henrique & Leandro: irrigation feature [2020-11-06]
     try(ReadDailyIrrigationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)
-
+    
     # Henrique & Leandro: fertilization feature [2020-11-30]
     try(ReadDailyFertilizationData(id, instanceEnv = simInstances[[id]]), silent=TRUE)
     assign("irriON", ifelse(simConfigs[[i]]$irrigate > 0, T, F), envir = simInstances[[id]])

@@ -17,7 +17,9 @@ lsxmain <- function(time_param = 0, day, month, year, jday = 0) {
   environment(cascad2) <- env
   environment(noveg) <- env
   environment(Stomata2) <- env
-  environment(soilctl) <- env
+  
+  # environment(soilctl) <- env
+  environment(soilctlR) <- env
   
   setsoi(env)
   
@@ -43,7 +45,7 @@ lsxmain <- function(time_param = 0, day, month, year, jday = 0) {
   canini(env, jday)
   
   drystress(env, jday, time_param)
-  
+
   niter <- 3
   for(iter in seq(1,niter)) {
     
@@ -64,7 +66,9 @@ lsxmain <- function(time_param = 0, day, month, year, jday = 0) {
     # Criar variáveis locais no inicio do laço e passar como parâmetro para rotina.
     # turvapDLL(iter, niter)
     turvap(env, iter, niter)
+    
   }
+  
   # canopy end
   cascad2(env)
   
@@ -78,6 +82,8 @@ lsxmain <- function(time_param = 0, day, month, year, jday = 0) {
   
   # snow() # not implemented yet.
   
-  soilctl() # the compiled function remains to this model.
+  # soilctl() # the compiled function remains to this model.
+  soilctlR()
+  
   
 }

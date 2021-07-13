@@ -75,7 +75,7 @@ CreateBuiltInNatVegModels()
 RunSimulation <- function(parallel = F, compiled = F, OnEndDailyStep = NULL, OnEndHourlyStep = NULL) {
   
   setDefaultFunctions()
-  if(compiled){ SetCompiledFunctions() } 
+  if(compiled) { SetCompiledFunctions() } 
   
   if(parallel) {
     
@@ -83,7 +83,7 @@ RunSimulation <- function(parallel = F, compiled = F, OnEndDailyStep = NULL, OnE
     
     mclapply(simInstancesNames, function(instance_name) {
       GeneralModel(simVars = simInstances[[instance_name]])
-    })
+    },mc.cores = 10)
     
   } else {
     
@@ -241,8 +241,9 @@ GeneralModel <- function(simVars = NULL) {
     
     environment(PhenoUpdate)      <- simVars
     
-    config$stationIDH=""
-    if(file.exists(paste0("inst/input/",config$stationID,"H.csv"))==T) config$stationIDH=paste0("inst/input/",config$stationID,"H.csv")
+    config$stationIDH = ""
+    if(file.exists(paste0("inst/input/",config$stationID,".csv"))==T) config$stationIDH=paste0("inst/input/",config$stationID,".csv")
+  
     
     if(config$stationIDH != "" ) {
       ReadMethourlyData(path = config$stationIDH) 
@@ -329,6 +330,8 @@ GeneralModel <- function(simVars = NULL) {
       
       for(day in seq(simVars$simulationStartDay, daypm(month, year))) {
         
+        # print(paste0(year, " / ", month, " / ", day, " / ", simVars$plai[1]))
+        
         simVars$day <- day
         
         simVars$jday <- simVars$jday + 1
@@ -338,10 +341,12 @@ GeneralModel <- function(simVars = NULL) {
           if(simVars$plantList[[i]]$startYear == year && !simVars$endCycle[i] && simVars$jday >= simVars$plantList[[i]]$controlConfigs$plantJday ) { 
             simVars$plantList[[i]]$active <- T
             simVars$exist[i]              <- 1
+           
           }
         }
         
         # print(paste("Simulation ",day, month, year,simVars$lai[1]*simVars$fl,simVars$lai[2]*simVars$fu,sep = " / "))
+        # print(paste(day, month, year, simVars$plai[1], simVars$plai[2], sep = " / "))
         
         UseDailyStationData(day, month, year)
         for(i in seq(1,simVars$npft)) {
@@ -366,6 +371,8 @@ GeneralModel <- function(simVars = NULL) {
         
         for(step in seq(1, simVars$niter)) {
           
+          print(paste(year, month, day, step), sep = "/")
+          
           simVars$step <- step
           
           time <- (step - 1) * simVars$dtime
@@ -375,14 +382,13 @@ GeneralModel <- function(simVars = NULL) {
                (year == simVars$imetend && simVars$jday <= simVars$dmetend)) {
             
             UseMethourlyData(year, simVars$jday, time)
-            
             diurnalmet(simVars, time, simVars$jday, simVars$irrigate)
+
           } else {
             
             diurnal(simVars, time, simVars$jday, simVars$irrigate)
             
           }
-          
           
           lsxmain(time, day, month, year, simVars$jday)
           
@@ -419,6 +425,8 @@ GeneralModel <- function(simVars = NULL) {
           }
           
         } # FIM DO LOOP HORÁRIO
+        
+       
         
         # Chama os modelos de vegetacao
         
@@ -485,17 +493,18 @@ GeneralModel <- function(simVars = NULL) {
         # if (!is.null(simVars$outputDailyList))
         #   outputC(simVars, paste(year, month, day, sep = '-'), simVars$NO_HOURLY)
         
-        for(i in seq(1, simVars$npft)) {
-          if(!simVars$plantList[[i]]$active) next
-          if(!is.null(simVars$OnEndDailyStep)) 
-                simVars$OnEndDailyStep(simVars, i)
-        }
+        # for(i in seq(1, simVars$npft)) {
+        #   if(!simVars$plantList[[i]]$active) next
+        if(!is.null(simVars$OnEndDailyStep)) 
+              simVars$OnEndDailyStep(simVars, 1)
+        # }
         
         
         if(year == simVars$iy2 && month == simVars$simulationEndMonth && day == simVars$simulationEndDay) {
           simVars$simulationEnd <- T 
           break()
         }
+        
         
       } # FIM DO LOOP DIÁRIO
       

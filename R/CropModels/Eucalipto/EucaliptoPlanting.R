@@ -25,8 +25,8 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, index) {
     if(cropy == 0 && pstart[i] >= 1 && pstart[i] <= 180) {
       
       croplive[i]     <- 1        # initialize freeze kill function to 1 - crops living 
-      pdate[i]         <- jday    
-      cropy            <- 1
+      pdate[i]        <- jday    
+      cropy           <- 1
       gddmaturity[i]  <- hybgdd[i]
       
       print(paste('1st Plant Eucalyptus ', jday, imonth, iyear,hybgdd[i],gddmaturity[i],sep=' / '))

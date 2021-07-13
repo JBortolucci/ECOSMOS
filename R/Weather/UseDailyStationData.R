@@ -21,7 +21,6 @@
 
 UseDailyStationData <- function(day, month, year) {
   
- 
                                       useYear <-   year
   if (year < min(data_station$year)) {useYear <-  min(data_station$year)}
   if (year > max(data_station$year)) {useYear <-  max(data_station$year)}
@@ -29,7 +28,6 @@ UseDailyStationData <- function(day, month, year) {
   useDay <- day
   if((year < min(data_station$year) || year > max(data_station$year)) && month == 2 && day == 29) {   useDay <- 28  } #Aplicável somente para os anos onde não temos dados de clima
 
-  
   
   TN <- data_station$TMIN[which(data_station$day == useDay &  data_station$month == month  & data_station$year == useYear)]
   TX <- data_station$TMAX[which(data_station$day == useDay &  data_station$month == month  & data_station$year == useYear)]

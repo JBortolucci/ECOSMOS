@@ -59,6 +59,7 @@ GetPointsFromRect <- function(north, south, west, east) {
     
     lats <- expand.grid(landMaskData$latscale, landMaskData$lonscale)[["Var1"]]
     lons <- expand.grid(landMaskData$latscale, landMaskData$lonscale)[["Var2"]]
+
     
     for(i in 1:length(lats)) {
       idx <- c(which(landMaskData$latscale == lats[i]), which(landMaskData$lonscale == lons[i]))

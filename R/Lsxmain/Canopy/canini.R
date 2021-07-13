@@ -30,7 +30,7 @@ caniniR <- function(envi, jday) {
   
   cp <- cair * (1.0 + (cvap / cair - 1.0) * qa)
   
-  # za <- (psurf - pa) / (rhoa * grav)
+  za <- (psurf - pa) / (rhoa * grav)
   
   # make sure that atmospheric level is higher than canopy top
   za <- max (za, ztop[2] + 1.0)
@@ -127,6 +127,9 @@ caniniR <- function(envi, jday) {
   alog2 <- log (z2-displ)
   alog1 <- log (z1-dispu)
   aloga <- log (za-dispu)
+  
+
+  
   # initialize u2, alogu, alogl for first iteration's fstrat
   u2 <- ua/exphu
   alogu <- log (max(.01, .1*(z1-z2)))

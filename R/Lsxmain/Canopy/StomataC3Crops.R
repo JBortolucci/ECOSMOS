@@ -100,7 +100,9 @@ StomataC3Crops <- function(i) {
     a10scalparam  <- a10scalparaml
     a10daylight   <- a10daylightl
     
+    
   }
+
   
   rwork  <- 3.47e-03 - 1 / canopyTemp
   tau    <- tau15 * exp( - 5000 * rwork)
@@ -127,7 +129,7 @@ StomataC3Crops <- function(i) {
   
   if(croplive[i] == 1) {
     
-    tempvm <- q10 ** ((tleaf - 15) / 10) / ((1 + exp(f1[i] * (lotemp[i] - tleaf))) * (1 + exp(f2[i] * (tleaf - hitemp[i]))))
+    tempvm <- q10[i] ** ((tleaf - 15) / 10) / ((1 + exp(f1[i] * (lotemp[i] - tleaf))) * (1 + exp(f2[i] * (tleaf - hitemp[i]))))
     
     #_________________________________________________________________________________
     #____________ SVC - devera' ser testado antes de ativado!!!! _____________________
@@ -171,7 +173,7 @@ StomataC3Crops <- function(i) {
     dumq <- 0.5 * (dumb + sqrt(dume)) + 1e-15
     
     agc3 <- min (dumq / duma, dumc / dumq)
-    anc3 <- (agc3 - rdarkc3)* max(0, stresst)
+    anc3 <- (agc3 - rdarkc3) * max(0, stresst)
     
     cs[i]   <- 0.5 * (cs[i] + co2conc - anc3 / gbco2l)
     
@@ -330,6 +332,7 @@ StomataC3Crops <- function(i) {
     totcond[i] <- 0
     rdarkc3    <- 0
     tempvm     <- 0
+    
   }
   
   

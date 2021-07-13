@@ -73,6 +73,7 @@ linsolve <- function (arr, rhs, vec, mplate, nd) {
     vec[id] <- (rhs[id] - f) / arr[id,id]
     
   }
+
   
   return(list(vec = vec, rhs = rhs))
 }

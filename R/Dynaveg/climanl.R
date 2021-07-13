@@ -51,11 +51,10 @@ climanl <- function() {
   #   coldest daily temperature of current year (C)
   assign("tcmin", min(data_station$TMIN), envir = env) #SVC set as - Absolute minimum temperature 
   
-  
-  
   td_m <- aggregate(data_station,by=list(month=data_station$month),FUN=mean)
   td_m$TM<-(td_m$TMAX+td_m$TMIN)/2
-
+  
+  
   # coldest monthly temperature (year 0) in deg c
   assign("tc", min(td_m$TM), envir = env)
   
@@ -75,6 +74,7 @@ climanl <- function() {
   td_mj <- aggregate(data_station,by=list(jday=data_station$jday), FUN=mean)
   td_mj$TD <- (td_mj$TMAX+td_mj$TMIN)/2.
 
+  
   i=0
   ii=0
   
@@ -145,9 +145,9 @@ climanl <- function() {
   assign("gddsgcp", gddsgcp, envir = env)
   assign("gddsgcr", gddsgcr, envir = env)
   
-  environment(existence) <- env
-  
-  existence()
+  # environment(existence) <- env
+  # 
+  # existence()
   
   
 }

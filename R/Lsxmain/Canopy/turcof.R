@@ -127,6 +127,8 @@ turcofR <- function (envi, iter, time, jday) {
 
     x <- ((alog4 - alogav) / vonk) ** 2  * bdl
     
+   
+    
     rwork <- 1 / expl
     yl <- ((x + 1) * expl + (x - 1) * rwork) /  
       ((x + 1) * expl - (x - 1) * rwork)
@@ -143,9 +145,12 @@ turcofR <- function (envi, iter, time, jday) {
     #          
     x <- ((alog2 - alogl) / vonk) ** 2  * bdu / straml
     
+ 
+    
     rwork <- 1 / expu
     yu <- ((x + 1) * expu + (x - 1) * rwork) /  
       ((x + 1) * expu - (x - 1) * rwork)
+    
     
     alogu <- alog1 - vonk * sqrt(yu / bdu)
     
@@ -165,8 +170,9 @@ turcofR <- function (envi, iter, time, jday) {
   
 
     tauu <- (ua * vonk / (aloga - alogu)) ** 2  * stramu
-    
+      
     ustar <- tauu ** 0.5        
+    
     
     #sant	if(i == 1  && iter == 3)write(222, * )jday,time/3600,ustar
     
@@ -189,7 +195,7 @@ turcofR <- function (envi, iter, time, jday) {
     u34 <- max (0.01, sqrt (max (0, (c / exphl + d*exphl))))
     u4 <- max (0.01, sqrt (max (0, (c / expl + d*expl))))
     
-
+  
  
   # compute inverse air - air transfer coeffs
   
@@ -246,10 +252,7 @@ turcofR <- function (envi, iter, time, jday) {
     sg0 <- rhoa * (0.004 + 0.012 * u4)
     si0 <- rhoa * (0.003 + 0.010 * u4)
     
-    
-    
     # modify the cofficient to deal with cfi[see above]
-    
     sg <- 1 / (cfi + 1 / sg0)
     si <- 1 / (cfi + 1 / si0)
     

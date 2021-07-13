@@ -153,7 +153,8 @@ setsoiR <- function(envi) {
   hvasug <- (qglif[1] + qglif[3]) * zvap + (qglif[2] + qglif[4]) * zsub 
   
   hvasui <- hsubf(tsno[1],ta)
-  
+
+    
   assign("consoi", consoi, envir = env)
   assign("qglif", qglif, envir = env)
   assign("hvasug", hvasug, envir = env)

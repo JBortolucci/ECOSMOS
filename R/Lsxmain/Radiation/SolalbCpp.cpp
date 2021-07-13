@@ -7,6 +7,7 @@ List twosetCpp(Environment env, double omega, double betad, double betai, double
 
 // [[Rcpp::export]]
 void solalbCpp(Environment env, double ibb) {
+  
   // global
   NumericVector asurd = env["asurd"];
   NumericVector asuri = env["asuri"];

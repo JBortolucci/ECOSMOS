@@ -250,9 +250,8 @@ iniveg <- function (isimveg) {
   # ************************************************************************
   # set minimum lai for each existing plant type
   for(j in 1:npft) {
-    plai[j] <- max (plai[j] , exist[j] * xminlai)
-    # plai[j] <- max (plai[j] , xminlai)
-    
+    # plai[j] <- max (plai[j] , exist[j] * xminlai)
+    plai[j] <- max (plai[j] , xminlai)
   }
   
   # set sapwood fraction and biomass characteristics
@@ -407,7 +406,6 @@ iniveg <- function (isimveg) {
       pstart[i] <- 999
     } 
   }
-  
 
   
 # Initializing values (Updated every time step in CropPhenoUpdate)
@@ -434,7 +432,8 @@ iniveg <- function (isimveg) {
  oriev[2] <- 0
  orieh[1] <- 0
  orieh[2] <- 0
-  
+ 
+
   # ************************************************************************
   # define rooting profiles
   # ************************************************************************
@@ -534,6 +533,7 @@ iniveg <- function (isimveg) {
     froot[k,1] <- froot[k,1] / frootnorm1
     froot[k,2] <- froot[k,2] / frootnorm2
   }
+
   
   ###----------------------------------------------------
   ### Michel: Fraction of root in the first 30 (nslaym is in the global params) cm from top soil
@@ -557,12 +557,14 @@ iniveg <- function (isimveg) {
       
       sumfroot[1, 1] <- sum(sumfroot[1, 1], 1 - beta1 ** (nslaym - depth[k-1]))
       sumfroot[1, 2] <- sum(sumfroot[1, 2], 1 - beta2 ** (nslaym - depth[k-1]))
+      print(paste(sumfroot[1, 1], sumfroot[1, 2]))
+      
       break
       
     }
     
   }
-  
+
   ### END
   ###----------------------------------------------------
   

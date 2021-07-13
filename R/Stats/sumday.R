@@ -100,6 +100,7 @@ sumday <- function (istep, plens, iyear, jday) {
     adnpp[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$type == CROPS, ((ndtimes - 1) * adnpp[i] + tnpp[i] * rwork3) * rwork, adnpp[i])
     adgpp[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$type == CROPS, ((ndtimes - 1) * adgpp[i] + tgpp[i] * rwork3) * rwork, adgpp[i])
     adan[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$type == CROPS, ((ndtimes - 1) * adan[i] + tan[i] * rwork3) * rwork, adan[i])
+    
   }
   
   # ---------------------------------------------------------------------

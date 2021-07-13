@@ -11,11 +11,11 @@ ReadDailyStationData <- function(path = "inst/input_xavier/", lat = 0, lon = 0, 
   print(paste0("Weather Station -> ",path))
   data_station<-read.csv(path, header = T, sep = ",", stringsAsFactors = F, dec = ".")
   
-  DOYtoDate=function(DATE)
-  {
+  DOYtoDate=function(DATE) {
     DATE=sprintf("%05d",as.numeric(DATE))
     YEAR<-as.numeric(substring(DATE,1,2))
-    YEAR[YEAR>21]<-YEAR[YEAR>21]+1900;YEAR[YEAR<=21]<-YEAR[YEAR<=21]+2000
+    YEAR[YEAR > 21]  <- YEAR[YEAR > 21] + 1900
+    YEAR[YEAR <= 21] <- YEAR[YEAR <= 21] + 2000
     DOY=as.numeric(substring(DATE,3,5))
     DATE=as.Date(DOY-1, origin = paste0(YEAR,"-01-01"))
     return(DATE)

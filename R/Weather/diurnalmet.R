@@ -75,6 +75,7 @@ diurnalmetR <- function (envi, time, jday, irrigate) {
     H <- acos(-tan(xlat)*tan(SD*(pi/180)))
     daylength <- (2/15)*( 0.83+(H*180/pi ) )
     
+    
     if(is.nan(daylength)) { print("daylength = 0.0")
       stop()  }
     
@@ -209,6 +210,7 @@ diurnalmetR <- function (envi, time, jday, irrigate) {
   ilens  <- dtime * (12.0 * 3600 / dtime)
   starti <- dtime * (6.0  * 3600 / dtime)
   endi   <- starti + ilens
+
   
   # if precipitation event - then no irrigation that day 
   if(time  >= starti && time  < endi &&  
@@ -224,7 +226,8 @@ diurnalmetR <- function (envi, time, jday, irrigate) {
     totirrig <- totirrig + (xirriga * dtime)
     
   } 
-    
+  
+  
   
   assign("coszen", coszen, envir = env)
   assign("daylength", daylength, envir = env)

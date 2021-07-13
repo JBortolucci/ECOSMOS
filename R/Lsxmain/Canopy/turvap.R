@@ -249,6 +249,8 @@ turvapR <- function (envi, iter, niter) {
     
   }
   
+
+  
   # set implicit / explicit factors w * (0 to 1) for this iteration
   # w * is 1 for fully implicit, 0 for fully explicit
   # for first iteration, impexp and impexp2 set w * to 1
@@ -375,6 +377,7 @@ turvapR <- function (envi, iter, niter) {
   zwdry <- swilt[1]
   betaw <- max(0, min(1, (zwtot - zwdry) / (zwopt - zwdry)) )
   
+  
   # limit evap if soil is frozen or snow - covered
   if(tg <= 273.16 || fi > 0) {
     betaw <- 0.01
@@ -463,6 +466,8 @@ turvapR <- function (envi, iter, niter) {
     if(plantList[[i]]$canopy == UPPER)
       totCondSum <- totCondSum + totcond[i] * frac[i]
   }
+  
+  
   sut <- (1 - fwetux) * 0.5 * totCondSum
   # sut <- (1 - fwetux) * 0.5 *
   #     (totcond[1] * frac[1] +
@@ -564,7 +569,6 @@ turvapR <- function (envi, iter, niter) {
   
   slh <- slw * (rliql * hvapf(tl,ta) + (1 - rliql) * hsubf(tl,ta)) + slt * hvapf(tl,ta)
   
-  
   # set the matrix of coefficients and the right - hand sides
   # of the linearized equations
   arr[,] <- 0
@@ -657,6 +661,7 @@ turvapR <- function (envi, iter, niter) {
   arr[9,9] <- rwork + rwork2 * dqi + coi + ziri
   rhs[9] <-  - rwork2 * (qi - dqi * ti) + coi * tsno[1] +  soli + firi + ziri * tiold
   
+  
   # solve the systems of equations
   res <- linsolve(arr, rhs, vec, mplate, nqn)
   vec <- res$vec
@@ -673,6 +678,8 @@ turvapR <- function (envi, iter, niter) {
   q12 <- vec[6]
   q34 <- vec[7]
   
+
+  browser()
   
   # all done except for final flux calculations,
   # so loop back for the next iteration (except the last)

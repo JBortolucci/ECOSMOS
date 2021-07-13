@@ -2,6 +2,7 @@
 
 EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
   
+
   # parametros
   Alleaf1      <- plantList[[index]]$params$Alleaf1
   Alleaf2      <- plantList[[index]]$params$Alleaf2
@@ -97,7 +98,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
         plai[i]   <- cbiol[i] * specla[i]  
         plai[i]   <- max(plai[i],0.02)
         cbiol[i]  <- plai[i]/specla[i]    
-        
+      
         }
       
 
@@ -356,12 +357,13 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       #---------------------
       #C Pool update
       #---------------------
-      cbiow[i]  <- cbiow[i] + (awood[i]    * max (0.0, adnpp[i]))  - (deltay * Deadwood      / kg_C_M2_to_T_ha)
+      # cbiow[i]  <- cbiow[i] + (awood[i]    * max (0.0, adnpp[i]))  - (deltay * Deadwood      / kg_C_M2_to_T_ha)
+      cbiow[i]  <- cbiow[i] + max(0,(awood[i] * max (0.0, adnpp[i]))  - (deltay * Deadwood      / kg_C_M2_to_T_ha))
       cbiob[i]  <- cbiob[i] + (abranch[i]  * max (0.0, adnpp[i]))  - (deltay * Deadbranch    / kg_C_M2_to_T_ha)
       cbior[i]  <- cbior[i] + (aroot[i]    * max (0.0, adnpp[i]))  - (deltay * Deadfineroots / kg_C_M2_to_T_ha)
       cbiol[i]  <- cbiol[i] + (aleaf[i]    * max (0.0, adnpp[i]))  - (deltay * Deadleaves    / kg_C_M2_to_T_ha)
       cbiocr[i] <- cbiocr[i] + (acroot[i] * max (0.0, adnpp[i]))  - (deltay * Deadcoroots   / kg_C_M2_to_T_ha)
-      
+    
       
       #######################################################################
       ########################     ### #####     ############################
@@ -384,7 +386,6 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       #computation of new LAI from G'DAY  (not using, see bellow that LAI is re-calculated)
        plai[i]   <- max(cbiol[i]*Signew/ Cfracts,0.02)
       # plai[i]    <- max((cbiol[i] * specla[i]),0.01)
-
       
       #---------------------
       # Sapwood update
@@ -437,7 +438,7 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
       #------------------------
       ### Harvest
       #------------------------
-      
+    
       if(cropy == 1) {
         if ( rm == mxmat[i]/365 ) { # maximum harvest date
           
@@ -460,8 +461,10 @@ EucaliptoPhenocrop <- function(iyear, iyear0, imonth, iday, jday, index) {
     
     sapfrac <- Sapwood / (Sapwood + Heartwood)
     
+
     # ztopPft[i] <- (min(plai[i]/3, 1)) * ztopmxPft[i] * min(1,(rm /0.7))
     ztopPft[i] <- Ht0 * (cbiow[i]*kg_C_M2_to_T_ha)^(Htpower)
+    
     
   }
   

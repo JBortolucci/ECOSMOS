@@ -136,7 +136,6 @@ EucaliptoModel <- function(year, month, day, index) {
   
   ###  beta1[index] <- min(0.995*(1-0.045*exp(-idpp[index]/120)), 0.995) # funcao que altera densidade de raiz em função do tempo. Perfis de raizes baseado no artigo de Christina et al. (2011). OBS: O Mathias passou os dados de densidade de raiz
   ###-------------------
-
   
   totdepth <- 0
   for(k in 1: nsoilay) {

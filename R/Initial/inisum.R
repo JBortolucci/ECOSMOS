@@ -126,6 +126,9 @@ inisum <- function() {
   # initialize total water content in soil + snow + vegetation (for mass conservation check)
   
   wtot <- (wliqu + wsnou) * fu * 2.0 * lai[2] + (wliqs + wsnos) * fu * 2.0 * sai[2] +  (wliql + wsnol) * fl * 2.0 *  (lai[1] + sai[1]) * (1. - fi) + wpud + wipud
+  
+
+  
   for(k in 1:nsoilay) {
     wtot <- wtot + poros[k] * wsoi[k] * (1 - wisoi[k]) * 
       hsoi[k] * rhow + poros[k] * wisoi[k] * hsoi[k] * rhow
@@ -135,7 +138,6 @@ inisum <- function() {
     wtot = wtot + fi * rhos * hsno[k]
   }
   assign("wtot", wtot, envir = env)
-  
   
   # Daily means
   assign("adrain", array(0, 1) , envir = env)

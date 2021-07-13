@@ -124,7 +124,7 @@ sumnow <- function() {
   for(i in seq(1,npft)) {
     nppdummy[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$canopy == UPPER,  frac[i] * an[i] * lai[2] * fu, nppdummy[i])
   }
-
+ 
   # PFT_UPDATE: lower canopy
   for(i in seq(1,npft)) {
     nppdummy[i] <- ifelse(plantList[[i]]$active && plantList[[i]]$canopy == LOWER,  frac[i] * an[i] * lai[1] * fl * smask, nppdummy[i])

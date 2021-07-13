@@ -57,6 +57,7 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
   assign("tblowu",  as.numeric(data[30,][2]), envir = envToSet)    
   assign("tblows",  as.numeric(data[31,][2]), envir = envToSet) 
   assign("tblowl",  as.numeric(data[32,][2]), envir = envToSet)  
+
   
   ##
   ## vegetation
@@ -91,8 +92,7 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
     simDataVars$hsoi[i-1] <- as.numeric(data[47,][i])
   }
   
-  
-   assign("nslaym", as.numeric(data[48,][2]), envir = envToSet) # TODO: Leandro, retirar dos parametros globias:
+  assign("nslaym", as.numeric(data[48,][2]), envir = envToSet) # TODO: Leandro, retirar dos parametros globias:
   assign("bperm", as.numeric(data[49,][2]), envir = envToSet)
   assign("wpudmax", as.numeric(data[50,][2]), envir = envToSet)
   assign("zwpmax", as.numeric(data[51,][2]), envir = envToSet)
@@ -171,6 +171,7 @@ ReadGlobalParamsFromFile <- function(path = "", col = 1) {
   assign("za",  as.numeric(data[102,][2]), envir = envToSet)
   assign("isoilay",  as.numeric(data[103,][2]), envir = envToSet)
   assign("gsmodel",  as.character(data[104,][2]), envir = envToSet) # TODO: achar melhor lugar para alterar 
+  
 }
 
 
@@ -242,6 +243,8 @@ ReadPlantParamsFromFile <- function(path = "") {
       }
     
       indexOfPlant <- i
+      
+      
       
       if(is.null(data[[column]])) {
         stop(paste0("This column does not exist in parameters table."))

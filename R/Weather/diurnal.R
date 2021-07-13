@@ -56,15 +56,13 @@ diurnalR <- function (envi, time, jday, irrigate) {
   
   # calculate the current solar declination angle
   # ref: global physical climatology, hartmann, appendix a
-  xdecl <- 0.006918                    -
+  xdecl <- 0.006918 -
     0.399912 * cos(orbit) +  
-    0.070257 * sin(orbit)       -
+    0.070257 * sin(orbit) -
     0.006758 * cos(2 * orbit) +
     0.000907 * sin(2 * orbit) -
     0.002697 * cos(3 * orbit) +
     0.001480 * sin(3 * orbit)
-  
-  
   
   
   # calculate the effective solar constant, including effects of eccentricity
@@ -104,6 +102,7 @@ diurnalR <- function (envi, time, jday, irrigate) {
 
     trans <- max(0.251,min(stinrad/dailyrad,0.75)) # 0.251 + 0.509 * (1 - cloud)  
     
+    
     # find daylength to be used in pheno subroutine
     
     #Valores estavam errados
@@ -118,6 +117,7 @@ diurnalR <- function (envi, time, jday, irrigate) {
       stop()  }
     
   }
+
   
   
   # calculate the fraction of indirect (diffuse) solar radiation
@@ -252,6 +252,7 @@ diurnalR <- function (envi, time, jday, irrigate) {
   
   truecloud <- max(0, min(1 - ((trans - 0.251) / 0.509),1)) 
   fira <- (1 - truecloud) * ea * stef * (ta - dtair  ) ** 4 + truecloud * ec * stef * (ta - dtcloud) ** 4
+
   
   # ---------------------------------------------------------------------- 
   # *  *  * snow and rain calculations *  * *
@@ -290,8 +291,6 @@ diurnalR <- function (envi, time, jday, irrigate) {
           plens  <- dtime  * plen
         } 
   }
-  
-  
 
   
   # if precipitation event then calculate

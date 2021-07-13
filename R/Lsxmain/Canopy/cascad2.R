@@ -13,7 +13,7 @@ cascad2R <- function(envi){
   
   # step upper leaves
   
-  retorno <- steph2o2 (tu,wliqu,wsnou,fveg,xai,rliqu,fvapuw,chu)
+  retorno <- steph2o2(tu,wliqu,wsnou,fveg,xai,rliqu,fvapuw,chu)
   tu <- retorno$tveg
   wliqu <- retorno$wliq
   wsnou <- retorno$wsno

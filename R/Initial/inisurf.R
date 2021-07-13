@@ -153,7 +153,6 @@ inisurf <- function() {
   assign("epsilon", 1.0e-6, envir = env)
   
 
-
   # zero flux arrays, and global diagnostic arrays
   assign("asurd",  matrix(0, 1, nband), envir = env)
   assign("asuri", matrix(0, 1, nband), envir = env)
