@@ -677,9 +677,7 @@ turvapR <- function (envi, iter, niter) {
   ti <- vec[9]
   q12 <- vec[6]
   q34 <- vec[7]
-  
 
-  browser()
   
   # all done except for final flux calculations,
   # so loop back for the next iteration (except the last)
@@ -853,7 +851,7 @@ turvapR <- function (envi, iter, niter) {
   gtrans <- fvaput * 2 * lai[2] * fu + fvaplt * 2 * lai[1] * fl * (1 - fi)
   gtransu <- fvaput * 2 * lai[2] * fu
   gtransl <- fvaplt * 2 * lai[1] * fl * (1 - fi)
-    
+ 
   
   assign("xu", xu, envir = env)
   assign("xs", xs, envir = env)

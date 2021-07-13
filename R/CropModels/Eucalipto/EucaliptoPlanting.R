@@ -14,7 +14,7 @@ EucaliptoPlanting <- function(iyear0, iyear, imonth, iday, jday, index) {
   if(pstart[i] == 1 && exist[i] == 1 && croplive[i] != 1) {
     print(paste("Start planting  at ",iday,imonth,iyear," min date is ", pdmin[i], pmmin[i],sep=" / "))
   }
-  
+
   
   #_______________________________________________________________    
   #__________________ Start Planting Block _______________________

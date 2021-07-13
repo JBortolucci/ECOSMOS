@@ -371,7 +371,6 @@ GeneralModel <- function(simVars = NULL) {
         
         for(step in seq(1, simVars$niter)) {
           
-          print(paste(year, month, day, step), sep = "/")
           
           simVars$step <- step
           

@@ -18,8 +18,8 @@ lsxmain <- function(time_param = 0, day, month, year, jday = 0) {
   environment(noveg) <- env
   environment(Stomata2) <- env
   
-  # environment(soilctl) <- env
-  environment(soilctlR) <- env
+  environment(soilctl) <- env
+  # environment(soilctlR) <- env
   
   setsoi(env)
   
@@ -82,8 +82,8 @@ lsxmain <- function(time_param = 0, day, month, year, jday = 0) {
   
   # snow() # not implemented yet.
   
-  # soilctl() # the compiled function remains to this model.
-  soilctlR()
+  soilctl() # the compiled function remains to this model.
+  # soilctlR()
   
   
 }
