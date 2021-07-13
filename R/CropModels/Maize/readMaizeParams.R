@@ -20,13 +20,16 @@ readMaizeParams <-function(pathExcel = "a",filePath = "BRFRM047", simInstances =
   simInstances[[simId]]$plantList[[i]]$params[["sg"]] 	         <- as.numeric(data[which(data$`VAR#` %in% column)[1],11])
   simInstances[[simId]]$plantList[[i]]$params[["phyl"]] 	       <- as.numeric(data[which(data$`VAR#` %in% column)[1],12])
   simInstances[[simId]]$plantList[[i]]$params[["dsstop"]] 	     <- as.numeric(data[which(data$`VAR#` %in% column)[1],13])
-  simInstances[[simId]]$plantList[[i]]$params[["ph1"]] 	         <- as.numeric(data[which(data$`VAR#` %in% column)[1],14])
-  simInstances[[simId]]$plantList[[i]]$params[["ph2"]] 	         <- as.numeric(data[which(data$`VAR#` %in% column)[1],15])
-  simInstances[[simId]]$plantList[[i]]$params[["G2"]] 	         <- as.numeric(data[which(data$`VAR#` %in% column)[1],16])
-  simInstances[[simId]]$plantList[[i]]$params[["G5"]] 	         <- as.numeric(data[which(data$`VAR#` %in% column)[1],17])
-  simInstances[[simId]]$plantList[[i]]$params[["efftrans"]] 	   <- as.numeric(data[which(data$`VAR#` %in% column)[1],18])
-  simInstances[[simId]]$plantList[[i]]$params[["SLAi"]] 	       <- as.numeric(data[which(data$`VAR#` %in% column)[1],19])
-  simInstances[[simId]]$plantList[[i]]$params[["SLAf"]] 	       <- as.numeric(data[which(data$`VAR#` %in% column)[1],20])
+  simInstances[[simId]]$plantList[[i]]$params[["G2"]] 	         <- as.numeric(data[which(data$`VAR#` %in% column)[1],14])
+  simInstances[[simId]]$plantList[[i]]$params[["G5"]] 	         <- as.numeric(data[which(data$`VAR#` %in% column)[1],15])
+  simInstances[[simId]]$plantList[[i]]$params[["efftrans"]] 	   <- as.numeric(data[which(data$`VAR#` %in% column)[1],16])
+  simInstances[[simId]]$plantList[[i]]$params[["SLAi"]] 	       <- as.numeric(data[which(data$`VAR#` %in% column)[1],17])
+  simInstances[[simId]]$plantList[[i]]$params[["SLAf"]] 	       <- as.numeric(data[which(data$`VAR#` %in% column)[1],18])
+  simInstances[[simId]]$plantList[[i]]$params[["SLAk"]] 	       <- as.numeric(data[which(data$`VAR#` %in% column)[1],19])
+  simInstances[[simId]]$plantList[[i]]$params[["MALA"]] 	       <- as.numeric(data[which(data$`VAR#` %in% column)[1],20])
+  simInstances[[simId]]$plantList[[i]]$params[["MLA"]] 	         <- as.numeric(data[which(data$`VAR#` %in% column)[1],21])
+  simInstances[[simId]]$plantList[[i]]$params[["VMLA"]] 	       <- as.numeric(data[which(data$`VAR#` %in% column)[1],22])
+  simInstances[[simId]]$plantList[[i]]$params[["MLAc"]] 	       <- as.numeric(data[which(data$`VAR#` %in% column)[1],23])
   
 }
 
